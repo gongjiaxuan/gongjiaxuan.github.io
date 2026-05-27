@@ -173,13 +173,13 @@
     .footer-mark::before {
       content: '';
       position: absolute;
-      inset: -16px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 65%);
-      animation: mark-glow 5s ease-in-out infinite;
+      inset: -18px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, rgba(6,182,212,0.08) 40%, transparent 70%);
+      animation: mark-glow 4s ease-in-out infinite;
     }
     @keyframes mark-glow {
-      0%, 100% { opacity: 0.4; transform: scale(0.92); }
-      50%      { opacity: 1; transform: scale(1.06); }
+      0%, 100% { opacity: 0.5; transform: scale(0.9); }
+      50%      { opacity: 1; transform: scale(1.08); }
     }
     /* ── 3D sphere (SVG rings) ── */
     .geo-scene {
@@ -200,15 +200,15 @@
     .geo-ring-svg circle {
       fill: none;
       stroke: #6366f1;
-      stroke-width: 0.7;
+      stroke-width: 1.5;
       vector-effect: non-scaling-stroke;
-      opacity: 0.7;
+      opacity: 0.85;
     }
     .geo-ring-svg:nth-child(1) { transform: rotateY(0deg); }
     .geo-ring-svg:nth-child(2) { transform: rotateY(58deg); }
-    .geo-ring-svg:nth-child(2) circle { stroke: #818cf8; opacity: 0.55; }
+    .geo-ring-svg:nth-child(2) circle { stroke: #06b6d4; opacity: 0.7; }
     .geo-ring-svg:nth-child(3) { transform: rotateX(62deg); }
-    .geo-ring-svg:nth-child(3) circle { stroke: #a78bfa; opacity: 0.55; }
+    .geo-ring-svg:nth-child(3) circle { stroke: #8b5cf6; opacity: 0.7; }
     @keyframes geo-spin {
       from { transform: rotateY(0deg) rotateX(10deg); }
       to   { transform: rotateY(360deg) rotateX(10deg); }
@@ -230,9 +230,14 @@
       animation: p-glow var(--glow) ease-in-out infinite;
       animation-delay: var(--dl);
     }
-    .p1 { --dur: 6s; --glow: 2.4s; --sz: 2px; --clr: #818cf8; --dl: 0s;   top: 8%;  left: 50%; }
-    .p2 { --dur: 7s; --glow: 3s;   --sz: 1.5px; --clr: #a78bfa; --dl: 0.6s; top: 55%; left: 90%; }
-    .p3 { --dur: 5.5s; --glow: 2.2s; --sz: 2px; --clr: #6366f1; --dl: 1.2s; top: 82%; left: 58%; }
+    .p1  { --dur: 5s;   --glow: 2s;   --sz: 2.5px; --clr: #6366f1; --dl: 0s;    top: 6%;  left: 48%; }
+    .p2  { --dur: 6s;   --glow: 2.5s; --sz: 2px;   --clr: #06b6d4; --dl: 0.4s;  top: 52%; left: 92%; }
+    .p3  { --dur: 4.5s; --glow: 1.8s; --sz: 3px;   --clr: #8b5cf6; --dl: 0.8s;  top: 84%; left: 56%; }
+    .p4  { --dur: 5.8s; --glow: 2.2s; --sz: 2px;   --clr: #6366f1; --dl: 0.2s;  top: 48%; left: 4%; }
+    .p5  { --dur: 4.2s; --glow: 2.8s; --sz: 2.5px; --clr: #06b6d4; --dl: 0.6s;  top: 16%; left: 84%; }
+    .p6  { --dur: 6.5s; --glow: 2s;   --sz: 2px;   --clr: #8b5cf6; --dl: 1s;    top: 72%; left: 18%; }
+    .p7  { --dur: 5.2s; --glow: 2.4s; --sz: 2.5px; --clr: #6366f1; --dl: 0.3s;  top: 28%; left: 8%; }
+    .p8  { --dur: 3.8s; --glow: 1.6s; --sz: 2px;   --clr: #06b6d4; --dl: 0.7s;  top: 60%; left: 80%; }
     @keyframes p-orbit {
       0%   { transform: rotate(0deg) translateX(24px) rotate(0deg); opacity: 0; }
       12%  { opacity: 1; }
@@ -564,6 +569,11 @@
             <div class="p p1"></div>
             <div class="p p2"></div>
             <div class="p p3"></div>
+            <div class="p p4"></div>
+            <div class="p p5"></div>
+            <div class="p p6"></div>
+            <div class="p p7"></div>
+            <div class="p p8"></div>
           </div>
         </div>
       </div>
