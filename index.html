@@ -613,14 +613,14 @@
 
       // [baseRadius, baseSpeed, phase, glowPeriod]
       var cfgs = [
-        [22, 0.55, 0,    2.0],
-        [30, 0.42, 0.8,  2.4],
-        [17, 0.68, 1.6,  1.6],
-        [26, 0.48, 2.4,  2.8],
-        [14, 0.75, 3.2,  2.2],
-        [32, 0.38, 4.0,  1.8],
-        [19, 0.58, 4.8,  2.6],
-        [24, 0.50, 5.6,  2.0]
+        [20, 0.28, 0,    2.0],
+        [38, 0.22, 0.8,  2.4],
+        [16, 0.32, 1.6,  1.6],
+        [42, 0.20, 2.4,  2.8],
+        [28, 0.25, 3.2,  2.2],
+        [48, 0.18, 4.0,  1.8],
+        [34, 0.24, 4.8,  2.6],
+        [44, 0.21, 5.6,  2.0]
       ];
 
       // per-particle evolving state for organic drift
@@ -652,16 +652,16 @@
           var oy = Math.sin(a) * c[0] * 0.7 + s.dy;
 
           // evolving drift (slow wandering of orbit center)
-          s.dx += (noise(T * 0.3, i) * 8 - s.dx) * 0.02;
-          s.dy += (noise(T * 0.3, i + 10) * 8 - s.dy) * 0.02;
+          s.dx += (noise(T * 0.2, i) * 14 - s.dx) * 0.015;
+          s.dy += (noise(T * 0.2, i + 10) * 14 - s.dy) * 0.015;
 
           // micro jitter
-          s.jx += (noise(T * 4.5, i * 3) * 2.5 - s.jx) * 0.4;
-          s.jy += (noise(T * 4.5, i * 3 + 5) * 2.5 - s.jy) * 0.4;
+          s.jx += (noise(T * 3.5, i * 3) * 3 - s.jx) * 0.35;
+          s.jy += (noise(T * 3.5, i * 3 + 5) * 3 - s.jy) * 0.35;
 
           // mouse: circle AROUND mouse point, not stick to it
-          var moAngle = a * 1.8 + T * 2.0;
-          var moR = 10 + (i % 3) * 6;
+          var moAngle = a * 1.4 + T * 1.5;
+          var moR = 14 + (i % 4) * 8;
           var mox = dx + Math.cos(moAngle) * moR;
           var moy = dy + Math.sin(moAngle) * moR * 0.7;
 
