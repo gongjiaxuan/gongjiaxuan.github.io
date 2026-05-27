@@ -5,21 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jiaxuan Gong</title>
   <meta name="description" content="Jiaxuan Gong — PhD student at Jiangnan University studying Design Science and Human-Computer Interaction.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
 
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --text:      #1a1a1a;
-      --text-mid:  #555;
-      --text-light:#888;
+      --text:      #1e1e24;
+      --text-mid:  #5c5c66;
+      --text-light:#8e8e98;
       --bg:        #fff;
-      --border:    #e5e5e5;
+      --bg-warm:   #fafaf8;
+      --border:    #ebebeb;
       --link:      #2563eb;
-      --badge-bg:  #ecfdf5;
-      --badge-text:#065f46;
+      --link-dim:  #93b4f5;
+      --accent:    #6366f1;
+      --badge-bg:  #eef2ff;
+      --badge-text:#4338ca;
       --max-w:     680px;
+      --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -27,7 +34,7 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       font-size: 16px;
-      line-height: 1.65;
+      line-height: 1.7;
       color: var(--text);
       background: var(--bg);
       -webkit-font-smoothing: antialiased;
@@ -36,17 +43,23 @@
     .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
 
     /* ── Typography ── */
-    a { color: var(--link); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    h1, h2, .section-head h2 { font-family: var(--font-serif); }
+    a { color: var(--link); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: #1d4ed8; text-decoration: none; }
 
-    /* ── Decorative divider: * * * ── */
+    /* ── Refined divider ── */
     .divider {
-      text-align: center;
-      color: #ccc;
-      font-size: 0.75rem;
-      letter-spacing: 0.35em;
-      margin: 3rem 0;
-      user-select: none;
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.65rem; margin: 3rem 0; user-select: none;
+    }
+    .divider::before, .divider::after {
+      content: ''; height: 1px; width: 100px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+    }
+    .divider::before { background: linear-gradient(to left, transparent, var(--border), transparent); }
+    .divider-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: #d4d4d8; flex-shrink: 0;
     }
 
     /* ── Section header ── */
@@ -56,9 +69,9 @@
       align-items: baseline;
       margin-bottom: 0.3rem;
     }
-    .section-head h2 { font-size: 1.1rem; font-weight: 600; }
-    .section-head a { font-size: 0.8rem; color: var(--text-light); }
-    .section-head a:hover { color: var(--link); text-decoration: none; }
+    .section-head h2 { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
+    .section-head a { font-size: 0.8rem; color: var(--text-light); transition: color 0.2s; }
+    .section-head a:hover { color: var(--link); }
 
     /* ── Navigation ── */
     nav {
@@ -95,41 +108,56 @@
     /* ── Badge ── */
     .badge {
       display: inline-block;
-      font-size: 0.68rem; font-weight: 600;
-      padding: 0.15rem 0.55rem; border-radius: 12px;
-      letter-spacing: 0.02em;
+      font-size: 0.66rem; font-weight: 600;
+      padding: 0.12rem 0.5rem; border-radius: 10px;
+      letter-spacing: 0.03em;
+      transition: transform 0.15s;
     }
     .badge-new { background: var(--badge-bg); color: var(--badge-text); }
-    .badge-label { font-size: 0.72rem; color: var(--text-light); }
+    .badge-label { font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.06em; }
 
     /* ── Paper entry ── */
-    .paper { margin-bottom: 1.3rem; }
-    .paper .label-row { font-size: 0.78rem; margin-bottom: 0.1rem; }
-    .paper .paper-title { font-weight: 600; font-size: 0.93rem; line-height: 1.4; }
-    .paper .paper-title a { color: var(--text); }
-    .paper .paper-title a:hover { color: var(--link); text-decoration: underline; }
-    .paper .paper-authors { font-size: 0.84rem; color: var(--text-mid); margin-top: 0.1rem; }
-    .paper .paper-venue { font-size: 0.82rem; color: var(--text-light); margin-top: 0.05rem; }
+    .paper {
+      margin-bottom: 1.2rem; padding: 0.8rem 1rem;
+      border-left: 2px solid transparent; border-radius: 0 6px 6px 0;
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .paper:hover { border-left-color: var(--accent); background: var(--bg-warm); }
+    .paper .label-row { font-size: 0.75rem; margin-bottom: 0.1rem; }
+    .paper .paper-title { font-weight: 600; font-size: 0.9rem; line-height: 1.45; }
+    .paper .paper-title a { color: var(--text); transition: color 0.2s; }
+    .paper .paper-title a:hover { color: var(--link); }
+    .paper .paper-authors { font-size: 0.82rem; color: var(--text-mid); margin-top: 0.1rem; }
+    .paper .paper-venue { font-size: 0.8rem; color: var(--text-light); margin-top: 0.05rem; }
 
     /* ── Project card ── */
-    .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .project-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .project-card {
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+      background: #fff; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      border-color: #d4d4d8;
+    }
     .project-card .preview {
       width: 100%; aspect-ratio: 16/10; background: #f9fafb;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.65rem; color: #ccc; overflow: hidden;
     }
-    .project-card .preview img { width: 100%; height: 100%; object-fit: cover; }
-    .project-card .card-body { padding: 1rem; }
+    .project-card .preview img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .project-card:hover .preview img { transform: scale(1.03); }
+    .project-card .card-body { padding: 1rem 1.1rem; }
     .project-card .card-body .card-icon {
-      width: 28px; height: 28px; border-radius: 50%;
+      width: 26px; height: 26px; border-radius: 50%;
       background: #f3f4f6; margin-bottom: 0.5rem;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.5rem; color: #ccc; overflow: hidden;
     }
     .project-card .card-body .card-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .project-card .card-body h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .project-card .card-body p { font-size: 0.8rem; color: var(--text-mid); line-height: 1.5; }
+    .project-card .card-body h3 { font-family: var(--font-serif); font-size: 0.92rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .project-card .card-body p { font-size: 0.8rem; color: var(--text-mid); line-height: 1.55; }
 
     /* ── Books ── */
     .books { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
@@ -146,46 +174,54 @@
     /* ── Footer ── */
     footer { text-align: center; padding: 3rem 0 3rem; }
     .footer-mark {
-      width: 56px; height: 56px;
-      margin: 0 auto 1.2rem;
+      width: 64px; height: 64px;
+      margin: 0 auto 1.4rem;
       position: relative;
     }
-    /* ── 3D sphere core ── */
+    /* subtle ambient glow */
+    .footer-mark::before {
+      content: '';
+      position: absolute;
+      inset: -12px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      animation: mark-glow 4s ease-in-out infinite;
+    }
+    @keyframes mark-glow {
+      0%, 100% { opacity: 0.5; transform: scale(0.95); }
+      50%      { opacity: 1; transform: scale(1.08); }
+    }
+    /* ── 3D sphere ── */
     .geo-scene {
       width: 100%; height: 100%;
-      perspective: 250px;
+      perspective: 300px;
       position: relative;
     }
     .geo-sphere {
       width: 100%; height: 100%;
       position: relative;
       transform-style: preserve-3d;
-      animation: geo-spin 10s linear infinite;
+      animation: geo-spin 16s linear infinite;
     }
     .geo-ring {
       position: absolute; inset: 0;
       border-radius: 50%;
-      background: conic-gradient(from 0deg, #6366f1, #06b6d4, #10b981, #f59e0b, #ec4899, #6366f1);
-      -webkit-mask: radial-gradient(circle, transparent 55%, black 58%);
-      mask: radial-gradient(circle, transparent 55%, black 58%);
+      background: conic-gradient(from 0deg, #6366f1, #818cf8, #a78bfa, #6366f1);
+      -webkit-mask: radial-gradient(circle, transparent 58%, black 60%);
+      mask: radial-gradient(circle, transparent 58%, black 60%);
     }
     .geo-ring:nth-child(1) { transform: rotateY(0deg); }
-    .geo-ring:nth-child(2) { transform: rotateY(60deg); animation: hue-shift-1 3s linear infinite; }
-    .geo-ring:nth-child(3) { transform: rotateX(70deg); animation: hue-shift-2 4s linear infinite reverse; }
+    .geo-ring:nth-child(2) { transform: rotateY(55deg); animation: ring-gradient 6s linear infinite; }
+    .geo-ring:nth-child(3) { transform: rotateX(65deg); animation: ring-gradient 6s linear infinite reverse; }
     @keyframes geo-spin {
-      from { transform: rotateY(0deg) rotateX(15deg); }
-      to   { transform: rotateY(360deg) rotateX(15deg); }
+      from { transform: rotateY(0deg) rotateX(12deg); }
+      to   { transform: rotateY(360deg) rotateX(12deg); }
     }
-    @keyframes hue-shift-1 {
+    @keyframes ring-gradient {
       from { filter: hue-rotate(0deg); }
       to   { filter: hue-rotate(360deg); }
     }
-    @keyframes hue-shift-2 {
-      from { filter: hue-rotate(120deg); }
-      to   { filter: hue-rotate(480deg); }
-    }
     /* ── Particles ── */
-    .particles { position: absolute; inset: -18px; pointer-events: none; }
+    .particles { position: absolute; inset: -20px; pointer-events: none; }
     .p {
       position: absolute;
       border-radius: 50%;
@@ -198,27 +234,24 @@
       width: var(--sz); height: var(--sz);
       background: var(--clr);
       border-radius: 50%;
-      animation: p-glow 1.6s ease-in-out infinite;
+      box-shadow: 0 0 4px var(--clr);
+      animation: p-glow 2s ease-in-out infinite;
       animation-delay: var(--dl);
     }
-    /* particle orbital positions */
-    .p1 { --dur: 4s; --sz: 3px; --clr: #6366f1; --dl: 0s;   top: 12%; left: 50%; }
-    .p2 { --dur: 5s; --sz: 2px; --clr: #06b6d4; --dl: 0.4s; top: 50%; left: 85%; }
-    .p3 { --dur: 3.5s; --sz: 4px; --clr: #f59e0b; --dl: 0.8s; top: 80%; left: 60%; }
-    .p4 { --dur: 4.5s; --sz: 2.5px; --clr: #ec4899; --dl: 0.2s; top: 50%; left: 8%; }
-    .p5 { --dur: 3.8s; --sz: 3px; --clr: #10b981; --dl: 0.6s; top: 15%; left: 80%; }
-    .p6 { --dur: 5.5s; --sz: 2px; --clr: #6366f1; --dl: 1s;   top: 75%; left: 25%; }
-    .p7 { --dur: 4.2s; --sz: 3.5px; --clr: #06b6d4; --dl: 0.3s; top: 30%; left: 10%; }
-    .p8 { --dur: 3.2s; --sz: 2px; --clr: #ec4899; --dl: 0.7s; top: 65%; left: 78%; }
+    .p1 { --dur: 5s; --sz: 2.5px; --clr: #6366f1; --dl: 0s;   top: 10%; left: 50%; }
+    .p2 { --dur: 6s; --sz: 2px;   --clr: #818cf8; --dl: 0.5s; top: 55%; left: 88%; }
+    .p3 { --dur: 4.5s; --sz: 3px; --clr: #a78bfa; --dl: 1s;   top: 82%; left: 60%; }
+    .p4 { --dur: 5.5s; --sz: 2px; --clr: #6366f1; --dl: 0.3s; top: 48%; left: 6%; }
+    .p5 { --dur: 4.8s; --sz: 2.5px; --clr: #818cf8; --dl: 0.8s; top: 18%; left: 82%; }
     @keyframes p-orbit {
-      0%   { transform: rotate(0deg) translateX(20px) rotate(0deg); opacity: 0; }
-      20%  { opacity: 1; }
-      80%  { opacity: 1; }
-      100% { transform: rotate(360deg) translateX(20px) rotate(-360deg); opacity: 0; }
+      0%   { transform: rotate(0deg) translateX(22px) rotate(0deg); opacity: 0; }
+      15%  { opacity: 1; }
+      85%  { opacity: 1; }
+      100% { transform: rotate(360deg) translateX(22px) rotate(-360deg); opacity: 0; }
     }
     @keyframes p-glow {
-      0%, 100% { opacity: 0.3; transform: scale(0.6); }
-      50%      { opacity: 1; transform: scale(1.3); }
+      0%, 100% { opacity: 0.2; transform: scale(0.5); }
+      50%      { opacity: 1; transform: scale(1.4); }
     }
     .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .footer-links a { font-size: 0.82rem; color: var(--text-mid); }
@@ -283,7 +316,7 @@
     </div>
   </div>
 
-  <div class="wrapper"><div class="divider">* * *</div></div>
+  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
 
   <!-- About -->
   <section id="about">
@@ -292,7 +325,7 @@
         <h2>About me</h2>
         <a href="#about">All about me →</a>
       </div>
-      <div class="divider">* * *</div>
+      <div class="divider"><span class="divider-dot"></span></div>
 
       <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.75;margin-bottom:0.8rem;">
         I am a design researcher working at the intersection of <strong>design, human–computer interaction, and accessibility</strong>.
@@ -332,7 +365,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider">* * *</div></div>
+  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
 
   <!-- Research / Publications -->
   <section id="research">
@@ -341,7 +374,7 @@
         <h2>Latest research</h2>
         <a href="#research">All research →</a>
       </div>
-      <div class="divider">* * *</div>
+      <div class="divider"><span class="divider-dot"></span></div>
 
       <div class="paper">
         <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
@@ -409,7 +442,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider">* * *</div></div>
+  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
 
   <!-- Projects -->
   <section id="projects">
@@ -418,7 +451,7 @@
         <h2>Some of my work</h2>
         <a href="#projects">All work →</a>
       </div>
-      <div class="divider">* * *</div>
+      <div class="divider"><span class="divider-dot"></span></div>
 
       <div class="projects">
 
@@ -474,7 +507,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider">* * *</div></div>
+  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
 
   <!-- Skills & More -->
   <section>
@@ -482,7 +515,7 @@
       <div class="section-head">
         <h2>Skills &amp; more</h2>
       </div>
-      <div class="divider">* * *</div>
+      <div class="divider"><span class="divider-dot"></span></div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.8rem;font-size:0.85rem;color:var(--text-mid);line-height:1.7;">
         <div>
@@ -514,7 +547,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider">* * *</div></div>
+  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
 
   <!-- CV -->
   <section id="cv">
@@ -525,7 +558,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider">* * *</div></div>
+  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
 
   <!-- Footer -->
   <footer>
@@ -543,9 +576,6 @@
             <div class="p p3"></div>
             <div class="p p4"></div>
             <div class="p p5"></div>
-            <div class="p p6"></div>
-            <div class="p p7"></div>
-            <div class="p p8"></div>
           </div>
         </div>
       </div>
