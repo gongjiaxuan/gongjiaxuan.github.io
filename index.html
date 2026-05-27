@@ -186,15 +186,20 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
     }
-    .geo-ring-svg circle {
-      fill: none;
-      stroke-width: 3.5;
-      vector-effect: non-scaling-stroke;
-      opacity: 0.9;
+    .geo-ring-svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: var(--grad);
+      -webkit-mask: radial-gradient(circle, transparent 48%, black 55%);
+      mask: radial-gradient(circle, transparent 48%, black 55%);
     }
-    .geo-ring-svg:nth-child(1) { transform: rotateY(0deg); }
-    .geo-ring-svg:nth-child(2) { transform: rotateY(58deg); }
-    .geo-ring-svg:nth-child(3) { transform: rotateX(62deg); }
+    .geo-ring-svg:nth-child(1) { --grad: conic-gradient(from 0deg, #5856D6, #FF2D55, #FF9500, #FFCC00, #34C759, #5AC8FA, #007AFF, #5856D6); transform: rotateY(0deg); animation: flow-hue 6s linear infinite; }
+    .geo-ring-svg:nth-child(2) { --grad: conic-gradient(from 60deg, #007AFF, #AF52DE, #FF375F, #FF9500, #5AC8FA, #007AFF); transform: rotateY(58deg); animation: flow-hue 5s linear infinite reverse; }
+    .geo-ring-svg:nth-child(3) { --grad: conic-gradient(from 120deg, #AF52DE, #FF2D55, #FFCC00, #34C759, #AF52DE); transform: rotateX(62deg); animation: flow-hue 7s linear infinite; }
+    @keyframes flow-hue {
+      to { filter: hue-rotate(360deg); }
+    }
     @keyframes geo-spin {
       from { transform: rotateY(0deg) rotateX(10deg); }
       to   { transform: rotateY(360deg) rotateX(10deg); }
@@ -550,54 +555,9 @@
       <div class="footer-mark">
         <div class="geo-scene">
           <div class="geo-sphere">
-            <svg class="geo-ring-svg" viewBox="0 0 72 72">
-              <defs>
-                <filter id="liquid">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="3">
-                    <animate attributeName="seed" values="1;8;1" dur="5s" repeatCount="indefinite"/>
-                  </feTurbulence>
-                  <feDisplacementMap in="SourceGraphic" scale="3.5"/>
-                </filter>
-                <linearGradient id="ra" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#5856D6"/><stop offset="20%" stop-color="#FF2D55"/>
-                  <stop offset="40%" stop-color="#FF9500"/><stop offset="60%" stop-color="#FFCC00"/>
-                  <stop offset="80%" stop-color="#34C759"/><stop offset="100%" stop-color="#5856D6"/>
-                </linearGradient>
-              </defs>
-              <circle cx="36" cy="36" r="31" stroke="url(#ra)" filter="url(#liquid)"/>
-            </svg>
-            <svg class="geo-ring-svg" viewBox="0 0 72 72">
-              <defs>
-                <filter id="liquid2">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="5">
-                    <animate attributeName="seed" values="5;2;5" dur="6s" repeatCount="indefinite"/>
-                  </feTurbulence>
-                  <feDisplacementMap in="SourceGraphic" scale="3"/>
-                </filter>
-                <linearGradient id="rb" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#007AFF"/><stop offset="20%" stop-color="#AF52DE"/>
-                  <stop offset="40%" stop-color="#FF375F"/><stop offset="60%" stop-color="#FF9500"/>
-                  <stop offset="80%" stop-color="#5AC8FA"/><stop offset="100%" stop-color="#007AFF"/>
-                </linearGradient>
-              </defs>
-              <circle cx="36" cy="36" r="31" stroke="url(#rb)" filter="url(#liquid2)"/>
-            </svg>
-            <svg class="geo-ring-svg" viewBox="0 0 72 72">
-              <defs>
-                <filter id="liquid3">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7">
-                    <animate attributeName="seed" values="7;4;7" dur="4.5s" repeatCount="indefinite"/>
-                  </feTurbulence>
-                  <feDisplacementMap in="SourceGraphic" scale="3.5"/>
-                </filter>
-                <linearGradient id="rc" x1="50%" y1="0%" x2="50%" y2="100%">
-                  <stop offset="0%" stop-color="#AF52DE"/><stop offset="25%" stop-color="#FF2D55"/>
-                  <stop offset="50%" stop-color="#FFCC00"/><stop offset="75%" stop-color="#34C759"/>
-                  <stop offset="100%" stop-color="#AF52DE"/>
-                </linearGradient>
-              </defs>
-              <circle cx="36" cy="36" r="31" stroke="url(#rc)" filter="url(#liquid3)"/>
-            </svg>
+            <div class="geo-ring-svg"></div>
+            <div class="geo-ring-svg"></div>
+            <div class="geo-ring-svg"></div>
           </div>
           <div class="particles">
             <div class="p p1"></div>
