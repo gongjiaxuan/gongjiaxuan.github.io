@@ -203,7 +203,7 @@
       from { transform: rotateY(0deg) rotateX(10deg); }
       to   { transform: rotateY(360deg) rotateX(10deg); }
     }
-    /* ── Particles (JS-driven positions) ── */
+    /* ── Particles (JS-driven: position + color) ── */
     .particles { position: absolute; inset: 0; pointer-events: none; }
     .p {
       position: absolute;
@@ -212,18 +212,16 @@
       margin-left: calc(var(--sz) / -2);
       margin-top: calc(var(--sz) / -2);
       border-radius: 50%;
-      background: var(--clr);
-      box-shadow: 0 0 4px var(--clr), 0 0 10px var(--clr), 0 0 18px var(--glow-clr);
-      opacity: 0.5;
+      transition: background 0.5s, box-shadow 0.5s;
     }
-    .p1  { --sz: 4px;   --clr: #AF52DE; --glow-clr: #AF52DE; }
-    .p2  { --sz: 3.5px; --clr: #FF2D55; --glow-clr: #FF2D55; }
-    .p3  { --sz: 5px;   --clr: #FF9500; --glow-clr: #FF9500; }
-    .p4  { --sz: 3.5px; --clr: #34C759; --glow-clr: #34C759; }
-    .p5  { --sz: 3px;   --clr: #007AFF; --glow-clr: #007AFF; }
-    .p6  { --sz: 4px;   --clr: #FFCC00; --glow-clr: #FFCC00; }
-    .p7  { --sz: 3.5px; --clr: #5AC8FA; --glow-clr: #5AC8FA; }
-    .p8  { --sz: 3px;   --clr: #FF375F; --glow-clr: #FF375F; }
+    .p1  { --sz: 5px; }
+    .p2  { --sz: 4px; }
+    .p3  { --sz: 6px; }
+    .p4  { --sz: 4.5px; }
+    .p5  { --sz: 3.5px; }
+    .p6  { --sz: 5px; }
+    .p7  { --sz: 4px; }
+    .p8  { --sz: 3.5px; }
     .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .footer-links a { font-size: 0.875rem; color: var(--text-mid); }
     .footer-info { font-size: 0.75rem; color: var(--text-light); }
@@ -671,10 +669,19 @@
           var oy = ty * (1 - att) + moy * att;
           var z = tz * (1 - att);
 
+          // gradient color: slowly shifting rainbow
+          var hue = ((T * 12 + f[6] * 35) % 360);
+          var c1 = 'hsl(' + hue.toFixed(0) + ', 90%, 68%)';
+          var c2 = 'hsl(' + ((hue + 25) % 360).toFixed(0) + ', 85%, 55%)';
+          var c3 = 'hsl(' + ((hue + 50) % 360).toFixed(0) + ', 80%, 50%)';
+
+          ps[i].style.background = 'radial-gradient(circle at 35% 35%, ' + c1 + ', ' + c2 + ')';
+          ps[i].style.boxShadow = '0 0 5px ' + c2 + ', 0 0 14px ' + c3 + ', 0 0 24px ' + c3;
+
           // 3D depth cues
-          var depth = (z + 40) / 80; // 0..1 where 0.5=mid
-          var sc = 0.5 + depth * 1.3; // scale: closer=bigger
-          var op = 0.3 + depth * 0.6; // opacity: closer=brighter
+          var depth = (z + 40) / 80;
+          var sc = 0.5 + depth * 1.3;
+          var op = 0.35 + depth * 0.55;
 
           ps[i].style.transform = 'translate(' + ox.toFixed(1) + 'px, ' + oy.toFixed(1) + 'px) scale(' + sc.toFixed(2) + ')';
           ps[i].style.opacity = op.toFixed(2);
