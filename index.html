@@ -214,14 +214,14 @@
       border-radius: 50%;
       transition: background 0.5s, box-shadow 0.5s;
     }
-    .p1  { --sz: 5px; }
-    .p2  { --sz: 4px; }
-    .p3  { --sz: 6px; }
-    .p4  { --sz: 4.5px; }
-    .p5  { --sz: 3.5px; }
-    .p6  { --sz: 5px; }
-    .p7  { --sz: 4px; }
-    .p8  { --sz: 3.5px; }
+    .p1  { --sz: 4px; }
+    .p2  { --sz: 3px; }
+    .p3  { --sz: 4.5px; }
+    .p4  { --sz: 3.5px; }
+    .p5  { --sz: 2.5px; }
+    .p6  { --sz: 4px; }
+    .p7  { --sz: 3px; }
+    .p8  { --sz: 2.5px; }
     .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .footer-links a { font-size: 0.875rem; color: var(--text-mid); }
     .footer-info { font-size: 0.75rem; color: var(--text-light); }
@@ -692,7 +692,7 @@
             return 'rgb(' + r + ',' + g + ',' + b + ')';
           }
 
-          var pos = ((T * 0.025 + f[6] * 0.13) % 1);
+          var pos = ((T * 0.05 + f[6] * 0.13) % 1);
           var c1 = rainbowColor(pos);
           var c2 = rainbowColor((pos + 0.06) % 1);
           var c3 = rainbowColor((pos + 0.12) % 1);
