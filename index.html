@@ -25,7 +25,7 @@
       --accent:     #6366f1;
       --badge-bg:   #eef2ff;
       --badge-text: #4338ca;
-      --max-w:      680px;
+      --max-w:      700px;
       --font:       'Inter', 'SF Pro', ui-sans-serif, system-ui, sans-serif;
     }
 
@@ -33,11 +33,14 @@
 
     body {
       font-family: var(--font);
+      font-feature-settings: 'liga' 1, 'calt' 1;
       font-size: 16px;
       line-height: 1.75;
       color: var(--text);
       background: var(--bg);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
     .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
@@ -46,19 +49,10 @@
     a { color: var(--link); text-decoration: none; transition: color 0.15s; font-weight: 500; }
     a:hover { text-decoration: underline; }
 
-    /* ── Refined divider ── */
+    /* ── Divider: matches Kanchi's <hr> ── */
     .divider {
-      display: flex; align-items: center; justify-content: center;
-      gap: 0.65rem; margin: 3rem 0; user-select: none;
-    }
-    .divider::before, .divider::after {
-      content: ''; height: 1px; width: 100px;
-      background: linear-gradient(to right, transparent, var(--border), transparent);
-    }
-    .divider::before { background: linear-gradient(to left, transparent, var(--border), transparent); }
-    .divider-dot {
-      width: 4px; height: 4px; border-radius: 50%;
-      background: #d4d4d8; flex-shrink: 0;
+      border: none; border-top: 1px solid var(--border);
+      margin: 3rem 0;
     }
 
     /* ── Section header ── */
@@ -314,7 +308,7 @@
     </div>
   </div>
 
-  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
+  <div class="wrapper"><hr class="divider"></div>
 
   <!-- About -->
   <section id="about">
@@ -363,7 +357,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
+  <div class="wrapper"><hr class="divider"></div>
 
   <!-- Research / Publications -->
   <section id="research">
@@ -440,7 +434,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
+  <div class="wrapper"><hr class="divider"></div>
 
   <!-- Projects -->
   <section id="projects">
@@ -505,7 +499,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
+  <div class="wrapper"><hr class="divider"></div>
 
   <!-- Skills & More -->
   <section>
@@ -545,7 +539,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
+  <div class="wrapper"><hr class="divider"></div>
 
   <!-- CV -->
   <section id="cv">
@@ -556,7 +550,7 @@
     </div>
   </section>
 
-  <div class="wrapper"><div class="divider"><span class="divider-dot"></span></div></div>
+  <div class="wrapper"><hr class="divider"></div>
 
   <!-- Footer -->
   <footer>
