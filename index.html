@@ -602,7 +602,7 @@
       });
     });
 
-    // Organic particle system: drift, jitter, mouse-orbit
+    // Organic particle system: broad orbits, wandering, mouse-orbit
     (function() {
       var mark = document.querySelector('.footer-mark');
       if (!mark) return;
@@ -613,22 +613,27 @@
 
       // [baseRadius, baseSpeed, phase, glowPeriod]
       var cfgs = [
-        [20, 0.28, 0,    2.0],
-        [38, 0.22, 0.8,  2.4],
-        [16, 0.32, 1.6,  1.6],
-        [42, 0.20, 2.4,  2.8],
-        [28, 0.25, 3.2,  2.2],
-        [48, 0.18, 4.0,  1.8],
-        [34, 0.24, 4.8,  2.6],
-        [44, 0.21, 5.6,  2.0]
+        [28, 0.18, 0,    2.2],
+        [52, 0.13, 0.8,  2.6],
+        [20, 0.21, 1.6,  1.8],
+        [60, 0.11, 2.4,  3.0],
+        [36, 0.16, 3.2,  2.4],
+        [68, 0.10, 4.0,  2.0],
+        [44, 0.14, 4.8,  2.8],
+        [55, 0.12, 5.6,  2.2]
       ];
 
-      // per-particle evolving state for organic drift
-      var st = cfgs.map(function() { return { dx: 0, dy: 0, jx: 0, jy: 0 }; });
+      // per-particle: wander center offset
+      var wx = cfgs.map(function() { return 0; });
+      var wy = cfgs.map(function() { return 0; });
+      var wa = cfgs.map(function(c, i) { return i * 1.3; }); // wander angle
+      var wr = cfgs.map(function() { return 12 + Math.random() * 30; }); // wander radius
 
       document.addEventListener('mousemove', function(e) { mx = e.clientX; my = e.clientY; });
 
-      function noise(t, seed) { return Math.sin(t * 1.7 + seed) * 0.5 + Math.sin(t * 2.9 + seed * 2.3) * 0.3 + Math.sin(t * 0.7 + seed * 0.6) * 0.2; }
+      function noise(t, seed) {
+        return Math.sin(t * 1.7 + seed) * 0.5 + Math.sin(t * 2.9 + seed * 2.3) * 0.3 + Math.sin(t * 0.7 + seed * 0.6) * 0.2;
+      }
 
       function tick() {
         T += 0.016;
@@ -639,39 +644,32 @@
         var dy = my - cy;
         var md = Math.sqrt(dx * dx + dy * dy);
         var att = md < MAX_D ? Math.pow(1 - md / MAX_D, 2) : 0;
-        // mouse direction for orbit
-        var ma = Math.atan2(dy, dx);
 
         for (var i = 0; i < ps.length; i++) {
           var c = cfgs[i];
-          var s = st[i];
 
-          // organic orbit: base circle + slow drift
+          // wander: orbit center slowly drifts in a circle + noise
+          wa[i] += 0.003 + noise(T * 0.15, i) * 0.005;
+          wx[i] += (Math.cos(wa[i]) * wr[i] + noise(T * 0.3, i) * 18 - wx[i]) * 0.02;
+          wy[i] += (Math.sin(wa[i]) * wr[i] * 0.7 + noise(T * 0.3, i + 10) * 18 - wy[i]) * 0.02;
+
+          // main orbit
           var a = c[2] + T * c[1];
-          var ox = Math.cos(a) * c[0] + s.dx;
-          var oy = Math.sin(a) * c[0] * 0.7 + s.dy;
+          var ox = Math.cos(a) * c[0] + wx[i];
+          var oy = Math.sin(a) * c[0] * 0.7 + wy[i];
 
-          // evolving drift (slow wandering of orbit center)
-          s.dx += (noise(T * 0.2, i) * 14 - s.dx) * 0.015;
-          s.dy += (noise(T * 0.2, i + 10) * 14 - s.dy) * 0.015;
+          // subtle flutter (tiny fast oscillation)
+          ox += noise(T * 6, i * 3) * 2;
+          oy += noise(T * 6, i * 3 + 5) * 2;
 
-          // micro jitter
-          s.jx += (noise(T * 3.5, i * 3) * 3 - s.jx) * 0.35;
-          s.jy += (noise(T * 3.5, i * 3 + 5) * 3 - s.jy) * 0.35;
+          // mouse: circle around mouse, not freeze
+          var moA = a * 1.2 + T * 1.2;
+          var moR = 16 + (i % 5) * 7;
+          var mox = dx + Math.cos(moA) * moR;
+          var moy = dy + Math.sin(moA) * moR * 0.7;
 
-          // mouse: circle AROUND mouse point, not stick to it
-          var moAngle = a * 1.4 + T * 1.5;
-          var moR = 14 + (i % 4) * 8;
-          var mox = dx + Math.cos(moAngle) * moR;
-          var moy = dy + Math.sin(moAngle) * moR * 0.7;
-
-          // blend base orbit <-> mouse orbit
           ox = ox * (1 - att) + mox * att;
           oy = oy * (1 - att) + moy * att;
-
-          // apply jitter
-          ox += s.jx;
-          oy += s.jy;
 
           ps[i].style.transform = 'translate(' + ox.toFixed(1) + 'px, ' + oy.toFixed(1) + 'px)';
 
