@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jiaxuan Gong</title>
+  <meta name="description" content="Jiaxuan Gong — PhD student at Jiangnan University studying Design Science and Human-Computer Interaction.">
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text:      #1a1a1a;
+      --text-mid:  #555;
+      --text-light:#888;
+      --bg:        #fff;
+      --border:    #e5e5e5;
+      --link:      #2563eb;
+      --badge-bg:  #ecfdf5;
+      --badge-text:#065f46;
+      --max-w:     680px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
+
+    /* ── Typography ── */
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Decorative divider: * * * ── */
+    .divider {
+      text-align: center;
+      color: #ccc;
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      margin: 3rem 0;
+      user-select: none;
+    }
+
+    /* ── Section header ── */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.3rem;
+    }
+    .section-head h2 { font-size: 1.1rem; font-weight: 600; }
+    .section-head a { font-size: 0.8rem; color: var(--text-light); }
+    .section-head a:hover { color: var(--link); text-decoration: none; }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.7rem 0;
+    }
+    nav .wrapper { display: flex; justify-content: space-between; align-items: center; }
+    .nav-name { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+    .nav-links { display: flex; gap: 1.3rem; list-style: none; }
+    .nav-links a { font-size: 0.84rem; color: var(--text-mid); }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+    .nav-links .external { color: var(--text-light); font-size: 0.8rem; }
+    .nav-toggle { display: none; background: none; border: none; font-size: 0.85rem; color: var(--text-mid); cursor: pointer; }
+
+    /* ── Hero ── */
+    .hero { padding: 3.5rem 0 0; }
+    .hero-top { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.2rem; }
+    .hero-portrait {
+      width: 110px; height: 110px; border-radius: 50%;
+      background: #f3f4f6; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: #bbb; overflow: hidden;
+    }
+    .hero-portrait img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-text h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.15rem; letter-spacing: -0.01em; }
+    .hero-text .intro { font-size: 0.95rem; color: var(--text-mid); line-height: 1.6; }
+    .hero-text .intro .uni-logo { height: 1.1em; vertical-align: middle; margin: 0 2px; }
+    .hero-links { display: flex; gap: 1.2rem; margin-top: 0.8rem; }
+    .hero-links a { font-size: 0.88rem; font-weight: 500; }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem; font-weight: 600;
+      padding: 0.15rem 0.55rem; border-radius: 12px;
+      letter-spacing: 0.02em;
+    }
+    .badge-new { background: var(--badge-bg); color: var(--badge-text); }
+    .badge-label { font-size: 0.72rem; color: var(--text-light); }
+
+    /* ── Paper entry ── */
+    .paper { margin-bottom: 1.3rem; }
+    .paper .label-row { font-size: 0.78rem; margin-bottom: 0.1rem; }
+    .paper .paper-title { font-weight: 600; font-size: 0.93rem; line-height: 1.4; }
+    .paper .paper-title a { color: var(--text); }
+    .paper .paper-title a:hover { color: var(--link); text-decoration: underline; }
+    .paper .paper-authors { font-size: 0.84rem; color: var(--text-mid); margin-top: 0.1rem; }
+    .paper .paper-venue { font-size: 0.82rem; color: var(--text-light); margin-top: 0.05rem; }
+
+    /* ── Project card ── */
+    .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .project-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .project-card .preview {
+      width: 100%; aspect-ratio: 16/10; background: #f9fafb;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: #ccc; overflow: hidden;
+    }
+    .project-card .preview img { width: 100%; height: 100%; object-fit: cover; }
+    .project-card .card-body { padding: 1rem; }
+    .project-card .card-body .card-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #f3f4f6; margin-bottom: 0.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.5rem; color: #ccc; overflow: hidden;
+    }
+    .project-card .card-body .card-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .project-card .card-body h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .project-card .card-body p { font-size: 0.8rem; color: var(--text-mid); line-height: 1.5; }
+
+    /* ── Books ── */
+    .books { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .book-item .book-cover {
+      width: 100%; aspect-ratio: 2/3; background: #f9fafb; border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; color: #ccc; overflow: hidden; margin-bottom: 0.4rem;
+    }
+    .book-item .book-cover img { width: 100%; height: 100%; object-fit: cover; }
+    .book-item .book-title { font-size: 0.82rem; font-weight: 600; line-height: 1.3; }
+    .book-item .book-title a { color: var(--text); }
+    .book-item .book-meta { font-size: 0.75rem; color: var(--text-light); }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 3rem 0 3rem; }
+    .footer-mark {
+      width: 38px; height: 38px;
+      margin: 0 auto 1rem;
+      opacity: 0.85;
+    }
+    .footer-mark svg { display: block; width: 100%; height: 100%; }
+    .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--text-mid); }
+    .footer-info { font-size: 0.78rem; color: var(--text-light); }
+    .footer-note { font-size: 0.75rem; color: #bbb; margin-top: 0.4rem; font-style: italic; }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .hero-top { flex-direction: column; align-items: center; text-align: center; }
+      .hero-links { justify-content: center; }
+      .hero-text h1 { font-size: 1.5rem; }
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; gap: 0.6rem; }
+      .nav-toggle { display: block; }
+      .projects { grid-template-columns: 1fr; }
+      .books { grid-template-columns: repeat(2, 1fr); }
+      .section-head { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="wrapper">
+      <a href="#" class="nav-name" style="color:var(--text);">Jiaxuan Gong</a>
+      <ul class="nav-links" id="navMenu">
+        <li><a href="#about">About</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#cv">CV</a></li>
+        <li><a href="#" class="external">Resume ↗</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle">Menu</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="wrapper">
+
+      <div class="hero-top">
+        <div class="hero-portrait">
+          <!-- Replace with your photo or sketch: <img src="portrait.jpg" alt="Jiaxuan Gong"> -->
+          <span>Photo</span>
+        </div>
+        <div class="hero-text">
+          <h1>Jiaxuan Gong</h1>
+          <p class="intro">
+            I'm an M.F.A. candidate at <strong>Jiangnan University</strong>, School of Design,
+            studying <strong>Design Science and Human–Computer Interaction</strong>.
+            My research explores how design and technology shape human experience —
+            from VR in museums to AI for accessibility and interactive art on social media.
+          </p>
+          <div class="hero-links">
+            <a href="#about">About me →</a>
+            <a href="#" style="color:var(--text-light);">Resume ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="wrapper"><div class="divider">* * *</div></div>
+
+  <!-- About -->
+  <section id="about">
+    <div class="wrapper">
+      <div class="section-head">
+        <h2>About me</h2>
+        <a href="#about">All about me →</a>
+      </div>
+      <div class="divider">* * *</div>
+
+      <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.75;margin-bottom:0.8rem;">
+        I am a design researcher working at the intersection of <strong>design, human–computer interaction, and accessibility</strong>.
+        My M.F.A. work at Jiangnan University combines quantitative methods (SEM, machine learning, survey design)
+        with qualitative approaches (thematic analysis, semi-structured interviews) to investigate how people
+        interact with emerging technologies.
+      </p>
+      <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.75;">
+        I am currently applying for PhD programs in Design, HCI, and Information Science,
+        seeking a research environment where I can deepen my work at the intersection of design and technology.
+      </p>
+
+      <!-- Education -->
+      <div style="margin-top:2rem;">
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.8rem;">Education</h3>
+        <div class="paper">
+          <div class="paper-title">M.F.A. in Design Science</div>
+          <div class="paper-authors">Jiangnan University, School of Design</div>
+          <div class="paper-venue">Sept 2023 – Jun 2026 (expected) &nbsp;·&nbsp; GPA 89/100</div>
+        </div>
+        <div class="paper">
+          <div class="paper-title">B.F.A. in Visual Communication Design</div>
+          <div class="paper-authors">Nanjing University of the Arts</div>
+          <div class="paper-venue">Sept 2019 – Jun 2023 &nbsp;·&nbsp; GPA 88/100 &nbsp;·&nbsp; Outstanding Graduate (Top 5%)</div>
+        </div>
+      </div>
+
+      <!-- Research Interests -->
+      <div style="margin-top:2rem;">
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.8rem;">Research Interests</h3>
+        <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.75;">
+          Design &amp; HCI · Human–AI Interaction · Accessibility · Digital Heritage ·
+          User Research · Interaction Technology · Computational Social Science ·
+          VR / Immersive Media · AI Ethics &amp; Policy · Mixed Methods
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrapper"><div class="divider">* * *</div></div>
+
+  <!-- Research / Publications -->
+  <section id="research">
+    <div class="wrapper">
+      <div class="section-head">
+        <h2>Latest research</h2>
+        <a href="#research">All research →</a>
+      </div>
+      <div class="divider">* * *</div>
+
+      <div class="paper">
+        <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
+        <div class="paper-title">
+          <a href="https://doi.org/10.1177/21582440251413067" target="_blank" rel="noopener">Public Sentiment Towards Interactive Art on Multi-Modal Social Media: Insights from Jiangsu Province</a>
+        </div>
+        <div class="paper-authors">Jiaxuan Gong, et al. (5 authors)</div>
+        <div class="paper-venue"><em>SAGE Open</em>, January–March 2026</div>
+      </div>
+
+      <div class="paper">
+        <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
+        <div class="paper-title">
+          <a href="https://doi.org/10.3390/heritage8120503" target="_blank" rel="noopener">Engaging the Next Generation: A Validated Model of VR Acceptance to Inform Design in Cultural Heritage Institutions</a>
+        </div>
+        <div class="paper-authors">Jiaxuan Gong*, Wen Zhong*, et al. (co-first author)</div>
+        <div class="paper-venue"><em>Heritage</em>, 2025</div>
+      </div>
+
+      <div class="paper">
+        <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
+        <div class="paper-title">
+          <a href="https://doi.org/10.3390/app15148088" target="_blank" rel="noopener">Motivation of University Students to Use LLMs to Assist with Online Consumption of Sustainable Products</a>
+        </div>
+        <div class="paper-authors">Jiaxuan Gong, et al.</div>
+        <div class="paper-venue"><em>Applied Sciences</em>, 2025</div>
+      </div>
+
+      <div class="paper" style="margin-top:1.5rem;">
+        <div class="label-row"><span class="badge-label">manuscript</span></div>
+        <div class="paper-title">
+          Generative AI for Accessibility in Human–Computer Interaction: A PRISMA-Based Systematic Review
+        </div>
+        <div class="paper-authors">Jiaxuan Gong (first author)</div>
+        <div class="paper-venue">PRISMA systematic review: 3,570 records screened, 136 analyzed (2020–2025) · In Preparation</div>
+      </div>
+
+      <div class="paper">
+        <div class="label-row"><span class="badge-label">paper</span></div>
+        <div class="paper-title">
+          Evaluating the Impact of User Experience Factors of Integrated Office Apps on Users' Sustainable Behavior of Work
+        </div>
+        <div class="paper-authors">Jiaxuan Gong, et al.</div>
+        <div class="paper-venue"><em>PLOS ONE</em> · Under Review</div>
+      </div>
+
+      <div class="paper">
+        <div class="label-row"><span class="badge-label">paper</span></div>
+        <div class="paper-title">
+          Tropical Island Visual Strategies for Sustainable Tourism: Contrasting Real Photographs and AI-Generated Images
+        </div>
+        <div class="paper-authors">Co-author</div>
+        <div class="paper-venue"><em>Sustainability</em> · Under Review</div>
+      </div>
+
+      <div class="paper">
+        <div class="label-row"><span class="badge-label">paper</span></div>
+        <div class="paper-title">
+          Quality Function Deployment Approach to Urban Ecological Public Art Design Centred on Resident Needs
+        </div>
+        <div class="paper-authors">Jiaxuan Gong, Renjing Hu, et al.</div>
+        <div class="paper-venue"><em>Scientific Reports</em>, 2024</div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="wrapper"><div class="divider">* * *</div></div>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="wrapper">
+      <div class="section-head">
+        <h2>Some of my work</h2>
+        <a href="#projects">All work →</a>
+      </div>
+      <div class="divider">* * *</div>
+
+      <div class="projects">
+
+        <a href="#" class="project-card" style="color:inherit;">
+          <div class="preview">
+            <!-- <img src="vr-heritage-thumb.jpg" alt=""> -->
+            <span>Preview</span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon"><span>Icon</span></div>
+            <h3>VR Heritage Study</h3>
+            <p>Mixed-methods investigation of VR in cultural heritage. 566 surveys + 20 interviews. Published in <em>Heritage</em>.</p>
+          </div>
+        </a>
+
+        <a href="#" class="project-card" style="color:inherit;">
+          <div class="preview">
+            <!-- <img src="textile2050-thumb.jpg" alt=""> -->
+            <span>Preview</span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon"><span>Icon</span></div>
+            <h3>TEXTILE 2050</h3>
+            <p>Interactive digital media installation with Arduino + TouchDesigner. Exhibited.</p>
+          </div>
+        </a>
+
+        <a href="#" class="project-card" style="color:inherit;">
+          <div class="preview">
+            <!-- <img src="remembery-thumb.jpg" alt=""> -->
+            <span>Preview</span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon"><span>Icon</span></div>
+            <h3>REMEMBERY</h3>
+            <p>App for Alzheimer's patients. Accessibility-first design across four interaction touchpoints.</p>
+          </div>
+        </a>
+
+        <a href="#" class="project-card" style="color:inherit;">
+          <div class="preview">
+            <!-- <img src="sage-open-thumb.jpg" alt=""> -->
+            <span>Preview</span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon"><span>Icon</span></div>
+            <h3>Interactive Art &amp; Social Media</h3>
+            <p>Multi-modal analysis of 15,201 Weibo posts on public sentiment toward interactive art. Published in <em>SAGE Open</em>.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="wrapper"><div class="divider">* * *</div></div>
+
+  <!-- Skills & More -->
+  <section>
+    <div class="wrapper">
+      <div class="section-head">
+        <h2>Skills &amp; more</h2>
+      </div>
+      <div class="divider">* * *</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.8rem;font-size:0.85rem;color:var(--text-mid);line-height:1.7;">
+        <div>
+          <strong style="color:var(--text);">Quantitative</strong><br>
+          CB-SEM · SEM-ANN · SPSS · AMOS<br>
+          Survey Design &amp; Validation<br>
+          Stratified k-fold CV · Python · MATLAB
+        </div>
+        <div>
+          <strong style="color:var(--text);">Qualitative &amp; Mixed</strong><br>
+          Thematic Analysis · Interviews<br>
+          PRISMA Systematic Review<br>
+          Explanatory Sequential Design · LaTeX
+        </div>
+        <div>
+          <strong style="color:var(--text);">Design &amp; Prototyping</strong><br>
+          Figma · Adobe Suite · Blender · C4D<br>
+          Unity3D · Unreal Engine<br>
+          TouchDesigner · Arduino
+        </div>
+        <div>
+          <strong style="color:var(--text);">Awards (Selected)</strong><br>
+          National 2nd Prize, Milan Design Week (2024)<br>
+          Outstanding Graduate, NUA, Top 5% (2023)<br>
+          National Silver, CICSIC (2021)
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="wrapper"><div class="divider">* * *</div></div>
+
+  <!-- CV -->
+  <section id="cv">
+    <div class="wrapper" style="text-align:center;">
+      <h2 style="font-size:1rem;">Curriculum Vitae</h2>
+      <p style="font-size:0.85rem;color:var(--text-mid);margin:0.5rem 0 1rem;">Full academic CV with publications, research experience, and project details.</p>
+      <a href="#" style="display:inline-block;padding:0.5rem 1.3rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.84rem;font-weight:500;color:var(--text);">Download CV (PDF)</a>
+    </div>
+  </section>
+
+  <div class="wrapper"><div class="divider">* * *</div></div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrapper">
+      <div class="footer-mark">
+        <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="19" cy="19" r="15" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="64 14" stroke-linecap="round" transform="rotate(-50 19 19)"/>
+          <rect x="16" y="16" width="6" height="6" fill="#2563eb" transform="rotate(45 19 19)"/>
+        </svg>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:gongjiaxuan169@gmail.com">Email</a>
+        <a href="#">Google Scholar</a>
+        <a href="#">GitHub</a>
+      </div>
+      <div class="footer-info">
+        © 2026 Jiaxuan Gong &nbsp;·&nbsp; gongjiaxuan169@gmail.com
+      </div>
+      <div class="footer-note">Handcrafted with care.</div>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    // Mobile nav toggle
+    document.getElementById('navToggle').addEventListener('click', function() {
+      document.getElementById('navMenu').classList.toggle('open');
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        const t = document.querySelector(this.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+
+</body>
+</html>
