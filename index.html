@@ -146,11 +146,28 @@
     /* ── Footer ── */
     footer { text-align: center; padding: 3rem 0 3rem; }
     .footer-mark {
-      width: 38px; height: 38px;
-      margin: 0 auto 1rem;
-      opacity: 0.85;
+      width: 42px; height: 42px;
+      margin: 0 auto 1.2rem;
+      perspective: 200px;
     }
-    .footer-mark svg { display: block; width: 100%; height: 100%; }
+    .geo-sphere {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: geo-spin 12s linear infinite;
+    }
+    .geo-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 1.2px solid #2563eb;
+    }
+    .geo-ring:nth-child(1) { transform: rotateY(0deg); opacity: 0.9; }
+    .geo-ring:nth-child(2) { transform: rotateY(60deg); opacity: 0.55; }
+    .geo-ring:nth-child(3) { transform: rotateX(60deg); opacity: 0.55; }
+    @keyframes geo-spin {
+      from { transform: rotateY(0deg) rotateX(18deg); }
+      to   { transform: rotateY(360deg) rotateX(18deg); }
+    }
     .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .footer-links a { font-size: 0.82rem; color: var(--text-mid); }
     .footer-info { font-size: 0.78rem; color: var(--text-light); }
@@ -462,10 +479,11 @@
   <footer>
     <div class="wrapper">
       <div class="footer-mark">
-        <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="19" cy="19" r="15" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="64 14" stroke-linecap="round" transform="rotate(-50 19 19)"/>
-          <rect x="16" y="16" width="6" height="6" fill="#2563eb" transform="rotate(45 19 19)"/>
-        </svg>
+        <div class="geo-sphere">
+          <div class="geo-ring"></div>
+          <div class="geo-ring"></div>
+          <div class="geo-ring"></div>
+        </div>
       </div>
       <div class="footer-links">
         <a href="mailto:gongjiaxuan169@gmail.com">Email</a>
