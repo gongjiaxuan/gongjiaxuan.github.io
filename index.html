@@ -181,6 +181,17 @@
       position: relative;
       transform-style: preserve-3d;
       animation: geo-spin 20s linear infinite;
+      transition: filter 0.5s;
+      filter: brightness(calc(1 + var(--t, 0) * 0.8));
+    }
+    .geo-scene::after {
+      content: '';
+      position: absolute;
+      inset: -14px; border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(120,100,240,0.15) 0%, rgba(255,80,120,0.06) 35%, transparent 65%);
+      opacity: var(--t, 0);
+      transition: opacity 0.5s;
     }
     .geo-ring-svg {
       position: absolute; inset: 0;
@@ -222,6 +233,8 @@
         0 0 18px var(--glow-clr);
       animation: p-glow var(--glow) ease-in-out infinite;
       animation-delay: var(--dl);
+      transition: filter 0.4s, box-shadow 0.4s;
+      filter: brightness(calc(1 + var(--t, 0) * 3));
     }
     .p1  { --dur: 4.5s; --glow: 2s;   --sz: 3.5px; --clr: #AF52DE; --glow-clr: #AF52DE; --dl: 0s;   --r: 15px; top: 8%;  left: 50%; }
     .p2  { --dur: 5.5s; --glow: 2.2s; --sz: 3px;   --clr: #FF2D55; --glow-clr: #FF2D55; --dl: 0.5s; --r: 22px; top: 52%; left: 92%; }
@@ -618,6 +631,43 @@
         if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
+
+    // Mouse interaction with footer mark
+    (function() {
+      var mark = document.querySelector('.footer-mark');
+      var scene = document.querySelector('.geo-scene');
+      var maxDist = 180;
+
+      function update(e) {
+        var rect = mark.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+        var dx = e.clientX - cx;
+        var dy = e.clientY - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var t = Math.max(0, Math.min(1, 1 - dist / maxDist));
+        scene.style.setProperty('--mx', (dx / maxDist).toFixed(3));
+        scene.style.setProperty('--my', (dy / maxDist).toFixed(3));
+        scene.style.setProperty('--t', t.toFixed(3));
+      }
+
+      document.addEventListener('mousemove', function(e) {
+        if (!mark) return;
+        var rect = mark.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+        var dx = e.clientX - cx;
+        var dy = e.clientY - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          update(e);
+        }
+      });
+
+      mark.addEventListener('mouseleave', function() {
+        scene.style.setProperty('--t', '0');
+      });
+    })();
   </script>
 
 </body>
