@@ -203,10 +203,11 @@
       from { transform: rotateY(0deg) rotateX(10deg); }
       to   { transform: rotateY(360deg) rotateX(10deg); }
     }
-    /* ── Particles (fairy glow, JS-driven positions) ── */
-    .particles { position: absolute; inset: -30px; pointer-events: none; }
+    /* ── Particles (JS-driven from center) ── */
+    .particles { position: absolute; inset: 0; pointer-events: none; }
     .p {
       position: absolute;
+      left: 50%; top: 50%;
       opacity: 1;
     }
     .p::before {
@@ -617,23 +618,21 @@
       var mark = document.querySelector('.footer-mark');
       if (!mark) return;
       var particles = document.querySelectorAll('.p');
-      var maxDist = 160;
+      var maxDist = 150;
       var mouseX = Infinity, mouseY = Infinity;
 
-      // particle config: [orbitRadius, speed, startAngle]
+      // [orbitRadius, speed, startAngle]
       var configs = [
-        [22, 0.012, 0],
-        [30, 0.009, 0.8],
-        [18, 0.014, 1.6],
-        [26, 0.010, 2.4],
-        [15, 0.016, 3.2],
-        [32, 0.008, 4.0],
-        [20, 0.013, 4.8],
-        [25, 0.011, 5.6]
+        [20, 0.010, 0],
+        [28, 0.008, 0.8],
+        [16, 0.013, 1.6],
+        [25, 0.009, 2.4],
+        [14, 0.015, 3.2],
+        [30, 0.007, 4.0],
+        [18, 0.011, 4.8],
+        [24, 0.010, 5.6]
       ];
       var angles = configs.map(function(c) { return c[2]; });
-      var currentX = configs.map(function() { return 0; });
-      var currentY = configs.map(function() { return 0; });
 
       document.addEventListener('mousemove', function(e) {
         mouseX = e.clientX;
@@ -653,24 +652,14 @@
           var cfg = configs[i];
           angles[i] += cfg[1];
 
-          // base orbit position (relative to mark center, in px)
           var ox = Math.cos(angles[i]) * cfg[0];
-          var oy = Math.sin(angles[i]) * cfg[0] * 0.7; // elliptical
+          var oy = Math.sin(angles[i]) * cfg[0] * 0.65;
 
-          // mouse attraction
-          var ax = mx * attract * 0.5;
-          var ay = my * attract * 0.5;
+          // mouse pull
+          ox += mx * attract * 0.45;
+          oy += my * attract * 0.45;
 
-          // target position (relative to mark, percentage-based for CSS left/top)
-          var tx = (ox + ax) / (rect.width / 2 + 30) * 50 + 50;
-          var ty = (oy + ay) / (rect.height / 2 + 30) * 50 + 50;
-
-          // smooth follow
-          currentX[i] += (tx - currentX[i]) * 0.08;
-          currentY[i] += (ty - currentY[i]) * 0.08;
-
-          particles[i].style.left = currentX[i] + '%';
-          particles[i].style.top = currentY[i] + '%';
+          particles[i].style.transform = 'translate(' + ox.toFixed(1) + 'px, ' + oy.toFixed(1) + 'px)';
         }
         requestAnimationFrame(tick);
       }
