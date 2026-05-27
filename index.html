@@ -166,58 +166,58 @@
     /* ── Footer ── */
     footer { text-align: center; padding: 3rem 0 3rem; }
     .footer-mark {
-      width: 64px; height: 64px;
+      width: 72px; height: 72px;
       margin: 0 auto 1.4rem;
       position: relative;
     }
-    /* subtle ambient glow */
     .footer-mark::before {
       content: '';
       position: absolute;
-      inset: -12px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
-      animation: mark-glow 4s ease-in-out infinite;
+      inset: -16px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 65%);
+      animation: mark-glow 5s ease-in-out infinite;
     }
     @keyframes mark-glow {
-      0%, 100% { opacity: 0.5; transform: scale(0.95); }
-      50%      { opacity: 1; transform: scale(1.08); }
+      0%, 100% { opacity: 0.4; transform: scale(0.92); }
+      50%      { opacity: 1; transform: scale(1.06); }
     }
-    /* ── 3D sphere ── */
+    /* ── 3D sphere (SVG rings) ── */
     .geo-scene {
       width: 100%; height: 100%;
-      perspective: 300px;
+      perspective: 280px;
       position: relative;
     }
     .geo-sphere {
       width: 100%; height: 100%;
       position: relative;
       transform-style: preserve-3d;
-      animation: geo-spin 16s linear infinite;
+      animation: geo-spin 20s linear infinite;
     }
-    .geo-ring {
+    .geo-ring-svg {
       position: absolute; inset: 0;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, #6366f1, #818cf8, #a78bfa, #6366f1);
-      -webkit-mask: radial-gradient(circle, transparent 58%, black 60%);
-      mask: radial-gradient(circle, transparent 58%, black 60%);
+      width: 100%; height: 100%;
     }
-    .geo-ring:nth-child(1) { transform: rotateY(0deg); }
-    .geo-ring:nth-child(2) { transform: rotateY(55deg); animation: ring-gradient 6s linear infinite; }
-    .geo-ring:nth-child(3) { transform: rotateX(65deg); animation: ring-gradient 6s linear infinite reverse; }
+    .geo-ring-svg circle {
+      fill: none;
+      stroke: #6366f1;
+      stroke-width: 0.7;
+      vector-effect: non-scaling-stroke;
+      opacity: 0.7;
+    }
+    .geo-ring-svg:nth-child(1) { transform: rotateY(0deg); }
+    .geo-ring-svg:nth-child(2) { transform: rotateY(58deg); }
+    .geo-ring-svg:nth-child(2) circle { stroke: #818cf8; opacity: 0.55; }
+    .geo-ring-svg:nth-child(3) { transform: rotateX(62deg); }
+    .geo-ring-svg:nth-child(3) circle { stroke: #a78bfa; opacity: 0.55; }
     @keyframes geo-spin {
-      from { transform: rotateY(0deg) rotateX(12deg); }
-      to   { transform: rotateY(360deg) rotateX(12deg); }
-    }
-    @keyframes ring-gradient {
-      from { filter: hue-rotate(0deg); }
-      to   { filter: hue-rotate(360deg); }
+      from { transform: rotateY(0deg) rotateX(10deg); }
+      to   { transform: rotateY(360deg) rotateX(10deg); }
     }
     /* ── Particles ── */
-    .particles { position: absolute; inset: -20px; pointer-events: none; }
+    .particles { position: absolute; inset: -22px; pointer-events: none; }
     .p {
       position: absolute;
-      border-radius: 50%;
-      animation: p-orbit var(--dur) linear infinite;
+      animation: p-orbit var(--dur) ease-in-out infinite;
       opacity: 0;
     }
     .p::before {
@@ -226,24 +226,22 @@
       width: var(--sz); height: var(--sz);
       background: var(--clr);
       border-radius: 50%;
-      box-shadow: 0 0 4px var(--clr);
-      animation: p-glow 2s ease-in-out infinite;
+      filter: blur(1px);
+      animation: p-glow var(--glow) ease-in-out infinite;
       animation-delay: var(--dl);
     }
-    .p1 { --dur: 5s; --sz: 2.5px; --clr: #6366f1; --dl: 0s;   top: 10%; left: 50%; }
-    .p2 { --dur: 6s; --sz: 2px;   --clr: #818cf8; --dl: 0.5s; top: 55%; left: 88%; }
-    .p3 { --dur: 4.5s; --sz: 3px; --clr: #a78bfa; --dl: 1s;   top: 82%; left: 60%; }
-    .p4 { --dur: 5.5s; --sz: 2px; --clr: #6366f1; --dl: 0.3s; top: 48%; left: 6%; }
-    .p5 { --dur: 4.8s; --sz: 2.5px; --clr: #818cf8; --dl: 0.8s; top: 18%; left: 82%; }
+    .p1 { --dur: 6s; --glow: 2.4s; --sz: 2px; --clr: #818cf8; --dl: 0s;   top: 8%;  left: 50%; }
+    .p2 { --dur: 7s; --glow: 3s;   --sz: 1.5px; --clr: #a78bfa; --dl: 0.6s; top: 55%; left: 90%; }
+    .p3 { --dur: 5.5s; --glow: 2.2s; --sz: 2px; --clr: #6366f1; --dl: 1.2s; top: 82%; left: 58%; }
     @keyframes p-orbit {
-      0%   { transform: rotate(0deg) translateX(22px) rotate(0deg); opacity: 0; }
-      15%  { opacity: 1; }
-      85%  { opacity: 1; }
-      100% { transform: rotate(360deg) translateX(22px) rotate(-360deg); opacity: 0; }
+      0%   { transform: rotate(0deg) translateX(24px) rotate(0deg); opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { transform: rotate(360deg) translateX(24px) rotate(-360deg); opacity: 0; }
     }
     @keyframes p-glow {
-      0%, 100% { opacity: 0.2; transform: scale(0.5); }
-      50%      { opacity: 1; transform: scale(1.4); }
+      0%, 100% { opacity: 0.15; transform: scale(0.4); }
+      50%      { opacity: 1; transform: scale(1.6); }
     }
     .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .footer-links a { font-size: 0.875rem; color: var(--text-mid); }
@@ -558,16 +556,14 @@
       <div class="footer-mark">
         <div class="geo-scene">
           <div class="geo-sphere">
-            <div class="geo-ring"></div>
-            <div class="geo-ring"></div>
-            <div class="geo-ring"></div>
+            <svg class="geo-ring-svg" viewBox="0 0 72 72"><circle cx="36" cy="36" r="31"/></svg>
+            <svg class="geo-ring-svg" viewBox="0 0 72 72"><circle cx="36" cy="36" r="31"/></svg>
+            <svg class="geo-ring-svg" viewBox="0 0 72 72"><circle cx="36" cy="36" r="31"/></svg>
           </div>
           <div class="particles">
             <div class="p p1"></div>
             <div class="p p2"></div>
             <div class="p p3"></div>
-            <div class="p p4"></div>
-            <div class="p p5"></div>
           </div>
         </div>
       </div>
