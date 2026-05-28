@@ -199,12 +199,15 @@
       border-radius: 1px;
       background: linear-gradient(to bottom,
         transparent 0%,
-        var(--border) 4%,
-        var(--border) var(--tl-pos, 4%),
-        var(--accent) var(--tl-pos, 4%),
-        var(--accent) calc(var(--tl-pos, 4%) + 30px),
-        var(--border) calc(var(--tl-pos, 4%) + 30px),
-        var(--border) 96%,
+        var(--border) 5%,
+        var(--border) calc(var(--tl-pos, 20%) - 7%),
+        rgba(99,102,241,0.15) calc(var(--tl-pos, 20%) - 5%),
+        rgba(99,102,241,0.45) calc(var(--tl-pos, 20%) - 2%),
+        var(--accent) var(--tl-pos, 20%),
+        rgba(99,102,241,0.45) calc(var(--tl-pos, 20%) + 2%),
+        rgba(99,102,241,0.15) calc(var(--tl-pos, 20%) + 5%),
+        var(--border) calc(var(--tl-pos, 20%) + 7%),
+        var(--border) 95%,
         transparent 100%
       );
     }
