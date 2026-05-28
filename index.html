@@ -187,63 +187,89 @@
     .paper.dimmed { opacity: 0.25; }
 
     /* ── Publications timeline ── */
-    .timeline { position: relative; padding-left: 2rem; }
+    .timeline {
+      position: relative;
+      padding-left: 2.8rem;
+    }
     .timeline::before {
       content: '';
       position: absolute;
-      left: 0; top: 0.3rem; bottom: 0.3rem;
+      left: 7px; top: 0; bottom: 0;
       width: 1px;
-      background: var(--border);
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        var(--border) 5%,
+        var(--border) 95%,
+        transparent 100%
+      );
     }
     .tl-year {
       position: relative;
-      font-family: var(--font);
-      font-size: 0.8rem; font-weight: 600;
+      font-size: 0.75rem; font-weight: 600;
       color: var(--text-light);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 1.5rem 0 0.6rem;
-      padding-left: 0;
+      letter-spacing: 0.12em;
+      margin: 2rem 0 0.8rem;
     }
+    .tl-year:first-child { margin-top: 0.4rem; }
     .tl-year::before {
       content: '';
       position: absolute;
-      left: -2.05rem; top: 0.4rem;
-      width: 8px; height: 8px;
+      left: -2.44rem; top: 50%; transform: translateY(-50%);
+      width: 10px; height: 10px;
       border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 1px var(--accent);
+      background: #fff;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 4px #fff;
       z-index: 1;
     }
     .tl-item {
       position: relative;
-      margin-bottom: 0.4rem;
-      padding: 0.5rem 0.8rem;
-      border-radius: 6px;
+      margin-bottom: 0.25rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
       font-size: 0.875rem;
       color: var(--text-mid);
       cursor: default;
-      transition: all 0.2s;
+      transition: all 0.25s ease;
+      border-left: 2px solid transparent;
     }
     .tl-item:hover {
       background: var(--bg-warm);
+      border-left-color: var(--accent);
       color: var(--text);
     }
-    .tl-item .tl-title { font-weight: 500; color: var(--text-head); }
-    .tl-item .tl-venue { font-size: 0.8rem; color: var(--text-light); margin-top: 0.1rem; }
+    .tl-item .tl-title {
+      font-weight: 500;
+      color: var(--text-head);
+      line-height: 1.4;
+    }
+    .tl-item .tl-title a {
+      color: var(--text-head);
+      transition: color 0.15s;
+    }
+    .tl-item .tl-title a:hover {
+      color: var(--accent);
+    }
+    .tl-item .tl-venue {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 0.15rem;
+    }
     .tl-badge {
       display: inline-block;
       font-size: 0.65rem; font-weight: 600;
-      padding: 0.05rem 0.45rem; border-radius: 8px;
-      margin-left: 0.4rem; vertical-align: middle;
+      padding: 0.08rem 0.5rem; border-radius: 9px;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+      letter-spacing: 0.03em;
     }
     .tl-badge-pub { background: #ecfdf5; color: #065f46; }
     .tl-badge-rev { background: #fef9e7; color: #92400e; }
     .tl-badge-prep { background: #fef2f2; color: #991b1b; }
     @media (max-width: 640px) {
-      .timeline { padding-left: 1.5rem; }
-      .tl-year::before { left: -1.58rem; width: 6px; height: 6px; }
+      .timeline { padding-left: 2.2rem; }
+      .tl-year::before { left: -1.9rem; width: 8px; height: 8px; }
     }
 
     /* ── Books ── */
