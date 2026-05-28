@@ -187,63 +187,95 @@
     .paper.dimmed { opacity: 0.25; }
 
     /* ── Publications timeline ── */
-    .timeline { position: relative; padding-left: 2rem; }
+    .timeline {
+      position: relative;
+      padding-left: 3rem;
+    }
     .timeline::before {
       content: '';
       position: absolute;
-      left: 0; top: 0.3rem; bottom: 0.3rem;
+      left: 9px; top: 0; bottom: 0;
       width: 1px;
-      background: var(--border);
+      background: linear-gradient(to bottom,
+        transparent,
+        var(--border) 4%,
+        var(--border) 96%,
+        transparent
+      );
     }
     .tl-year {
       position: relative;
-      font-family: var(--font);
-      font-size: 0.8rem; font-weight: 600;
+      font-size: 0.72rem; font-weight: 600;
       color: var(--text-light);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 1.5rem 0 0.6rem;
-      padding-left: 0;
+      letter-spacing: 0.14em;
+      margin: 2rem 0 0.9rem;
     }
+    .tl-year:first-child { margin-top: 0.2rem; }
     .tl-year::before {
       content: '';
       position: absolute;
-      left: -2.05rem; top: 0.4rem;
-      width: 8px; height: 8px;
+      left: -2.55rem; top: 50%; transform: translateY(-50%);
+      width: 7px; height: 7px;
       border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 1px var(--accent);
+      background: #fff;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 5px #fff;
       z-index: 1;
     }
     .tl-item {
       position: relative;
-      margin-bottom: 0.4rem;
-      padding: 0.5rem 0.8rem;
-      border-radius: 6px;
+      margin-bottom: 0.35rem;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
       font-size: 0.875rem;
       color: var(--text-mid);
-      cursor: default;
-      transition: all 0.2s;
+      background: #fff;
+      border: 1px solid transparent;
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background 0.3s ease;
     }
     .tl-item:hover {
-      background: var(--bg-warm);
-      color: var(--text);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
+      border-color: var(--border);
+      background: #fff;
     }
-    .tl-item .tl-title { font-weight: 500; color: var(--text-head); }
-    .tl-item .tl-venue { font-size: 0.8rem; color: var(--text-light); margin-top: 0.1rem; }
+    .tl-item .tl-title {
+      font-weight: 500;
+      color: var(--text-head);
+      line-height: 1.45;
+    }
+    .tl-item .tl-title a {
+      color: var(--text-head);
+      background: linear-gradient(var(--accent), var(--accent)) left bottom / 0% 1px no-repeat;
+      transition: background-size 0.3s ease, color 0.2s;
+    }
+    .tl-item:hover .tl-title a {
+      background-size: 100% 1px;
+    }
+    .tl-item .tl-venue {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-top: 0.12rem;
+    }
     .tl-badge {
       display: inline-block;
       font-size: 0.65rem; font-weight: 600;
-      padding: 0.05rem 0.45rem; border-radius: 8px;
+      padding: 0.1rem 0.5rem; border-radius: 10px;
       margin-left: 0.4rem; vertical-align: middle;
+      letter-spacing: 0.03em;
+      transition: transform 0.2s ease;
     }
+    .tl-item:hover .tl-badge { transform: scale(1.05); }
     .tl-badge-pub { background: #ecfdf5; color: #065f46; }
     .tl-badge-rev { background: #fef9e7; color: #92400e; }
     .tl-badge-prep { background: #fef2f2; color: #991b1b; }
     @media (max-width: 640px) {
-      .timeline { padding-left: 1.5rem; }
-      .tl-year::before { left: -1.58rem; width: 6px; height: 6px; }
+      .timeline { padding-left: 2.3rem; }
+      .tl-year::before { left: -1.9rem; }
     }
 
     /* ── Books ── */
