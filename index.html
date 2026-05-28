@@ -237,6 +237,25 @@
                   border-color 0.3s ease,
                   background 0.3s ease;
     }
+    /* timeline dot on each item */
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -2.34rem; top: 50%; transform: translateY(-50%);
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1.5px solid #d4d4d8;
+      z-index: 1;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .tl-item.active::before {
+      background: var(--accent);
+      border-color: var(--accent);
+      width: 9px; height: 9px;
+      left: -2.47rem;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    }
     .tl-item:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
@@ -902,6 +921,28 @@
           papers.forEach(function(p) { p.classList.remove('dimmed'); });
         });
       });
+    })();
+
+    // Timeline scroll tracking
+    (function() {
+      var items = document.querySelectorAll('.tl-item');
+      if (!items.length) return;
+      var centerY = window.innerHeight / 2;
+
+      function update() {
+        var best = null, bestDist = Infinity;
+        items.forEach(function(item) {
+          var rect = item.getBoundingClientRect();
+          var itemMid = rect.top + rect.height / 2;
+          var dist = Math.abs(itemMid - centerY);
+          if (dist < bestDist) { bestDist = dist; best = item; }
+        });
+        items.forEach(function(item) { item.classList.toggle('active', item === best); });
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', function() { centerY = window.innerHeight / 2; update(); });
+      update();
     })();
 
     // Animated favicon
