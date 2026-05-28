@@ -41,6 +41,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
 
     .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
@@ -49,10 +50,13 @@
     a { color: var(--link); text-decoration: none; transition: color 0.15s; font-weight: 500; }
     a:hover { text-decoration: underline; }
 
-    /* ── Divider: matches Kanchi's <hr> ── */
+    /* ── Divider ── */
     .divider {
       border: none; border-top: 1px solid var(--border);
-      margin: 3rem 0;
+      margin: 3rem auto;
+      width: 130%;
+      margin-left: -15%;
+      max-width: 910px;
     }
 
     /* ── Section header ── */
@@ -150,6 +154,97 @@
     .project-card .card-body .card-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .project-card .card-body h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.25rem; }
     .project-card .card-body p { font-size: 0.875rem; color: var(--text-mid); line-height: 1.6; }
+
+    /* ── Scroll reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Interactive research tags ── */
+    .interest-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+    .interest-tag {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .interest-tag:hover, .interest-tag.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .paper[data-tags] { transition: opacity 0.3s, transform 0.3s; }
+    .paper.dimmed { opacity: 0.25; }
+
+    /* ── Publications timeline ── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.3rem; bottom: 0.3rem;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-year {
+      position: relative;
+      font-family: var(--font);
+      font-size: 0.8rem; font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 1.5rem 0 0.6rem;
+      padding-left: 0;
+    }
+    .tl-year::before {
+      content: '';
+      position: absolute;
+      left: -2.05rem; top: 0.4rem;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px var(--accent);
+      z-index: 1;
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 0.4rem;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      cursor: default;
+      transition: all 0.2s;
+    }
+    .tl-item:hover {
+      background: var(--bg-warm);
+      color: var(--text);
+    }
+    .tl-item .tl-title { font-weight: 500; color: var(--text-head); }
+    .tl-item .tl-venue { font-size: 0.8rem; color: var(--text-light); margin-top: 0.1rem; }
+    .tl-badge {
+      display: inline-block;
+      font-size: 0.65rem; font-weight: 600;
+      padding: 0.05rem 0.45rem; border-radius: 8px;
+      margin-left: 0.4rem; vertical-align: middle;
+    }
+    .tl-badge-pub { background: #ecfdf5; color: #065f46; }
+    .tl-badge-rev { background: #fef9e7; color: #92400e; }
+    .tl-badge-prep { background: #fef2f2; color: #991b1b; }
+    @media (max-width: 640px) {
+      .timeline { padding-left: 1.5rem; }
+      .tl-year::before { left: -1.58rem; width: 6px; height: 6px; }
+    }
 
     /* ── Books ── */
     .books { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
@@ -288,7 +383,7 @@
   <div class="wrapper"><hr class="divider"></div>
 
   <!-- About -->
-  <section id="about">
+  <section id="about" class="reveal">
     <div class="wrapper">
       <div class="section-head">
         <h2>About me</h2>
@@ -325,11 +420,18 @@
       <!-- Research Interests -->
       <div style="margin-top:2rem;">
         <h3 style="font-weight:500;margin-bottom:0.6rem;">Research Interests</h3>
-        <p style="color:var(--text-mid);line-height:1.75;">
-          Design &amp; HCI · Human–AI Interaction · Accessibility · Digital Heritage ·
-          User Research · Interaction Technology · Computational Social Science ·
-          VR / Immersive Media · AI Ethics &amp; Policy · Mixed Methods
-        </p>
+        <div class="interest-tags">
+          <span class="interest-tag" data-tag="hci">Design &amp; HCI</span>
+          <span class="interest-tag" data-tag="hai">Human–AI Interaction</span>
+          <span class="interest-tag" data-tag="accessibility">Accessibility</span>
+          <span class="interest-tag" data-tag="heritage">Digital Heritage</span>
+          <span class="interest-tag" data-tag="ux">User Research</span>
+          <span class="interest-tag" data-tag="interaction">Interaction Technology</span>
+          <span class="interest-tag" data-tag="social">Computational Social Science</span>
+          <span class="interest-tag" data-tag="vr">VR / Immersive Media</span>
+          <span class="interest-tag" data-tag="ethics">AI Ethics &amp; Policy</span>
+          <span class="interest-tag" data-tag="methods">Mixed Methods</span>
+        </div>
       </div>
     </div>
   </section>
@@ -337,7 +439,7 @@
   <div class="wrapper"><hr class="divider"></div>
 
   <!-- Research / Publications -->
-  <section id="research">
+  <section id="research" class="reveal">
     <div class="wrapper">
       <div class="section-head">
         <h2>Latest research</h2>
@@ -345,67 +447,86 @@
       </div>
 
 
-      <div class="paper">
-        <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
-        <div class="paper-title">
-          <a href="https://doi.org/10.1177/21582440251413067" target="_blank" rel="noopener">Public Sentiment Towards Interactive Art on Multi-Modal Social Media: Insights from Jiangsu Province</a>
-        </div>
-        <div class="paper-authors">Jiaxuan Gong, et al. (5 authors)</div>
-        <div class="paper-venue"><em>SAGE Open</em>, January–March 2026</div>
-      </div>
+      <div class="timeline">
 
-      <div class="paper">
-        <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
-        <div class="paper-title">
-          <a href="https://doi.org/10.3390/heritage8120503" target="_blank" rel="noopener">Engaging the Next Generation: A Validated Model of VR Acceptance to Inform Design in Cultural Heritage Institutions</a>
-        </div>
-        <div class="paper-authors">Jiaxuan Gong*, Wen Zhong*, et al. (co-first author)</div>
-        <div class="paper-venue"><em>Heritage</em>, 2025</div>
-      </div>
+        <div class="tl-year">2026</div>
 
-      <div class="paper">
-        <div class="label-row"><span class="badge-label">paper</span> <span class="badge badge-new">New!</span></div>
-        <div class="paper-title">
-          <a href="https://doi.org/10.3390/app15148088" target="_blank" rel="noopener">Motivation of University Students to Use LLMs to Assist with Online Consumption of Sustainable Products</a>
+        <div class="tl-item paper" data-tags="hci social interaction methods">
+          <div class="tl-title">
+            <a href="https://doi.org/10.1177/21582440251413067" target="_blank" rel="noopener">Public Sentiment Towards Interactive Art on Multi-Modal Social Media</a>
+            <span class="tl-badge tl-badge-pub">Published</span>
+          </div>
+          <div class="tl-venue"><em>SAGE Open</em>, 2026 · 5 authors</div>
         </div>
-        <div class="paper-authors">Jiaxuan Gong, et al.</div>
-        <div class="paper-venue"><em>Applied Sciences</em>, 2025</div>
-      </div>
 
-      <div class="paper" style="margin-top:1.5rem;">
-        <div class="label-row"><span class="badge-label">manuscript</span></div>
-        <div class="paper-title">
-          Generative AI for Accessibility in Human–Computer Interaction: A PRISMA-Based Systematic Review
+        <div class="tl-item paper" data-tags="hci accessibility hai ethics">
+          <div class="tl-title">
+            Generative AI for Accessibility in Human–Computer Interaction: A PRISMA-Based Systematic Review
+            <span class="tl-badge tl-badge-prep">In Preparation</span>
+          </div>
+          <div class="tl-venue">First author · 3,570 records screened, 136 analyzed (2020–2025)</div>
         </div>
-        <div class="paper-authors">Jiaxuan Gong (first author)</div>
-        <div class="paper-venue">PRISMA systematic review: 3,570 records screened, 136 analyzed (2020–2025) · In Preparation</div>
-      </div>
 
-      <div class="paper">
-        <div class="label-row"><span class="badge-label">paper</span></div>
-        <div class="paper-title">
-          Evaluating the Impact of User Experience Factors of Integrated Office Apps on Users' Sustainable Behavior of Work
-        </div>
-        <div class="paper-authors">Jiaxuan Gong, et al.</div>
-        <div class="paper-venue"><em>PLOS ONE</em> · Under Review</div>
-      </div>
+        <div class="tl-year">2025</div>
 
-      <div class="paper">
-        <div class="label-row"><span class="badge-label">paper</span></div>
-        <div class="paper-title">
-          Tropical Island Visual Strategies for Sustainable Tourism: Contrasting Real Photographs and AI-Generated Images
+        <div class="tl-item paper" data-tags="hci heritage vr methods ux">
+          <div class="tl-title">
+            <a href="https://doi.org/10.3390/heritage8120503" target="_blank" rel="noopener">Engaging the Next Generation: VR Acceptance in Cultural Heritage Institutions</a>
+            <span class="tl-badge tl-badge-pub">Published</span>
+          </div>
+          <div class="tl-venue"><em>Heritage</em>, 2025 · Co-first author · N=566 + 20 interviews</div>
         </div>
-        <div class="paper-authors">Co-author</div>
-        <div class="paper-venue"><em>Sustainability</em> · Under Review</div>
-      </div>
 
-      <div class="paper">
-        <div class="label-row"><span class="badge-label">paper</span></div>
-        <div class="paper-title">
-          Quality Function Deployment Approach to Urban Ecological Public Art Design Centred on Resident Needs
+        <div class="tl-item paper" data-tags="hai ux methods">
+          <div class="tl-title">
+            <a href="https://doi.org/10.3390/app15148088" target="_blank" rel="noopener">Motivation of University Students to Use LLMs for Online Consumption of Sustainable Products</a>
+            <span class="tl-badge tl-badge-pub">Published</span>
+          </div>
+          <div class="tl-venue"><em>Applied Sciences</em>, 2025</div>
         </div>
-        <div class="paper-authors">Jiaxuan Gong, Renjing Hu, et al.</div>
-        <div class="paper-venue"><em>Scientific Reports</em>, 2024</div>
+
+        <div class="tl-item paper" data-tags="ux methods">
+          <div class="tl-title">
+            Integrated Office Applications Promote Sustainable Development of E-Commerce Enterprises
+            <span class="tl-badge tl-badge-pub">Published</span>
+          </div>
+          <div class="tl-venue"><em>JTAER</em>, 2025 · IF 4.6</div>
+        </div>
+
+        <div class="tl-item paper" data-tags="methods">
+          <div class="tl-title">
+            <a href="https://doi.org/10.1021/acsami.4c14956" target="_blank" rel="noopener">Machine Learning Boosted Synthesis of CuCo Alloys for Nitrate Reduction to Ammonia</a>
+            <span class="tl-badge tl-badge-pub">Published</span>
+          </div>
+          <div class="tl-venue"><em>ACS Applied Materials &amp; Interfaces</em>, 2025 · Cover Article · IF 8.5</div>
+        </div>
+
+        <div class="tl-item paper" data-tags="ux methods">
+          <div class="tl-title">
+            Evaluating the Impact of UX Factors of Integrated Office Apps on Sustainable Behavior
+            <span class="tl-badge tl-badge-rev">Under Review</span>
+          </div>
+          <div class="tl-venue"><em>PLOS ONE</em> · IF 2.6</div>
+        </div>
+
+        <div class="tl-item paper" data-tags="hai">
+          <div class="tl-title">
+            Tropical Island Visual Strategies for Sustainable Tourism
+            <span class="tl-badge tl-badge-rev">Under Review</span>
+          </div>
+          <div class="tl-venue"><em>Sustainability</em> · IF 3.3</div>
+        </div>
+
+        <div class="tl-year">2024</div>
+
+        <div class="tl-item paper" data-tags="hci ux methods">
+          <div class="tl-title">
+            Quality Function Deployment Approach to Urban Ecological Public Art Design
+            <span class="tl-badge tl-badge-pub">Published</span>
+          </div>
+          <div class="tl-venue"><em>Scientific Reports</em>, 2024 · IF 4.3</div>
+        </div>
+
       </div>
 
     </div>
@@ -414,7 +535,7 @@
   <div class="wrapper"><hr class="divider"></div>
 
   <!-- Projects -->
-  <section id="projects">
+  <section id="projects" class="reveal">
     <div class="wrapper">
       <div class="section-head">
         <h2>Some of my work</h2>
@@ -479,7 +600,7 @@
   <div class="wrapper"><hr class="divider"></div>
 
   <!-- Skills & More -->
-  <section>
+  <section class="reveal">
     <div class="wrapper">
       <div class="section-head">
         <h2>Skills &amp; more</h2>
@@ -519,7 +640,7 @@
   <div class="wrapper"><hr class="divider"></div>
 
   <!-- CV -->
-  <section id="cv">
+  <section id="cv" class="reveal">
     <div class="wrapper" style="text-align:center;">
       <h2>Curriculum Vitae</h2>
       <p style="font-size:0.875rem;color:var(--text-mid);margin:0.5rem 0 1rem;">Full academic CV with publications, research experience, and project details.</p>
@@ -712,6 +833,43 @@
         requestAnimationFrame(tick);
       }
       tick();
+    })();
+
+    // Scroll reveal
+    (function() {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.reveal').forEach(function(el) {
+        observer.observe(el);
+      });
+    })();
+
+    // Interactive research tags → highlight papers
+    (function() {
+      var tags = document.querySelectorAll('.interest-tag');
+      var papers = document.querySelectorAll('.paper[data-tags]');
+      var active = null;
+
+      tags.forEach(function(tag) {
+        tag.addEventListener('mouseenter', function() {
+          var t = this.dataset.tag;
+          active = t;
+          tags.forEach(function(tt) { tt.classList.toggle('active', tt.dataset.tag === t); });
+          papers.forEach(function(p) {
+            var has = p.dataset.tags.split(' ').indexOf(t) !== -1;
+            p.classList.toggle('dimmed', !has);
+          });
+        });
+        tag.addEventListener('mouseleave', function() {
+          active = null;
+          tags.forEach(function(tt) { tt.classList.remove('active'); });
+          papers.forEach(function(p) { p.classList.remove('dimmed'); });
+        });
+      });
     })();
 
     // Animated favicon
