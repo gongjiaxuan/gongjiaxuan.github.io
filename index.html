@@ -25,7 +25,7 @@
       --accent:     #6366f1;
       --badge-bg:   #eef2ff;
       --badge-text: #4338ca;
-      --max-w:      700px;
+      --max-w:      720px;
       --font:       'Inter', 'SF Pro', ui-sans-serif, system-ui, sans-serif;
     }
 
@@ -35,7 +35,8 @@
       font-family: var(--font);
       font-feature-settings: 'liga' 1, 'calt' 1;
       font-size: 16px;
-      line-height: 1.75;
+      line-height: 1.68;
+      letter-spacing: 0;
       color: var(--text);
       background: var(--bg);
       -webkit-font-smoothing: antialiased;
@@ -47,13 +48,22 @@
     .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
 
     /* ── Typography ── */
-    a { color: var(--link); text-decoration: none; transition: color 0.15s; font-weight: 500; }
+    a {
+      color: var(--link);
+      text-decoration: none;
+      text-underline-offset: 0.18em;
+      text-decoration-thickness: 1px;
+      transition: color 0.15s, opacity 0.15s;
+      font-weight: 500;
+    }
     a:hover { text-decoration: underline; }
+    p { margin: 0; }
+    strong { color: var(--text-head); font-weight: 600; }
 
     /* ── Divider ── */
     .divider {
       border: none; border-top: 1px solid var(--border);
-      margin: 3rem auto;
+      margin: 3.4rem auto;
       width: 130%;
       margin-left: -15%;
       max-width: 910px;
@@ -64,10 +74,17 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 0.3rem;
+      gap: 1rem;
+      margin-bottom: 1.05rem;
     }
-    .section-head h2 { font-size: 1.5rem; font-weight: 500; color: var(--text-head); letter-spacing: -0.01em; }
-    .section-head a { font-size: 0.875rem; color: var(--text-light); transition: color 0.15s; font-weight: 400; }
+    .section-head h2 {
+      font-size: 1.35rem;
+      line-height: 1.25;
+      font-weight: 600;
+      color: var(--text-head);
+      letter-spacing: 0;
+    }
+    .section-head a { font-size: 0.86rem; color: var(--text-light); transition: color 0.15s; font-weight: 400; white-space: nowrap; }
     .section-head a:hover { color: var(--text); }
 
     /* ── Navigation ── */
@@ -76,37 +93,40 @@
       background: rgba(255,255,255,0.94);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
-      padding: 0.7rem 0;
+      padding: 0.85rem 0;
     }
     nav .wrapper { display: flex; justify-content: space-between; align-items: center; }
-    .nav-name { font-weight: 600; font-size: 1rem; color: var(--text); }
-    .nav-links { display: flex; gap: 1.3rem; list-style: none; }
-    .nav-links a { font-size: 0.875rem; color: var(--text-mid); }
+    .nav-name { font-weight: 600; font-size: 0.95rem; color: var(--text); letter-spacing: 0; }
+    .nav-links { display: flex; gap: 1.4rem; list-style: none; align-items: center; }
+    .nav-links a { font-size: 0.86rem; color: var(--text-mid); font-weight: 500; }
     .nav-links a:hover { color: var(--text); text-decoration: none; }
-    .nav-links .external { color: var(--text-light); font-size: 0.875rem; }
+    .nav-links .external { color: var(--text-light); font-size: 0.86rem; }
     .nav-toggle { display: none; background: none; border: none; font-size: 0.875rem; color: var(--text-mid); cursor: pointer; }
 
     /* ── Hero ── */
-    .hero { padding: 3.5rem 0 0; }
-    .hero-top { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.2rem; }
+    .hero { padding: 4.4rem 0 0; }
+    .hero-top { display: flex; align-items: flex-start; gap: 1.85rem; margin-bottom: 0.6rem; }
     .hero-portrait {
-      width: 110px; height: 110px; border-radius: 50%;
-      background: #f3f4f6; flex-shrink: 0;
+      width: 116px; height: 116px; border-radius: 50%;
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      border: 1px solid rgba(16,24,40,0.06);
+      flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.65rem; color: #bbb; overflow: hidden;
     }
     .hero-portrait img { width: 100%; height: 100%; object-fit: cover; }
-    .hero-text h1 { font-size: 2.25rem; font-weight: 600; margin-bottom: 0.2rem; color: var(--text-head); letter-spacing: -0.02em; }
-    .hero-text .intro { font-size: 1rem; font-weight: 400; color: var(--text-mid); line-height: 1.75; }
+    .hero-text h1 { font-size: 2.85rem; line-height: 1.05; font-weight: 600; margin-bottom: 0.95rem; color: var(--text-head); letter-spacing: 0; }
+    .hero-text .intro { font-size: 1rem; font-weight: 400; color: var(--text-mid); line-height: 1.72; max-width: 34rem; }
     .hero-text .intro .uni-logo { height: 1.1em; vertical-align: middle; margin: 0 2px; }
-    .hero-links { display: flex; gap: 1.2rem; margin-top: 0.8rem; }
-    .hero-links a { font-size: 0.875rem; font-weight: 500; }
+    .hero-links { display: flex; gap: 1.15rem; margin-top: 1rem; }
+    .hero-links a { font-size: 0.9rem; font-weight: 500; }
+    .muted-link { color: var(--text-light); }
 
     /* ── Badge ── */
     .badge {
       display: inline-block;
-      font-size: 0.75rem; font-weight: 600;
-      padding: 0.1rem 0.5rem; border-radius: 10px;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 0.08rem 0.45rem; border-radius: 999px;
       letter-spacing: 0.02em;
     }
     .badge-new { background: var(--badge-bg); color: var(--badge-text); }
@@ -114,42 +134,58 @@
 
     /* ── Paper entry ── */
     .paper {
-      margin-bottom: 1.25rem; padding: 0.75rem 1rem;
-      border-left: 2px solid transparent; border-radius: 0 6px 6px 0;
+      margin-bottom: 0.9rem; padding: 0.72rem 0.9rem;
+      border-left: 2px solid transparent; border-radius: 0 8px 8px 0;
       transition: border-color 0.2s, background 0.2s;
     }
     .paper:hover { border-left-color: var(--accent); background: var(--bg-warm); }
     .paper .label-row { font-size: 0.75rem; margin-bottom: 0.15rem; }
-    .paper .paper-title { font-weight: 500; font-size: 1rem; line-height: 1.5; color: var(--text-head); }
+    .paper .paper-title { font-weight: 500; font-size: 0.98rem; line-height: 1.5; color: var(--text-head); }
     .paper .paper-title a { color: var(--text-head); transition: color 0.15s; font-weight: 500; }
     .paper .paper-title a:hover { text-decoration: underline; }
-    .paper .paper-authors { font-size: 0.875rem; color: var(--text-mid); margin-top: 0.15rem; }
-    .paper .paper-venue { font-size: 0.875rem; color: var(--text-light); margin-top: 0.05rem; font-style: italic; }
+    .paper .paper-authors { font-size: 0.86rem; color: var(--text-mid); margin-top: 0.15rem; }
+    .paper .paper-venue { font-size: 0.84rem; color: var(--text-light); margin-top: 0.05rem; font-style: italic; }
+
+    .copy {
+      font-size: 0.95rem;
+      line-height: 1.72;
+      color: var(--text-mid);
+      max-width: 39rem;
+    }
+    .copy + .copy { margin-top: 0.82rem; }
+    .subsection { margin-top: 2.15rem; }
+    .subsection h3 {
+      font-size: 0.98rem;
+      line-height: 1.35;
+      font-weight: 600;
+      color: var(--text-head);
+      margin-bottom: 0.65rem;
+    }
 
     /* ── Project cards (Kanchi: image overlay + hover reveal) ── */
     .projects-wrap {
       position: relative;
-      margin-top: 0.8rem;
+      margin-top: 0.15rem;
       padding-left: calc((100vw - var(--max-w)) / 2 + 1.25rem);
       display: flex; align-items: center; gap: 0;
     }
     .projects {
-      display: flex; gap: 1.1rem;
+      display: flex; gap: 1rem;
       overflow-x: auto;
       scroll-behavior: smooth;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      padding: 0.3rem 1.25rem 0.5rem 0;
+      padding: 0.25rem 1.25rem 0.5rem 0;
       flex: 1;
     }
     .projects::-webkit-scrollbar { display: none; }
     .proj-scroll {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px;
+      width: 34px; height: 34px;
       border-radius: 50%;
       border: 1px solid rgba(0,0,0,0.1);
-      background: #f4f4f5; color: #18181b;
+      background: #fff; color: #18181b;
       cursor: pointer;
       transition: opacity 0.15s, transform 0.15s;
       vertical-align: middle;
@@ -159,14 +195,23 @@
     .proj-scroll:not(:disabled):hover { transform: scale(0.92); opacity: 0.7; }
     .proj-scroll:first-of-type { margin-right: 0.35rem; }
     .section-head .proj-scroll { margin-left: 0.5rem; }
+    .section-actions { display: flex; align-items: center; gap: 0.4rem; }
     .project-card {
-      flex: 0 0 280px;
+      flex: 0 0 272px;
       scroll-snap-align: start;
       text-decoration: none; color: inherit;
       display: block;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 8px;
+      border: 1px solid rgba(16,24,40,0.08);
       overflow: hidden;
+      box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16,24,40,0.12);
+      box-shadow: 0 10px 28px rgba(16,24,40,0.08);
+      text-decoration: none;
     }
     .project-card .preview {
       position: relative;
@@ -196,14 +241,14 @@
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
       justify-content: space-between;
-      padding: 1rem;
+      padding: 0.95rem;
       pointer-events: none;
     }
     .project-card .card-overlay .top-row {
       display: flex; align-items: flex-start; justify-content: space-between;
     }
     .project-card .card-overlay .top-row h3 {
-      font-size: 0.9rem; font-weight: 500;
+      font-size: 0.9rem; line-height: 1.25; font-weight: 600;
       color: #fff;
       text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
@@ -216,7 +261,7 @@
       overflow: hidden; flex-shrink: 0;
     }
     .project-card .card-overlay .desc {
-      font-size: 0.8rem; font-weight: 500; color: #fff;
+      font-size: 0.78rem; font-weight: 500; color: #fff;
       line-height: 1.5;
       text-shadow: 0 1px 4px rgba(0,0,0,0.5);
       transform: translateY(16px);
@@ -250,10 +295,10 @@
     /* ── Interactive research tags ── */
     .interest-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
     .interest-tag {
-      padding: 0.3rem 0.8rem;
+      padding: 0.28rem 0.72rem;
       border: 1px solid var(--border);
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-mid);
       cursor: pointer;
       transition: all 0.2s;
@@ -270,7 +315,7 @@
     /* ── Publications timeline ── */
     .timeline {
       position: relative;
-      padding-left: 3rem;
+      padding-left: 2.8rem;
     }
     .timeline::before {
       content: '';
@@ -294,11 +339,11 @@
     }
     .tl-year {
       position: relative;
-      font-size: 0.72rem; font-weight: 600;
+      font-size: 0.68rem; font-weight: 600;
       color: var(--text-light);
       text-transform: uppercase;
-      letter-spacing: 0.14em;
-      margin: 2rem 0 0.9rem;
+      letter-spacing: 0.16em;
+      margin: 1.9rem 0 0.85rem;
     }
     .tl-year:first-child { margin-top: 0.2rem; }
     .tl-year::before {
@@ -314,10 +359,10 @@
     }
     .tl-item {
       position: relative;
-      margin-bottom: 0.35rem;
-      padding: 0.65rem 1rem;
-      border-radius: 10px;
-      font-size: 0.875rem;
+      margin-bottom: 0.42rem;
+      padding: 0.72rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.86rem;
       color: var(--text-mid);
       background: #fff;
       border: 1px solid transparent;
@@ -335,7 +380,7 @@
     .tl-item .tl-title {
       font-weight: 500;
       color: var(--text-head);
-      line-height: 1.45;
+      line-height: 1.48;
     }
     .tl-item .tl-title a {
       color: var(--text-head);
@@ -348,12 +393,12 @@
     .tl-item .tl-venue {
       font-size: 0.8rem;
       color: var(--text-light);
-      margin-top: 0.12rem;
+      margin-top: 0.16rem;
     }
     .tl-badge {
       display: inline-block;
-      font-size: 0.65rem; font-weight: 600;
-      padding: 0.1rem 0.5rem; border-radius: 10px;
+      font-size: 0.62rem; font-weight: 600;
+      padding: 0.08rem 0.45rem; border-radius: 999px;
       margin-left: 0.4rem; vertical-align: middle;
       letter-spacing: 0.03em;
       transition: transform 0.2s ease;
@@ -379,8 +424,56 @@
     .book-item .book-title a { color: var(--text); }
     .book-item .book-meta { font-size: 0.75rem; color: var(--text-light); }
 
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.65rem 1.9rem;
+      font-size: 0.86rem;
+      color: var(--text-mid);
+      line-height: 1.68;
+    }
+    .skill-group strong {
+      display: inline-block;
+      color: var(--text-head);
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 0.16rem;
+    }
+
+    .cv-block { text-align: center; }
+    .cv-block h2 {
+      font-size: 1.35rem;
+      line-height: 1.25;
+      font-weight: 600;
+      color: var(--text-head);
+      letter-spacing: 0;
+    }
+    .cv-block p {
+      font-size: 0.86rem;
+      color: var(--text-mid);
+      margin: 0.55rem auto 1.05rem;
+      max-width: 30rem;
+    }
+    .button-link {
+      display: inline-block;
+      padding: 0.5rem 1.18rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      color: var(--text);
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .button-link:hover {
+      border-color: #9ca3af;
+      box-shadow: 0 4px 16px rgba(16,24,40,0.06);
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+
     /* ── Footer ── */
-    footer { text-align: center; padding: 3rem 0 3rem; }
+    footer { text-align: center; padding: 3.2rem 0 3.4rem; }
     .footer-mark {
       width: 72px; height: 72px;
       margin: 0 auto 1.4rem;
@@ -439,20 +532,26 @@
     .p7  { --sz: 3px; }
     .p8  { --sz: 2.5px; }
     .footer-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
-    .footer-links a { font-size: 0.875rem; color: var(--text-mid); }
+    .footer-links a { font-size: 0.86rem; color: var(--text-mid); }
     .footer-info { font-size: 0.75rem; color: var(--text-light); }
     .footer-note { font-size: 0.75rem; color: #bbb; margin-top: 0.4rem; font-style: italic; }
 
     /* ── Mobile ── */
     @media (max-width: 640px) {
-      .hero-top { flex-direction: column; align-items: center; text-align: center; }
+      .wrapper { padding: 0 1.15rem; }
+      .divider { width: 100%; margin-left: 0; margin-top: 2.6rem; margin-bottom: 2.6rem; }
+      .hero { padding-top: 3.2rem; }
+      .hero-top { flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; }
       .hero-links { justify-content: center; }
-      .hero-text h1 { font-size: 1.5rem; }
+      .hero-text h1 { font-size: 2.2rem; margin-bottom: 0.75rem; }
+      .hero-text .intro { font-size: 0.96rem; line-height: 1.68; }
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; gap: 0.6rem; }
       .nav-toggle { display: block; }
       .books { grid-template-columns: repeat(2, 1fr); }
-      .section-head { flex-direction: column; }
+      .skills-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+      .section-head { flex-direction: column; align-items: flex-start; gap: 0.25rem; margin-bottom: 0.9rem; }
+      .section-head h2 { font-size: 1.25rem; }
     }
   </style>
 </head>
@@ -461,7 +560,7 @@
   <!-- Navigation -->
   <nav>
     <div class="wrapper">
-      <a href="#" class="nav-name" style="color:var(--text);">Jiaxuan Gong</a>
+      <a href="#" class="nav-name">Jiaxuan Gong</a>
       <ul class="nav-links" id="navMenu">
         <li><a href="#about">About</a></li>
         <li><a href="#research">Research</a></li>
@@ -492,7 +591,7 @@
           </p>
           <div class="hero-links">
             <a href="#about">About me →</a>
-            <a href="#" style="color:var(--text-light);">Resume ↗</a>
+            <a href="#" class="muted-link">Resume ↗</a>
           </div>
         </div>
       </div>
@@ -511,20 +610,20 @@
       </div>
 
 
-      <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.75;margin-bottom:0.8rem;">
+      <p class="copy">
         I am a design researcher working at the intersection of <strong>design, human–computer interaction, and accessibility</strong>.
         My M.F.A. work at Jiangnan University combines quantitative methods (SEM, machine learning, survey design)
         with qualitative approaches (thematic analysis, semi-structured interviews) to investigate how people
         interact with emerging technologies.
       </p>
-      <p style="color:var(--text-mid);line-height:1.75;">
+      <p class="copy">
         I am currently applying for PhD programs in Design, HCI, and Information Science,
         seeking a research environment where I can deepen my work at the intersection of design and technology.
       </p>
 
       <!-- Education -->
-      <div style="margin-top:2rem;">
-        <h3 style="font-weight:500;margin-bottom:0.6rem;">Education</h3>
+      <div class="subsection">
+        <h3>Education</h3>
         <div class="paper">
           <div class="paper-title">M.F.A. in Design Science</div>
           <div class="paper-authors">Jiangnan University, School of Design</div>
@@ -538,8 +637,8 @@
       </div>
 
       <!-- Research Interests -->
-      <div style="margin-top:2rem;">
-        <h3 style="font-weight:500;margin-bottom:0.6rem;">Research Interests</h3>
+      <div class="subsection">
+        <h3>Research Interests</h3>
         <div class="interest-tags">
           <span class="interest-tag" data-tag="hci">Design &amp; HCI</span>
           <span class="interest-tag" data-tag="hai">Human–AI Interaction</span>
@@ -659,7 +758,7 @@
     <div class="wrapper">
       <div class="section-head">
         <h2>Some of my work</h2>
-        <div style="display:flex;align-items:center;gap:0.4rem;">
+        <div class="section-actions">
           <button class="proj-scroll proj-left" aria-label="Scroll left" disabled>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>
           </button>
@@ -783,27 +882,27 @@
       </div>
 
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.8rem;font-size:0.875rem;color:var(--text-mid);line-height:1.7;">
-        <div>
-          <strong style="color:var(--text);">Quantitative</strong><br>
+      <div class="skills-grid">
+        <div class="skill-group">
+          <strong>Quantitative</strong><br>
           CB-SEM · SEM-ANN · SPSS · AMOS<br>
           Survey Design &amp; Validation<br>
           Stratified k-fold CV · Python · MATLAB
         </div>
-        <div>
-          <strong style="color:var(--text);">Qualitative &amp; Mixed</strong><br>
+        <div class="skill-group">
+          <strong>Qualitative &amp; Mixed</strong><br>
           Thematic Analysis · Interviews<br>
           PRISMA Systematic Review<br>
           Explanatory Sequential Design · LaTeX
         </div>
-        <div>
-          <strong style="color:var(--text);">Design &amp; Prototyping</strong><br>
+        <div class="skill-group">
+          <strong>Design &amp; Prototyping</strong><br>
           Figma · Adobe Suite · Blender · C4D<br>
           Unity3D · Unreal Engine<br>
           TouchDesigner · Arduino
         </div>
-        <div>
-          <strong style="color:var(--text);">Awards (Selected)</strong><br>
+        <div class="skill-group">
+          <strong>Awards (Selected)</strong><br>
           National 2nd Prize, Milan Design Week (2024)<br>
           Outstanding Graduate, NUA, Top 5% (2023)<br>
           National Silver, CICSIC (2021)
@@ -817,10 +916,10 @@
 
   <!-- CV -->
   <section id="cv" class="reveal">
-    <div class="wrapper" style="text-align:center;">
+    <div class="wrapper cv-block">
       <h2>Curriculum Vitae</h2>
-      <p style="font-size:0.875rem;color:var(--text-mid);margin:0.5rem 0 1rem;">Full academic CV with publications, research experience, and project details.</p>
-      <a href="#" style="display:inline-block;padding:0.5rem 1.3rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.875rem;font-weight:500;color:var(--text);">Download CV (PDF)</a>
+      <p>Full academic CV with publications, research experience, and project details.</p>
+      <a href="#" class="button-link">Download CV (PDF)</a>
     </div>
   </section>
 
