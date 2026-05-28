@@ -126,17 +126,37 @@
     .paper .paper-authors { font-size: 0.875rem; color: var(--text-mid); margin-top: 0.15rem; }
     .paper .paper-venue { font-size: 0.875rem; color: var(--text-light); margin-top: 0.05rem; font-style: italic; }
 
-    /* ── Project cards (Kanchi style) ── */
+    /* ── Project cards (Kanchi style, full-width scroll) ── */
+    .projects-wrap {
+      position: relative;
+      margin-top: 0.8rem;
+      padding: 0 calc((100vw - var(--max-w)) / 2 + 1.25rem);
+      display: flex; align-items: center;
+    }
     .projects {
-      display: flex; gap: 1.2rem;
+      display: flex; gap: 1.1rem;
       overflow-x: auto;
+      scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      padding-bottom: 0.5rem;
+      padding: 0.3rem 0.3rem 0.5rem;
+      flex: 1;
     }
     .projects::-webkit-scrollbar { display: none; }
+    .proj-scroll {
+      flex: 0 0 36px; width: 36px; height: 36px;
+      border-radius: 50%; border: 1px solid var(--border);
+      background: #fff; color: var(--text-mid);
+      font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      z-index: 2;
+    }
+    .proj-scroll:hover { background: var(--bg-warm); border-color: #d4d4d8; color: var(--text); }
+    .proj-left  { margin-right: 0.3rem; }
+    .proj-right { margin-left: 0.3rem; }
     .project-card {
-      flex: 0 0 220px;
+      flex: 0 0 240px;
       text-decoration: none; color: inherit;
       display: block;
     }
@@ -173,8 +193,10 @@
       font-size: 0.8rem; color: var(--text-mid);
       line-height: 1.5; margin-top: 0.3rem;
     }
-    @media (min-width: 700px) {
-      .project-card { flex: 0 0 240px; }
+    @media (max-width: 700px) {
+      .projects-wrap { padding: 0 1rem; }
+      .project-card { flex: 0 0 210px; }
+      .proj-scroll { display: none; }
     }
 
     /* ── Scroll reveal ── */
@@ -392,7 +414,6 @@
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; gap: 0.6rem; }
       .nav-toggle { display: block; }
-      .project-card { flex: 0 0 200px; }
       .books { grid-template-columns: repeat(2, 1fr); }
       .section-head { flex-direction: column; }
     }
@@ -603,59 +624,77 @@
         <h2>Some of my work</h2>
         <a href="#projects">All work →</a>
       </div>
+    </div>
 
-
-      <div class="projects">
-
-        <a href="#" class="project-card" style="color:inherit;">
-          <div class="preview">
-            <!-- <img src="vr-heritage-thumb.jpg" alt=""> -->
-            <span>Preview</span>
-          </div>
+    <div class="projects-wrap">
+      <button class="proj-scroll proj-left" aria-label="Scroll left">←</button>
+      <div class="projects" id="projScroll">
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
           <div class="card-body">
-            <div class="card-icon"><span>Icon</span></div>
+            <div class="card-icon"><span>Ic</span></div>
             <h3>VR Heritage Study</h3>
             <p>Mixed-methods investigation of VR in cultural heritage. 566 surveys + 20 interviews. Published in <em>Heritage</em>.</p>
           </div>
         </a>
-
-        <a href="#" class="project-card" style="color:inherit;">
-          <div class="preview">
-            <!-- <img src="textile2050-thumb.jpg" alt=""> -->
-            <span>Preview</span>
-          </div>
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
           <div class="card-body">
-            <div class="card-icon"><span>Icon</span></div>
+            <div class="card-icon"><span>Ic</span></div>
             <h3>TEXTILE 2050</h3>
-            <p>Interactive digital media installation with Arduino + TouchDesigner. Exhibited.</p>
+            <p>Interactive digital media installation with Arduino + TouchDesigner. Exhibited with full documentation.</p>
           </div>
         </a>
-
-        <a href="#" class="project-card" style="color:inherit;">
-          <div class="preview">
-            <!-- <img src="remembery-thumb.jpg" alt=""> -->
-            <span>Preview</span>
-          </div>
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
           <div class="card-body">
-            <div class="card-icon"><span>Icon</span></div>
+            <div class="card-icon"><span>Ic</span></div>
             <h3>REMEMBERY</h3>
             <p>App for Alzheimer's patients. Accessibility-first design across four interaction touchpoints.</p>
           </div>
         </a>
-
-        <a href="#" class="project-card" style="color:inherit;">
-          <div class="preview">
-            <!-- <img src="sage-open-thumb.jpg" alt=""> -->
-            <span>Preview</span>
-          </div>
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
           <div class="card-body">
-            <div class="card-icon"><span>Icon</span></div>
+            <div class="card-icon"><span>Ic</span></div>
             <h3>Interactive Art &amp; Social Media</h3>
-            <p>Multi-modal analysis of 15,201 Weibo posts on public sentiment toward interactive art. Published in <em>SAGE Open</em>.</p>
+            <p>Multi-modal analysis of 15,201 Weibo posts. Published in <em>SAGE Open</em>, 2026.</p>
           </div>
         </a>
-
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
+          <div class="card-body">
+            <div class="card-icon"><span>Ic</span></div>
+            <h3>LISTEN Interactive Installation</h3>
+            <p>Interactive installation concept exploring sensory perception. TouchDesigner + spatial audio.</p>
+          </div>
+        </a>
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
+          <div class="card-body">
+            <div class="card-icon"><span>Ic</span></div>
+            <h3>GenAI Accessibility Review</h3>
+            <p>PRISMA systematic review: 3,570 records screened on GenAI for accessibility in HCI.</p>
+          </div>
+        </a>
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
+          <div class="card-body">
+            <div class="card-icon"><span>Ic</span></div>
+            <h3>南京云锦 Cultural Heritage</h3>
+            <p>Infographic design and illustration for Nanjing Yunjin intangible cultural heritage.</p>
+          </div>
+        </a>
+        <a href="#" class="project-card">
+          <div class="preview"><span>Preview</span></div>
+          <div class="card-body">
+            <div class="card-icon"><span>Ic</span></div>
+            <h3>会意AD Immersive Space</h3>
+            <p>Immersive experience space design for Alzheimer's awareness and health communication.</p>
+          </div>
+        </a>
       </div>
+      <button class="proj-scroll proj-right" aria-label="Scroll right">→</button>
     </div>
   </section>
 
@@ -974,6 +1013,16 @@
       });
       calcTarget();
       tick();
+    })();
+
+    // Project scroll buttons
+    (function() {
+      var row = document.getElementById('projScroll');
+      var left = document.querySelector('.proj-left');
+      var right = document.querySelector('.proj-right');
+      if (!row || !left || !right) return;
+      left.addEventListener('click', function() { row.scrollBy({ left: -260, behavior: 'smooth' }); });
+      right.addEventListener('click', function() { row.scrollBy({ left: 260, behavior: 'smooth' }); });
     })();
 
     // Animated favicon
