@@ -295,16 +295,28 @@
       // Card thumbnail
       h += '<div class="field"><label>Card Thumbnail <span class="opt">(homepage card image)</span></label><input value="' + escAttr(p.cardImage || '') + '" onchange="setVal(\'cardImage\',this.value)" placeholder="images/remembery.jpg">';
 
+      // Layout
+      var layouts = ['stacked', 'grid', 'masonry'];
+      h += '<div class="field-row"><div class="field"><label>Gallery Layout</label><select onchange="setVal(\'layout\',this.value)" style="width:100%;padding:0.4rem 0.5rem;border:1px solid var(--bdr);border-radius:5px;font-size:0.82rem;font-family:inherit;background:var(--c1)">';
+      layouts.forEach(function(l) { h += '<option value="' + l + '"' + ((p.layout||'stacked')===l?' selected':'') + '>' + l.charAt(0).toUpperCase()+l.slice(1) + '</option>'; });
+      h += '</select><div style="font-size:0.6rem;color:var(--t2);margin-top:0.15rem">Stacked: full-width · Grid: 2-column · Masonry: staggered</div></div>';
+      h += '<div class="field"><label>Hero Height <span class="opt">(for project page)</span></label><select onchange="setVal(\'heroHeight\',this.value)" style="width:100%;padding:0.4rem 0.5rem;border:1px solid var(--bdr);border-radius:5px;font-size:0.82rem;font-family:inherit;background:var(--c1)">';
+      ['auto','medium','large'].forEach(function(hh) { h += '<option value="' + hh + '"' + ((p.heroHeight||'auto')===hh?' selected':'') + '>' + hh.charAt(0).toUpperCase()+hh.slice(1) + '</option>'; });
+      h += '</select></div></div>';
+
       // Gallery
-      h += '<div class="field"><label>Gallery <span class="opt">(drag to reorder · click × to remove · click image to set hero)</span></label>';
+      h += '<div class="field"><label>Gallery Images <span class="opt">(drag to reorder · click × to remove · click image to set hero · click caption text to edit)</span></label>';
       h += '<div class="gitems" id="galleryArea">';
       p.images.forEach(function(img, j) {
         var src = 'images/' + img.src;
         var isHero = (p.hero === src) ? ' is-hero' : '';
+        h += '<div style="display:flex;flex-direction:column;gap:0.15rem;align-items:center;margin-bottom:0.4rem">';
         h += '<div class="gitem' + isHero + '" draggable="true" data-gidx="' + j + '" ondragstart="gDragStart(event,' + j + ')" ondragover="gDragOver(event)" ondrop="gDrop(event,' + j + ')" onclick="setHero(' + j + ')">';
         h += '<img src="' + src + '" onerror="this.style.background=\'#ddd\'">';
         h += '<button class="gi-del" onclick="event.stopPropagation();rmImg(' + j + ')">×</button>';
         h += '<span class="gi-hero">Hero</span>';
+        h += '</div>';
+        h += '<input value="' + escAttr(img.caption || '') + '" onchange="setCaption(' + j + ',this.value)" placeholder="+ caption" style="width:90px;font-size:0.6rem;padding:2px 4px;border:1px solid transparent;border-radius:3px;text-align:center;background:transparent" onfocus="this.style.borderColor=\'var(--acc)\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'transparent\';this.style.background=\'transparent\'">';
         h += '</div>';
       });
       h += '<div class="upload-slot" onclick="openUpload()">+</div>';
@@ -350,6 +362,7 @@
     function addTag(ev) { if (ev.key !== 'Enter') return; ev.preventDefault(); var v = ev.target.value.trim(); if (v && cfg.projects[curIdx].tags.indexOf(v) === -1) { cfg.projects[curIdx].tags.push(v); markChanged(); renderEditor(); } }
     function rmTag(t) { cfg.projects[curIdx].tags = cfg.projects[curIdx].tags.filter(function(x) { return x !== t; }); markChanged(); renderEditor(); }
     function rmImg(j) { cfg.projects[curIdx].images.splice(j, 1); markChanged(); renderEditor(); }
+    function setCaption(j, val) { cfg.projects[curIdx].images[j].caption = val; markChanged(); }
 
     // ── Gallery drag reorder ──
     var gDragIdx = null;
