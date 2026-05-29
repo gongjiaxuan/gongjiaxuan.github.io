@@ -24,103 +24,120 @@
       color: var(--text); background: var(--bg);
       -webkit-font-smoothing: antialiased;
     }
-
-    a { text-decoration: none; font-weight: 500; }
+    a { text-decoration: none; font-weight: 500; color: var(--text-head); }
     a:hover { text-decoration: underline; }
 
-    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
+    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.5rem; }
 
     /* ── Back nav ── */
     .back-nav {
-      padding: 1.5rem 0; border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 100;
       background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
     }
-    .back-nav a { font-size: 0.88rem; color: var(--text-mid); }
+    .back-nav .wrapper { display: flex; justify-content: space-between; align-items: center; }
+    .back-nav a { font-size: 0.85rem; color: var(--text-mid); }
+    .back-nav .project-counter { font-size: 0.78rem; color: var(--text-light); }
 
-    /* ── Hero ── */
-    .hero-img {
-      width: 100%; max-height: 55vh; object-fit: cover;
-      border-radius: 0 0 16px 16px; background: #e5e7eb;
+    /* ── Hero — full bleed ── */
+    .hero {
+      width: 100%;
+      background: #e5e7eb;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .hero img {
+      width: 100%; height: auto; display: block;
+      max-height: 70vh; object-fit: contain;
     }
 
-    /* ── Header ── */
-    .proj-header { padding: 2rem 0 0.5rem; }
-    .proj-header h1 { font-size: 2rem; font-weight: 700; color: var(--text-head); line-height: 1.2; margin-bottom: 0.3rem; }
-    .proj-header .subtitle { font-size: 1.05rem; color: var(--accent); font-weight: 500; margin-bottom: 0.8rem; }
-    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem; }
+    /* ── Project header ── */
+    .proj-header { padding: 2.5rem 0 1rem; }
+    .proj-header h1 { font-size: 2.2rem; font-weight: 700; color: var(--text-head); line-height: 1.2; margin-bottom: 0.3rem; letter-spacing: -0.02em; }
+    .proj-header .subtitle { font-size: 1.1rem; color: var(--accent); font-weight: 500; margin-bottom: 0.8rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
     .tags span {
-      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
-      padding: 0.2rem 0.5rem; border-radius: 4px; background: #eef2ff; color: #4338ca;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
+      padding: 0.2rem 0.6rem; border-radius: 4px; background: #eef2ff; color: #4338ca;
     }
 
-    .desc { font-size: 1rem; line-height: 1.78; color: var(--text-mid); margin-bottom: 1rem; }
-    .tools { font-size: 0.88rem; color: var(--text-light); margin-bottom: 2rem; }
+    .desc { font-size: 1.02rem; line-height: 1.78; color: var(--text-mid); margin-bottom: 1.2rem; max-width: 680px; }
+    .tools { font-size: 0.9rem; color: var(--text-light); padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
     .tools strong { color: var(--text-head); }
 
-    /* ── Gallery ── */
-    .section-title {
-      font-size: 1.2rem; font-weight: 600; color: var(--text-head);
-      margin-bottom: 0.8rem; padding-top: 1rem;
-      border-top: 1px solid var(--border);
+    /* ── Section labels ── */
+    .section-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-light); margin: 3rem 0 1.2rem;
     }
-    .gallery {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 0.75rem; margin-bottom: 2.5rem;
-    }
-    .gallery img {
-      width: 100%; aspect-ratio: 4/3; object-fit: cover;
-      border-radius: 8px; cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+
+    /* ── Gallery — full width stacked ── */
+    .gallery-img {
+      width: 100%; height: auto; display: block;
+      margin-bottom: 1.5rem;
+      border-radius: 6px; cursor: pointer;
+      transition: box-shadow 0.2s;
       background: #e5e7eb;
     }
-    .gallery img:hover { transform: scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .gallery-img:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
 
     /* ── Video ── */
-    .video-wrap { margin-bottom: 2.5rem; }
-    .video-wrap video { width: 100%; border-radius: 12px; background: #000; }
+    .video-wrap { margin-bottom: 3rem; }
+    .video-wrap video { width: 100%; border-radius: 8px; background: #000; }
     .video-placeholder {
       padding: 3rem 2rem; text-align: center; background: var(--bg-warm);
-      border-radius: 12px; color: var(--text-light); font-size: 0.9rem;
+      border-radius: 8px; color: var(--text-light); font-size: 0.9rem;
     }
 
     /* ── Bottom nav ── */
     .bottom-nav {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 2rem 0 3rem; border-top: 1px solid var(--border); margin-top: 1rem;
+      padding: 2.5rem 0 3rem; border-top: 1px solid var(--border); margin-top: 2rem;
       flex-wrap: wrap; gap: 0.5rem;
     }
     .bottom-nav a { font-size: 0.9rem; }
     .bottom-nav .prev::before { content: "← "; }
     .bottom-nav .next::after { content: " →"; }
+    .bottom-nav .back { color: var(--text-light); }
 
     /* ── Lightbox ── */
     .lightbox {
       position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.92);
+      background: rgba(0,0,0,0.94);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
     .lightbox.active { opacity: 1; pointer-events: auto; }
-    .lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 4px; }
+    .lightbox img { max-width: 94vw; max-height: 92vh; border-radius: 4px; object-fit: contain; }
     .lightbox .close {
       position: absolute; top: 1.5rem; right: 1.5rem;
-      color: #fff; font-size: 2rem; cursor: pointer; line-height: 1;
+      color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; opacity: 0.7;
+    }
+    .lightbox .close:hover { opacity: 1; }
+    .lightbox .counter {
+      position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.6); font-size: 0.82rem;
     }
 
     @media (max-width: 640px) {
-      .proj-header h1 { font-size: 1.5rem; }
-      .gallery { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .wrapper { padding: 0 1.15rem; }
+      .proj-header h1 { font-size: 1.6rem; }
+      .hero img { max-height: 50vh; }
+      .gallery-img { margin-bottom: 0.75rem; border-radius: 4px; }
     }
   </style>
 </head>
 <body>
 
   <div class="back-nav">
-    <div class="wrapper"><a href="index.html#projects">← Back to Portfolio</a></div>
+    <div class="wrapper">
+      <a href="index.html#projects">← Back</a>
+      <span class="project-counter" id="projCounter"></span>
+    </div>
   </div>
 
-  <img class="hero-img" src="" alt="" id="heroImg">
+  <div class="hero"><img src="" alt="" id="heroImg"></div>
 
   <div class="wrapper">
     <div class="proj-header">
@@ -131,14 +148,14 @@
       <div class="tools" id="projTools"></div>
     </div>
 
-    <div class="section-title">Gallery</div>
-    <div class="gallery" id="gallery"></div>
+    <div class="section-label">Gallery</div>
+    <div id="gallery"></div>
 
-    <div class="section-title">Video</div>
+    <div class="section-label">Video</div>
     <div class="video-wrap" id="videoWrap"></div>
 
     <div class="bottom-nav">
-      <a href="index.html#projects">← Back to Portfolio</a>
+      <a href="index.html#projects" class="back">← Back to Portfolio</a>
       <span>
         <a href="#" class="prev" id="prevLink">Previous</a>
         &nbsp;·&nbsp;
@@ -150,6 +167,7 @@
   <div class="lightbox" id="lightbox">
     <span class="close" id="lbClose">&times;</span>
     <img src="" alt="" id="lbImg">
+    <span class="counter" id="lbCounter"></span>
   </div>
 
   <script>
@@ -219,6 +237,7 @@
     var basePath = "images/" + folderNames[id] + "/";
 
     document.title = p.title + " — Jiaxuan Gong";
+    document.getElementById('projCounter').textContent = (id + 1) + ' / ' + projects.length;
     document.getElementById('heroImg').src = p.hero;
     document.getElementById('heroImg').alt = p.title;
     document.getElementById('projTitle').textContent = p.title;
@@ -227,35 +246,58 @@
     document.getElementById('projDesc').textContent = p.desc;
     document.getElementById('projTools').innerHTML = p.tools;
 
+    // Gallery — full width, native aspect ratio
     var gallery = document.getElementById('gallery');
+    var allSrcs = [];
     p.gallery.forEach(function(img) {
+      var src = basePath + img;
+      allSrcs.push(src);
       var el = document.createElement('img');
-      el.src = basePath + img;
-      el.alt = p.title;
-      el.loading = 'lazy';
-      el.addEventListener('click', function() { openLightbox(el.src); });
+      el.src = src; el.alt = p.title; el.loading = 'lazy';
+      el.className = 'gallery-img';
+      el.addEventListener('click', function() { openLightbox(allSrcs.indexOf(src)); });
       gallery.appendChild(el);
     });
 
+    // Video
     var vw = document.getElementById('videoWrap');
     if (p.video) {
-      vw.innerHTML = '<video controls poster="' + p.hero + '"><source src="' + p.video + '" type="video/mp4"></video>';
+      vw.innerHTML = '<video controls poster="' + p.hero + '" preload="metadata"><source src="' + p.video + '" type="video/mp4"></video>';
     } else {
       vw.innerHTML = '<div class="video-placeholder">Video demo available upon request — <a href="mailto:gongjiaxuan169@gmail.com">contact me</a></div>';
     }
 
+    // Bottom nav
     var prevId = (id - 1 + projects.length) % projects.length;
     var nextId = (id + 1) % projects.length;
     document.getElementById('prevLink').href = 'project.html?id=' + prevId;
     document.getElementById('nextLink').href = 'project.html?id=' + nextId;
 
+    // Lightbox
     var lb = document.getElementById('lightbox');
     var lbImg = document.getElementById('lbImg');
-    function openLightbox(src) { lbImg.src = src; lb.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    var lbCounter = document.getElementById('lbCounter');
+    var curIdx = 0;
+
+    function openLightbox(idx) {
+      curIdx = idx;
+      lbImg.src = allSrcs[idx];
+      lbCounter.textContent = (idx + 1) + ' / ' + allSrcs.length;
+      lb.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
     function closeLightbox() { lb.classList.remove('active'); document.body.style.overflow = ''; }
+    function lightboxPrev() { if (allSrcs.length) openLightbox((curIdx - 1 + allSrcs.length) % allSrcs.length); }
+    function lightboxNext() { if (allSrcs.length) openLightbox((curIdx + 1) % allSrcs.length); }
+
     document.getElementById('lbClose').addEventListener('click', closeLightbox);
     lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+    document.addEventListener('keydown', function(e) {
+      if (!lb.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lightboxPrev();
+      if (e.key === 'ArrowRight') lightboxNext();
+    });
   </script>
 </body>
 </html>
