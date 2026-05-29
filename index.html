@@ -1122,7 +1122,7 @@
 
     document.querySelectorAll('.project-card').forEach(function(card) {
       card.addEventListener('click', function() {
-        openModal(parseInt(this.dataset.proj));
+        window.location.href = 'project.html?id=' + this.dataset.proj;
       });
     });
 
