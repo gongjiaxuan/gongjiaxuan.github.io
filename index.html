@@ -37,10 +37,10 @@
     .hero .btns .secondary:hover{background:#f9f9f9;opacity:1}
 
     /* ── Social row ── */
-    .soc{display:flex;gap:0.8rem;margin-top:1.5rem}
-    .soc a{display:flex;align-items:center;gap:0.3rem;font-size:14px;color:var(--c-muted)}
-    .soc a:hover{color:var(--c-h)}
-    .soc svg{width:14px;height:14px}
+    .soc{display:flex;justify-content:center;gap:0.6rem;margin-top:1.5rem}
+    .soc a{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;border:1px solid var(--c-border);color:var(--c-muted);transition:all 0.15s}
+    .soc a:hover{border-color:var(--c-accent);color:var(--c-accent);background:var(--c-soft);opacity:1}
+    .soc svg{width:15px;height:15px}
 
     /* ── Section titles ── */
     .sec-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.2rem;padding-top:3rem}
@@ -51,15 +51,21 @@
     /* ── About ── */
     .about p{font-size:16px;line-height:1.6;color:var(--c-muted);max-width:600px}
 
-    /* ── Paper cards ── */
-    .paper-card{padding:1rem 0;border-bottom:1px solid #f2f2f2}
-    .paper-card:first-child{padding-top:0}
-    .paper-lbl{font-size:12px;color:var(--c-muted);margin-bottom:0.3rem}
-    .paper-lbl .new{font-size:10px;background:var(--c-soft);color:var(--c-accent);padding:1px 5px;border-radius:3px;margin-left:0.4rem;font-weight:500;vertical-align:middle}
-    .paper-card h3{font-size:20px;font-weight:500;color:var(--c-h);line-height:1.35;margin-bottom:0.2rem}
-    .paper-card h3 a{color:var(--c-h)}
-    .paper-card .authors{font-size:12px;color:var(--c-muted);margin-bottom:0.2rem}
-    .paper-card .venue{font-size:14px;color:var(--c-h);font-weight:500}
+    /* ── Timeline ── */
+    .tl{position:relative;padding-left:2.4rem}
+    .tl::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:1px;background:var(--c-border)}
+    .tl-yr{font-size:12px;font-weight:500;color:#bbb;text-transform:uppercase;letter-spacing:0.1em;margin:1.4rem 0 0.5rem;position:relative}
+    .tl-yr::before{content:'';position:absolute;left:-2.1rem;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--c-accent);z-index:1}
+    .tl-yr:first-child{margin-top:0}
+    .tl-it{padding:0.45rem 0.65rem;margin-bottom:0.2rem;border-radius:6px;transition:background 0.2s;font-size:14px;color:var(--c-muted);line-height:1.5}
+    .tl-it:hover{background:#fafafa}
+    .tl-it .tlt{font-weight:500;color:var(--c-h)}
+    .tl-it .tlv{font-size:13px;color:var(--c-muted);margin-top:0.05rem}
+    .tl-badge{display:inline-block;font-size:10px;font-weight:500;padding:0.03rem 0.3rem;border-radius:999px;margin-left:0.3rem;vertical-align:middle}
+    .tl-badge-pub{background:#ecfdf5;color:#065f46}
+    .tl-badge-prep{background:#fef2f2;color:#991b1b}
+    .paper[data-tags]{transition:opacity 0.3s}
+    .paper.dimmed{opacity:0.2}
 
     /* ── Project cards ── */
     .proj{display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0.2rem 0 0.5rem}
@@ -155,9 +161,10 @@
         <a href="cv/CV_JiaxuanGong_HCI+.pdf" class="secondary">Resume ↗</a>
       </div>
       <div class="soc">
-        <a href="mailto:gongjiaxuan169@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 4-10 7L2 4"/></svg> Email</a>
-        <a href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg> Scholar</a>
-        <a href="https://github.com/gongjiaxuan"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg> GitHub</a>
+        <a href="mailto:gongjiaxuan169@gmail.com" title="Email" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 4-10 7L2 4"/></svg></a>
+        <a href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ" target="_blank" rel="noopener" title="Scholar" aria-label="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg></a>
+        <a href="https://github.com/gongjiaxuan" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg></a>
+        <a href="cv/CV_JiaxuanGong_HCI+.pdf" title="Download CV" aria-label="CV"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg></a>
       </div>
     </div>
   </div>
@@ -186,47 +193,16 @@
   <!-- Research -->
   <div class="wrap"><section id="research" class="rv">
     <div class="sec-hd"><h2>Latest research</h2><a href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ" target="_blank" rel="noopener">All research →</a></div>
-
-    <div class="paper-card">
-      <div class="paper-lbl">Paper</div>
-      <h3><a href="https://doi.org/10.1177/21582440251413067" target="_blank" rel="noopener">Public Sentiment Towards Interactive Art on Multi-Modal Social Media</a></h3>
-      <div class="authors">Shunfeng Zhang, Jiaxuan Gong, Haiyan Wu, Zhengyang Lu, and Wanying Zhang</div>
-      <div class="venue">SAGE Open, 2026</div>
-    </div>
-
-    <div class="paper-card">
-      <div class="paper-lbl">Paper <span class="new">In Preparation</span></div>
-      <h3>Generative AI for Accessibility in HCI: A PRISMA-Based Systematic Review</h3>
-      <div class="authors">Jiaxuan Gong, Zhengyang Lu, Feng Wang, et al.</div>
-      <div class="venue">First author · 3,570 records screened, 136 publications coded</div>
-    </div>
-
-    <div class="paper-card">
-      <div class="paper-lbl">Paper</div>
-      <h3><a href="https://doi.org/10.3390/heritage8120503" target="_blank" rel="noopener">Engaging the Next Generation: VR Acceptance in Cultural Heritage Institutions</a></h3>
-      <div class="authors">Jiaxuan Gong, Wen Zhong, Bai Liu, Zhengyang Lu, and Feng Wang</div>
-      <div class="venue">Heritage, 2025 · Co-first author</div>
-    </div>
-
-    <div class="paper-card">
-      <div class="paper-lbl">Paper</div>
-      <h3><a href="https://doi.org/10.3390/app15148088" target="_blank" rel="noopener">Motivation of University Students to Use LLMs for Online Consumption of Sustainable Products</a></h3>
-      <div class="authors">Junjie Yu, Wanying Yan, Jiaxuan Gong, Siqin Wang, Ken Nah, and Wei Cheng</div>
-      <div class="venue">Applied Sciences, 2025</div>
-    </div>
-
-    <div class="paper-card">
-      <div class="paper-lbl">Paper</div>
-      <h3><a href="https://doi.org/10.3390/jtaer20040324" target="_blank" rel="noopener">Integrated Office Applications Promote Sustainable Development of E-Commerce Enterprises</a></h3>
-      <div class="authors">Siqin Wang, Jiaxuan Gong, Xiaoshan Li, Yuting Peng, Chenhui Du, and Ken Nah</div>
-      <div class="venue">Journal of Theoretical and Applied Electronic Commerce Research, 2025</div>
-    </div>
-
-    <div class="paper-card" style="border-bottom:none">
-      <div class="paper-lbl">Paper</div>
-      <h3><a href="https://doi.org/10.1038/s41598-024-73156-7" target="_blank" rel="noopener">Quality Function Deployment Approach to Urban Ecological Public Art Design</a></h3>
-      <div class="authors">Renjing Hu, Xiaonan Tao, Jiaxuan Gong, and Feng Wang</div>
-      <div class="venue">Scientific Reports, 2024</div>
+    <div class="tl">
+      <div class="tl-yr">2026</div>
+      <div class="tl-it paper" data-tags="llm ux"><div class="tlt"><a href="https://doi.org/10.1177/21582440251413067" target="_blank" rel="noopener">Public Sentiment Towards Interactive Art on Multi-Modal Social Media</a><span class="tl-badge tl-badge-pub">Published</span></div><div class="tlv"><em>SAGE Open</em> 16, 1 (2026), 21582440251413067</div></div>
+      <div class="tl-it paper" data-tags="hai accessibility llm"><div class="tlt">Generative AI for Accessibility in HCI: A PRISMA-Based Systematic Review<span class="tl-badge tl-badge-prep">In Preparation</span></div><div class="tlv">First author · 3,570 records screened, 136 publications coded</div></div>
+      <div class="tl-yr">2025</div>
+      <div class="tl-it paper" data-tags="arvr ux"><div class="tlt"><a href="https://doi.org/10.3390/heritage8120503" target="_blank" rel="noopener">Engaging the Next Generation: VR Acceptance in Cultural Heritage Institutions</a><span class="tl-badge tl-badge-pub">Published</span></div><div class="tlv"><em>Heritage</em> 8, 12 (2025), 503 · Co-first author</div></div>
+      <div class="tl-it paper" data-tags="hai ux"><div class="tlt"><a href="https://doi.org/10.3390/app15148088" target="_blank" rel="noopener">Motivation of University Students to Use LLMs for Online Consumption of Sustainable Products</a><span class="tl-badge tl-badge-pub">Published</span></div><div class="tlv"><em>Applied Sciences</em> 15, 14 (2025), 8088</div></div>
+      <div class="tl-it paper" data-tags="ux"><div class="tlt"><a href="https://doi.org/10.3390/jtaer20040324" target="_blank" rel="noopener">Integrated Office Applications Promote Sustainable Development of E-Commerce Enterprises</a><span class="tl-badge tl-badge-pub">Published</span></div><div class="tlv"><em>JTAER</em> 20, 4 (2025), 324</div></div>
+      <div class="tl-yr">2024</div>
+      <div class="tl-it paper" data-tags="ux"><div class="tlt"><a href="https://doi.org/10.1038/s41598-024-73156-7" target="_blank" rel="noopener">Quality Function Deployment Approach to Urban Ecological Public Art Design</a><span class="tl-badge tl-badge-pub">Published</span></div><div class="tlv"><em>Scientific Reports</em> 14, 1 (2024), 22814</div></div>
     </div>
   </section></div>
 
