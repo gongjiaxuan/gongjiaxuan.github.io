@@ -1,126 +1,64 @@
 {
-  "_schema": "1.0",
-  "_help": "Edit this file to control your entire portfolio. Changes take effect on next deploy. See README in CODEX_HANDOFF.md for field descriptions.",
-
+  "_schema": "2.0",
   "site": {
     "name": "Jiaxuan Gong",
+    "title": "HCI Researcher & Designer",
     "email": "gongjiaxuan169@gmail.com",
     "scholar": "https://scholar.google.com/citations?user=FtQ2NOUAAAAJ",
-    "github": "https://github.com/gongjiaxuan"
+    "github": "https://github.com/gongjiaxuan",
+    "photo": "",
+    "cvPath": "cv/CV_JiaxuanGong_HCI+.pdf"
   },
-
+  "hero": {
+    "line1": "Hi, I'm Jiaxuan.",
+    "line2": "I build interactive prototypes, run user studies, and write about what makes technology work for people. I'm finishing my M.F.A. at Jiangnan University and looking for my next research home."
+  },
+  "about": {
+    "paragraphs": [
+      "I came to HCI through the long way — started in visual communication design, picked up Python somewhere along the way, and somehow ended up building AR prototypes and running structural equation models on 388-person datasets. My M.F.A. at Jiangnan University sits at the intersection of human-AI interaction, accessibility, and immersive media.",
+      "I like the full loop: build something people can actually use (Unity AR apps, Arduino installations, Figma prototypes), then test it with real users (surveys, interviews, SEM), then figure out why it works or doesn't. My thesis explored how AR can bring traditional craftsmanship to life in museum spaces.",
+      "I led a PRISMA systematic review on GenAI accessibility (3,570 papers → 136 coded). I've published in Heritage, SAGE Open, Applied Sciences, and other venues. Outside of research: I design typefaces for fun, have strong opinions about museums, and take too many photos.",
+      "TOEFL 106 · GRE 333 + 4.0"
+    ],
+    "highlight": "☀️ Summer 2026: I'm looking for a research internship in HCI — especially projects around AI-mediated communication, accessibility, or AR/VR. If your lab needs a design-trained researcher who can prototype and run user studies, let's talk."
+  },
+  "education": [
+    { "year": "2023 – 2026 (expected)", "degree": "M.F.A. in Design Science", "school": "Jiangnan University, School of Design", "note": "GPA 89/100" },
+    { "year": "2019 – 2023", "degree": "B.F.A. in Visual Communication Design", "school": "Nanjing University of the Arts", "note": "GPA 88/100 · Outstanding Graduate (Top 3%)" }
+  ],
+  "interests": [
+    "Human–AI Interaction",
+    "Accessible & Assistive Tech",
+    "Immersive Media (AR/VR)",
+    "AI-Mediated Communication",
+    "UX & Technology Acceptance"
+  ],
+  "publications": [
+    { "year": "2026", "title": "Public Sentiment Towards Interactive Art on Multi-Modal Social Media", "authors": "Zhang S., Gong J., Wu H., Lu Z., Zhang W.", "venue": "SAGE Open 16, 1 (2026)", "doi": "https://doi.org/10.1177/21582440251413067", "badge": "Published", "badgeType": "pub" },
+    { "year": "2026", "title": "Generative AI for Accessibility in HCI: A PRISMA-Based Systematic Review", "authors": "Gong J., Lu Z., Wang F. et al.", "venue": "First author · 3,570 records screened, 136 publications coded", "doi": "", "badge": "In Preparation", "badgeType": "prep" },
+    { "year": "2025", "title": "Engaging the Next Generation: VR Acceptance in Cultural Heritage Institutions", "authors": "Gong J., Zhong W., Liu B., Lu Z., Wang F.", "venue": "Heritage 8, 12 (2025), 503 · Co-first author", "doi": "https://doi.org/10.3390/heritage8120503", "badge": "Published", "badgeType": "pub" },
+    { "year": "2025", "title": "Motivation of University Students to Use LLMs for Online Consumption of Sustainable Products", "authors": "Yu J., Yan W., Gong J., Wang S., Nah K., Cheng W.", "venue": "Applied Sciences 15, 14 (2025), 8088", "doi": "https://doi.org/10.3390/app15148088", "badge": "Published", "badgeType": "pub" },
+    { "year": "2025", "title": "Integrated Office Applications Promote Sustainable Development of E-Commerce Enterprises", "authors": "Wang S., Gong J., Li X., Peng Y., Du C., Nah K.", "venue": "JTAER 20, 4 (2025), 324", "doi": "https://doi.org/10.3390/jtaer20040324", "badge": "Published", "badgeType": "pub" },
+    { "year": "2024", "title": "Quality Function Deployment Approach to Urban Ecological Public Art Design", "authors": "Hu R., Tao X., Gong J., Wang F.", "venue": "Scientific Reports 14, 1 (2024), 22814", "doi": "https://doi.org/10.1038/s41598-024-73156-7", "badge": "Published", "badgeType": "pub" }
+  ],
+  "skills": [
+    { "name": "User Research", "items": "Interviews · Survey Design (N>500) · Thematic Analysis · PRISMA · Mixed Methods · Usability Testing" },
+    { "name": "Quantitative", "items": "CB-SEM (SPSS, AMOS) · SEM-ANN · Hypothesis Testing · Python (scikit-learn) · MATLAB" },
+    { "name": "Prototyping", "items": "Unity3D (Vuforia AR) · TouchDesigner · Arduino · Figma · Blender · C4D · Adobe Suite" },
+    { "name": "Languages", "items": "Mandarin (Native) · English — TOEFL 106, GRE 333 + 4.0" }
+  ],
+  "news": [
+    { "date": "May 2026", "title": "Applying to HCI+ Summer Research Program", "detail": "Tsinghua · Nankai · HKUST(GZ)" },
+    { "date": "May 2026", "title": "Master's thesis defense: AR Display Design for Cultural Heritage", "detail": "Unity + Vuforia prototype, N=388 CB-SEM" },
+    { "date": "Jan 2026", "title": "Paper published: Interactive Art on Multi-Modal Social Media", "detail": "SAGE Open" },
+    { "date": "2025", "title": "Co-first-author paper published in Heritage", "detail": "VR Acceptance in Cultural Heritage Institutions" }
+  ],
   "projects": [
-    {
-      "id": "remembery",
-      "title": "REMEMBERY",
-      "subtitle": "Multi-Stakeholder Alzheimer's Care App",
-      "tags": ["User Research", "Accessibility", "UX Design", "Health Tech"],
-      "description": "REMEMBERY is a mobile application designed for four distinct user groups — patients with Alzheimer's disease, family caregivers, doctors, and social workers — each with unique needs and interaction patterns. The design process began with stakeholder interviews and persona development to understand the care ecosystem. For patients, the focus was on cognitive training exercises with simplified navigation and high-contrast visuals to accommodate cognitive decline. For family caregivers, emergency response workflows and daily care coordination tools. For doctors, a monitoring dashboard tracking patient progress. For social workers, case management and resource allocation tools. The project demonstrates a complete user-centered design process: from user needs assessment through iterative prototyping to high-fidelity interactive mockups. Accessibility considerations — including font sizing, color contrast, touch target sizing, and simplified navigation hierarchies — were integrated from the earliest wireframes rather than retrofitted.",
-      "tools": "Figma · User Interviews · Persona Development · Iterative Prototyping · WCAG",
-      "hero": "images/remembery/board.jpg",
-      "images": [
-        { "src": "remembery/mockup1.jpg", "alt": "Device mockup showing patient interface" },
-        { "src": "remembery/mockup2.jpg", "alt": "Device mockup showing caregiver dashboard" },
-        { "src": "remembery/mockup3.jpg", "alt": "Device mockup showing doctor view" },
-        { "src": "remembery/ui1.jpg", "alt": "Patient cognitive training screen" },
-        { "src": "remembery/ui2.jpg", "alt": "Family caregiver coordination screen" },
-        { "src": "remembery/ui3.jpg", "alt": "Doctor monitoring interface" }
-      ],
-      "video": { "src": "videos/remembery.mp4", "poster": "images/remembery/board.jpg" },
-      "layout": "stacked",
-      "cardImage": "images/remembery.jpg"
-    },
-    {
-      "id": "woodblock",
-      "title": "木上生画",
-      "subtitle": "Gamified Cultural Heritage EdTech App",
-      "tags": ["UX Research", "EdTech", "Information Architecture", "Gamification"],
-      "description": "An iPad application designed to teach the heritage of Zhuxianzhen woodblock prints — a centuries-old Chinese craft tradition — through gamified, interactive learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app is organized into three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project transforms passive cultural consumption into active discovery, demonstrating how UX research methods can be applied to design engaging educational technology.",
-      "tools": "Adobe XD · Card Sorting · IA Design · Wireframing · High-Fidelity Prototyping",
-      "hero": "images/woodblock/ipad1.jpg",
-      "images": [
-        { "src": "woodblock/ipad2.jpg", "alt": "Story interface on iPad" },
-        { "src": "woodblock/ipad3.jpg", "alt": "Craft technique module" },
-        { "src": "woodblock/home.jpg", "alt": "Home screen" },
-        { "src": "woodblock/onboarding.jpg", "alt": "Onboarding flow" },
-        { "src": "woodblock/ia.jpg", "alt": "Information architecture diagram" },
-        { "src": "woodblock/wireframe.jpg", "alt": "Low-fidelity wireframe" }
-      ],
-      "video": null,
-      "layout": "stacked",
-      "cardImage": "images/woodblock.jpg"
-    },
-    {
-      "id": "textile",
-      "title": "TEXTILE 2050",
-      "subtitle": "Interactive Installation with Physical Computing",
-      "tags": ["Physical Computing", "Prototyping", "Interactive Media", "Sustainability"],
-      "description": "A future-sustainability themed interactive digital media installation that invites visitors to physically engage with textile-inspired interfaces. The installation uses Arduino pressure sensors and ultrasonic distance sensors to detect visitor touch and proximity, triggering real-time generative visuals through TouchDesigner. The 3D environment — a speculative future factory — was modeled in Blender. Visitors could press fabric swatches to 'grow' virtual plants or approach sensors to reveal hidden layers of the narrative about sustainable textile production. The project was exhibited at the university gallery, demonstrating end-to-end capability: hardware sensor integration, real-time graphics programming, 3D environmental modeling, and public exhibition deployment. It explores how embodied, tangible interaction can communicate abstract environmental futures more effectively than passive media.",
-      "tools": "Arduino (Pressure + Ultrasonic Sensors) · TouchDesigner · Blender · 3D Modeling · Exhibition Design",
-      "hero": "images/textile/exhibit1.jpg",
-      "images": [
-        { "src": "textile/exhibit2.jpg", "alt": "Exhibition view — visitors interacting with installation" },
-        { "src": "textile/exhibit3.jpg", "alt": "Exhibition view — textile interface closeup" },
-        { "src": "textile/render1.jpg", "alt": "3D render — destruction module" },
-        { "src": "textile/render2.jpg", "alt": "3D render — utopia module" },
-        { "src": "textile/display1.jpg", "alt": "Display setup with projection" },
-        { "src": "textile/display2.jpg", "alt": "Display setup detail view" }
-      ],
-      "video": { "src": "videos/textile.mp4", "poster": "images/textile/exhibit1.jpg" },
-      "layout": "stacked",
-      "cardImage": "images/textile.jpg"
-    },
-    {
-      "id": "listen",
-      "title": "LISTEN",
-      "subtitle": "Multimodal Sensory Interaction Concept",
-      "tags": ["Interaction Design", "Creative Coding", "Multimodal", "Sensory Design"],
-      "description": "An interactive installation concept exploring auditory-visual synesthesia — the perceptual crossing of sound and sight. The installation creates an immersive environment where visual forms respond dynamically to sonic input, using TouchDesigner for real-time generative graphics synchronized with a spatial audio system. A 3D environment modeled in Blender serves as the spatial canvas. The concept investigates how cross-modal sensory feedback — when visual patterns, colors, and movements are directly driven by sound parameters — can shape user perception and emotional response. The project contributes to research on multisensory interaction design by demonstrating how creative coding and spatial design can create experiences where hearing and seeing become intertwined.",
-      "tools": "TouchDesigner · Blender · Spatial Audio · 3D Modeling · Creative Coding",
-      "hero": "images/listen/3.jpg",
-      "images": [
-        { "src": "listen/1.jpg", "alt": "Installation render — overview" },
-        { "src": "listen/2.jpg", "alt": "Installation render — detail view" },
-        { "src": "listen/4.jpg", "alt": "Installation render — audience perspective" },
-        { "src": "listen/5.jpg", "alt": "Installation render — closeup" }
-      ],
-      "video": { "src": "videos/listen.mp4", "poster": "images/listen/3.jpg" },
-      "layout": "stacked",
-      "cardImage": "images/listen.jpg"
-    },
-    {
-      "id": "huiyi",
-      "title": "会意AD",
-      "subtitle": "Immersive Health Communication Space",
-      "tags": ["Health Communication", "Immersive Design", "Accessibility"],
-      "description": "An immersive spatial experience designed to communicate Alzheimer's disease awareness to the general public. Through environmental storytelling — combining spatial design, curated lighting, soundscapes, and information graphics — the installation translates complex medical and neurological concepts into an embodied, emotionally resonant visitor experience. The design strategy uses metaphor and sensory immersion to make invisible cognitive conditions tangibly felt: visitors move through spaces that simulate memory fragmentation, temporal disorientation, and sensory overload. The project demonstrates how human-centered spatial design can bridge the gap between clinical knowledge and public understanding, making complex health conditions accessible through experiential learning.",
-      "tools": "Spatial Design · Environmental Graphics · Exhibition Design · Storyboarding",
-      "hero": "images/huiyi/board1.jpg",
-      "images": [
-        { "src": "huiyi/board2.jpg", "alt": "Exhibition board — concept overview" },
-        { "src": "huiyi/board3.jpg", "alt": "Exhibition board — spatial layout" }
-      ],
-      "video": { "src": "videos/huiyi.mp4", "poster": "images/huiyi/board1.jpg" },
-      "layout": "stacked",
-      "cardImage": "images/huiyi.jpg"
-    },
-    {
-      "id": "museum",
-      "title": "NUA Museum",
-      "subtitle": "Website UX Redesign for University Museum",
-      "tags": ["UX Design", "Information Architecture", "Visual Design"],
-      "description": "A comprehensive user experience redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation of the existing site, identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around these three primary visitor goals. A visual refresh modernized the interface — updating typography, color palette, and spacing — while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context.",
-      "tools": "Figma · Heuristic Evaluation · Task Analysis · IA Design · Visual Design",
-      "hero": "images/museum/home.jpg",
-      "images": [
-        { "src": "museum/page1.jpg", "alt": "Redesigned homepage" },
-        { "src": "museum/page2.jpg", "alt": "Exhibition listing page" },
-        { "src": "museum/page3.jpg", "alt": "Collection detail page" },
-        { "src": "museum/page4.jpg", "alt": "Event registration page" }
-      ],
-      "video": { "src": "videos/museum.mp4", "poster": "images/museum/home.jpg" },
-      "layout": "stacked",
-      "cardImage": "images/museum.jpg"
-    }
+    { "id": "remembery", "title": "REMEMBERY", "subtitle": "Multi-Stakeholder Alzheimer's Care App", "tags": ["User Research","Accessibility","UX Design","Health Tech"], "description": "...", "tools": "Figma · User Interviews · Persona Development · Prototyping · WCAG", "hero": "images/remembery/board.jpg", "images": [{ "src": "remembery/mockup1.jpg", "alt": "App mockup" }], "video": { "src": "videos/remembery.mp4", "poster": "images/remembery/board.jpg" }, "layout": "stacked", "cardImage": "images/remembery.jpg" },
+    { "id": "woodblock", "title": "木上生画", "subtitle": "Gamified Cultural Heritage EdTech App", "tags": ["UX Research","EdTech","IA Design"], "description": "...", "tools": "Adobe XD · Card Sorting · Wireframing · Prototyping", "hero": "images/woodblock/ipad1.jpg", "images": [], "video": null, "layout": "stacked", "cardImage": "images/woodblock.jpg" },
+    { "id": "textile", "title": "TEXTILE 2050", "subtitle": "Interactive Installation with Physical Computing", "tags": ["Physical Computing","Prototyping","Exhibition"], "description": "...", "tools": "Arduino · TouchDesigner · Blender · 3D Modeling", "hero": "images/textile/exhibit1.jpg", "images": [], "video": { "src": "videos/textile.mp4", "poster": "images/textile/exhibit1.jpg" }, "layout": "stacked", "cardImage": "images/textile.jpg" },
+    { "id": "listen", "title": "LISTEN", "subtitle": "Multimodal Sensory Interaction Concept", "tags": ["Interaction Design","Creative Coding","Multimodal"], "description": "...", "tools": "TouchDesigner · Blender · Spatial Audio", "hero": "images/listen/3.jpg", "images": [], "video": { "src": "videos/listen.mp4", "poster": "images/listen/3.jpg" }, "layout": "stacked", "cardImage": "images/listen.jpg" },
+    { "id": "huiyi", "title": "会意AD", "subtitle": "Immersive Health Communication Space", "tags": ["Health Communication","Immersive Design"], "description": "...", "tools": "Spatial Design · Environmental Graphics · Exhibition Design", "hero": "images/huiyi/board1.jpg", "images": [], "video": { "src": "videos/huiyi.mp4", "poster": "images/huiyi/board1.jpg" }, "layout": "stacked", "cardImage": "images/huiyi.jpg" },
+    { "id": "museum", "title": "NUA Museum", "subtitle": "Website UX Redesign for University Museum", "tags": ["UX Design","IA Design","Visual Design"], "description": "...", "tools": "Figma · Heuristic Evaluation · Task Analysis · IA Design", "hero": "images/museum/home.jpg", "images": [], "video": { "src": "videos/museum.mp4", "poster": "images/museum/home.jpg" }, "layout": "stacked", "cardImage": "images/museum.jpg" }
   ]
 }
