@@ -10,436 +10,462 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#f5f5f7;--card-bg:#fff;--text:#1d1d1f;--t2:#6e6e73;--accent:#6366f1;--border:#e5e5e5;--r:10px;--red:#dc2626}
-    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
-    .topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.7rem 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:0.8rem;flex-wrap:wrap}
-    .topbar h1{font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:0.5rem}
-    .topbar h1 span{font-size:0.65rem;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.05em}
-    .btn{padding:0.4rem 0.85rem;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text);white-space:nowrap;display:inline-flex;align-items:center;gap:0.3rem}
+    :root{--bg:#f4f4f6;--c1:#fff;--text:#1d1d1f;--t2:#6e6e73;--acc:#6366f1;--bdr:#e5e5e5;--r:8px;--red:#dc2626;--green:#16a34a;--h:100vh}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow:hidden;height:var(--h);-webkit-font-smoothing:antialiased}
+
+    /* ── Layout ── */
+    .app{display:flex;height:var(--h)}
+    .sidebar{width:260px;min-width:260px;background:var(--c1);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
+    .sidebar-h{padding:1rem 1rem 0.7rem;border-bottom:1px solid var(--bdr);flex-shrink:0}
+    .sidebar-h h1{font-size:0.95rem;font-weight:700;display:flex;align-items:center;gap:0.4rem}
+    .sidebar-h h1 span{font-size:0.6rem;background:var(--acc);color:#fff;padding:1px 5px;border-radius:3px;text-transform:uppercase;letter-spacing:0.04em}
+    .proj-list{flex:1;overflow-y:auto;padding:0.4rem 0}
+    .proj-item{padding:0.55rem 1rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;border-left:3px solid transparent;transition:all 0.12s;font-size:0.8rem;position:relative}
+    .proj-item:hover{background:#f5f5f7}
+    .proj-item.active{background:#eef2ff;border-left-color:var(--acc)}
+    .proj-item.active .ptitle{color:var(--acc);font-weight:600}
+    .proj-item .dot{width:7px;height:7px;border-radius:50%;background:#ddd;flex-shrink:0}
+    .proj-item.active .dot{background:var(--acc)}
+    .proj-item .ptitle{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .proj-item .drag-hint{color:#ccc;font-size:0.75rem;cursor:grab;opacity:0;transition:opacity 0.15s}
+    .proj-item:hover .drag-hint{opacity:1}
+    .sidebar-foot{padding:0.7rem 1rem;border-top:1px solid var(--bdr);display:flex;gap:0.3rem;flex-shrink:0}
+    .btn{display:inline-flex;align-items:center;gap:0.3rem;padding:0.4rem 0.75rem;border-radius:6px;border:1px solid var(--bdr);background:var(--c1);font-size:0.75rem;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text);white-space:nowrap}
     .btn:hover{border-color:#bbb;background:#fafafa}
-    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .btn.small{font-size:0.7rem;padding:0.25rem 0.5rem}
-    .btn.danger{color:var(--red);border-color:#fca5a5}
-    .main{padding:1.5rem;max-width:1100px;margin:0 auto}
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:0.7rem 1.5rem;border-radius:20px;font-size:0.85rem;z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none}
-    .toast.show{opacity:1}
-    .pcard{background:var(--card-bg);border-radius:var(--r);border:1px solid var(--border);margin-bottom:0.8rem;overflow:hidden;transition:box-shadow 0.2s}
-    .pcard:hover{box-shadow:0 2px 12px rgba(0,0,0,0.05)}
-    .pcard.open .chdr{border-bottom-color:var(--border)}
-    .chdr{padding:0.8rem 1rem;display:flex;align-items:center;gap:0.7rem;cursor:pointer;user-select:none;border-bottom:1px solid transparent}
-    .chdr:hover{background:#fafafa}
-    .drag{cursor:grab;color:#ccc;font-size:1.1rem;line-height:1;flex-shrink:0}
-    .drag:hover{color:#999}
-    .cthumb{width:44px;height:33px;border-radius:4px;object-fit:cover;background:#eee;flex-shrink:0}
-    .cinfo{flex:1;min-width:0}
-    .cinfo h3{font-size:0.88rem;font-weight:600}
-    .cinfo .meta{font-size:0.72rem;color:var(--t2)}
-    .carrow{font-size:0.7rem;color:#ccc;transition:transform 0.2s;flex-shrink:0}
-    .pcard.open .carrow{transform:rotate(180deg)}
-    .epanel{display:none;padding:1rem 1.2rem 1.3rem;border-top:1px solid var(--border);background:#fafafa}
-    .pcard.open .epanel{display:block}
-    .field{margin-bottom:0.9rem}
-    .field label{display:block;font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--t2);margin-bottom:0.25rem}
+    .btn.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+    .btn.primary:hover{opacity:0.9;background:var(--acc)}
+    .btn.icon{padding:0.35rem 0.45rem;border:none;background:transparent;font-size:0.9rem}
+    .btn.icon:hover{background:#eee}
+
+    /* ── Main area ── */
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1rem;background:var(--c1);border-bottom:1px solid var(--bdr);flex-shrink:0;gap:0.5rem;flex-wrap:wrap}
+    .toolbar .tabs{display:flex;gap:0.2rem}
+    .toolbar .tab{padding:0.3rem 0.7rem;border-radius:5px;font-size:0.75rem;cursor:pointer;border:none;background:transparent;color:var(--t2);font-family:inherit;transition:all 0.12s}
+    .toolbar .tab.active{background:#eee;color:var(--text);font-weight:500}
+    .toolbar .changed{display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:var(--acc)}
+    .toolbar .changed .dot{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+    .content{flex:1;display:flex;overflow:hidden}
+
+    /* ── Editor panel ── */
+    .editor{flex:1;overflow-y:auto;padding:1.2rem 1.5rem;min-width:0}
+    .empty-state{display:flex;align-items:center;justify-content:center;height:100%;color:var(--t2);font-size:0.9rem;text-align:center;flex-direction:column;gap:0.5rem}
+    .empty-state .icon{font-size:3rem;opacity:0.4}
+    .field{margin-bottom:1rem}
+    .field label{display:block;font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--t2);margin-bottom:0.2rem}
     .field label .opt{font-weight:400;text-transform:none;color:#aaa}
-    .field input,.field textarea{width:100%;padding:0.45rem 0.55rem;border:1px solid var(--border);border-radius:5px;font-size:0.83rem;font-family:inherit;background:#fff}
-    .field input:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,0.1)}
-    .field textarea{resize:vertical;min-height:55px}
+    .field input,.field textarea{width:100%;padding:0.45rem 0.55rem;border:1px solid var(--bdr);border-radius:5px;font-size:0.82rem;font-family:inherit;background:var(--c1)}
+    .field input:focus,.field textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 2px rgba(99,102,241,0.08)}
+    .field textarea{resize:vertical;min-height:60px}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem}
-    .frow3{grid-template-columns:1fr 1fr 1fr}
-    .tags-wrap{display:flex;flex-wrap:wrap;gap:0.3rem;padding:0.35rem;border:1px solid var(--border);border-radius:5px;background:#fff;min-height:34px;align-items:center}
-    .tags-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,0.1)}
-    .tags-wrap input{border:none;outline:none;flex:1;min-width:70px;font-size:0.78rem;padding:2px 4px}
-    .tagchip{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;background:#eef2ff;color:#4338ca;border-radius:4px;font-size:0.7rem;font-weight:500}
-    .tagchip .x{cursor:pointer;opacity:0.5}.tagchip .x:hover{opacity:1}
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:0.25rem;padding:0.3rem;border:1px solid var(--bdr);border-radius:5px;background:var(--c1);min-height:32px;align-items:center}
+    .tags-wrap:focus-within{border-color:var(--acc);box-shadow:0 0 0 2px rgba(99,102,241,0.08)}
+    .tags-wrap input{border:none;outline:none;flex:1;min-width:60px;font-size:0.76rem;padding:2px 3px}
+    .tagchip{display:inline-flex;align-items:center;gap:1px;padding:1px 6px;background:#eef2ff;color:#4338ca;border-radius:4px;font-size:0.68rem;font-weight:500}
+    .tagchip .x{cursor:pointer;opacity:0.4;margin-left:2px}.tagchip .x:hover{opacity:1}
 
-    /* ── Gallery editor ── */
-    .gitems{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.4rem;align-items:flex-start}
-    .gitem{position:relative;width:80px;height:60px;border-radius:5px;overflow:hidden;border:2px solid transparent;background:#e5e5e5;cursor:pointer;flex-shrink:0}
-    .gitem:hover{border-color:var(--accent)}
-    .gitem img{width:100%;height:100%;object-fit:cover}
-    .gitem .del{position:absolute;top:1px;right:1px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
-    .gitem:hover .del{opacity:1}
-    .gitem.video{border-color:#e5e5e5;border-style:dashed}
-    .gitem.video::after{content:'▶';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;background:rgba(0,0,0,0.3)}
-    .gitem.video img{object-fit:cover}
-    .upload-btn{display:inline-flex;align-items:center;gap:4px;padding:0.3rem 0.6rem;border:1px dashed var(--border);border-radius:5px;background:transparent;font-size:0.72rem;cursor:pointer;color:var(--t2);transition:all 0.15s;height:60px;flex-shrink:0}
-    .upload-btn:hover{border-color:var(--accent);color:var(--accent);background:#f0f0ff}
+    /* ── Gallery ── */
+    .gitems{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.3rem;min-height:40px}
+    .gitem{position:relative;width:90px;height:68px;border-radius:5px;overflow:hidden;border:2px solid transparent;cursor:grab;flex-shrink:0;background:#e5e5e5;transition:transform 0.15s,box-shadow 0.15s}
+    .gitem:active{cursor:grabbing;transform:scale(1.05);box-shadow:0 4px 16px rgba(0,0,0,0.15);z-index:10}
+    .gitem.drag-over{border-color:var(--acc);border-style:dashed}
+    .gitem img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+    .gitem .gi-del{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
+    .gitem:hover .gi-del{opacity:1}
+    .gitem .gi-hero{position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,0.55);color:#fff;font-size:0.5rem;padding:1px 4px;border-radius:3px;opacity:0;transition:opacity 0.15s}
+    .gitem:hover .gi-hero{opacity:1}
+    .gitem.is-hero{border-color:var(--acc)}
+    .gitem.is-hero .gi-hero{opacity:1;background:var(--acc)}
+    .upload-slot{width:90px;height:68px;border:2px dashed #ccc;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#aaa;transition:all 0.15s;font-size:1.5rem}
+    .upload-slot:hover{border-color:var(--acc);color:var(--acc);background:#f0f0ff}
 
-    /* ── Hero preview ── */
-    .hero-preview{width:100%;max-height:180px;object-fit:cover;border-radius:6px;background:#e5e5e5;margin-top:0.3rem;cursor:pointer;border:2px solid transparent}
-    .hero-preview:hover{border-color:var(--accent)}
-    .hero-preview[src=""]{display:none}
+    /* ── Preview panel ── */
+    .preview{width:380px;min-width:280px;border-left:1px solid var(--bdr);background:#fff;display:flex;flex-direction:column;overflow:hidden}
+    .preview-h{padding:0.5rem 0.8rem;border-bottom:1px solid var(--bdr);font-size:0.7rem;color:var(--t2);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .preview iframe{flex:1;border:none;width:100%}
 
     /* ── Modal ── */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
     .modal-overlay.active{opacity:1;pointer-events:auto}
-    .modal{background:#fff;border-radius:12px;max-width:750px;width:94%;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
-    .modal-h{padding:0.9rem 1.1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;border-radius:12px 12px 0 0}
-    .modal-h h2{font-size:0.95rem;font-weight:600}
-    .modal-b{padding:1rem 1.2rem}
-
-    /* ── Drop zone ── */
-    .dropzone{border:2px dashed #ccc;border-radius:10px;padding:2.5rem 1.5rem;text-align:center;transition:all 0.2s;cursor:pointer;background:#fafafa}
-    .dropzone:hover,.dropzone.dragover{border-color:var(--accent);background:#f0f0ff}
-    .dropzone p{font-size:0.85rem;color:var(--t2)}
-    .dropzone .icon{font-size:2rem;margin-bottom:0.3rem}
+    .modal{background:#fff;border-radius:12px;max-width:680px;width:94%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+    .modal-h{padding:0.8rem 1rem;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;border-radius:12px 12px 0 0}
+    .modal-h h2{font-size:0.9rem;font-weight:600}
+    .modal-b{padding:1rem}
+    .dropzone{border:2px dashed #ccc;border-radius:10px;padding:2rem 1rem;text-align:center;cursor:pointer;background:#fafafa;transition:all 0.2s}
+    .dropzone:hover,.dropzone.dragover{border-color:var(--acc);background:#f0f0ff}
+    .dropzone p{font-size:0.8rem;color:var(--t2)}
+    .dropzone .icon{font-size:1.8rem;margin-bottom:0.2rem}
     .dropzone input{display:none}
-
-    /* ── Upload previews ── */
-    .upload-grid{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.8rem}
-    .up-item{position:relative;width:100px;height:75px;border-radius:6px;overflow:hidden;border:2px solid #34c759;background:#eee}
+    .up-grid{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.6rem}
+    .up-item{position:relative;width:90px;height:68px;border-radius:5px;overflow:hidden;border:2px solid var(--green);background:#eee}
     .up-item img{width:100%;height:100%;object-fit:cover}
-    .up-item .filename{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:#fff;font-size:0.55rem;padding:2px 4px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+    .up-item .fn{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:#fff;font-size:0.5rem;padding:2px 3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+    .up-item .remove-btn{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;border:none;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-    /* ── Actions ── */
-    .actions{margin-top:0.8rem;padding-top:0.7rem;border-top:1px solid var(--border);display:flex;gap:0.4rem}
-    .summary{font-size:0.75rem;color:var(--t2);margin-top:0.3rem}
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:0.6rem 1.2rem;border-radius:20px;font-size:0.8rem;z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap}
+    .toast.show{opacity:1}
 
-    @media(max-width:640px){.main{padding:0.6rem}.field-row{grid-template-columns:1fr}.topbar{flex-direction:column;align-items:flex-start}}
+    /* ── Delete confirm ── */
+    .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+    .confirm-overlay.active{opacity:1;pointer-events:auto}
+    .confirm-box{background:#fff;border-radius:12px;padding:1.5rem 2rem;text-align:center;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+    .confirm-box p{font-size:0.9rem;margin-bottom:1rem;color:var(--t2)}
+    .confirm-box h3{font-size:1.1rem;margin-bottom:0.3rem}
+    .confirm-box .btns{display:flex;gap:0.5rem;justify-content:center}
+
+    @media(max-width:900px){.preview{display:none}.sidebar{width:220px;min-width:220px}}
+    @media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;min-width:0;flex-shrink:0;max-height:40vh}.sidebar-h h1{font-size:0.85rem}.main{min-height:0}.preview{display:none}.editor{padding:0.8rem}}
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <h1>Portfolio Editor <span>CMS</span></h1>
-    <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
-      <button class="btn" onclick="resetAll()">↺ Reset</button>
-      <button class="btn primary" onclick="downloadAll()">⬇ Download ZIP</button>
-      <button class="btn" onclick="window.open('index.html','_blank')">↗ Preview</button>
+  <div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-h"><h1>Projects <span>CMS</span></h1></div>
+      <div class="proj-list" id="projList"></div>
+      <div class="sidebar-foot">
+        <button class="btn" style="flex:1" onclick="addNew()">+ Add Project</button>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <div class="toolbar">
+        <div class="tabs">
+          <button class="tab active" id="tabEdit" onclick="switchTab('edit')">✎ Edit</button>
+          <button class="tab" id="tabPreview" onclick="switchTab('preview')">👁 Preview</button>
+        </div>
+        <div style="display:flex;gap:0.4rem;align-items:center">
+          <span class="changed" id="changedIndicator" style="display:none"><span class="dot"></span> Unsaved</span>
+          <button class="btn" onclick="resetAll()">↺</button>
+          <button class="btn primary" onclick="downloadAll()">⬇ Download ZIP</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="editor" id="editorPanel">
+          <div class="empty-state" id="emptyState">
+            <div class="icon">📂</div>
+            <p>Select a project from the left to edit</p>
+            <p style="font-size:0.7rem">Ctrl+S to save and download</p>
+          </div>
+          <div id="editorForm" style="display:none"></div>
+        </div>
+        <div class="preview" id="previewPanel" style="display:none">
+          <div class="preview-h">
+            <span>Live Preview — project.html?id=<span id="previewIdx">0</span></span>
+            <button class="btn icon" onclick="updatePreview()" title="Refresh preview">↻</button>
+          </div>
+          <iframe id="previewFrame" src="" frameborder="0"></iframe>
+        </div>
+      </div>
     </div>
   </div>
-
-  <div class="main" id="main"></div>
-  <div class="toast" id="toast"></div>
 
   <!-- Upload Modal -->
   <div class="modal-overlay" id="uploadModal">
     <div class="modal">
-      <div class="modal-h"><h2 id="modalTitle">Add Images</h2><button class="btn small" onclick="closeUpload()">✕</button></div>
+      <div class="modal-h"><h2>Upload Images</h2><button class="btn icon" onclick="closeUpload()">✕</button></div>
       <div class="modal-b">
-        <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div class="dropzone" id="dropzone" ondragover="this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleFiles(event.dataTransfer.files)" onclick="document.getElementById('fileInput').click()">
           <div class="icon">📁</div>
-          <p>Click to select images from your computer</p>
-          <p style="font-size:0.7rem;color:#aaa">or drag and drop files here</p>
+          <p>Click to browse or drag & drop</p>
           <input type="file" id="fileInput" multiple accept="image/*" onchange="handleFiles(this.files)">
         </div>
-        <div class="upload-grid" id="uploadPreviews"></div>
-        <div style="margin-top:1rem;text-align:right;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:0.72rem;color:var(--t2)" id="uploadCount"></span>
-          <div>
-            <button class="btn" onclick="closeUpload()">Cancel</button>
-            <button class="btn primary" onclick="confirmUpload()" style="margin-left:0.4rem">✓ Add to Gallery</button>
-          </div>
+        <div class="up-grid" id="uploadPreviews"></div>
+        <div style="margin-top:0.8rem;text-align:right;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:0.7rem;color:var(--t2)" id="uploadCount"></span>
+          <span><button class="btn" onclick="closeUpload()">Cancel</button><button class="btn primary" style="margin-left:0.4rem" onclick="confirmUpload()">✓ Add</button></span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Video Upload Modal -->
+  <!-- Video Modal -->
   <div class="modal-overlay" id="videoModal">
     <div class="modal">
-      <div class="modal-h"><h2>Upload Video</h2><button class="btn small" onclick="closeVideoUpload()">✕</button></div>
+      <div class="modal-h"><h2>Upload Video</h2><button class="btn icon" onclick="closeVideoUpload()">✕</button></div>
       <div class="modal-b">
-        <div class="dropzone" id="videoDropzone" onclick="document.getElementById('videoInput').click()">
+        <div class="dropzone" id="vDropzone" ondragover="this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleVideo(event.dataTransfer.files)" onclick="document.getElementById('videoInput').click()">
           <div class="icon">🎬</div>
-          <p>Click to select a video file</p>
-          <p style="font-size:0.7rem;color:#aaa">MP4 format recommended. Max 100MB.</p>
-          <input type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm" onchange="handleVideoFile(this.files)">
+          <p>Click to select video (MP4, max 100MB)</p>
+          <input type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm" onchange="handleVideo(this.files)">
         </div>
-        <div id="videoPreview" style="margin-top:0.8rem"></div>
-        <div style="margin-top:1rem;text-align:right">
-          <button class="btn" onclick="closeVideoUpload()">Cancel</button>
-          <button class="btn primary" onclick="confirmVideoUpload()" style="margin-left:0.4rem">✓ Use This Video</button>
-        </div>
+        <div id="videoPreview" style="margin-top:0.6rem"></div>
+        <div style="margin-top:0.8rem;text-align:right"><button class="btn" onclick="closeVideoUpload()">Cancel</button><button class="btn primary" style="margin-left:0.4rem" onclick="confirmVideoUpload()">✓ Use</button></div>
       </div>
     </div>
   </div>
 
+  <!-- Confirm -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box"><h3 id="confirmTitle">Delete?</h3><p id="confirmMsg"></p><div class="btns"><button class="btn" id="confirmCancel">Cancel</button><button class="btn primary" id="confirmOk" style="background:var(--red);border-color:var(--red)">Delete</button></div></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
   <script>
-    var config = null;
-    var pendingFiles = []; // { file: File, objectURL: string }
-    var pendingVideoFile = null;
-    var uploadTarget = { projectIdx: null, type: 'gallery' }; // 'gallery' or 'hero'
+    var cfg = null;
+    var curIdx = -1;
+    var pendingFiles = [];
+    var pendingVideo = null;
+    var changed = false;
 
     // ── Init ──
     fetch('config.json')
       .then(function(r) { return r.json(); })
-      .then(function(c) { config = c; render(); })
-      .catch(function() { document.getElementById('main').innerHTML = '<p style="padding:2rem;color:var(--red)">Could not load config.json. Make sure this file is served from a web server (not file://).</p>'; });
+      .then(function(c) { cfg = c; renderSidebar(); selectProject(0); })
+      .catch(function() { document.body.innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json. Must be served from a web server.</p>'; });
 
-    function toast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 2000); }
+    function toast(m) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 1800); }
+    function markChanged() { changed = true; document.getElementById('changedIndicator').style.display = 'flex'; }
 
-    // ── File upload handlers ──
-    function handleFiles(files) {
-      pendingFiles = [];
-      document.getElementById('uploadPreviews').innerHTML = '';
-      for (var i = 0; i < files.length; i++) {
-        var f = files[i];
-        if (!f.type.match(/image\//)) continue;
-        var url = URL.createObjectURL(f);
-        pendingFiles.push({ file: f, objectURL: url });
-        var div = document.createElement('div');
-        div.className = 'up-item';
-        div.innerHTML = '<img src="' + url + '"><div class="filename">' + f.name + '</div>';
-        document.getElementById('uploadPreviews').appendChild(div);
-      }
-      document.getElementById('uploadCount').textContent = pendingFiles.length + ' file(s) selected';
-    }
-
-    function handleVideoFile(files) {
-      pendingVideoFile = null;
-      document.getElementById('videoPreview').innerHTML = '';
-      if (!files || !files[0]) return;
-      var f = files[0];
-      if (f.size > 100 * 1024 * 1024) { toast('Video too large (>100MB). Please compress it first.'); return; }
-      pendingVideoFile = f;
-      var url = URL.createObjectURL(f);
-      document.getElementById('videoPreview').innerHTML = '<p style="font-size:0.8rem;color:var(--accent)">✓ ' + f.name + ' (' + (f.size / 1024 / 1024).toFixed(1) + ' MB)</p><video controls style="width:100%;max-height:200px;margin-top:0.5rem;border-radius:6px"><source src="' + url + '"></video>';
-    }
-
-    // ── Upload modals ──
-    function openUpload(projIdx, type) {
-      uploadTarget = { projectIdx: projIdx, type: type };
-      pendingFiles = [];
-      document.getElementById('uploadPreviews').innerHTML = '';
-      document.getElementById('uploadCount').textContent = '';
-      document.getElementById('fileInput').value = '';
-      document.getElementById('modalTitle').textContent = type === 'hero' ? 'Upload Hero Image' : 'Upload Gallery Images';
-      document.getElementById('uploadModal').classList.add('active');
-    }
-    function closeUpload() { document.getElementById('uploadModal').classList.remove('active'); pendingFiles = []; }
-    function confirmUpload() {
-      if (!pendingFiles.length) { closeUpload(); return; }
-      var p = config.projects[uploadTarget.projectIdx];
-      var folder = 'images/' + p.id + '/';
-      var added = 0;
-      pendingFiles.forEach(function(item) {
-        var fn = item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        // Add to gallery
-        p.images.push({ src: p.id + '/' + fn, alt: item.file.name });
-        // Store raw file for ZIP download
-        if (!p._uploads) p._uploads = [];
-        p._uploads.push({ file: item.file, path: folder + fn });
-        added++;
-      });
-      render();
-      var el = document.querySelectorAll('.pcard')[uploadTarget.projectIdx];
-      if (el) { el.classList.add('open'); setTimeout(function() { el.scrollIntoView({ behavior: 'smooth' }); }, 100); }
-      toast('Added ' + added + ' image(s) to gallery');
-      closeUpload();
-      // Release object URLs
-      pendingFiles.forEach(function(item) { URL.revokeObjectURL(item.objectURL); });
-      pendingFiles = [];
-    }
-
-    function openVideoUpload(projIdx) {
-      uploadTarget = { projectIdx: projIdx, type: 'video' };
-      pendingVideoFile = null;
-      document.getElementById('videoInput').value = '';
-      document.getElementById('videoPreview').innerHTML = '';
-      document.getElementById('videoModal').classList.add('active');
-    }
-    function closeVideoUpload() { document.getElementById('videoModal').classList.remove('active'); pendingVideoFile = null; }
-    function confirmVideoUpload() {
-      if (!pendingVideoFile) return;
-      var p = config.projects[uploadTarget.projectIdx];
-      var fn = pendingVideoFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      var vpath = 'videos/' + fn;
-      p.video = { src: vpath, poster: p.hero || '' };
-      if (!p._uploads) p._uploads = [];
-      p._uploads.push({ file: pendingVideoFile, path: vpath });
-      render();
-      var el = document.querySelectorAll('.pcard')[uploadTarget.projectIdx];
-      if (el) el.classList.add('open');
-      toast('Video updated: ' + fn);
-      closeVideoUpload();
-    }
-
-    // ── Set hero from gallery ──
-    function setHeroFromGallery(projIdx, imgIdx) {
-      var p = config.projects[projIdx];
-      var img = p.images[imgIdx];
-      p.hero = 'images/' + p.id + '/' + img.src;
-      render();
-      var el = document.querySelectorAll('.pcard')[projIdx];
-      if (el) el.classList.add('open');
-      toast('Hero image set ✓');
-    }
-
-    // ── Render ──
-    function render() {
+    // ── Sidebar ──
+    function renderSidebar() {
       var h = '';
-      config.projects.forEach(function(p, i) {
+      cfg.projects.forEach(function(p, i) {
         var thumb = p.cardImage || p.hero || '';
-        h += '<div class="pcard" data-idx="' + i + '">';
-        h += '  <div class="chdr" onclick="toggle(' + i + ',event)">';
-        h += '    <span class="drag" draggable="true" ondragstart="dragStart(event,' + i + ')" ondragover="dragOver(event)" ondrop="drop(event,' + i + ')">☰</span>';
-        h += '    <img class="cthumb" src="' + escAttr(thumb) + '" onerror="this.style.display=\'none\'">';
-        h += '    <div class="cinfo"><h3>' + esc(p.title) + '</h3><div class="meta">' + esc(p.tags.join(', ')) + '</div></div>';
-        h += '    <span class="carrow">▾</span>';
-        h += '  </div>';
-        h += '  <div class="epanel">';
-
-        // Title + Subtitle
-        h += '    <div class="field-row">';
-        h += '      <div class="field"><label>Title</label><input value="' + escAttr(p.title) + '" onchange="set(' + i + ',\'title\',this.value)"></div>';
-        h += '      <div class="field"><label>Subtitle</label><input value="' + escAttr(p.subtitle) + '" onchange="set(' + i + ',\'subtitle\',this.value)"></div>';
-        h += '    </div>';
-
-        // Tags
-        h += '    <div class="field"><label>Tags <span class="opt">(press Enter to add)</span></label>';
-        h += '    <div class="tags-wrap" onclick="this.querySelector(\'input\').focus()">';
-        p.tags.forEach(function(t) { h += '<span class="tagchip">' + esc(t) + '<span class="x" onclick="event.stopPropagation();rmTag(' + i + ',\'' + escAttr(t) + '\')">×</span></span>'; });
-        h += '    <input placeholder="Add tag..." onkeydown="addTag(event,' + i + ')"></div></div>';
-
-        // Description + Tools
-        h += '    <div class="field"><label>Description</label><textarea onchange="set(' + i + ',\'description\',this.value)">' + esc(p.description) + '</textarea></div>';
-        h += '    <div class="field"><label>Tools</label><input value="' + escAttr(p.tools) + '" onchange="set(' + i + ',\'tools\',this.value)"></div>';
-
-        // Hero image
-        h += '    <div class="field"><label>Hero Image</label>';
-        h += '    <img class="hero-preview" src="' + escAttr(p.hero) + '" onerror="this.style.display=\'none\'" onclick="openUpload(' + i + ',\'hero\')" title="Click to change hero image">';
-        h += '    <div style="display:flex;gap:0.4rem;margin-top:0.3rem;flex-wrap:wrap">';
-        h += '      <button class="btn small" onclick="openUpload(' + i + ',\'hero\')">📷 Change Hero</button>';
-        h += '      <span style="font-size:0.65rem;color:var(--t2);display:flex;align-items:center">Current: ' + escAttr(p.hero || 'none') + '</span>';
-        h += '    </div></div>';
-
-        // Card thumbnail
-        h += '    <div class="field"><label>Card Thumbnail <span class="opt">(shown on homepage)</span></label>';
-        h += '    <div style="display:flex;gap:0.4rem;align-items:center">';
-        h += '      <img src="' + escAttr(p.cardImage || '') + '" style="width:60px;height:45px;object-fit:cover;border-radius:4px;background:#eee" onerror="this.style.display=\'none\'">';
-        h += '      <input value="' + escAttr(p.cardImage || '') + '" onchange="set(' + i + ',\'cardImage\',this.value)" style="flex:1" placeholder="e.g. images/remembery.jpg">';
-        h += '    </div></div>';
-
-        // Gallery
-        h += '    <div class="field"><label>Gallery Images <span class="opt">(click ⋮ to set as hero, × to remove)</span></label>';
-        h += '    <div class="gitems">';
-        p.images.forEach(function(img, j) {
-          var src = 'images/' + img.src;
-          h += '<div class="gitem" title="Click to set as hero">';
-          h += '<img src="' + src + '" onerror="this.style.background=\'#eee\'" onclick="setHeroFromGallery(' + i + ',' + j + ')">';
-          h += '<button class="del" onclick="event.stopPropagation();rmImg(' + i + ',' + j + ')">×</button>';
-          h += '</div>';
-        });
-        h += '      <button class="upload-btn" onclick="event.stopPropagation();openUpload(' + i + ',\'gallery\')">+ Upload</button>';
-        h += '    </div></div>';
-
-        // Video
-        var vname = p.video ? p.video.src : '';
-        h += '    <div class="field"><label>Video <span class="opt">(or leave empty)</span></label>';
-        h += '    <div style="display:flex;gap:0.4rem;align-items:center">';
-        h += '      <input value="' + escAttr(vname) + '" onchange="setVideo(' + i + ',this.value)" placeholder="videos/myvideo.mp4" style="flex:1">';
-        h += '      <button class="btn small" onclick="event.stopPropagation();openVideoUpload(' + i + ')">🎬 Upload</button>';
-        h += '      <button class="btn small danger" onclick="event.stopPropagation();setVideo(' + i + ',\'\');render();var e=document.querySelectorAll(\'.pcard\')[' + i + '];if(e)e.classList.add(\'open\')">✕</button>';
-        h += '    </div></div>';
-
-        // Actions
-        h += '    <div class="actions">';
-        h += '      <button class="btn small" onclick="event.stopPropagation();var idx=config.projects.findIndex(function(p2){return p2.id===p.id});window.open(\'project.html?id=\'+idx,\'_blank\')">↗ Preview</button>';
-        h += '      <button class="btn small danger" onclick="event.stopPropagation();delProj(' + i + ')">🗑 Delete</button>';
-        h += '      <span style="font-size:0.65rem;color:var(--t2);display:flex;align-items:center;margin-left:auto">ID: ' + esc(p.id) + '</span>';
-        h += '    </div>';
-
-        h += '  </div></div>';
+        var active = i === curIdx ? ' active' : '';
+        h += '<div class="proj-item' + active + '" data-idx="' + i + '" onclick="selectProject(' + i + ')" draggable="true" ondragstart="dragStart(event,' + i + ')" ondragover="dragOver(event)" ondrop="drop(event,' + i + ')">';
+        h += '<span class="dot"></span><span class="ptitle">' + esc(p.title) + '</span>';
+        h += '<span class="drag-hint">⋮⋮</span>';
+        h += '</div>';
       });
-
-      h += '<div style="text-align:center;padding:2rem"><button class="btn primary" style="font-size:1rem;padding:0.7rem 2rem" onclick="addNew()">+ Add New Project</button></div>';
-      h += '<div style="text-align:center;padding-bottom:4rem;color:var(--t2);font-size:0.72rem">Click <strong>⬇ Download ZIP</strong> when finished. Extract into your portfolio folder and deploy.</div>';
-      document.getElementById('main').innerHTML = h;
+      document.getElementById('projList').innerHTML = h;
     }
 
-    function toggle(i, ev) {
-      if (ev.target.closest('input,textarea,button,.tags-wrap,.gitem,.upload-btn')) return;
-      document.querySelectorAll('.pcard')[i].classList.toggle('open');
+    function selectProject(i) {
+      curIdx = i;
+      renderSidebar();
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('editorForm').style.display = 'block';
+      document.getElementById('editorPanel').style.display = '';
+      document.getElementById('previewPanel').style.display = 'none';
+      document.getElementById('tabEdit').classList.add('active');
+      document.getElementById('tabPreview').classList.remove('active');
+      renderEditor();
+      document.getElementById('previewIdx').textContent = i;
+      document.getElementById('previewFrame').src = 'about:blank';
+    }
+
+    function switchTab(t) {
+      document.getElementById('tabEdit').classList.toggle('active', t === 'edit');
+      document.getElementById('tabPreview').classList.toggle('active', t === 'preview');
+      document.getElementById('editorPanel').style.display = t === 'edit' ? '' : 'none';
+      document.getElementById('previewPanel').style.display = t === 'preview' ? '' : 'none';
+      if (t === 'preview') updatePreview();
+    }
+
+    function updatePreview() {
+      var iframe = document.getElementById('previewFrame');
+      document.getElementById('previewIdx').textContent = curIdx;
+      if (iframe) iframe.src = 'project.html?id=' + curIdx + '&t=' + Date.now();
+    }
+
+    // ── Editor ──
+    function renderEditor() {
+      var p = cfg.projects[curIdx];
+      var heroSrc = p.hero || '';
+      var h = '';
+
+      // Title + Subtitle
+      h += '<div class="field-row">';
+      h += '<div class="field"><label>Title</label><input value="' + escAttr(p.title) + '" onchange="setVal(\'title\',this.value)"></div>';
+      h += '<div class="field"><label>Subtitle</label><input value="' + escAttr(p.subtitle) + '" onchange="setVal(\'subtitle\',this.value)"></div>';
+      h += '</div>';
+
+      // Tags
+      h += '<div class="field"><label>Tags <span class="opt">(Enter to add)</span></label><div class="tags-wrap" onclick="this.querySelector(\'input\').focus()">';
+      p.tags.forEach(function(t) { h += '<span class="tagchip">' + esc(t) + '<span class="x" onclick="event.stopPropagation();rmTag(\'' + escAttr(t) + '\')">×</span></span>'; });
+      h += '<input placeholder="Add tag..." onkeydown="addTag(event)"></div></div>';
+
+      // Description + Tools
+      h += '<div class="field"><label>Description</label><textarea onchange="setVal(\'description\',this.value)">' + esc(p.description) + '</textarea></div>';
+      h += '<div class="field"><label>Tools <span class="opt">(e.g. Figma · User Interviews · Prototyping)</span></label><input value="' + escAttr(p.tools) + '" onchange="setVal(\'tools\',this.value)"></div>';
+
+      // Hero
+      h += '<div class="field"><label>Hero Image</label>';
+      h += '<div style="display:flex;align-items:flex-start;gap:0.6rem">';
+      if (heroSrc) h += '<img src="' + escAttr(heroSrc) + '" style="width:120px;height:auto;max-height:90px;object-fit:cover;border-radius:5px;background:#eee" onerror="this.style.display=\'none\'">';
+      h += '<div style="flex:1"><input value="' + escAttr(heroSrc) + '" onchange="setVal(\'hero\',this.value)" placeholder="images/remembery/board.jpg"><div style="font-size:0.6rem;color:var(--t2);margin-top:0.2rem">Click any image in gallery below to auto-set as hero.</div></div>';
+      h += '</div></div>';
+
+      // Card thumbnail
+      h += '<div class="field"><label>Card Thumbnail <span class="opt">(homepage card image)</span></label><input value="' + escAttr(p.cardImage || '') + '" onchange="setVal(\'cardImage\',this.value)" placeholder="images/remembery.jpg">';
+
+      // Gallery
+      h += '<div class="field"><label>Gallery <span class="opt">(drag to reorder · click × to remove · click image to set hero)</span></label>';
+      h += '<div class="gitems" id="galleryArea">';
+      p.images.forEach(function(img, j) {
+        var src = 'images/' + img.src;
+        var isHero = (p.hero === src) ? ' is-hero' : '';
+        h += '<div class="gitem' + isHero + '" draggable="true" data-gidx="' + j + '" ondragstart="gDragStart(event,' + j + ')" ondragover="gDragOver(event)" ondrop="gDrop(event,' + j + ')" onclick="setHero(' + j + ')">';
+        h += '<img src="' + src + '" onerror="this.style.background=\'#ddd\'">';
+        h += '<button class="gi-del" onclick="event.stopPropagation();rmImg(' + j + ')">×</button>';
+        h += '<span class="gi-hero">Hero</span>';
+        h += '</div>';
+      });
+      h += '<div class="upload-slot" onclick="openUpload()">+</div>';
+      h += '</div></div>';
+
+      // Video
+      var vname = p.video ? p.video.src : '';
+      h += '<div class="field"><label>Video</label>';
+      h += '<div style="display:flex;gap:0.4rem"><input value="' + escAttr(vname) + '" onchange="setVideo(this.value)" placeholder="videos/demo.mp4" style="flex:1">';
+      h += '<button class="btn" onclick="openVideoUpload()">🎬 Upload</button>';
+      if (vname) h += '<button class="btn" onclick="setVideo(\'\');renderEditor()" style="color:var(--red);border-color:#fca5a5">✕</button>';
+      h += '</div></div>';
+
+      // Delete + Preview
+      h += '<div style="display:flex;gap:0.4rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--bdr)">';
+      h += '<button class="btn" onclick="window.open(\'project.html?id=' + curIdx + '\',\'_blank\')">↗ Open Live</button>';
+      h += '<button class="btn" style="color:var(--red);border-color:#fca5a5;margin-left:auto" onclick="confirmDelete()">🗑 Delete Project</button>';
+      h += '</div>';
+
+      document.getElementById('editorForm').innerHTML = h;
+      document.getElementById('editorPanel').scrollTop = 0;
+    }
+
+    function updatePreview() {
+      // Simple refresh hint for iframe mode
+      var iframe = document.getElementById('previewFrame');
+      if (iframe) { iframe.src = 'project.html?id=' + curIdx + '&t=' + Date.now(); }
     }
 
     // ── Data setters ──
-    function set(i, key, val) { config.projects[i][key] = val; }
-    function setVideo(i, val) {
-      if (!val) { config.projects[i].video = null; return; }
-      if (!config.projects[i].video) config.projects[i].video = {};
-      config.projects[i].video.src = val;
+    function setVal(key, val) { cfg.projects[curIdx][key] = val; markChanged(); }
+    function setVideo(val) {
+      if (!val) { cfg.projects[curIdx].video = null; } else {
+        if (!cfg.projects[curIdx].video) cfg.projects[curIdx].video = {};
+        cfg.projects[curIdx].video.src = val;
+      }
+      markChanged();
     }
-    function addTag(ev, i) {
-      if (ev.key !== 'Enter') return;
-      ev.preventDefault(); var v = ev.target.value.trim();
-      if (v && config.projects[i].tags.indexOf(v) === -1) { config.projects[i].tags.push(v); render(); reopen(i); }
+    function setHero(j) {
+      cfg.projects[curIdx].hero = 'images/' + cfg.projects[curIdx].images[j].src;
+      markChanged(); renderEditor(); toast('Hero image set ✓');
     }
-    function rmTag(i, t) { config.projects[i].tags = config.projects[i].tags.filter(function(x) { return x !== t; }); render(); reopen(i); }
-    function rmImg(i, j) { config.projects[i].images.splice(j, 1); render(); reopen(i); }
+    function addTag(ev) { if (ev.key !== 'Enter') return; ev.preventDefault(); var v = ev.target.value.trim(); if (v && cfg.projects[curIdx].tags.indexOf(v) === -1) { cfg.projects[curIdx].tags.push(v); markChanged(); renderEditor(); } }
+    function rmTag(t) { cfg.projects[curIdx].tags = cfg.projects[curIdx].tags.filter(function(x) { return x !== t; }); markChanged(); renderEditor(); }
+    function rmImg(j) { cfg.projects[curIdx].images.splice(j, 1); markChanged(); renderEditor(); }
 
-    function reopen(i) { var el = document.querySelectorAll('.pcard')[i]; if (el) el.classList.add('open'); }
+    // ── Gallery drag reorder ──
+    var gDragIdx = null;
+    function gDragStart(ev, j) { gDragIdx = j; ev.dataTransfer.effectAllowed = 'move'; }
+    function gDragOver(ev) { ev.preventDefault(); }
+    function gDrop(ev, to) {
+      ev.preventDefault(); if (gDragIdx === null || gDragIdx === to) return;
+      var imgs = cfg.projects[curIdx].images;
+      var item = imgs.splice(gDragIdx, 1)[0]; imgs.splice(to, 0, item);
+      gDragIdx = null; markChanged(); renderEditor();
+    }
 
-    // ── Drag reorder ──
-    var dragIdx = null;
-    function dragStart(ev, i) { dragIdx = i; ev.dataTransfer.effectAllowed = 'move'; }
+    // ── Project drag reorder ──
+    var pDragIdx = null;
+    function dragStart(ev, i) { pDragIdx = i; ev.dataTransfer.effectAllowed = 'move'; }
     function dragOver(ev) { ev.preventDefault(); }
-    function drop(ev, to) {
-      ev.preventDefault(); if (dragIdx === null || dragIdx === to) return;
-      var item = config.projects.splice(dragIdx, 1)[0]; config.projects.splice(to, 0, item);
-      dragIdx = null; render(); toast('Reordered');
+    function drop(ev, to) { ev.preventDefault(); if (pDragIdx === null || pDragIdx === to) return; var item = cfg.projects.splice(pDragIdx, 1)[0]; cfg.projects.splice(to, 0, item); curIdx = cfg.projects.indexOf(item); pDragIdx = null; markChanged(); renderSidebar(); renderEditor(); }
+
+    // ── Upload ──
+    function openUpload() { pendingFiles = []; document.getElementById('uploadPreviews').innerHTML = ''; document.getElementById('uploadCount').textContent = ''; document.getElementById('fileInput').value = ''; document.getElementById('uploadModal').classList.add('active'); }
+    function closeUpload() { document.getElementById('uploadModal').classList.remove('active'); pendingFiles.forEach(function(f) { URL.revokeObjectURL(f.objectURL); }); pendingFiles = []; }
+    function handleFiles(files) {
+      pendingFiles.forEach(function(f) { URL.revokeObjectURL(f.objectURL); });
+      pendingFiles = [];
+      document.getElementById('uploadPreviews').innerHTML = '';
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i]; if (!f.type.match(/image\//)) continue;
+        var url = URL.createObjectURL(f);
+        pendingFiles.push({ file: f, objectURL: url });
+        var d = document.createElement('div'); d.className = 'up-item';
+        d.innerHTML = '<img src="' + url + '"><div class="fn">' + f.name + '</div>';
+        document.getElementById('uploadPreviews').appendChild(d);
+      }
+      document.getElementById('uploadCount').textContent = pendingFiles.length + ' file(s) selected';
     }
+    function confirmUpload() {
+      if (!pendingFiles.length) { closeUpload(); return; }
+      var p = cfg.projects[curIdx];
+      if (!p._uploads) p._uploads = [];
+      var added = 0;
+      pendingFiles.forEach(function(item) {
+        var fn = item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        p.images.push({ src: p.id + '/' + fn, alt: item.file.name });
+        p._uploads.push({ file: item.file, path: 'images/' + p.id + '/' + fn });
+        added++;
+      });
+      markChanged(); renderEditor(); closeUpload();
+      toast('Added ' + added + ' image(s)');
+    }
+
+    function openVideoUpload() { pendingVideo = null; document.getElementById('videoInput').value = ''; document.getElementById('videoPreview').innerHTML = ''; document.getElementById('videoModal').classList.add('active'); }
+    function closeVideoUpload() { document.getElementById('videoModal').classList.remove('active'); pendingVideo = null; }
+    function handleVideo(files) { if (!files || !files[0]) return; var f = files[0]; if (f.size > 100 * 1024 * 1024) { toast('File >100MB'); return; } pendingVideo = f; document.getElementById('videoPreview').innerHTML = '<p style="font-size:0.75rem;color:var(--acc)">✓ ' + f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)</p>'; }
+    function confirmVideoUpload() {
+      if (!pendingVideo) return;
+      var p = cfg.projects[curIdx];
+      var fn = pendingVideo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var vpath = 'videos/' + fn;
+      p.video = { src: vpath, poster: p.hero || '' };
+      if (!p._uploads) p._uploads = [];
+      p._uploads.push({ file: pendingVideo, path: vpath });
+      markChanged(); renderEditor(); closeVideoUpload();
+      toast('Video added: ' + fn);
+    }
+
+    // ── Delete ──
+    function confirmDelete() {
+      var p = cfg.projects[curIdx];
+      var overlay = document.getElementById('confirmOverlay');
+      document.getElementById('confirmTitle').textContent = 'Delete "' + p.title + '"?';
+      document.getElementById('confirmMsg').textContent = 'This cannot be undone.';
+      overlay.classList.add('active');
+      document.getElementById('confirmOk').onclick = function() {
+        cfg.projects.splice(curIdx, 1); curIdx = Math.min(curIdx, cfg.projects.length - 1);
+        overlay.classList.remove('active'); markChanged(); renderSidebar();
+        if (cfg.projects.length === 0) { document.getElementById('editorForm').style.display = 'none'; document.getElementById('emptyState').style.display = 'flex'; }
+        else { selectProject(curIdx); }
+        toast('Project deleted');
+      };
+      document.getElementById('confirmCancel').onclick = function() { overlay.classList.remove('active'); };
+    }
+    document.getElementById('confirmCancel').onclick = function() { document.getElementById('confirmOverlay').classList.remove('active'); };
 
     // ── CRUD ──
     function addNew() {
       var id = 'project-' + Date.now();
-      config.projects.push({ id: id, title: 'New Project', subtitle: '', tags: [], description: '', tools: '', hero: '', images: [], video: null, layout: 'stacked', cardImage: '' });
-      render(); document.querySelectorAll('.pcard')[config.projects.length - 1].classList.add('open');
+      cfg.projects.push({ id: id, title: 'New Project', subtitle: '', tags: [], description: '', tools: '', hero: '', images: [], video: null, layout: 'stacked', cardImage: '' });
+      markChanged(); renderSidebar(); selectProject(cfg.projects.length - 1);
       toast('New project added');
     }
-    function delProj(i) {
-      if (!confirm('Delete "' + config.projects[i].title + '"? This cannot be undone.')) return;
-      config.projects.splice(i, 1); render(); toast('Project deleted');
-    }
-    function resetAll() { if (confirm('Discard all changes?')) location.reload(); }
+    function resetAll() { if (confirm('Discard all changes and reload?')) location.reload(); }
 
-    // ── ZIP Download ──
+    // ── Downloazd ZIP ──
     function downloadAll() {
-      // Remove internal _uploads from config before serializing
-      var clean = JSON.parse(JSON.stringify(config));
+      var clean = JSON.parse(JSON.stringify(cfg));
       delete clean._schema; delete clean._help;
       clean.projects.forEach(function(p) { delete p._uploads; });
-
       var zip = new JSZip();
       var allFiles = [];
-
-      // Collect all uploaded files from config
-      config.projects.forEach(function(p) {
-        if (p._uploads && p._uploads.length) {
-          p._uploads.forEach(function(u) { allFiles.push(u); });
-        }
-      });
-
-      if (allFiles.length === 0) {
-        // No uploads, just download config.json
-        var blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' });
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); a.download = 'config.json'; a.click();
-        toast('config.json downloaded (no new files to bundle)');
-        return;
-      }
-
-      // Add config.json
+      cfg.projects.forEach(function(p) { if (p._uploads && p._uploads.length) p._uploads.forEach(function(u) { allFiles.push(u); }); });
       zip.file('config.json', JSON.stringify(clean, null, 2));
-
-      // Add all uploaded files
-      var count = 0;
-      allFiles.forEach(function(u) {
-        zip.file(u.path, u.file, { binary: true });
-        count++;
-      });
-
-      toast('Generating ZIP...');
+      allFiles.forEach(function(u) { zip.file(u.path, u.file, { binary: true }); });
+      var msg = allFiles.length ? 'Generating ZIP with ' + allFiles.length + ' file(s)...' : 'Downloading config.json...';
+      toast(msg);
       zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } }).then(function(blob) {
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'portfolio-update.zip';
-        a.click();
-        toast('✓ Downloaded! Extract into your portfolio folder, then commit + push.');
-      }).catch(function(err) {
-        toast('Error generating ZIP: ' + err.message);
-      });
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'portfolio-update.zip'; a.click();
+        toast(allFiles.length ? '✓ Downloaded! Extract and deploy.' : '✓ config.json downloaded');
+        changed = false; document.getElementById('changedIndicator').style.display = 'none';
+      }).catch(function(err) { toast('Error: ' + err.message); });
     }
+
+    // ── Keyboard shortcuts ──
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); downloadAll(); }
+      if (e.key === 'Escape') { closeUpload(); closeVideoUpload(); document.getElementById('confirmOverlay').classList.remove('active'); }
+    });
 
     // ── Utilities ──
     function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
