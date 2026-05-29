@@ -170,133 +170,75 @@
     <span class="counter" id="lbCounter"></span>
   </div>
 
+  <script src="portfolio.js"></script>
   <script>
-    var folderNames = ["remembery","woodblock","textile","listen","huiyi","museum"];
+    PORTFOLIO_onReady(function(config) {
+      if (!config || !config.projects) { document.body.innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json</p>'; return; }
 
-    var projects = [{
-      title: "REMEMBERY",
-      subtitle: "Multi-Stakeholder Alzheimer's Care App",
-      tags: ["User Research","Accessibility","UX Design","Health Tech"],
-      desc: "REMEMBERY is a mobile application designed for four distinct user groups — patients with Alzheimer's disease, family caregivers, doctors, and social workers — each with unique needs and interaction patterns. The design process began with stakeholder interviews and persona development to understand the care ecosystem. For patients, the focus was on cognitive training exercises with simplified navigation and high-contrast visuals to accommodate cognitive decline. For family caregivers, emergency response workflows and daily care coordination tools. For doctors, a monitoring dashboard tracking patient progress. For social workers, case management and resource allocation tools. The project demonstrates a complete user-centered design process: from user needs assessment through iterative prototyping to high-fidelity interactive mockups. Accessibility considerations — including font sizing, color contrast, touch target sizing, and simplified navigation hierarchies — were integrated from the earliest wireframes rather than retrofitted.",
-      tools: "<strong>Tools:</strong> Figma · User Interviews · Persona Development · Iterative Prototyping · Accessibility Guidelines (WCAG)",
-      hero: "images/remembery/board.jpg",
-      gallery: ["mockup1.jpg","mockup2.jpg","mockup3.jpg","ui1.jpg","ui2.jpg","ui3.jpg"],
-      video: "videos/remembery.mp4"
-    }, {
-      title: "木上生画",
-      subtitle: "Gamified Cultural Heritage EdTech App",
-      tags: ["UX Research","EdTech","Information Architecture","Gamification"],
-      desc: "An iPad application designed to teach the heritage of Zhuxianzhen woodblock prints — a centuries-old Chinese craft tradition — through gamified, interactive learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app is organized into three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project transforms passive cultural consumption into active discovery, demonstrating how UX research methods can be applied to design engaging educational technology.",
-      tools: "<strong>Tools:</strong> Adobe XD · Card Sorting · IA Design · Wireframing · High-Fidelity Prototyping",
-      hero: "images/woodblock/ipad1.jpg",
-      gallery: ["ipad2.jpg","ipad3.jpg","home.jpg","onboarding.jpg","ia.jpg","wireframe.jpg"],
-      video: null
-    }, {
-      title: "TEXTILE 2050",
-      subtitle: "Interactive Installation with Physical Computing",
-      tags: ["Physical Computing","Prototyping","Interactive Media","Sustainability"],
-      desc: "A future-sustainability themed interactive digital media installation that invites visitors to physically engage with textile-inspired interfaces. The installation uses Arduino pressure sensors and ultrasonic distance sensors to detect visitor touch and proximity, triggering real-time generative visuals through TouchDesigner. The 3D environment — a speculative future factory — was modeled in Blender. Visitors could press fabric swatches to 'grow' virtual plants or approach sensors to reveal hidden layers of the narrative about sustainable textile production. The project was exhibited at the university gallery, demonstrating end-to-end capability: hardware sensor integration, real-time graphics programming, 3D environmental modeling, and public exhibition deployment. It explores how embodied, tangible interaction can communicate abstract environmental futures more effectively than passive media.",
-      tools: "<strong>Tools:</strong> Arduino (Pressure + Ultrasonic Sensors) · TouchDesigner · Blender · 3D Modeling · Exhibition Design",
-      hero: "images/textile/exhibit1.jpg",
-      gallery: ["exhibit2.jpg","exhibit3.jpg","render1.jpg","render2.jpg","display1.jpg","display2.jpg"],
-      video: "videos/textile.mp4"
-    }, {
-      title: "LISTEN",
-      subtitle: "Multimodal Sensory Interaction Concept",
-      tags: ["Interaction Design","Creative Coding","Multimodal","Sensory Design"],
-      desc: "An interactive installation concept exploring auditory-visual synesthesia — the perceptual crossing of sound and sight. The installation creates an immersive environment where visual forms respond dynamically to sonic input, using TouchDesigner for real-time generative graphics synchronized with a spatial audio system. A 3D environment modeled in Blender serves as the spatial canvas. The concept investigates how cross-modal sensory feedback — when visual patterns, colors, and movements are directly driven by sound parameters — can shape user perception and emotional response. The project contributes to research on multisensory interaction design by demonstrating how creative coding and spatial design can create experiences where hearing and seeing become intertwined.",
-      tools: "<strong>Tools:</strong> TouchDesigner · Blender · Spatial Audio · 3D Modeling · Creative Coding",
-      hero: "images/listen/3.jpg",
-      gallery: ["1.jpg","2.jpg","4.jpg","5.jpg"],
-      video: "videos/listen.mp4"
-    }, {
-      title: "会意AD",
-      subtitle: "Immersive Health Communication Space",
-      tags: ["Health Communication","Immersive Design","Accessibility"],
-      desc: "An immersive spatial experience designed to communicate Alzheimer's disease awareness to the general public. Through environmental storytelling — combining spatial design, curated lighting, soundscapes, and information graphics — the installation translates complex medical and neurological concepts into an embodied, emotionally resonant visitor experience. The design strategy uses metaphor and sensory immersion to make invisible cognitive conditions tangibly felt: visitors move through spaces that simulate memory fragmentation, temporal disorientation, and sensory overload. The project demonstrates how human-centered spatial design can bridge the gap between clinical knowledge and public understanding, making complex health conditions accessible through experiential learning.",
-      tools: "<strong>Tools:</strong> Spatial Design · Environmental Graphics · Exhibition Design · Storyboarding",
-      hero: "images/huiyi/board1.jpg",
-      gallery: ["board2.jpg","board3.jpg"],
-      video: "videos/huiyi.mp4"
-    }, {
-      title: "NUA Museum",
-      subtitle: "Website UX Redesign for University Museum",
-      tags: ["UX Design","Information Architecture","Visual Design"],
-      desc: "A comprehensive user experience redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation of the existing site, identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around these three primary visitor goals. A visual refresh modernized the interface — updating typography, color palette, and spacing — while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context.",
-      tools: "<strong>Tools:</strong> Figma · Heuristic Evaluation · Task Analysis · IA Design · Visual Design",
-      hero: "images/museum/home.jpg",
-      gallery: ["page1.jpg","page2.jpg","page3.jpg","page4.jpg"],
-      video: "videos/museum.mp4"
-    }];
+      var projects = config.projects;
+      var params = new URLSearchParams(window.location.search);
+      var id = parseInt(params.get('id')) || 0;
+      if (id < 0 || id >= projects.length) id = 0;
 
-    var params = new URLSearchParams(window.location.search);
-    var id = parseInt(params.get('id')) || 0;
-    if (id < 0 || id >= projects.length) id = 0;
+      var p = projects[id];
+      document.title = p.title + ' — Jiaxuan Gong';
+      document.getElementById('projCounter').textContent = (id + 1) + ' / ' + projects.length;
+      document.getElementById('heroImg').src = p.hero;
+      document.getElementById('heroImg').alt = p.title;
+      document.getElementById('projTitle').textContent = p.title;
+      document.getElementById('projSubtitle').textContent = p.subtitle;
+      document.getElementById('projTags').innerHTML = p.tags.map(function(t) { return '<span>' + t + '</span>'; }).join('');
+      document.getElementById('projDesc').textContent = p.description;
+      document.getElementById('projTools').innerHTML = '<strong>Tools:</strong> ' + p.tools;
 
-    var p = projects[id];
-    var basePath = "images/" + folderNames[id] + "/";
+      // Gallery — full width, native aspect ratio
+      var gallery = document.getElementById('gallery');
+      var allSrcs = [];
+      p.images.forEach(function(img) {
+        var src = 'images/' + img.src;
+        allSrcs.push(src);
+        var el = document.createElement('img');
+        el.src = src; el.alt = img.alt || p.title; el.loading = 'lazy';
+        el.className = 'gallery-img';
+        el.addEventListener('click', function() { openLightbox(allSrcs.indexOf(src)); });
+        gallery.appendChild(el);
+      });
 
-    document.title = p.title + " — Jiaxuan Gong";
-    document.getElementById('projCounter').textContent = (id + 1) + ' / ' + projects.length;
-    document.getElementById('heroImg').src = p.hero;
-    document.getElementById('heroImg').alt = p.title;
-    document.getElementById('projTitle').textContent = p.title;
-    document.getElementById('projSubtitle').textContent = p.subtitle;
-    document.getElementById('projTags').innerHTML = p.tags.map(function(t) { return '<span>' + t + '</span>'; }).join('');
-    document.getElementById('projDesc').textContent = p.desc;
-    document.getElementById('projTools').innerHTML = p.tools;
+      // Video
+      var vw = document.getElementById('videoWrap');
+      if (p.video && p.video.src) {
+        vw.innerHTML = '<video controls poster="' + (p.video.poster || p.hero) + '" preload="metadata"><source src="' + p.video.src + '" type="video/mp4"></video>';
+      } else {
+        vw.innerHTML = '<div class="video-placeholder">Video demo available upon request — <a href="mailto:' + (config.site ? config.site.email : 'gongjiaxuan169@gmail.com') + '">contact me</a></div>';
+      }
 
-    // Gallery — full width, native aspect ratio
-    var gallery = document.getElementById('gallery');
-    var allSrcs = [];
-    p.gallery.forEach(function(img) {
-      var src = basePath + img;
-      allSrcs.push(src);
-      var el = document.createElement('img');
-      el.src = src; el.alt = p.title; el.loading = 'lazy';
-      el.className = 'gallery-img';
-      el.addEventListener('click', function() { openLightbox(allSrcs.indexOf(src)); });
-      gallery.appendChild(el);
-    });
+      // Bottom nav
+      var prevId = (id - 1 + projects.length) % projects.length;
+      var nextId = (id + 1) % projects.length;
+      document.getElementById('prevLink').href = 'project.html?id=' + prevId;
+      document.getElementById('nextLink').href = 'project.html?id=' + nextId;
 
-    // Video
-    var vw = document.getElementById('videoWrap');
-    if (p.video) {
-      vw.innerHTML = '<video controls poster="' + p.hero + '" preload="metadata"><source src="' + p.video + '" type="video/mp4"></video>';
-    } else {
-      vw.innerHTML = '<div class="video-placeholder">Video demo available upon request — <a href="mailto:gongjiaxuan169@gmail.com">contact me</a></div>';
-    }
-
-    // Bottom nav
-    var prevId = (id - 1 + projects.length) % projects.length;
-    var nextId = (id + 1) % projects.length;
-    document.getElementById('prevLink').href = 'project.html?id=' + prevId;
-    document.getElementById('nextLink').href = 'project.html?id=' + nextId;
-
-    // Lightbox
-    var lb = document.getElementById('lightbox');
-    var lbImg = document.getElementById('lbImg');
-    var lbCounter = document.getElementById('lbCounter');
-    var curIdx = 0;
-
-    function openLightbox(idx) {
-      curIdx = idx;
-      lbImg.src = allSrcs[idx];
-      lbCounter.textContent = (idx + 1) + ' / ' + allSrcs.length;
-      lb.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox() { lb.classList.remove('active'); document.body.style.overflow = ''; }
-    function lightboxPrev() { if (allSrcs.length) openLightbox((curIdx - 1 + allSrcs.length) % allSrcs.length); }
-    function lightboxNext() { if (allSrcs.length) openLightbox((curIdx + 1) % allSrcs.length); }
-
-    document.getElementById('lbClose').addEventListener('click', closeLightbox);
-    lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
-    document.addEventListener('keydown', function(e) {
-      if (!lb.classList.contains('active')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') lightboxPrev();
-      if (e.key === 'ArrowRight') lightboxNext();
+      // Lightbox
+      var lb = document.getElementById('lightbox');
+      var lbImg = document.getElementById('lbImg');
+      var lbCounter = document.getElementById('lbCounter');
+      var curIdx = 0;
+      function openLightbox(idx) {
+        curIdx = idx; lbImg.src = allSrcs[idx];
+        lbCounter.textContent = (idx + 1) + ' / ' + allSrcs.length;
+        lb.classList.add('active'); document.body.style.overflow = 'hidden';
+      }
+      function closeLightbox() { lb.classList.remove('active'); document.body.style.overflow = ''; }
+      function lightboxPrev() { if (allSrcs.length) openLightbox((curIdx - 1 + allSrcs.length) % allSrcs.length); }
+      function lightboxNext() { if (allSrcs.length) openLightbox((curIdx + 1) % allSrcs.length); }
+      document.getElementById('lbClose').addEventListener('click', closeLightbox);
+      lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
+      document.addEventListener('keydown', function(e) {
+        if (!lb.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxPrev();
+        if (e.key === 'ArrowRight') lightboxNext();
+      });
     });
   </script>
 </body>
