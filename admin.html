@@ -123,7 +123,7 @@
   <div class="app">
     <!-- Sidebar -->
     <div class="sidebar">
-      <div class="sidebar-h"><h1>Projects <span>CMS</span></h1></div>
+      <div class="sidebar-h"><h1>Projects <span>CMS</span></h1><button class="btn small" style="margin-top:0.4rem;width:100%" onclick="openSiteSettings()">⚙ Site Settings</button></div>
       <div class="proj-list" id="projList"></div>
       <div class="sidebar-foot">
         <button class="btn" style="flex:1" onclick="addNew()">+ Add Project</button>
@@ -158,6 +158,37 @@
             <button class="btn icon" onclick="updatePreview()" title="Refresh preview">↻</button>
           </div>
           <iframe id="previewFrame" src="" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Settings Modal -->
+  <div class="modal-overlay" id="siteSettingsModal">
+    <div class="modal">
+      <div class="modal-h"><h2>Site Settings</h2><button class="btn icon" onclick="closeSiteSettings()">✕</button></div>
+      <div class="modal-b">
+        <div class="field"><label>Your Name</label><input id="ssName" placeholder="Jiaxuan Gong"></div>
+        <div class="field"><label>Tagline <span class="opt">(one short sentence)</span></label><input id="ssTagline" placeholder="I build prototypes, run user studies, and write."></div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input id="ssEmail" placeholder="you@email.com"></div>
+          <div class="field"><label>Google Scholar URL</label><input id="ssScholar" placeholder="https://scholar.google.com/citations?user=..."></div>
+        </div>
+        <div class="field-row"><div class="field"><label>GitHub Username</label><input id="ssGitHub" placeholder="yourusername"></div></div>
+        <div class="field"><label>Profile Photo</label>
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:0.3rem">
+            <div id="photoPreview" style="width:80px;height:80px;border-radius:50%;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--acc);overflow:hidden;flex-shrink:0;border:2px solid #ddd"><span id="photoInit">JG</span><img id="photoImg" src="" style="display:none;width:100%;height:100%;object-fit:cover"></div>
+            <div>
+              <button class="btn" onclick="document.getElementById('photoInput').click()">📷 Choose Photo</button>
+              <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoPick(this.files)" style="display:none">
+              <button class="btn small danger" onclick="removePhoto()" style="margin-top:0.3rem">✕ Remove</button>
+              <div style="font-size:0.65rem;color:var(--t2);margin-top:0.2rem">PNG or JPG. Square works best.</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;text-align:right">
+          <button class="btn" onclick="closeSiteSettings()">Cancel</button>
+          <button class="btn primary" style="margin-left:0.4rem" onclick="saveSiteSettings()">✓ Save</button>
         </div>
       </div>
     </div>
@@ -446,6 +477,66 @@
     }
     document.getElementById('confirmCancel').onclick = function() { document.getElementById('confirmOverlay').classList.remove('active'); };
 
+    // ── Site Settings ──
+    var sitePhotoFile = null;
+
+    function openSiteSettings() {
+      if (!cfg.site) cfg.site = {};
+      var s = cfg.site;
+      document.getElementById('ssName').value = s.name || '';
+      document.getElementById('ssTagline').value = s.tagline || '';
+      document.getElementById('ssEmail').value = s.email || '';
+      document.getElementById('ssScholar').value = s.scholar || '';
+      document.getElementById('ssGitHub').value = s.github || '';
+      // Photo preview
+      sitePhotoFile = null;
+      var photoPath = s.photo || '';
+      var img = document.getElementById('photoImg');
+      var init = document.getElementById('photoInit');
+      if (photoPath) {
+        img.src = photoPath; img.style.display = ''; init.style.display = 'none';
+      } else {
+        img.style.display = 'none'; init.style.display = '';
+      }
+      document.getElementById('siteSettingsModal').classList.add('active');
+    }
+    function closeSiteSettings() { document.getElementById('siteSettingsModal').classList.remove('active'); }
+    function handlePhotoPick(files) {
+      if (!files || !files[0]) return;
+      var f = files[0];
+      sitePhotoFile = f;
+      var url = URL.createObjectURL(f);
+      document.getElementById('photoImg').src = url;
+      document.getElementById('photoImg').style.display = '';
+      document.getElementById('photoInit').style.display = 'none';
+    }
+    function removePhoto() {
+      sitePhotoFile = null;
+      if (cfg.site) { cfg.site.photo = ''; cfg.site._photoUpload = null; }
+      document.getElementById('photoImg').style.display = 'none';
+      document.getElementById('photoInit').style.display = '';
+      markChanged();
+      toast('Photo removed');
+    }
+    function saveSiteSettings() {
+      if (!cfg.site) cfg.site = {};
+      var s = cfg.site;
+      s.name = document.getElementById('ssName').value.trim() || 'Jiaxuan Gong';
+      s.tagline = document.getElementById('ssTagline').value.trim();
+      s.email = document.getElementById('ssEmail').value.trim();
+      s.scholar = document.getElementById('ssScholar').value.trim();
+      s.github = document.getElementById('ssGitHub').value.trim();
+      if (sitePhotoFile) {
+        var fn = 'photo.' + (sitePhotoFile.name.split('.').pop() || 'jpg');
+        s.photo = 'images/' + fn;
+        s._photoUpload = { file: sitePhotoFile, path: 'images/' + fn };
+        sitePhotoFile = null;
+      }
+      markChanged();
+      closeSiteSettings();
+      toast('Site settings saved ✓');
+    }
+
     // ── CRUD ──
     function addNew() {
       var id = 'project-' + Date.now();
@@ -455,13 +546,15 @@
     }
     function resetAll() { if (confirm('Discard all changes and reload?')) location.reload(); }
 
-    // ── Downloazd ZIP ──
+    // ── Download ZIP ──
     function downloadAll() {
       var clean = JSON.parse(JSON.stringify(cfg));
       delete clean._schema; delete clean._help;
+      if (clean.site) { delete clean.site._photoUpload; }
       clean.projects.forEach(function(p) { delete p._uploads; });
       var zip = new JSZip();
       var allFiles = [];
+      if (cfg.site && cfg.site._photoUpload) allFiles.push(cfg.site._photoUpload);
       cfg.projects.forEach(function(p) { if (p._uploads && p._uploads.length) p._uploads.forEach(function(u) { allFiles.push(u); }); });
       zip.file('config.json', JSON.stringify(clean, null, 2));
       allFiles.forEach(function(u) { zip.file(u.path, u.file, { binary: true }); });
