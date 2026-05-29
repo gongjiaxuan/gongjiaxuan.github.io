@@ -22,9 +22,11 @@
       --bg-warm:    #f9fafb;
       --border:     #e5e7eb;
       --link:       #101828;
-      --accent:     #6366f1;
-      --badge-bg:   #eef2ff;
-      --badge-text: #4338ca;
+      --accent:     #4f46e5;
+      --accent-soft:#eef2ff;
+      --accent-text:#4338ca;
+      --badge-bg:   #ecfdf5;
+      --badge-text: #065f46;
       --max-w:      720px;
       --font:       'Inter', 'SF Pro', ui-sans-serif, system-ui, sans-serif;
     }
@@ -230,40 +232,22 @@
       opacity: 1;
       transition: opacity 0.25s;
     }
-    @media (hover: hover) {
-      .project-card .preview::after { opacity: 0; }
-      .project-card:hover .preview::after { opacity: 1; }
-    }
+    .project-card .preview::after { opacity: 1; }
     .project-card .card-overlay {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
-      justify-content: space-between;
-      padding: 0.95rem;
+      justify-content: flex-end;
+      padding: 0.85rem;
       pointer-events: none;
     }
-    .project-card .card-overlay .top-row {
-      display: flex; align-items: flex-start; justify-content: space-between;
-    }
-    .project-card .card-overlay .top-row h3 {
-      font-size: 0.9rem; line-height: 1.25; font-weight: 600;
-      color: #fff;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    }
-    .project-card .card-overlay .card-icon {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.5rem; color: #fff;
-      overflow: hidden; flex-shrink: 0;
-    }
+    .project-card .card-overlay .top-row { display: none; }
+    .project-card .card-overlay .card-icon { display: none; }
     .project-card .card-overlay .desc {
       font-size: 0.78rem; font-weight: 500; color: #fff;
       line-height: 1.5;
       text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-      transform: translateY(16px);
-      opacity: 0;
-      transition: transform 0.5s ease, opacity 0.5s ease;
+      transform: translateY(0);
+      opacity: 1;
     }
     .project-card:hover .card-overlay .desc {
       transform: translateY(0);
@@ -365,6 +349,12 @@
       .modal-body { padding: 1.2rem 1.3rem 1.5rem; }
       .modal-body h2 { font-size: 1.25rem; }
     }
+
+    /* ── News ── */
+    .news-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .news-item { font-size: 0.9rem; color: var(--text-mid); line-height: 1.55; padding: 0.4rem 0; border-bottom: 1px solid #f3f4f6; }
+    .news-item:last-child { border-bottom: none; }
+    .news-date { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 0.6rem; white-space: nowrap; }
 
     /* ── Scroll reveal ── */
     .reveal {
@@ -642,7 +632,7 @@
     <div class="wrapper">
       <div class="hero-top">
         <div class="hero-portrait">
-          <span>Photo</span>
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='116' height='116'%3E%3Crect fill='%23eef2ff' width='116' height='116'/%3E%3Ctext x='58' y='68' text-anchor='middle' font-family='Inter,sans-serif' font-size='42' fill='%234f46e5'%3EJG%3C/text%3E%3C/svg%3E" alt="Jiaxuan Gong">
         </div>
         <div class="hero-text">
           <h1>Jiaxuan Gong</h1>
@@ -659,6 +649,22 @@
       </div>
     </div>
   </div>
+
+  <div class="wrapper"><hr class="divider"></div>
+
+  <!-- News -->
+  <section id="news" class="reveal">
+    <div class="wrapper">
+      <div class="section-head"><h2>News</h2></div>
+      <div class="news-list">
+        <div class="news-item"><span class="news-date">May 2026</span> Applying to <strong>HCI+ 2026</strong> Summer Research Program at Tsinghua · Nankai · HKUST(GZ)</div>
+        <div class="news-item"><span class="news-date">May 2026</span> Master's thesis defense: <em>AR Display Design for Cultural Heritage &amp; User Acceptance</em> — Unity + Vuforia prototype, N=388 CB-SEM</div>
+        <div class="news-item"><span class="news-date">Jan 2026</span> Paper published in <em>SAGE Open</em>: Public Sentiment Towards Interactive Art on Multi-Modal Social Media</div>
+        <div class="news-item"><span class="news-date">2025</span> Co-first-author paper published in <em>Heritage</em>: VR Acceptance in Cultural Heritage Institutions</div>
+        <div class="news-item"><span class="news-date">2024</span> National Second Prize, Milan Design Week China Collegiate Design Competition</div>
+      </div>
+    </div>
+  </section>
 
   <div class="wrapper"><hr class="divider"></div>
 
