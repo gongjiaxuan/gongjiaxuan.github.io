@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Editor — Jiaxuan Gong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#f5f5f7;--card-bg:#fff;--text:#1d1d1f;--text2:#6e6e73;--accent:#6366f1;--border:#e5e5e5;--radius:10px}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+    /* ── Top bar ── */
+    .topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .topbar h1{font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:0.5rem}
+    .topbar h1 span{font-size:0.7rem;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.05em}
+    .topbar-actions{display:flex;gap:0.6rem;flex-wrap:wrap}
+    .btn{padding:0.45rem 0.9rem;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:inherit;color:var(--text);white-space:nowrap}
+    .btn:hover{border-color:#bbb;background:#fafafa}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn.primary:hover{opacity:0.9}
+    .btn.danger{color:#dc2626;border-color:#fca5a5}
+    .btn.danger:hover{background:#fef2f2}
+
+    /* ── Layout ── */
+    .main{padding:1.5rem;max-width:1100px;margin:0 auto}
+    .status{text-align:center;padding:0.5rem;font-size:0.8rem;color:var(--accent);display:none}
+    .status.show{display:block}
+
+    /* ── Project card ── */
+    .project-card{background:var(--card-bg);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:1rem;overflow:hidden;transition:box-shadow 0.2s}
+    .project-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+    .card-header{padding:0.9rem 1.2rem;display:flex;align-items:center;gap:0.8rem;cursor:pointer;user-select:none;border-bottom:1px solid transparent}
+    .card-header:hover{background:#fafafa}
+    .drag-handle{cursor:grab;color:#ccc;font-size:1.2rem;line-height:1;flex-shrink:0}
+    .drag-handle:hover{color:#999}
+    .card-thumb{width:48px;height:36px;border-radius:4px;object-fit:cover;background:#eee;flex-shrink:0}
+    .card-info{flex:1;min-width:0}
+    .card-info h3{font-size:0.9rem;font-weight:600}
+    .card-info .meta{font-size:0.75rem;color:var(--text2)}
+    .card-order{font-size:0.7rem;color:var(--text2);flex-shrink:0}
+    .card-arrow{font-size:0.8rem;color:#ccc;transition:transform 0.2s;flex-shrink:0}
+    .project-card.open .card-arrow{transform:rotate(180deg)}
+    .project-card.open .card-header{border-bottom-color:var(--border)}
+
+    /* ── Edit panel ── */
+    .edit-panel{display:none;padding:1.2rem 1.5rem 1.5rem;border-top:1px solid var(--border);background:#fafafa}
+    .project-card.open .edit-panel{display:block}
+    .field{margin-bottom:1rem}
+    .field label{display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--text2);margin-bottom:0.3rem}
+    .field input,.field textarea,.field select{width:100%;padding:0.5rem 0.6rem;border:1px solid var(--border);border-radius:5px;font-size:0.85rem;font-family:inherit;background:#fff;transition:border-color 0.15s}
+    .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,0.1)}
+    .field textarea{resize:vertical;min-height:60px}
+    .field .hint{font-size:0.7rem;color:#999;margin-top:0.2rem}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+
+    /* ── Tags input ── */
+    .tags-input{display:flex;flex-wrap:wrap;gap:0.3rem;padding:0.4rem;border:1px solid var(--border);border-radius:5px;background:#fff;min-height:36px;cursor:text;align-items:center}
+    .tags-input:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,0.1)}
+    .tag-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:#eef2ff;color:#4338ca;border-radius:4px;font-size:0.72rem;font-weight:500}
+    .tag-chip .remove{cursor:pointer;opacity:0.5;font-size:0.9rem;line-height:1}
+    .tag-chip .remove:hover{opacity:1}
+    .tags-input input{border:none;outline:none;flex:1;min-width:80px;font-size:0.8rem;padding:2px 4px;font-family:inherit}
+
+    /* ── Image gallery editor ── */
+    .image-list{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem}
+    .image-item{position:relative;width:100px;height:75px;border-radius:5px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#eee}
+    .image-item:hover{border-color:var(--accent)}
+    .image-item img{width:100%;height:100%;object-fit:cover}
+    .image-item .del{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
+    .image-item:hover .del{opacity:1}
+    .add-image-btn{padding:0.4rem 0.7rem;border:1px dashed var(--border);border-radius:5px;background:transparent;font-size:0.75rem;cursor:pointer;color:var(--text2);transition:all 0.15s}
+    .add-image-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* ── Image selector modal ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+    .modal-overlay.active{opacity:1;pointer-events:auto}
+    .modal{background:#fff;border-radius:12px;max-width:700px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+    .modal-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .modal-header h2{font-size:1rem;font-weight:600}
+    .modal-body{padding:1rem 1.2rem}
+    .picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.6rem}
+    .picker-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;background:#eee}
+    .picker-grid img:hover{border-color:var(--accent)}
+    .picker-grid img.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,0.2)}
+
+    /* ── Post-edit actions ── */
+    .actions-row{display:flex;gap:0.5rem;margin-top:1rem;padding-top:0.8rem;border-top:1px solid var(--border)}
+
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:0.7rem 1.5rem;border-radius:20px;font-size:0.85rem;z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none}
+    .toast.show{opacity:1}
+
+    @media (max-width:600px){.main{padding:0.8rem}.field-row{grid-template-columns:1fr}.topbar{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>Portfolio Editor <span>CMS</span></h1>
+    <div class="topbar-actions">
+      <button class="btn" onclick="resetAll()">↺ Reset</button>
+      <button class="btn primary" onclick="downloadConfig()">⬇ Download config.json</button>
+      <button class="btn" onclick="window.open('index.html','_blank')">↗ Preview Site</button>
+    </div>
+  </div>
+
+  <div class="main" id="main"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- Image picker modal -->
+  <div class="modal-overlay" id="pickerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Select images — <span id="pickerProjectName"></span></h2>
+        <button class="btn" onclick="closePicker()">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="picker-grid" id="pickerGrid"></div>
+        <div style="margin-top:1rem;text-align:right">
+          <button class="btn primary" onclick="confirmPicker()">✓ Add Selected</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ──
+    var config = null;
+    var currentPickerProject = null;
+    var currentPickerImages = [];
+    var pickerSelected = [];
+
+    // ── Init ──
+    fetch('config.json?t=' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(c) { config = c; render(); })
+      .catch(function() { document.getElementById('main').innerHTML = '<p style="padding:2rem;color:red">Could not load config.json. Make sure this file is on the server.</p>'; });
+
+    function toast(msg) {
+      var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+      setTimeout(function() { t.classList.remove('show'); }, 2000);
+    }
+
+    // ── Render all projects ──
+    function render() {
+      var html = '';
+      config.projects.forEach(function(p, i) {
+        var thumb = p.cardImage || p.hero || '';
+        var tagStr = p.tags.join(', ');
+        html += '<div class="project-card" data-index="' + i + '">';
+        html += '  <div class="card-header" onclick="toggleProject(' + i + ', event)">';
+        html += '    <span class="drag-handle" draggable="true" ondragstart="dragStart(event,' + i + ')" ondragover="dragOver(event)" ondrop="drop(event,' + i + ')">☰</span>';
+        html += '    <img class="card-thumb" src="' + thumb + '" onerror="this.style.display=\'none\'">';
+        html += '    <div class="card-info"><h3>' + esc(p.title) + '</h3><div class="meta">' + esc(tagStr) + '</div></div>';
+        html += '    <span class="card-order">#' + (i + 1) + '</span>';
+        html += '    <span class="card-arrow">▾</span>';
+        html += '  </div>';
+        html += '  <div class="edit-panel">';
+        html += '    <div class="field-row">';
+        html += '      <div class="field"><label>Title</label><input type="text" value="' + escAttr(p.title) + '" onchange="updateField(' + i + ',\'title\',this.value)"></div>';
+        html += '      <div class="field"><label>Subtitle</label><input type="text" value="' + escAttr(p.subtitle) + '" onchange="updateField(' + i + ',\'subtitle\',this.value)"></div>';
+        html += '    </div>';
+        html += '    <div class="field"><label>Tags (press Enter to add)</label><div class="tags-input" id="tags-' + i + '" onclick="this.querySelector(\'input\').focus()">' + p.tags.map(function(t) { return '<span class="tag-chip">' + esc(t) + '<span class="remove" onclick="event.stopPropagation();removeTag(' + i + ',\'' + escAttr(t) + '\')">×</span></span>'; }).join('') + '<input placeholder="Add tag..." onkeydown="addTag(event,' + i + ')"></div></div>';
+        html += '    <div class="field"><label>Description</label><textarea onchange="updateField(' + i + ',\'description\',this.value)">' + esc(p.description) + '</textarea></div>';
+        html += '    <div class="field"><label>Tools</label><input type="text" value="' + escAttr(p.tools) + '" onchange="updateField(' + i + ',\'tools\',this.value)"></div>';
+        html += '    <div class="field-row">';
+        html += '      <div class="field"><label>Hero Image (path)</label><input type="text" value="' + escAttr(p.hero) + '" onchange="updateField(' + i + ',\'hero\',this.value)"></div>';
+        html += '      <div class="field"><label>Card Thumbnail (path)</label><input type="text" value="' + escAttr(p.cardImage || '') + '" onchange="updateField(' + i + ',\'cardImage\',this.value)"></div>';
+        html += '    </div>';
+        // Gallery images
+        html += '    <div class="field"><label>Gallery Images</label>';
+        html += '    <div class="image-list" id="gallery-' + i + '">';
+        p.images.forEach(function(img, j) {
+          html += '<div class="image-item"><img src="images/' + img.src + '" onerror="this.style.background=\'#eee\'"><button class="del" onclick="event.stopPropagation();removeImage(' + i + ',' + j + ')">×</button></div>';
+        });
+        html += '      <button class="add-image-btn" onclick="event.stopPropagation();openPicker(' + i + ')">+ Add Images</button>';
+        html += '    </div></div>';
+        // Video
+        html += '    <div class="field-row">';
+        html += '      <div class="field"><label>Video (path, or empty for none)</label><input type="text" value="' + escAttr(p.video ? p.video.src : '') + '" onchange="updateVideo(' + i + ',this.value)"></div>';
+        html += '      <div class="field"><label>Video Poster (path)</label><input type="text" value="' + escAttr(p.video ? (p.video.poster || '') : '') + '" onchange="updateVideoPoster(' + i + ',this.value)"></div>';
+        html += '    </div>';
+        html += '    <div class="actions-row">';
+        html += '      <button class="btn primary" onclick="previewProject(\'' + p.id + '\')">↗ Preview</button>';
+        html += '      <button class="btn danger" onclick="deleteProject(' + i + ')">Delete</button>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+      });
+      html += '<div style="text-align:center;padding:2rem"><button class="btn primary" style="font-size:1rem;padding:0.7rem 2rem" onclick="addNewProject()">+ Add New Project</button></div>';
+      document.getElementById('main').innerHTML = html;
+    }
+
+    // ── Toggle panel ──
+    function toggleProject(i, ev) {
+      if (ev.target.closest('input,textarea,button,.tags-input,.image-item,.add-image-btn')) return;
+      document.querySelectorAll('.project-card')[i].classList.toggle('open');
+    }
+
+    // ── Update helpers ──
+    function updateField(i, key, val) { config.projects[i][key] = val; }
+    function updateVideo(i, val) {
+      if (!val) { config.projects[i].video = null; return; }
+      if (!config.projects[i].video) config.projects[i].video = {};
+      config.projects[i].video.src = val;
+    }
+    function updateVideoPoster(i, val) {
+      if (!config.projects[i].video) config.projects[i].video = {};
+      config.projects[i].video.poster = val;
+    }
+
+    // ── Tags ──
+    function addTag(ev, i) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        var val = ev.target.value.trim();
+        if (val && config.projects[i].tags.indexOf(val) === -1) {
+          config.projects[i].tags.push(val);
+          render(); var el = document.querySelectorAll('.project-card')[i]; if (el) { el.classList.add('open'); setTimeout(function() { var inp = document.getElementById('tags-'+i); if (inp) { var realInp = inp.querySelector('input'); if (realInp) realInp.focus(); } }, 100); }
+        }
+      }
+    }
+    function removeTag(i, tag) { config.projects[i].tags = config.projects[i].tags.filter(function(t) { return t !== tag; }); render(); var el = document.querySelectorAll('.project-card')[i]; if (el) el.classList.add('open'); }
+
+    // ── Gallery image management ──
+    function removeImage(i, j) { config.projects[i].images.splice(j, 1); render(); var el = document.querySelectorAll('.project-card')[i]; if (el) el.classList.add('open'); }
+
+    function openPicker(i) {
+      currentPickerProject = i;
+      pickerSelected = [];
+      // Show all images available for this project
+      var dirs = ['remembery','woodblock','textile','listen','huiyi','museum'];
+      var projDir = config.projects[i].id;
+      currentPickerImages = [];
+      dirs.forEach(function(d) {
+        // We don't have a server-side listing, so show placeholder buttons
+      });
+      // Actually, let's use a different approach: show a text input for paths
+      var html = '<p style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">Enter image paths relative to <code>images/</code> folder. One per line.</p>';
+      html += '<textarea id="pickerTextarea" style="width:100%;height:150px;font-family:monospace;font-size:0.8rem;padding:0.6rem;border:1px solid var(--border);border-radius:5px" placeholder="e.g.&#10;remembery/mockup1.jpg&#10;remembery/board.jpg&#10;textile/exhibit2.jpg"></textarea>';
+      html += '<p class="hint" style="margin-top:0.3rem">Separate paths with newlines. These will be added to the existing gallery.</p>';
+      document.getElementById('pickerGrid').innerHTML = html;
+      document.getElementById('pickerProjectName').textContent = config.projects[i].title;
+      document.getElementById('pickerModal').classList.add('active');
+    }
+    function confirmPicker() {
+      var text = document.getElementById('pickerTextarea').value.trim();
+      if (!text) { closePicker(); return; }
+      var paths = text.split('\n').filter(function(l) { return l.trim(); });
+      paths.forEach(function(p) {
+        config.projects[currentPickerProject].images.push({ src: p.trim(), alt: '' });
+      });
+      closePicker();
+      render();
+      var el = document.querySelectorAll('.project-card')[currentPickerProject];
+      if (el) el.classList.add('open');
+      toast('Added ' + paths.length + ' image(s)');
+    }
+    function closePicker() { document.getElementById('pickerModal').classList.remove('active'); currentPickerProject = null; }
+
+    // ── Drag & Drop reorder ──
+    var dragIdx = null;
+    function dragStart(ev, i) { dragIdx = i; ev.dataTransfer.effectAllowed = 'move'; }
+    function dragOver(ev) { ev.preventDefault(); }
+    function drop(ev, targetIdx) {
+      ev.preventDefault();
+      if (dragIdx === null || dragIdx === targetIdx) return;
+      var item = config.projects.splice(dragIdx, 1)[0];
+      config.projects.splice(targetIdx, 0, item);
+      dragIdx = null;
+      render();
+      toast('Reordered');
+    }
+
+    // ── CRUD ──
+    function addNewProject() {
+      var newId = 'project-' + Date.now();
+      config.projects.push({
+        id: newId, title: 'New Project', subtitle: '', tags: [], description: '', tools: '',
+        hero: '', images: [], video: null, layout: 'stacked', cardImage: ''
+      });
+      render();
+      var last = document.querySelectorAll('.project-card')[config.projects.length - 1];
+      if (last) last.classList.add('open');
+      toast('New project added');
+    }
+    function deleteProject(i) {
+      if (!confirm('Delete "' + config.projects[i].title + '"? This cannot be undone.')) return;
+      config.projects.splice(i, 1);
+      render();
+      toast('Project deleted');
+    }
+    function previewProject(id) {
+      window.open('project.html?id=' + config.projects.findIndex(function(p) { return p.id === id; }), '_blank');
+    }
+    function resetAll() {
+      if (!confirm('Discard all changes and reload from config.json?')) return;
+      location.reload();
+    }
+
+    // ── Download ──
+    function downloadConfig() {
+      var clean = JSON.parse(JSON.stringify(config));
+      delete clean._schema; delete clean._help;
+      var json = JSON.stringify(clean, null, 2);
+      var blob = new Blob([json], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'config.json';
+      a.click();
+      toast('config.json downloaded! Replace the file in your portfolio folder and deploy.');
+    }
+
+    // ── Utilities ──
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escAttr(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  </script>
+</body>
+</html>
