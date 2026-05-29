@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project — Jiaxuan Gong</title>
+  <meta name="description" content="Jiaxuan Gong — Design project detail">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text: #364153; --text-head: #101828; --text-mid: #4a5565;
+      --text-light: #6a7282; --bg: #fff; --bg-warm: #f9fafb;
+      --border: #e5e7eb; --accent: #6366f1; --max-w: 800px;
+      --font: 'Inter', 'SF Pro', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font); font-size: 16px; line-height: 1.68;
+      color: var(--text); background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+
+    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
+
+    /* ── Back nav ── */
+    .back-nav {
+      padding: 1.5rem 0; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+    }
+    .back-nav a { font-size: 0.88rem; color: var(--text-mid); }
+
+    /* ── Hero ── */
+    .hero-img {
+      width: 100%; max-height: 55vh; object-fit: cover;
+      border-radius: 0 0 16px 16px; background: #e5e7eb;
+    }
+
+    /* ── Header ── */
+    .proj-header { padding: 2rem 0 0.5rem; }
+    .proj-header h1 { font-size: 2rem; font-weight: 700; color: var(--text-head); line-height: 1.2; margin-bottom: 0.3rem; }
+    .proj-header .subtitle { font-size: 1.05rem; color: var(--accent); font-weight: 500; margin-bottom: 0.8rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem; }
+    .tags span {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
+      padding: 0.2rem 0.5rem; border-radius: 4px; background: #eef2ff; color: #4338ca;
+    }
+
+    .desc { font-size: 1rem; line-height: 1.78; color: var(--text-mid); margin-bottom: 1rem; }
+    .tools { font-size: 0.88rem; color: var(--text-light); margin-bottom: 2rem; }
+    .tools strong { color: var(--text-head); }
+
+    /* ── Gallery ── */
+    .section-title {
+      font-size: 1.2rem; font-weight: 600; color: var(--text-head);
+      margin-bottom: 0.8rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .gallery {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem; margin-bottom: 2.5rem;
+    }
+    .gallery img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      border-radius: 8px; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background: #e5e7eb;
+    }
+    .gallery img:hover { transform: scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+    /* ── Video ── */
+    .video-wrap { margin-bottom: 2.5rem; }
+    .video-wrap video { width: 100%; border-radius: 12px; background: #000; }
+    .video-placeholder {
+      padding: 3rem 2rem; text-align: center; background: var(--bg-warm);
+      border-radius: 12px; color: var(--text-light); font-size: 0.9rem;
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 2rem 0 3rem; border-top: 1px solid var(--border); margin-top: 1rem;
+      flex-wrap: wrap; gap: 0.5rem;
+    }
+    .bottom-nav a { font-size: 0.9rem; }
+    .bottom-nav .prev::before { content: "← "; }
+    .bottom-nav .next::after { content: " →"; }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .lightbox.active { opacity: 1; pointer-events: auto; }
+    .lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 4px; }
+    .lightbox .close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      color: #fff; font-size: 2rem; cursor: pointer; line-height: 1;
+    }
+
+    @media (max-width: 640px) {
+      .proj-header h1 { font-size: 1.5rem; }
+      .gallery { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-nav">
+    <div class="wrapper"><a href="index.html#projects">← Back to Portfolio</a></div>
+  </div>
+
+  <img class="hero-img" src="" alt="" id="heroImg">
+
+  <div class="wrapper">
+    <div class="proj-header">
+      <h1 id="projTitle"></h1>
+      <div class="subtitle" id="projSubtitle"></div>
+      <div class="tags" id="projTags"></div>
+      <div class="desc" id="projDesc"></div>
+      <div class="tools" id="projTools"></div>
+    </div>
+
+    <div class="section-title">Gallery</div>
+    <div class="gallery" id="gallery"></div>
+
+    <div class="section-title">Video</div>
+    <div class="video-wrap" id="videoWrap"></div>
+
+    <div class="bottom-nav">
+      <a href="index.html#projects">← Back to Portfolio</a>
+      <span>
+        <a href="#" class="prev" id="prevLink">Previous</a>
+        &nbsp;·&nbsp;
+        <a href="#" class="next" id="nextLink">Next</a>
+      </span>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lbClose">&times;</span>
+    <img src="" alt="" id="lbImg">
+  </div>
+
+  <script>
+    var folderNames = ["remembery","woodblock","textile","listen","huiyi","museum"];
+
+    var projects = [{
+      title: "REMEMBERY",
+      subtitle: "Multi-Stakeholder Alzheimer's Care App",
+      tags: ["User Research","Accessibility","UX Design","Health Tech"],
+      desc: "REMEMBERY is a mobile application designed for four distinct user groups — patients with Alzheimer's disease, family caregivers, doctors, and social workers — each with unique needs and interaction patterns. The design process began with stakeholder interviews and persona development to understand the care ecosystem. For patients, the focus was on cognitive training exercises with simplified navigation and high-contrast visuals to accommodate cognitive decline. For family caregivers, emergency response workflows and daily care coordination tools. For doctors, a monitoring dashboard tracking patient progress. For social workers, case management and resource allocation tools. The project demonstrates a complete user-centered design process: from user needs assessment through iterative prototyping to high-fidelity interactive mockups. Accessibility considerations — including font sizing, color contrast, touch target sizing, and simplified navigation hierarchies — were integrated from the earliest wireframes rather than retrofitted.",
+      tools: "<strong>Tools:</strong> Figma · User Interviews · Persona Development · Iterative Prototyping · Accessibility Guidelines (WCAG)",
+      hero: "images/remembery/board.jpg",
+      gallery: ["mockup1.jpg","mockup2.jpg","mockup3.jpg","ui1.jpg","ui2.jpg","ui3.jpg"],
+      video: null
+    }, {
+      title: "木上生画",
+      subtitle: "Gamified Cultural Heritage EdTech App",
+      tags: ["UX Research","EdTech","Information Architecture","Gamification"],
+      desc: "An iPad application designed to teach the heritage of Zhuxianzhen woodblock prints — a centuries-old Chinese craft tradition — through gamified, interactive learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app is organized into three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project transforms passive cultural consumption into active discovery, demonstrating how UX research methods can be applied to design engaging educational technology.",
+      tools: "<strong>Tools:</strong> Adobe XD · Card Sorting · IA Design · Wireframing · High-Fidelity Prototyping",
+      hero: "images/woodblock/ipad1.jpg",
+      gallery: ["ipad2.jpg","ipad3.jpg","home.jpg","onboarding.jpg","ia.jpg","wireframe.jpg"],
+      video: null
+    }, {
+      title: "TEXTILE 2050",
+      subtitle: "Interactive Installation with Physical Computing",
+      tags: ["Physical Computing","Prototyping","Interactive Media","Sustainability"],
+      desc: "A future-sustainability themed interactive digital media installation that invites visitors to physically engage with textile-inspired interfaces. The installation uses Arduino pressure sensors and ultrasonic distance sensors to detect visitor touch and proximity, triggering real-time generative visuals through TouchDesigner. The 3D environment — a speculative future factory — was modeled in Blender. Visitors could press fabric swatches to 'grow' virtual plants or approach sensors to reveal hidden layers of the narrative about sustainable textile production. The project was exhibited at the university gallery, demonstrating end-to-end capability: hardware sensor integration, real-time graphics programming, 3D environmental modeling, and public exhibition deployment. It explores how embodied, tangible interaction can communicate abstract environmental futures more effectively than passive media.",
+      tools: "<strong>Tools:</strong> Arduino (Pressure + Ultrasonic Sensors) · TouchDesigner · Blender · 3D Modeling · Exhibition Design",
+      hero: "images/textile/exhibit1.jpg",
+      gallery: ["exhibit2.jpg","exhibit3.jpg","render1.jpg","render2.jpg","display1.jpg","display2.jpg"],
+      video: null
+    }, {
+      title: "LISTEN",
+      subtitle: "Multimodal Sensory Interaction Concept",
+      tags: ["Interaction Design","Creative Coding","Multimodal","Sensory Design"],
+      desc: "An interactive installation concept exploring auditory-visual synesthesia — the perceptual crossing of sound and sight. The installation creates an immersive environment where visual forms respond dynamically to sonic input, using TouchDesigner for real-time generative graphics synchronized with a spatial audio system. A 3D environment modeled in Blender serves as the spatial canvas. The concept investigates how cross-modal sensory feedback — when visual patterns, colors, and movements are directly driven by sound parameters — can shape user perception and emotional response. The project contributes to research on multisensory interaction design by demonstrating how creative coding and spatial design can create experiences where hearing and seeing become intertwined.",
+      tools: "<strong>Tools:</strong> TouchDesigner · Blender · Spatial Audio · 3D Modeling · Creative Coding",
+      hero: "images/listen/3.jpg",
+      gallery: ["1.jpg","2.jpg","4.jpg","5.jpg"],
+      video: null
+    }, {
+      title: "会意AD",
+      subtitle: "Immersive Health Communication Space",
+      tags: ["Health Communication","Immersive Design","Accessibility"],
+      desc: "An immersive spatial experience designed to communicate Alzheimer's disease awareness to the general public. Through environmental storytelling — combining spatial design, curated lighting, soundscapes, and information graphics — the installation translates complex medical and neurological concepts into an embodied, emotionally resonant visitor experience. The design strategy uses metaphor and sensory immersion to make invisible cognitive conditions tangibly felt: visitors move through spaces that simulate memory fragmentation, temporal disorientation, and sensory overload. The project demonstrates how human-centered spatial design can bridge the gap between clinical knowledge and public understanding, making complex health conditions accessible through experiential learning.",
+      tools: "<strong>Tools:</strong> Spatial Design · Environmental Graphics · Exhibition Design · Storyboarding",
+      hero: "images/huiyi/board1.jpg",
+      gallery: ["board2.jpg","board3.jpg"],
+      video: null
+    }, {
+      title: "NUA Museum",
+      subtitle: "Website UX Redesign for University Museum",
+      tags: ["UX Design","Information Architecture","Visual Design"],
+      desc: "A comprehensive user experience redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation of the existing site, identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around these three primary visitor goals. A visual refresh modernized the interface — updating typography, color palette, and spacing — while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context.",
+      tools: "<strong>Tools:</strong> Figma · Heuristic Evaluation · Task Analysis · IA Design · Visual Design",
+      hero: "images/museum/home.jpg",
+      gallery: ["page1.jpg","page2.jpg","page3.jpg","page4.jpg"],
+      video: null
+    }];
+
+    var params = new URLSearchParams(window.location.search);
+    var id = parseInt(params.get('id')) || 0;
+    if (id < 0 || id >= projects.length) id = 0;
+
+    var p = projects[id];
+    var basePath = "images/" + folderNames[id] + "/";
+
+    document.title = p.title + " — Jiaxuan Gong";
+    document.getElementById('heroImg').src = p.hero;
+    document.getElementById('heroImg').alt = p.title;
+    document.getElementById('projTitle').textContent = p.title;
+    document.getElementById('projSubtitle').textContent = p.subtitle;
+    document.getElementById('projTags').innerHTML = p.tags.map(function(t) { return '<span>' + t + '</span>'; }).join('');
+    document.getElementById('projDesc').textContent = p.desc;
+    document.getElementById('projTools').innerHTML = p.tools;
+
+    var gallery = document.getElementById('gallery');
+    p.gallery.forEach(function(img) {
+      var el = document.createElement('img');
+      el.src = basePath + img;
+      el.alt = p.title;
+      el.loading = 'lazy';
+      el.addEventListener('click', function() { openLightbox(el.src); });
+      gallery.appendChild(el);
+    });
+
+    var vw = document.getElementById('videoWrap');
+    if (p.video) {
+      vw.innerHTML = '<video controls poster="' + p.hero + '"><source src="' + p.video + '" type="video/mp4"></video>';
+    } else {
+      vw.innerHTML = '<div class="video-placeholder">Video demo available upon request — <a href="mailto:gongjiaxuan169@gmail.com">contact me</a></div>';
+    }
+
+    var prevId = (id - 1 + projects.length) % projects.length;
+    var nextId = (id + 1) % projects.length;
+    document.getElementById('prevLink').href = 'project.html?id=' + prevId;
+    document.getElementById('nextLink').href = 'project.html?id=' + nextId;
+
+    var lb = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lbImg');
+    function openLightbox(src) { lbImg.src = src; lb.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeLightbox() { lb.classList.remove('active'); document.body.style.overflow = ''; }
+    document.getElementById('lbClose').addEventListener('click', closeLightbox);
+    lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+</body>
+</html>
