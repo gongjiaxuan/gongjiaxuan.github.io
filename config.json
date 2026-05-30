@@ -218,7 +218,7 @@
       ],
       "processImages": [],
       "video": {
-        "src": "videos/____.mp4",
+        "src": "videos/remembery.mp4",
         "poster": "images/remembery/mockup1.jpg"
       },
       "layout": "stacked",
