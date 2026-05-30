@@ -245,7 +245,7 @@
       var kh='';K.forEach(function(s){kh+='<div class="sk-group"><strong>'+s.name+'</strong>'+s.items+'</div>'});document.getElementById('skillsGrid').innerHTML=kh;
 
       // Projects
-      var prh='',prIndex=0;PR.forEach(function(p){prh+='<a class="proj-card" href="project.html?id='+prIndex+'"><div class="pc-preview"><img src="'+p.cardImage+'" alt="'+p.title+'" loading="lazy"><span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+(p.tags||[]).slice(0,3).map(function(t){return'<span class="pc-tag">'+t+'</span>'}).join('')+'</div></a>';prIndex++});document.getElementById('projRow').innerHTML=prh;
+      var prh='',prIndex=0;PR.forEach(function(p){prh+='<a class="proj-card" href="project.html?id='+prIndex+'"><div class="pc-preview"><img src="'+p.cardImage+'" alt="'+p.title+'" loading="lazy"><span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+(p.tags||[]).slice(0,3).map(function(t){return'<span class="pc-tag">'+t+'</span>'}).join('')+'</div></a>';prIndex++});document.getElementById('projRow').innerHTML=prh;initProjScroll();
 
       // Footer
       if(S.email)document.getElementById('ftEmail').href='mailto:'+S.email;
@@ -265,8 +265,8 @@
     // ── Timeline gradient ──
     (function(){setTimeout(function(){var tl=document.querySelector('.tl');if(!tl)return;var items=document.querySelectorAll('.tl-it');if(!items.length)return;var tp=0,cp=0,cy=window.innerHeight*0.45;function ct(){var b=null,bd=Infinity;items.forEach(function(item){var r=item.getBoundingClientRect();var m=r.top+r.height/2;var d=Math.abs(m-cy);if(d<bd){bd=d;b=item}});if(b){var tr=tl.getBoundingClientRect();var ir=b.getBoundingClientRect();var im=ir.top+ir.height/2-tr.top;tp=(im/tl.offsetHeight)*100}}function tick(){cp+=(tp-cp)*0.1;tl.style.setProperty('--tl-pos',cp.toFixed(1)+'%');requestAnimationFrame(tick)}window.addEventListener('scroll',ct,{passive:true});ct();tick()},500)})();
 
-    // ── Project scroll ──
-    (function(){setTimeout(function(){var r=document.getElementById('projRow'),l=document.querySelector('.proj-l'),rt=document.querySelector('.proj-r');if(!r)return;function u(){if(l)l.disabled=r.scrollLeft<=1;if(rt)rt.disabled=r.scrollLeft>=r.scrollWidth-r.clientWidth-1}if(l)l.addEventListener('click',function(){r.scrollBy({left:-280,behavior:'smooth'})});if(rt)rt.addEventListener('click',function(){r.scrollBy({left:280,behavior:'smooth'})});r.addEventListener('scroll',u,{passive:true});u()},500)})();
+    // ── Project scroll (called after data renders) ──
+    function initProjScroll(){var r=document.getElementById('projRow'),l=document.querySelector('.proj-l'),rt=document.querySelector('.proj-r');if(!r)return;function u(){if(l)l.disabled=r.scrollLeft<=1;if(rt)rt.disabled=r.scrollLeft>=r.scrollWidth-r.clientWidth-1}if(l)l.addEventListener('click',function(){r.scrollBy({left:-280,behavior:'smooth'})});if(rt)rt.addEventListener('click',function(){r.scrollBy({left:280,behavior:'smooth'})});r.addEventListener('scroll',u,{passive:true});u()}
 
     // ── Mobile nav ──
     document.getElementById('navToggle').addEventListener('click',function(){document.getElementById('navMenu').classList.toggle('open')});
