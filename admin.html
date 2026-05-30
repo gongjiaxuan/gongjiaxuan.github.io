@@ -637,7 +637,7 @@
         var body = JSON.stringify({ config: clean, files: files, message: 'Update from CMS' });
         fetch('http://localhost:8765/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
           .then(function(r) { return r.text(); })
-          .then(function(msg) { toast(msg); changed = false; document.getElementById('changedIndicator').style.display = 'none'; })
+          .then(function(msg) { toast(msg); changed = false; document.getElementById('changedIndicator').style.display = 'none'; cfg._uploads = []; cfg._siteUploads = null; if(cfg.site)cfg.site._photoUpload=null; cfg.projects.forEach(function(p){p._uploads=[]}); saveDraft(); setTimeout(function(){location.reload()},1500); })
           .catch(function() { toast('❌ Cannot reach deploy server. Run: python deploy.py'); })
           .finally(function() { btn.textContent = '🚀 Deploy'; btn.disabled = false; });
       }).catch(function(e) { toast('Error: ' + e.message); btn.textContent = '🚀 Deploy'; btn.disabled = false; });

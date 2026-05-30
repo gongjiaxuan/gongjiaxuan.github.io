@@ -20,14 +20,19 @@
     .back-nav a{font-size:14px;color:var(--tm)}.back-nav .counter{font-size:12px;color:#bbb}
 
     /* ── Hero carousel ── */
-    .carousel{position:relative;width:100%;background:#e5e5e5;overflow:hidden;user-select:none}
-    .carousel-track{display:flex;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);will-change:transform}
+    .carousel{position:relative;width:100%;background:#e5e5e5;overflow:hidden;user-select:none;touch-action:pan-y}
+    .carousel-track{display:flex;transition:transform 0.55s cubic-bezier(0.22,0.61,0.36,1);will-change:transform}
     .carousel-slide{flex:0 0 100%;display:flex;align-items:center;justify-content:center}
-    .carousel-slide img{width:100%;height:auto;max-height:70vh;object-fit:contain;display:block}
-    .carousel-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:0.4rem;z-index:2}
-    .carousel-dots .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:background 0.2s;border:1px solid rgba(0,0,0,0.15)}
-    .carousel-dots .dot.active{background:#fff;border-color:transparent}
-    .carousel-hint{position:absolute;bottom:2.5rem;right:1.5rem;font-size:11px;color:rgba(255,255,255,0.7);pointer-events:none;z-index:2;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
+    .carousel-slide img{width:100%;height:auto;max-height:70vh;object-fit:contain;display:block;pointer-events:none}
+    .carousel-arrows{position:absolute;top:50%;transform:translateY(-50%);width:100%;display:flex;justify-content:space-between;padding:0 1rem;pointer-events:none;z-index:3}
+    .carousel-arrow{pointer-events:auto;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);border:1px solid rgba(0,0,0,0.08);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.2s;opacity:0}
+    .carousel:hover .carousel-arrow{opacity:1}
+    .carousel-arrow:disabled{opacity:0.2;cursor:default}
+    .carousel-arrow svg{width:18px;height:18px;color:#444}
+    .carousel-dots{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:2}
+    .carousel-dots .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.55);cursor:pointer;transition:all 0.2s;border:none}
+    .carousel-dots .dot.active{background:#fff;box-shadow:0 0 6px rgba(0,0,0,0.15);transform:scale(1.2)}
+    .carousel-hint{position:absolute;bottom:2.8rem;right:1.5rem;font-size:11px;color:rgba(255,255,255,0.65);pointer-events:none;z-index:2;text-shadow:0 1px 3px rgba(0,0,0,0.4);font-weight:500}
 
     /* ── Project info ── */
     .proj-info{padding:2.5rem 0 1rem}
@@ -73,6 +78,10 @@
   <!-- Carousel -->
   <div class="carousel" id="carousel">
     <div class="carousel-track" id="track"></div>
+    <div class="carousel-arrows">
+      <button class="carousel-arrow" id="prevArrow" aria-label="Previous"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg></button>
+      <button class="carousel-arrow" id="nextArrow" aria-label="Next"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button>
+    </div>
     <div class="carousel-dots" id="dots"></div>
     <div class="carousel-hint" id="hint"></div>
   </div>
@@ -122,15 +131,20 @@
       document.getElementById('desc').textContent=p.description;
       document.getElementById('tools').innerHTML='<strong>Tools:</strong> '+p.tools;
 
-      // ── Build carousel: hero + gallery images
+      // ── Build carousel ──
       var allSlides=[p.hero];
       if(p.images&&p.images.length)allSlides=allSlides.concat(p.images.map(function(img){return'images/'+img.src}));
-      var curIdx=0,track=document.getElementById('track'),dots=document.getElementById('dots'),hint=document.getElementById('hint');
+      var curIdx=0,total=allSlides.length,track=document.getElementById('track'),dots=document.getElementById('dots'),hint=document.getElementById('hint');
+      var prevArrow=document.getElementById('prevArrow'),nextArrow=document.getElementById('nextArrow');
+      var wheelLock=false,touchStartX=0;
 
-      function updateCarousel(idx,animate){
-        curIdx=idx;var offset=-idx*100;track.style.transform='translateX('+offset+'%)';
-        document.querySelectorAll('.carousel-dots .dot').forEach(function(d,i){d.classList.toggle('active',i===idx)});
-        hint.textContent=allSlides.length>1?(idx+1)+'/'+allSlides.length:'';
+      function goTo(idx){
+        curIdx=Math.max(0,Math.min(idx,total-1));
+        track.style.transform='translateX('+(-curIdx*100)+'%)';
+        document.querySelectorAll('.carousel-dots .dot').forEach(function(d,i){d.classList.toggle('active',i===curIdx)});
+        hint.textContent=total>1?(curIdx+1)+'/'+total:'';
+        prevArrow.disabled=curIdx===0;
+        nextArrow.disabled=curIdx>=total-1;
       }
 
       allSlides.forEach(function(src,i){
@@ -139,17 +153,32 @@
         img.addEventListener('click',function(){openLb(i)});
         slide.appendChild(img);track.appendChild(slide);
         var d=document.createElement('span');d.className='dot'+(i===0?' active':'');
-        d.addEventListener('click',function(){updateCarousel(i,true)});
+        d.addEventListener('click',function(){goTo(i)});
         dots.appendChild(d);
       });
 
-      if(allSlides.length>1){
-        track.parentElement.addEventListener('wheel',function(e){
-          e.preventDefault();
-          if(e.deltaY>0&&curIdx<allSlides.length-1)updateCarousel(curIdx+1,true);
-          else if(e.deltaY<0&&curIdx>0)updateCarousel(curIdx-1,true);
-        },{passive:false});
+      if(total>1){
+        // Smooth wheel with debounce
+        var carousel=document.getElementById('carousel');
+        carousel.addEventListener('wheel',function(e){
+          if(wheelLock)return;
+          if(e.deltaY>30&&curIdx<total-1){wheelLock=true;goTo(curIdx+1)}
+          else if(e.deltaY<-30&&curIdx>0){wheelLock=true;goTo(curIdx-1)}
+          setTimeout(function(){wheelLock=false},600);
+        },{passive:true});
+
+        // Touch swipe
+        carousel.addEventListener('touchstart',function(e){touchStartX=e.touches[0].clientX},{passive:true});
+        carousel.addEventListener('touchend',function(e){
+          var dx=e.changedTouches[0].clientX-touchStartX;
+          if(Math.abs(dx)>50){if(dx<0&&curIdx<total-1)goTo(curIdx+1);else if(dx>0&&curIdx>0)goTo(curIdx-1)}
+        });
+
+        // Arrow buttons
+        prevArrow.addEventListener('click',function(){goTo(curIdx-1)});
+        nextArrow.addEventListener('click',function(){goTo(curIdx+1)});
       }
+      goTo(0);
 
       // ── Process images
       if(p.processImages&&p.processImages.length){
