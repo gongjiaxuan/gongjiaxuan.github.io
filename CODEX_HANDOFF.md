@@ -375,6 +375,52 @@ gongjiaxuan169@gmail.com
 
 ---
 
+---
+
+# 📱 HCI+ 暑研微信公众号文章
+
+> ⚠️ 微信有反爬保护，WebFetch/Jina 会被拦截。必须用 **CDP 浏览器模式**（已连接 Chrome，Proxy 在 localhost:3456）才能查看原文。
+
+| # | 标题 | URL |
+|---|------|-----|
+| 1 | **HCI+2026｜暑期研究项目面试启动+申请延长**（主文章，含申请条件、导师列表、项目内容） | `https://mp.weixin.qq.com/s/OPFYGTcyw3Y6pM_XvZZvDg` |
+| 2 | **HCI+2026｜导师介绍**（18位导师完整Bio+研究方向） | `https://mp.weixin.qq.com/s?__biz=Mzg3ODYyNTcxNg==&mid=2247485506&idx=1&sn=0fb22684f60d3cce8abda5159e6719ab` |
+| 3 | **HCI+2025 招募通知**（去年版本，可参考项目历史） | `http://mp.weixin.qq.com/s?__biz=Mzg3ODYyNTcxNg==&mid=2247485322&idx=1&sn=6da7edd82707991a01ca64cf6b2e69de` |
+
+## 用 CDP 查看微信文章的方法
+
+```bash
+# 1. 打开新 tab
+curl -s -X POST --data-raw 'https://mp.weixin.qq.com/s/OPFYGTcyw3Y6pM_XvZZvDg' http://localhost:3456/new
+
+# 2. 提取文章内容
+curl -s -X POST "http://localhost:3456/eval?target=<从步骤1获取的targetId>" -d "document.querySelector('#js_content').innerText"
+```
+
+## 文章摘要（Claude 已抓取的核心信息）
+
+**文章1 — 主文章内容**：
+- 自5月7日报名以来已收到大量申请
+- 面试由相关导师邮件通知，未进入面试不再另行通知
+- **原截止5月20日，延长至5月30日**
+- 项目时间：2026年6-9月（导师自定）
+- 地点：远程线上
+- 报名方式：在线申请表
+- 申请条件：英语能力、CS/EE/IE专业背景、HCI/AI研究经历优先
+- 导师按首字母A-Z排列（全文约18位导师+36个课题详情）
+
+**文章2 — 导师介绍内容**：
+- 项目由清华、港城大、港科广等多校HCI教授联合组织
+- 专注以人为本的智能技术创新
+- 每位参与者以小组形式加入导师项目
+- 将有系列专题讲座和前沿课程
+- 2026年招募远程实习生，至少3个月，每周30h+
+- 学术顾问：史元春(清华)、赵盛东(港城大)
+- 项目主席：易鑫(清华)
+- 18位导师完整Bio（研究背景、获奖、论文发表）
+
+---
+
 ## 十、手动链接索引
 
 | 用途 | 链接 |
@@ -383,6 +429,10 @@ gongjiaxuan169@gmail.com
 | 编辑器 | https://gongjiaxuan.github.io/admin.html |
 | Google Scholar | https://scholar.google.com/citations?user=FtQ2NOUAAAAJ |
 | GitHub | https://github.com/gongjiaxuan |
+| 暑研申请表 | https://wj.qq.com/s2/26569312/valy/ |
+| 暑研咨询 | hcixclub@gmail.com |
+| HCI+ 主文章 | https://mp.weixin.qq.com/s/OPFYGTcyw3Y6pM_XvZZvDg |
+| HCI+ 导师介绍 | https://mp.weixin.qq.com/s?__biz=Mzg3ODYyNTcxNg==&mid=2247485506&idx=1&sn=0fb22684f60d3cce8abda5159e6719ab |
 | CV Overleaf 代码 | 上文对话中已提供完整 LaTeX |
 | 设计素材 | `E:\PHD_27\01_个人材料\设计项目\` |
 | 硕士论文 | `E:\硕士学位论文最终精修\` |
