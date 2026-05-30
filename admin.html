@@ -140,6 +140,7 @@
         <div style="display:flex;gap:0.4rem;align-items:center">
           <span class="changed" id="changedIndicator" style="display:none"><span class="dot"></span> Unsaved</span>
           <button class="btn" onclick="saveDraft()">💾 Draft</button>
+          <button class="btn" onclick="localStorage.clear();location.reload()" title="Clear saved draft and reload from server">🗑</button>
           <button class="btn primary" onclick="doDeploy()" id="deployBtn">🚀 Deploy</button>
         </div>
       </div>
@@ -245,10 +246,16 @@
     var changed = false;
 
     // ── Init ──
-    fetch('config.json')
+    fetch('config.json?t=' + Date.now())
       .then(function(r) { return r.json(); })
-      .then(function(c) { cfg = c; if (!loadDraft()) { /* use fresh config */ } renderSidebar(); selectProject(0); })
-      .catch(function() { document.getElementById('main').innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json. Start deploy server: python deploy.py</p>'; });
+      .then(function(c) {
+        cfg = c;
+        var hasDraft = loadDraft();
+        renderSidebar();
+        if (cfg.projects && cfg.projects.length > 0) { selectProject(0); }
+        if (hasDraft) { toast('📝 Loaded saved draft'); }
+      })
+      .catch(function() { document.getElementById('main').innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json<br><small>Open this page from: <code>gongjiaxuan.github.io/admin.html</code></small><br><br><button class="btn" onclick="localStorage.clear();location.reload()">Clear Cache & Reload</button></p>'; });
 
     function toast(m) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 1800); }
     function markChanged() { changed = true; document.getElementById('changedIndicator').style.display = 'flex'; }
