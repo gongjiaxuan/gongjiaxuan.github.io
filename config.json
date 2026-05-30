@@ -15,8 +15,8 @@
   },
   "about": {
     "paragraphs": [
-      "My research asks how people actually experience the technologies we build. I make interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — then test them with users through surveys, interviews, and structural equation models. My M.F.A. thesis research explores how augmented reality can bring traditional Yixing Zisha pottery to life in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
-      "I am developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is (and isn't) serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
+      "My research asks how people actually experience the technologies we build. I make interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — then test them with real users through surveys, interviews, and structural equation models. My M.F.A. thesis explored how augmented reality can bring traditional Yixing Zisha pottery to life in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
+      "I've led a PRISMA systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is (and isn't) serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
       "I came to research through design. My B.F.A. in visual communication taught me to care about how things look and feel; my M.F.A. taught me to care about whether they actually work. These days I split my time between making things and measuring their impact — a combination I'd like to keep pursuing in a PhD. Outside of work: I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
     ],
     "highlight": "I'm currently looking for a summer 2026 research internship — especially projects at the intersection of AI-mediated communication, accessibility, or immersive media. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
@@ -165,7 +165,7 @@
     },
     {
       "date": "May 2026",
-      "title": "Master's thesis research: AR Display Design for Cultural Heritage & User Acceptance",
+      "title": "Master's thesis defended: AR Display Design for Cultural Heritage & User Acceptance",
       "detail": "Unity + Vuforia AR prototype, SOR-TAM-Flow model, N=388 CB-SEM study"
     },
     {
@@ -216,13 +216,70 @@
           "alt": "6.jpg"
         }
       ],
-      "processImages": [],
+      "processImages": [
+        {
+          "src": "remembery/1_1.jpg",
+          "alt": "1~1.jpg"
+        },
+        {
+          "src": "remembery/2_1.jpg",
+          "alt": "2~1.jpg"
+        },
+        {
+          "src": "remembery/3_1.jpg",
+          "alt": "3~1.jpg"
+        }
+      ],
       "video": {
-        "src": "videos/remembery.mp4",
+        "src": "videos/____.mp4",
         "poster": "images/remembery/mockup1.jpg"
       },
       "layout": "stacked",
       "cardImage": "images/remembery.jpg"
+    },
+    {
+      "id": "museum",
+      "title": "NUA Museum",
+      "subtitle": "Website UX Redesign for University Museum",
+      "cardBlurb": "Heuristic evaluation + task analysis + IA redesign for Nanjing University of the Arts museum website. Structured around visitor goals.",
+      "tags": [
+        "UX Design",
+        "Information Architecture",
+        "Visual Design",
+        "Heuristic Evaluation"
+      ],
+      "description": "A comprehensive UX redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around three primary visitor goals. A visual refresh updated typography, color palette, and spacing while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context: from diagnostic evaluation through structural redesign to visual implementation.",
+      "tools": "Figma · Heuristic Evaluation · Task Analysis · Information Architecture · Visual Design",
+      "hero": "images/museum/_______1___1.png",
+      "images": [
+        {
+          "src": "museum/_______1___1.png",
+          "alt": "南艺美术馆首页1 – 1.png"
+        },
+        {
+          "src": "museum/_______1___2.png",
+          "alt": "南艺美术馆首页1 – 2.png"
+        },
+        {
+          "src": "museum/_______1___3.png",
+          "alt": "南艺美术馆首页1 – 3.png"
+        },
+        {
+          "src": "museum/_______1___4.png",
+          "alt": "南艺美术馆首页1 – 4.png"
+        },
+        {
+          "src": "museum/_______1___5.png",
+          "alt": "南艺美术馆首页1 – 5.png"
+        }
+      ],
+      "processImages": [],
+      "video": {
+        "src": "videos/museum.mp4",
+        "poster": "images/museum/home.jpg"
+      },
+      "layout": "stacked",
+      "cardImage": "images/museum.jpg"
     },
     {
       "id": "woodblock",
@@ -381,48 +438,8 @@
       "cardImage": "images/huiyi.jpg"
     },
     {
-      "id": "museum",
-      "title": "NUA Museum",
-      "subtitle": "Website UX Redesign for University Museum",
-      "cardBlurb": "Heuristic evaluation + task analysis + IA redesign for Nanjing University of the Arts museum website. Structured around visitor goals.",
-      "tags": [
-        "UX Design",
-        "Information Architecture",
-        "Visual Design",
-        "Heuristic Evaluation"
-      ],
-      "description": "A comprehensive UX redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around three primary visitor goals. A visual refresh updated typography, color palette, and spacing while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context: from diagnostic evaluation through structural redesign to visual implementation.",
-      "tools": "Figma · Heuristic Evaluation · Task Analysis · Information Architecture · Visual Design",
-      "hero": "images/museum/home.jpg",
-      "images": [
-        {
-          "src": "museum/page1.jpg",
-          "alt": "Redesigned homepage with clear navigation hierarchy"
-        },
-        {
-          "src": "museum/page2.jpg",
-          "alt": "Exhibition listing page — improved content discoverability"
-        },
-        {
-          "src": "museum/page3.jpg",
-          "alt": "Collection detail page with restructured layout"
-        },
-        {
-          "src": "museum/page4.jpg",
-          "alt": "Event registration page — streamlined visitor flow"
-        }
-      ],
-      "processImages": [],
-      "video": {
-        "src": "videos/museum.mp4",
-        "poster": "images/museum/home.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/museum.jpg"
-    },
-    {
       "id": "project-1780122503226",
-      "title": "New Project",
+      "title": "敦煌奇妙夜",
       "subtitle": "",
       "tags": [],
       "description": "",
@@ -432,21 +449,6 @@
       "video": null,
       "layout": "stacked",
       "cardImage": ""
-    },
-    {
-      "id": "dunhuang",
-      "title": "敦煌奇妙夜",
-      "subtitle": "Immersive Interactive Installation with Physical Computing",
-      "cardBlurb": "Flashlight-driven immersive installation exploring Dunhuang murals. TouchDesigner + real-time 3D animation triggered by visitor interaction.",
-      "tags": ["Interaction Design", "Physical Computing", "TouchDesigner", "Cultural Heritage"],
-      "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore — when the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. The installation was built with TouchDesigner for projection mapping and webcam-based light tracking, Blender for 3D character modeling, and AIGC tools for generating reference imagery. Multiple visitors can interact simultaneously, each flashlight triggering different animations. The physical space was constructed from cardboard, foam, and paint to recreate the texture and atmosphere of the original cave. The project explores how tangible interaction — the simple gesture of shining a light — can collapse the distance between ancient art and contemporary audiences, making cultural heritage feel alive and participatory.",
-      "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · AIGC · Physical Construction",
-      "hero": "images/dunhuang_hero.jpg",
-      "images": [],
-      "processImages": [],
-      "video": { "src": "videos/dunhuang.mp4", "poster": "images/dunhuang_hero.jpg" },
-      "layout": "stacked",
-      "cardImage": "images/dunhuang_hero.jpg"
     }
   ]
 }
