@@ -229,46 +229,6 @@
       "cardImage": "images/remembery.jpg"
     },
     {
-      "id": "remembery",
-      "title": "REMEMBERY",
-      "subtitle": "Multi-Stakeholder Alzheimer's Care App",
-      "cardBlurb": "UX design across four user groups — patients, family caregivers, doctors, and social workers. Accessibility-first approach to cognitive decline and care coordination.",
-      "tags": [
-        "User Research",
-        "Accessibility",
-        "UX Design",
-        "Health Tech"
-      ],
-      "description": "A mobile application co-designed for four user groups within the Alzheimer's care ecosystem: patients managing cognitive decline, family caregivers coordinating daily support, doctors tracking clinical progress, and social workers allocating community resources. The design process began with stakeholder interviews and persona development to map the distinct needs of each group. For patients, the interface prioritizes simplified navigation, high-contrast visuals, and cognitive training exercises. For caregivers, it surfaces emergency workflows and care coordination tools. For clinicians, it provides a monitoring dashboard. For social workers, it supports case management and resource matching. Accessibility was not retrofitted — WCAG guidelines informed every wireframe from the start, shaping decisions about font sizing, touch targets, color contrast, and navigation hierarchy. The project demonstrates a complete user-centered design process from needs assessment through iterative prototyping to high-fidelity interactive mockups.",
-      "tools": "Figma · Stakeholder Interviews · Persona Development · Iterative Prototyping · WCAG Accessibility Guidelines",
-      "hero": "images/remembery/mockup1.jpg",
-      "images": [
-        {
-          "src": "remembery/mockup2.jpg",
-          "alt": "Device mockup showing family caregiver coordination dashboard"
-        },
-        {
-          "src": "remembery/mockup3.jpg",
-          "alt": "Device mockup showing doctor monitoring view"
-        },
-        {
-          "src": "remembery/2.jpg",
-          "alt": "2.jpg"
-        },
-        {
-          "src": "remembery/6.jpg",
-          "alt": "6.jpg"
-        }
-      ],
-      "processImages": [],
-      "video": {
-        "src": "videos/____.mp4",
-        "poster": "images/remembery/mockup1.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/remembery.jpg"
-    },
-    {
       "id": "museum",
       "title": "NUA Museum",
       "subtitle": "Website UX Redesign for University Museum",

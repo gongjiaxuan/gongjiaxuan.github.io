@@ -103,7 +103,7 @@
     .up-item .remove-btn{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;border:none;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
     /* ── Toast ── */
-    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:0.6rem 1.2rem;border-radius:20px;font-size:0.8rem;z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:0.6rem 1.2rem;border-radius:20px;font-size:0.8rem;z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:normal;max-width:min(92vw,720px);text-align:center}
     .toast.show{opacity:1}
 
     /* ── Delete confirm ── */
@@ -139,8 +139,9 @@
         </div>
         <div style="display:flex;gap:0.4rem;align-items:center">
           <span class="changed" id="changedIndicator" style="display:none"><span class="dot"></span> Unsaved</span>
-          <button class="btn" onclick="saveDraft()">💾 Draft</button>
-          <button class="btn" onclick="localStorage.clear();location.reload()" title="Clear saved draft and reload from server">🗑</button>
+          <button class="btn" onclick="loadDraftFromStorage()" title="Load the local browser draft">Load Draft</button>
+          <button class="btn" onclick="saveDraft()" title="Save a local browser draft. This does not deploy.">Save Draft</button>
+          <button class="btn" onclick="clearDraftAndReload()" title="Clear only this portfolio draft and reload from server">Clear Draft</button>
           <button class="btn primary" onclick="doDeploy()" id="deployBtn">🚀 Deploy</button>
         </div>
       </div>
@@ -198,7 +199,7 @@
   <!-- Upload Modal -->
   <div class="modal-overlay" id="uploadModal">
     <div class="modal">
-      <div class="modal-h"><h2>Upload Images</h2><button class="btn icon" onclick="closeUpload()">✕</button></div>
+      <div class="modal-h"><h2 id="modalTitle">Upload Images</h2><button class="btn icon" onclick="closeUpload()">✕</button></div>
       <div class="modal-b">
         <div class="dropzone" id="dropzone" ondragover="this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleFiles(event.dataTransfer.files)" onclick="document.getElementById('fileInput').click()">
           <div class="icon">📁</div>
@@ -250,12 +251,12 @@
       .then(function(r) { return r.json(); })
       .then(function(c) {
         cfg = c;
-        var hasDraft = loadDraft();
+        var hasDraft = draftAvailable();
         renderSidebar();
         if (cfg.projects && cfg.projects.length > 0) { selectProject(0); }
-        if (hasDraft) { toast('📝 Loaded saved draft'); }
+        if (hasDraft) { toast('Local draft available. Use Load Draft if needed.'); }
       })
-      .catch(function() { document.getElementById('main').innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json<br><small>Open this page from: <code>gongjiaxuan.github.io/admin.html</code></small><br><br><button class="btn" onclick="localStorage.clear();location.reload()">Clear Cache & Reload</button></p>'; });
+      .catch(function() { document.body.innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json<br><small>Open this page from: <code>gongjiaxuan.github.io/admin.html</code></small><br><br><button class="btn" onclick="clearDraftAndReload()">Clear Draft & Reload</button></p>'; });
 
     function toast(m) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 1800); }
     function markChanged() { changed = true; document.getElementById('changedIndicator').style.display = 'flex'; }
@@ -381,6 +382,11 @@
       h += '<button class="upload-slot" onclick="event.stopPropagation();openProcUpload()">+</button>';
       h += '</div></div>';
 
+      // Custom narrative sections
+      h += '<div class="field"><label>Custom Detail Sections JSON <span class="opt">(optional advanced case-study layout; leave empty to use Gallery + Process + Video)</span></label>';
+      h += '<textarea onchange="setSectionsJson(this.value)" placeholder=\'[{ "type": "text", "title": "Research Context", "body": "..." }]\' style="min-height:150px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:0.72rem">' + esc(JSON.stringify(p.sections || [], null, 2)) + '</textarea>';
+      h += '<div style="font-size:0.6rem;color:var(--t2);margin-top:0.2rem">Supported types: text, imageText, gallery, video. When sections exist, project.html uses them instead of the default process/video stack.</div></div>';
+
       // Delete + Preview
       h += '<div style="display:flex;gap:0.4rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--bdr)">';
       h += '<button class="btn" onclick="window.open(\'project.html?id=' + curIdx + '\',\'_blank\')">↗ Open Live</button>';
@@ -409,13 +415,26 @@
     function setHero(j) {
       var p = cfg.projects[curIdx];
       p.hero = 'images/' + p.images[j].src;
-      p.cardImage = 'images/' + p.id + '.jpg';  // sync card image
+      p.cardImage = p.hero;
       markChanged(); renderEditor(); toast('Hero + card image synced ✓');
     }
     function addTag(ev) { if (ev.key !== 'Enter') return; ev.preventDefault(); var v = ev.target.value.trim(); if (v && cfg.projects[curIdx].tags.indexOf(v) === -1) { cfg.projects[curIdx].tags.push(v); markChanged(); renderEditor(); } }
     function rmTag(t) { cfg.projects[curIdx].tags = cfg.projects[curIdx].tags.filter(function(x) { return x !== t; }); markChanged(); renderEditor(); }
     function rmImg(j) { cfg.projects[curIdx].images.splice(j, 1); markChanged(); renderEditor(); }
     function setCaption(j, val) { cfg.projects[curIdx].images[j].caption = val; markChanged(); }
+    function setSectionsJson(val) {
+      var p = cfg.projects[curIdx];
+      if (!val.trim()) { delete p.sections; markChanged(); toast('Custom sections cleared'); return; }
+      try {
+        var parsed = JSON.parse(val);
+        if (!Array.isArray(parsed)) throw new Error('Sections must be an array');
+        p.sections = parsed;
+        markChanged();
+        toast('Custom sections updated');
+      } catch(e) {
+        toast('Invalid sections JSON: ' + e.message);
+      }
+    }
 
     // Process images
     function openProcUpload() { openUpload('process'); }
@@ -581,12 +600,31 @@
       delete clean._uploads; delete clean._siteUploads;
       if (clean.site) delete clean.site._photoUpload;
       clean.projects.forEach(function(p) { delete p._uploads; });
-      try { localStorage.setItem('portfolio_draft', JSON.stringify(clean)); changed = false; document.getElementById('changedIndicator').style.display = 'none'; toast('Draft saved ✓'); }
+      clean._draftSavedAt = new Date().toISOString();
+      try { localStorage.setItem('portfolio_draft', JSON.stringify(clean)); toast('Local draft saved. Deploy still needed.'); }
       catch(e) { toast('Save failed: ' + e.message); }
     }
+    function draftAvailable() {
+      try { return !!localStorage.getItem('portfolio_draft'); } catch(e) { return false; }
+    }
     function loadDraft() {
-      try { var d = localStorage.getItem('portfolio_draft'); if (d) { var parsed = JSON.parse(d); Object.keys(parsed).forEach(function(k) { cfg[k] = parsed[k]; }); return true; } } catch(e) {}
+      try { var d = localStorage.getItem('portfolio_draft'); if (d) { cfg = JSON.parse(d); delete cfg._draftSavedAt; return true; } } catch(e) {}
       return false;
+    }
+    function loadDraftFromStorage() {
+      if (!loadDraft()) { toast('No local draft found'); return; }
+      curIdx = -1;
+      renderSidebar();
+      if (cfg.projects && cfg.projects.length > 0) { selectProject(0); }
+      markChanged();
+      toast('Loaded local draft. Review before deploy.');
+    }
+    function clearDraft() {
+      try { localStorage.removeItem('portfolio_draft'); } catch(e) {}
+    }
+    function clearDraftAndReload() {
+      clearDraft();
+      location.reload();
     }
 
     // ── Deploy — send config + files to local server ──
@@ -598,9 +636,9 @@
       var files = {};
       function addFile(path, file) {
         var reader = new FileReader();
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
           reader.onload = function() { files[path] = reader.result.split(',')[1]; resolve(); };
-          reader.onerror = resolve;
+          reader.onerror = function() { reject(new Error('Could not read file: ' + file.name)); };
           reader.readAsDataURL(file);
         });
       }
@@ -621,9 +659,14 @@
       Promise.all(promises).then(function() {
         var body = JSON.stringify({ config: clean, files: files, message: 'Update from CMS' });
         fetch('http://localhost:8765/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
-          .then(function(r) { return r.text(); })
-          .then(function(msg) { toast(msg); changed = false; document.getElementById('changedIndicator').style.display = 'none'; cfg._uploads = []; cfg._siteUploads = null; if(cfg.site)cfg.site._photoUpload=null; cfg.projects.forEach(function(p){p._uploads=[]}); saveDraft(); setTimeout(function(){location.reload()},1500); })
-          .catch(function() { toast('❌ Cannot reach deploy server. Run: python deploy.py'); })
+          .then(function(r) {
+            return r.text().then(function(text) {
+              if (!r.ok) { throw new Error(text || ('Deploy failed with HTTP ' + r.status)); }
+              return text;
+            });
+          })
+          .then(function(msg) { toast(msg); changed = false; document.getElementById('changedIndicator').style.display = 'none'; cfg._uploads = []; cfg._siteUploads = null; if(cfg.site)cfg.site._photoUpload=null; cfg.projects.forEach(function(p){p._uploads=[]}); clearDraft(); setTimeout(function(){location.reload()},1500); })
+          .catch(function(err) { toast(err && err.message ? err.message : 'Cannot reach deploy server. Run: python deploy.py'); })
           .finally(function() { btn.textContent = '🚀 Deploy'; btn.disabled = false; });
       }).catch(function(e) { toast('Error: ' + e.message); btn.textContent = '🚀 Deploy'; btn.disabled = false; });
     }
