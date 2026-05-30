@@ -15,8 +15,8 @@
   },
   "about": {
     "paragraphs": [
-      "My research asks how people actually experience the technologies we build. I make interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — then test them with real users through surveys, interviews, and structural equation models. My M.F.A. thesis explored how augmented reality can bring traditional Yixing Zisha pottery to life in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
-      "I've led a PRISMA systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is (and isn't) serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
+      "My research asks how people actually experience the technologies we build. I make interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — then test them with users through surveys, interviews, and structural equation models. My M.F.A. thesis research explores how augmented reality can bring traditional Yixing Zisha pottery to life in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
+      "I am developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is (and isn't) serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
       "I came to research through design. My B.F.A. in visual communication taught me to care about how things look and feel; my M.F.A. taught me to care about whether they actually work. These days I split my time between making things and measuring their impact — a combination I'd like to keep pursuing in a PhD. Outside of work: I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
     ],
     "highlight": "I'm currently looking for a summer 2026 research internship — especially projects at the intersection of AI-mediated communication, accessibility, or immersive media. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
@@ -165,7 +165,7 @@
     },
     {
       "date": "May 2026",
-      "title": "Master's thesis defended: AR Display Design for Cultural Heritage & User Acceptance",
+      "title": "Master's thesis research: AR Display Design for Cultural Heritage & User Acceptance",
       "detail": "Unity + Vuforia AR prototype, SOR-TAM-Flow model, N=388 CB-SEM study"
     },
     {
