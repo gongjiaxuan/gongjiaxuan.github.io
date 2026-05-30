@@ -139,8 +139,8 @@
         </div>
         <div style="display:flex;gap:0.4rem;align-items:center">
           <span class="changed" id="changedIndicator" style="display:none"><span class="dot"></span> Unsaved</span>
-          <button class="btn" onclick="resetAll()">↺</button>
-          <button class="btn primary" onclick="downloadAll()">⬇ Download ZIP</button>
+          <button class="btn" onclick="saveDraft()">💾 Draft</button>
+          <button class="btn primary" onclick="doDeploy()" id="deployBtn">🚀 Deploy</button>
         </div>
       </div>
       <div class="content">
@@ -247,8 +247,8 @@
     // ── Init ──
     fetch('config.json')
       .then(function(r) { return r.json(); })
-      .then(function(c) { cfg = c; renderSidebar(); selectProject(0); })
-      .catch(function() { document.body.innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json. Must be served from a web server.</p>'; });
+      .then(function(c) { cfg = c; if (!loadDraft()) { /* use fresh config */ } renderSidebar(); selectProject(0); })
+      .catch(function() { document.getElementById('main').innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json. Start deploy server: python deploy.py</p>'; });
 
     function toast(m) { var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 1800); }
     function markChanged() { changed = true; document.getElementById('changedIndicator').style.display = 'flex'; }
@@ -536,6 +536,62 @@
       closeSiteSettings();
       toast('Site settings saved ✓');
     }
+
+    // ── Save Draft to localStorage ──
+    function saveDraft() {
+      var clean = JSON.parse(JSON.stringify(cfg));
+      delete clean._uploads; delete clean._siteUploads;
+      if (clean.site) delete clean.site._photoUpload;
+      clean.projects.forEach(function(p) { delete p._uploads; });
+      try { localStorage.setItem('portfolio_draft', JSON.stringify(clean)); changed = false; document.getElementById('changedIndicator').style.display = 'none'; toast('Draft saved ✓'); }
+      catch(e) { toast('Save failed: ' + e.message); }
+    }
+    function loadDraft() {
+      try { var d = localStorage.getItem('portfolio_draft'); if (d) { var parsed = JSON.parse(d); Object.keys(parsed).forEach(function(k) { cfg[k] = parsed[k]; }); return true; } } catch(e) {}
+      return false;
+    }
+
+    // ── Deploy — send config + files to local server ──
+    function doDeploy() {
+      var btn = document.getElementById('deployBtn');
+      btn.textContent = '...'; btn.disabled = true;
+
+      // Collect all uploaded files as base64
+      var files = {};
+      function addFile(path, file) {
+        var reader = new FileReader();
+        return new Promise(function(resolve) {
+          reader.onload = function() { files[path] = reader.result.split(',')[1]; resolve(); };
+          reader.onerror = resolve;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      var promises = [];
+      if (cfg.site && cfg.site._photoUpload) {
+        promises.push(addFile(cfg.site._photoUpload.path, cfg.site._photoUpload.file));
+      }
+      cfg.projects.forEach(function(p) {
+        if (p._uploads) { p._uploads.forEach(function(u) { promises.push(addFile(u.path, u.file)); }); }
+      });
+
+      var clean = JSON.parse(JSON.stringify(cfg));
+      delete clean._schema; delete clean._help; delete clean._uploads; delete clean._siteUploads;
+      if (clean.site) delete clean.site._photoUpload;
+      clean.projects.forEach(function(p) { delete p._uploads; });
+
+      Promise.all(promises).then(function() {
+        var body = JSON.stringify({ config: clean, files: files, message: 'Update from CMS' });
+        fetch('http://localhost:8765/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
+          .then(function(r) { return r.text(); })
+          .then(function(msg) { toast(msg); changed = false; document.getElementById('changedIndicator').style.display = 'none'; })
+          .catch(function() { toast('❌ Cannot reach deploy server. Run: python deploy.py'); })
+          .finally(function() { btn.textContent = '🚀 Deploy'; btn.disabled = false; });
+      }).catch(function(e) { toast('Error: ' + e.message); btn.textContent = '🚀 Deploy'; btn.disabled = false; });
+    }
+
+    // ── Save draft on unload ──
+    window.addEventListener('beforeunload', function() { if (changed) saveDraft(); });
 
     // ── CRUD ──
     function addNew() {
