@@ -432,15 +432,36 @@
       ],
       "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore: when the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. The installation was built with TouchDesigner for projection mapping and webcam-based light tracking, Blender for 3D character modeling, and AIGC tools for generating reference imagery. Multiple visitors can interact simultaneously, with different light-triggered regions activating different animations. The physical space was constructed from cardboard, foam, and paint to recreate the texture and atmosphere of the original cave. The project explores how tangible interaction, spatial storytelling, and real-time media can make cultural heritage feel alive and participatory.",
       "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · AIGC · Physical Construction",
-      "hero": "images/dunhuang_hero.jpg",
-      "images": [],
+      "hero": "images/dunhuang/mpsbgbgy____pdf_page-0001.jpg",
+      "images": [
+        {
+          "src": "dunhuang/mpsbfnh8____pdf_page-0016.jpg",
+          "alt": "编辑中pdf_page-0016.jpg"
+        },
+        {
+          "src": "dunhuang/mpsbgbgy____pdf_page-0001.jpg",
+          "alt": "编辑中pdf_page-0001.jpg"
+        },
+        {
+          "src": "dunhuang/mpsbgbgy____pdf_page-0002.jpg",
+          "alt": "编辑中pdf_page-0002.jpg"
+        },
+        {
+          "src": "dunhuang/mpsbgbgy____pdf_page-0015.jpg",
+          "alt": "编辑中pdf_page-0015.jpg"
+        },
+        {
+          "src": "dunhuang/mpsbgbgy____pdf_page-0016.jpg",
+          "alt": "编辑中pdf_page-0016.jpg"
+        }
+      ],
       "processImages": [],
       "video": {
         "src": "videos/dunhuang.mp4",
         "poster": "images/dunhuang_hero.jpg"
       },
       "layout": "stacked",
-      "cardImage": "images/dunhuang_hero.jpg"
+      "cardImage": "images/dunhuang/mpsbgbgy____pdf_page-0001.jpg"
     }
   ]
 }
