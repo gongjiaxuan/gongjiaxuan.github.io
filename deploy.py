@@ -19,6 +19,78 @@ def is_video_path(path):
     ext = os.path.splitext(normalized)[1]
     return normalized.startswith('videos/') or ext in VIDEO_EXTS
 
+def is_external_ref(ref):
+    lower = str(ref).lower()
+    return lower.startswith(('http://', 'https://', 'mailto:', '#'))
+
+def prefixed_asset(ref, prefix=None):
+    if not ref or is_external_ref(ref):
+        return None
+    normalized = str(ref).replace('\\', '/').lstrip('/')
+    if normalized.startswith(('images/', 'videos/', 'cv/')):
+        return normalized
+    if prefix:
+        return f'{prefix}/{normalized}'
+    return normalized
+
+def iter_section_asset_refs(section):
+    if not isinstance(section, dict):
+        return
+    for key in ('image', 'media'):
+        media = section.get(key)
+        if isinstance(media, dict):
+            src = prefixed_asset(media.get('src'), 'images')
+            if src:
+                yield f'section {section.get("title", "")} {key}', src
+    for img in section.get('images') or []:
+        if isinstance(img, dict):
+            src = prefixed_asset(img.get('src'), 'images')
+            if src:
+                yield f'section {section.get("title", "")} gallery', src
+    for key in ('src', 'video', 'poster'):
+        src = prefixed_asset(section.get(key))
+        if src:
+            yield f'section {section.get("title", "")} {key}', src
+
+def validate_config_assets(root, cfg):
+    missing = []
+    site = cfg.get('site') or {}
+    for label, ref in (('site.photo', site.get('photo')), ('site.cvPath', site.get('cvPath'))):
+        src = prefixed_asset(ref)
+        if src and not os.path.exists(safe_join(root, src)):
+            missing.append(f'{label}: {src}')
+
+    for p in cfg.get('projects', []):
+        pid = p.get('id') or p.get('title') or 'project'
+        for field in ('hero', 'cardImage'):
+            src = prefixed_asset(p.get(field))
+            if src and not os.path.exists(safe_join(root, src)):
+                missing.append(f'{pid}.{field}: {src}')
+        for img in p.get('images') or []:
+            src = prefixed_asset(img.get('src') if isinstance(img, dict) else img, 'images')
+            if src and not os.path.exists(safe_join(root, src)):
+                missing.append(f'{pid}.images: {src}')
+        for img in p.get('processImages') or []:
+            src = prefixed_asset(img.get('src') if isinstance(img, dict) else img, 'images')
+            if src and not os.path.exists(safe_join(root, src)):
+                missing.append(f'{pid}.processImages: {src}')
+        video = p.get('video') or {}
+        if isinstance(video, dict):
+            for field in ('src', 'poster'):
+                src = prefixed_asset(video.get(field))
+                if src and not os.path.exists(safe_join(root, src)):
+                    missing.append(f'{pid}.video.{field}: {src}')
+        for section in p.get('sections') or []:
+            for label, src in iter_section_asset_refs(section):
+                if src and not os.path.exists(safe_join(root, src)):
+                    missing.append(f'{pid}.{label}: {src}')
+
+    if missing:
+        preview = '\n'.join(missing[:20])
+        if len(missing) > 20:
+            preview += f'\n...and {len(missing) - 20} more'
+        raise RuntimeError('Config references missing local assets:\n' + preview)
+
 def write_uploaded_file(root, path, b64):
     full = safe_join(root, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -31,16 +103,19 @@ def write_uploaded_file(root, path, b64):
 
     ffmpeg = shutil.which('ffmpeg')
     if not ffmpeg:
-        with open(full, 'wb') as f:
-            f.write(data)
-        return f'ffmpeg not found; wrote raw video without H.264 transcode: {path}'
+        raise RuntimeError(
+            f'ffmpeg is required for video uploads so browsers can play H.264/AAC MP4: {path}'
+        )
 
     ext = os.path.splitext(path)[1] or '.bin'
     tmp_name = None
+    out_name = None
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
             tmp.write(data)
             tmp_name = tmp.name
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4', dir=os.path.dirname(full)) as out:
+            out_name = out.name
         subprocess.run(
             [
                 ffmpeg, '-y', '-i', tmp_name,
@@ -49,19 +124,27 @@ def write_uploaded_file(root, path, b64):
                 '-pix_fmt', 'yuv420p',
                 '-c:a', 'aac', '-b:a', '128k',
                 '-movflags', '+faststart',
-                full
+                out_name
             ],
             cwd=root, capture_output=True, text=True, check=True
         )
+        os.replace(out_name, full)
+        out_name = None
         return f'transcoded video to H.264/AAC: {path}'
+    except subprocess.CalledProcessError as e:
+        err = (e.stderr or e.stdout or str(e)).strip()
+        raise RuntimeError(f'video transcode failed for {path}: {err[-1200:]}') from e
     except Exception as e:
-        with open(full, 'wb') as f:
-            f.write(data)
-        return f'video transcode failed; wrote raw upload for {path}: {e}'
+        raise RuntimeError(f'video upload failed for {path}: {e}') from e
     finally:
         if tmp_name and os.path.exists(tmp_name):
             try:
                 os.remove(tmp_name)
+            except OSError:
+                pass
+        if out_name and os.path.exists(out_name):
+            try:
+                os.remove(out_name)
             except OSError:
                 pass
 
@@ -82,7 +165,18 @@ class Handler(BaseHTTPRequestHandler):
                 files = data.get('files', {})
                 message = data.get('message', 'Update from CMS')
 
-                # 1. Write config.json
+                # 1. Write uploaded files first. Config is written only after uploads succeed.
+                written = 0
+                notes = []
+                uploaded_paths = []
+                for path, b64 in files.items():
+                    note = write_uploaded_file(ROOT, path, b64)
+                    if note:
+                        notes.append(note)
+                    uploaded_paths.append(path.replace('\\', '/').lstrip('/'))
+                    written += 1
+
+                # 2. Write config.json
                 clean = dict(cfg)
                 clean.pop('_schema', None)
                 clean.pop('_help', None)
@@ -91,38 +185,43 @@ class Handler(BaseHTTPRequestHandler):
                 for p in clean.get('projects', []):
                     p.pop('_uploads', None)
 
+                validate_config_assets(ROOT, clean)
+
                 with open(os.path.join(ROOT, 'config.json'), 'w', encoding='utf-8') as f:
                     json.dump(clean, f, indent=2, ensure_ascii=False)
 
-                # 2. Write uploaded files
-                written = 0
-                notes = []
-                for path, b64 in files.items():
-                    note = write_uploaded_file(ROOT, path, b64)
-                    if note:
-                        notes.append(note)
-                    written += 1
-
-                # 3. Git add, commit, push
+                # 3. Git add only files touched by this CMS request, then commit and push.
+                add_paths = ['config.json'] + uploaded_paths
                 result = subprocess.run(
-                    ['git', 'add', '-A'],
+                    ['git', 'add', '--'] + add_paths,
                     cwd=ROOT, capture_output=True, text=True
                 )
+                if result.returncode != 0:
+                    raise RuntimeError(result.stderr.strip() or result.stdout.strip() or 'git add failed')
                 result = subprocess.run(
                     ['git', 'commit', '-m', message],
                     cwd=ROOT, capture_output=True, text=True
                 )
-                push = subprocess.run(
-                    ['git', 'push', 'origin', 'main'],
-                    cwd=ROOT, capture_output=True, text=True
-                )
+                combined_commit = (result.stdout + '\n' + result.stderr).strip()
+                did_commit = result.returncode == 0
+                if result.returncode != 0 and 'nothing to commit' not in combined_commit.lower():
+                    raise RuntimeError(combined_commit or 'git commit failed')
+
+                push = None
+                if did_commit:
+                    push = subprocess.run(
+                        ['git', 'push', 'origin', 'main'],
+                        cwd=ROOT, capture_output=True, text=True
+                    )
+                    if push.returncode != 0:
+                        raise RuntimeError(push.stderr.strip() or push.stdout.strip() or 'git push failed')
 
                 msg = f'OK: config saved, {written} files written'
                 if notes:
                     msg += '\n' + '\n'.join(notes)
-                if 'nothing to commit' not in result.stdout:
-                    msg += f'\nCommitted: {result.stdout.strip()}'
-                    msg += f'\nPush: {push.stdout.strip() or push.stderr.strip()}'
+                if did_commit:
+                    msg += f'\nCommitted: {combined_commit}'
+                    msg += f'\nPush: {(push.stdout or push.stderr).strip()}'
                 else:
                     msg += '\nNo changes to commit.'
 
