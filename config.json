@@ -218,8 +218,8 @@
       ],
       "processImages": [],
       "video": {
-        "src": "videos/remembery.mp4",
-        "poster": "images/remembery/board.jpg"
+        "src": "videos/____.mp4",
+        "poster": "images/remembery/mockup1.jpg"
       },
       "layout": "stacked",
       "cardImage": "images/remembery.jpg"
@@ -419,6 +419,19 @@
       },
       "layout": "stacked",
       "cardImage": "images/museum.jpg"
+    },
+    {
+      "id": "project-1780122503226",
+      "title": "New Project",
+      "subtitle": "",
+      "tags": [],
+      "description": "",
+      "tools": "",
+      "hero": "",
+      "images": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": ""
     }
   ]
 }
