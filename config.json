@@ -216,6 +216,7 @@
           "alt": "6.jpg"
         }
       ],
+      "processImages": [],
       "video": {
         "src": "videos/remembery.mp4",
         "poster": "images/remembery/board.jpg"
@@ -307,6 +308,7 @@
           "alt": "Display setup — detail view of installation components"
         }
       ],
+      "processImages": [],
       "video": {
         "src": "videos/textile.mp4",
         "poster": "images/textile/exhibit1.jpg"
@@ -346,6 +348,7 @@
           "alt": "Installation render — closeup of visual-sonic interaction"
         }
       ],
+      "processImages": [],
       "video": {
         "src": "videos/listen.mp4",
         "poster": "images/listen/3.jpg"
@@ -377,6 +380,7 @@
           "alt": "Exhibition board — spatial layout and visitor flow"
         }
       ],
+      "processImages": [],
       "video": {
         "src": "videos/huiyi.mp4",
         "poster": "images/huiyi/board1.jpg"
@@ -416,6 +420,7 @@
           "alt": "Event registration page — streamlined visitor flow"
         }
       ],
+      "processImages": [],
       "video": {
         "src": "videos/museum.mp4",
         "poster": "images/museum/home.jpg"

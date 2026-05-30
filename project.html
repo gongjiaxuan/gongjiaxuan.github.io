@@ -4,260 +4,179 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project — Jiaxuan Gong</title>
-  <meta name="description" content="Jiaxuan Gong — Design project detail">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--t:#374151;--th:#111827;--tm:#6b7280;--acc:#4f46e5;--as:#eef2ff;--bdr:#e5e7eb;--bg:#fff;--mw:768px;--f:'Inter',system-ui,sans-serif}
+    body{font-family:var(--f);font-size:16px;line-height:1.5;color:var(--t);background:var(--bg);-webkit-font-smoothing:antialiased;font-weight:400}
+    a{color:var(--th);text-decoration:none;font-weight:500}
+    a:hover{opacity:0.7}
 
-    :root {
-      --text: #364153; --text-head: #101828; --text-mid: #4a5565;
-      --text-light: #6a7282; --bg: #fff; --bg-warm: #f9fafb;
-      --border: #e5e7eb; --accent: #6366f1; --max-w: 800px;
-      --font: 'Inter', 'SF Pro', ui-sans-serif, system-ui, sans-serif;
-    }
+    .back-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bdr);padding:0.8rem 0}
+    .wrap{max-width:var(--mw);margin:0 auto;padding:0 1.5rem}
+    .back-nav .wrap{display:flex;justify-content:space-between;align-items:center}
+    .back-nav a{font-size:14px;color:var(--tm)}.back-nav .counter{font-size:12px;color:#bbb}
 
-    body {
-      font-family: var(--font); font-size: 16px; line-height: 1.68;
-      color: var(--text); background: var(--bg);
-      -webkit-font-smoothing: antialiased;
-    }
-    a { text-decoration: none; font-weight: 500; color: var(--text-head); }
-    a:hover { text-decoration: underline; }
+    /* ── Hero carousel ── */
+    .carousel{position:relative;width:100%;background:#e5e5e5;overflow:hidden;user-select:none}
+    .carousel-track{display:flex;transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);will-change:transform}
+    .carousel-slide{flex:0 0 100%;display:flex;align-items:center;justify-content:center}
+    .carousel-slide img{width:100%;height:auto;max-height:70vh;object-fit:contain;display:block}
+    .carousel-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:0.4rem;z-index:2}
+    .carousel-dots .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:background 0.2s;border:1px solid rgba(0,0,0,0.15)}
+    .carousel-dots .dot.active{background:#fff;border-color:transparent}
+    .carousel-hint{position:absolute;bottom:2.5rem;right:1.5rem;font-size:11px;color:rgba(255,255,255,0.7);pointer-events:none;z-index:2;text-shadow:0 1px 3px rgba(0,0,0,0.4)}
 
-    .wrapper { max-width: var(--max-w); margin: 0 auto; padding: 0 1.5rem; }
+    /* ── Project info ── */
+    .proj-info{padding:2.5rem 0 1rem}
+    .proj-info h1{font-size:2rem;font-weight:700;color:var(--th);letter-spacing:-0.02em;margin-bottom:0.3rem}
+    .proj-info .sub{font-size:1.05rem;color:var(--acc);font-weight:500;margin-bottom:0.7rem}
+    .tags{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:1.2rem}
+    .tags span{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:0.2rem 0.5rem;border-radius:4px;background:var(--as);color:#4338ca}
+    .desc{font-size:0.98rem;line-height:1.72;color:var(--tm);margin-bottom:1rem}
+    .tools{font-size:0.84rem;color:#9ca3af;padding-bottom:1.2rem;border-bottom:1px solid var(--bdr)}
 
-    /* ── Back nav ── */
-    .back-nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 0;
-    }
-    .back-nav .wrapper { display: flex; justify-content: space-between; align-items: center; }
-    .back-nav a { font-size: 0.85rem; color: var(--text-mid); }
-    .back-nav .project-counter { font-size: 0.78rem; color: var(--text-light); }
-
-    /* ── Hero — full bleed ── */
-    .hero {
-      width: 100%;
-      background: #e5e7eb;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .hero img {
-      width: 100%; height: auto; display: block;
-      max-height: 70vh; object-fit: contain;
-    }
-
-    /* ── Project header ── */
-    .proj-header { padding: 2.5rem 0 1rem; }
-    .proj-header h1 { font-size: 2.2rem; font-weight: 700; color: var(--text-head); line-height: 1.2; margin-bottom: 0.3rem; letter-spacing: -0.02em; }
-    .proj-header .subtitle { font-size: 1.1rem; color: var(--accent); font-weight: 500; margin-bottom: 0.8rem; }
-    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
-    .tags span {
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
-      padding: 0.2rem 0.6rem; border-radius: 4px; background: #eef2ff; color: #4338ca;
-    }
-
-    .desc { font-size: 1.02rem; line-height: 1.78; color: var(--text-mid); margin-bottom: 1.2rem; max-width: 680px; }
-    .tools { font-size: 0.9rem; color: var(--text-light); padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-    .tools strong { color: var(--text-head); }
-
-    /* ── Section labels ── */
-    .section-label {
-      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text-light); margin: 3rem 0 1.2rem;
-    }
-
-    /* ── Gallery ── */
-    .gallery-stacked .gallery-item { margin-bottom: 1.8rem; }
-    .gallery-stacked .gallery-img { width: 100%; height: auto; display: block; border-radius: 6px; cursor: pointer; transition: box-shadow 0.2s; background: #e5e7eb; }
-    .gallery-stacked .gallery-img:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
-    /* Grid */
-    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .gallery-grid .gallery-item { margin-bottom: 0; }
-    .gallery-grid .gallery-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; border-radius: 6px; cursor: pointer; transition: box-shadow 0.2s; background: #e5e7eb; }
-    .gallery-grid .gallery-img:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-    /* Masonry */
-    .gallery-masonry { columns: 2; column-gap: 1rem; }
-    .gallery-masonry .gallery-item { break-inside: avoid; margin-bottom: 1rem; }
-    .gallery-masonry .gallery-img { width: 100%; height: auto; display: block; border-radius: 6px; cursor: pointer; transition: box-shadow 0.2s; background: #e5e7eb; }
-    .gallery-masonry .gallery-img:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-    /* Caption */
-    .gallery-caption { font-size: 0.78rem; color: var(--text-light); margin-top: 0.35rem; line-height: 1.4; font-style: italic; }
-    @media (max-width: 640px) { .gallery-grid { grid-template-columns: 1fr; } .gallery-masonry { columns: 1; } }
+    /* ── Process images ── */
+    .process-section{margin:1.5rem 0}
+    .process-section .sec-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#bbb;margin-bottom:0.8rem}
+    .process-section img{width:100%;height:auto;border-radius:6px;margin-bottom:0.6rem;background:#e5e5e5;cursor:pointer;transition:box-shadow 0.2s}
+    .process-section img:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1)}
 
     /* ── Video ── */
-    .video-wrap { margin-bottom: 3rem; }
-    .video-wrap video { width: 100%; border-radius: 8px; background: #000; }
-    .video-placeholder {
-      padding: 3rem 2rem; text-align: center; background: var(--bg-warm);
-      border-radius: 8px; color: var(--text-light); font-size: 0.9rem;
-    }
+    .video-wrap{margin-bottom:2rem}
+    .video-wrap video{width:100%;border-radius:8px;background:#000}
+    .video-placeholder{padding:3rem 2rem;text-align:center;background:#fafafa;border-radius:8px;color:var(--tm);font-size:0.85rem}
 
     /* ── Bottom nav ── */
-    .bottom-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 2.5rem 0 3rem; border-top: 1px solid var(--border); margin-top: 2rem;
-      flex-wrap: wrap; gap: 0.5rem;
-    }
-    .bottom-nav a { font-size: 0.9rem; }
-    .bottom-nav .prev::before { content: "← "; }
-    .bottom-nav .next::after { content: " →"; }
-    .bottom-nav .back { color: var(--text-light); }
+    .bottom-nav{display:flex;justify-content:space-between;padding:2rem 0 3rem;border-top:1px solid var(--bdr);margin-top:1rem;flex-wrap:wrap;gap:0.5rem}
+    .bottom-nav a{font-size:14px}
 
     /* ── Lightbox ── */
-    .lightbox {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.94);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    }
-    .lightbox.active { opacity: 1; pointer-events: auto; }
-    .lightbox img { max-width: 94vw; max-height: 92vh; border-radius: 4px; object-fit: contain; }
-    .lightbox .close {
-      position: absolute; top: 1.5rem; right: 1.5rem;
-      color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; opacity: 0.7;
-    }
-    .lightbox .close:hover { opacity: 1; }
-    .lightbox .counter {
-      position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-      color: rgba(255,255,255,0.6); font-size: 0.82rem;
-    }
+    .lb{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.94);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+    .lb.active{opacity:1;pointer-events:auto}
+    .lb img{max-width:94vw;max-height:92vh;object-fit:contain;border-radius:4px}
+    .lb .close{position:absolute;top:1.5rem;right:1.5rem;color:#fff;font-size:2rem;cursor:pointer;opacity:0.6}
+    .lb .close:hover{opacity:1}
+    .lb .ctr{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:0.78rem}
 
-    @media (max-width: 640px) {
-      .wrapper { padding: 0 1.15rem; }
-      .proj-header h1 { font-size: 1.6rem; }
-      .hero img { max-height: 50vh; }
-      .gallery-img { margin-bottom: 0.75rem; border-radius: 4px; }
+    @media(max-width:640px){
+      .proj-info h1{font-size:1.5rem}.carousel-slide img{max-height:50vh}.wrap{padding:0 1.15rem}
     }
   </style>
 </head>
 <body>
 
-  <div class="back-nav">
-    <div class="wrapper">
-      <a href="index.html#projects">← Back</a>
-      <span class="project-counter" id="projCounter"></span>
-    </div>
+  <div class="back-nav"><div class="wrap"><a href="index.html#projects">← Back</a><span class="counter" id="counter"></span></div></div>
+
+  <!-- Carousel -->
+  <div class="carousel" id="carousel">
+    <div class="carousel-track" id="track"></div>
+    <div class="carousel-dots" id="dots"></div>
+    <div class="carousel-hint" id="hint"></div>
   </div>
 
-  <div class="hero"><img src="" alt="" id="heroImg"></div>
-
-  <div class="wrapper">
-    <div class="proj-header">
-      <h1 id="projTitle"></h1>
-      <div class="subtitle" id="projSubtitle"></div>
-      <div class="tags" id="projTags"></div>
-      <div class="desc" id="projDesc"></div>
-      <div class="tools" id="projTools"></div>
+  <div class="wrap">
+    <!-- Info -->
+    <div class="proj-info">
+      <h1 id="title"></h1>
+      <div class="sub" id="subtitle"></div>
+      <div class="tags" id="tags"></div>
+      <div class="desc" id="desc"></div>
+      <div class="tools" id="tools"></div>
     </div>
 
-    <div class="section-label">Gallery</div>
-    <div id="gallery"></div>
+    <!-- Process images -->
+    <div class="process-section" id="processSection" style="display:none">
+      <div class="sec-label">Process</div>
+      <div id="processImages"></div>
+    </div>
 
-    <div class="section-label">Video</div>
+    <!-- Video -->
+    <div class="sec-label" style="margin-bottom:0.4rem">Video</div>
     <div class="video-wrap" id="videoWrap"></div>
 
-    <div class="bottom-nav">
-      <a href="index.html#projects" class="back">← Back to Portfolio</a>
-      <span>
-        <a href="#" class="prev" id="prevLink">Previous</a>
-        &nbsp;·&nbsp;
-        <a href="#" class="next" id="nextLink">Next</a>
-      </span>
-    </div>
+    <!-- Nav -->
+    <div class="bottom-nav"><a href="index.html#projects">← Back to Portfolio</a><span><a href="#" class="prev" id="prevLink">Previous</a> · <a href="#" class="next" id="nextLink">Next</a></span></div>
   </div>
 
-  <div class="lightbox" id="lightbox">
-    <span class="close" id="lbClose">&times;</span>
-    <img src="" alt="" id="lbImg">
-    <span class="counter" id="lbCounter"></span>
-  </div>
+  <!-- Lightbox -->
+  <div class="lb" id="lb"><span class="close" id="lbClose">&times;</span><img src="" id="lbImg"><span class="ctr" id="lbCtr"></span></div>
 
   <script src="portfolio.js"></script>
   <script>
     PORTFOLIO_onReady(function(config) {
-      if (!config || !config.projects) { document.body.innerHTML = '<p style="padding:3rem;text-align:center;color:red">Could not load config.json</p>'; return; }
+      if (!config||!config.projects){document.body.innerHTML='<p style="padding:3rem;text-align:center;color:red">Could not load config</p>';return}
+      var projects=config.projects;
+      var params=new URLSearchParams(window.location.search);
+      var id=parseInt(params.get('id'))||0;
+      if(id<0||id>=projects.length)id=0;
+      var p=projects[id];
 
-      var projects = config.projects;
-      var params = new URLSearchParams(window.location.search);
-      var id = parseInt(params.get('id')) || 0;
-      if (id < 0 || id >= projects.length) id = 0;
+      document.title=p.title+' — Jiaxuan Gong';
+      document.getElementById('counter').textContent=(id+1)+' / '+projects.length;
+      document.getElementById('title').textContent=p.title;
+      document.getElementById('subtitle').textContent=p.subtitle;
+      document.getElementById('tags').innerHTML=(p.tags||[]).map(function(t){return'<span>'+t+'</span>'}).join('');
+      document.getElementById('desc').textContent=p.description;
+      document.getElementById('tools').innerHTML='<strong>Tools:</strong> '+p.tools;
 
-      var p = projects[id];
-      document.title = p.title + ' — Jiaxuan Gong';
-      document.getElementById('projCounter').textContent = (id + 1) + ' / ' + projects.length;
-      document.getElementById('heroImg').src = p.hero;
-      document.getElementById('heroImg').alt = p.title;
-      document.getElementById('projTitle').textContent = p.title;
-      document.getElementById('projSubtitle').textContent = p.subtitle;
-      document.getElementById('projTags').innerHTML = p.tags.map(function(t) { return '<span>' + t + '</span>'; }).join('');
-      document.getElementById('projDesc').textContent = p.description;
-      document.getElementById('projTools').innerHTML = '<strong>Tools:</strong> ' + p.tools;
+      // ── Build carousel: hero + gallery images
+      var allSlides=[p.hero];
+      if(p.images&&p.images.length)allSlides=allSlides.concat(p.images.map(function(img){return'images/'+img.src}));
+      var curIdx=0,track=document.getElementById('track'),dots=document.getElementById('dots'),hint=document.getElementById('hint');
 
-      // Gallery with layout support
-      var layout = p.layout || 'stacked';
-      var gallery = document.getElementById('gallery');
-      gallery.className = 'gallery-' + layout;
-      var allSrcs = [];
-      p.images.forEach(function(img) {
-        var src = 'images/' + img.src;
-        allSrcs.push(src);
-        var item = document.createElement('div');
-        item.className = 'gallery-item';
-        var el = document.createElement('img');
-        el.src = src; el.alt = img.alt || p.title; el.loading = 'lazy';
-        el.className = 'gallery-img';
-        el.addEventListener('click', function() { openLightbox(allSrcs.indexOf(src)); });
-        item.appendChild(el);
-        if (img.caption) {
-          var cap = document.createElement('div');
-          cap.className = 'gallery-caption';
-          cap.textContent = img.caption;
-          item.appendChild(cap);
-        }
-        gallery.appendChild(item);
-      });
-
-      // Video
-      var vw = document.getElementById('videoWrap');
-      if (p.video && p.video.src) {
-        vw.innerHTML = '<video controls poster="' + (p.video.poster || p.hero) + '" preload="metadata"><source src="' + p.video.src + '" type="video/mp4"></video>';
-      } else {
-        vw.innerHTML = '<div class="video-placeholder">Video demo available upon request — <a href="mailto:' + (config.site ? config.site.email : 'gongjiaxuan169@gmail.com') + '">contact me</a></div>';
+      function updateCarousel(idx,animate){
+        curIdx=idx;var offset=-idx*100;track.style.transform='translateX('+offset+'%)';
+        document.querySelectorAll('.carousel-dots .dot').forEach(function(d,i){d.classList.toggle('active',i===idx)});
+        hint.textContent=allSlides.length>1?(idx+1)+'/'+allSlides.length:'';
       }
 
-      // Bottom nav
-      var prevId = (id - 1 + projects.length) % projects.length;
-      var nextId = (id + 1) % projects.length;
-      document.getElementById('prevLink').href = 'project.html?id=' + prevId;
-      document.getElementById('nextLink').href = 'project.html?id=' + nextId;
-
-      // Lightbox
-      var lb = document.getElementById('lightbox');
-      var lbImg = document.getElementById('lbImg');
-      var lbCounter = document.getElementById('lbCounter');
-      var curIdx = 0;
-      function openLightbox(idx) {
-        curIdx = idx; lbImg.src = allSrcs[idx];
-        lbCounter.textContent = (idx + 1) + ' / ' + allSrcs.length;
-        lb.classList.add('active'); document.body.style.overflow = 'hidden';
-      }
-      function closeLightbox() { lb.classList.remove('active'); document.body.style.overflow = ''; }
-      function lightboxPrev() { if (allSrcs.length) openLightbox((curIdx - 1 + allSrcs.length) % allSrcs.length); }
-      function lightboxNext() { if (allSrcs.length) openLightbox((curIdx + 1) % allSrcs.length); }
-      document.getElementById('lbClose').addEventListener('click', closeLightbox);
-      lb.addEventListener('click', function(e) { if (e.target === lb) closeLightbox(); });
-      document.addEventListener('keydown', function(e) {
-        if (!lb.classList.contains('active')) return;
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowLeft') lightboxPrev();
-        if (e.key === 'ArrowRight') lightboxNext();
+      allSlides.forEach(function(src,i){
+        var slide=document.createElement('div');slide.className='carousel-slide';
+        var img=document.createElement('img');img.src=src;img.alt=p.title;img.loading=i===0?'eager':'lazy';
+        img.addEventListener('click',function(){openLb(i)});
+        slide.appendChild(img);track.appendChild(slide);
+        var d=document.createElement('span');d.className='dot'+(i===0?' active':'');
+        d.addEventListener('click',function(){updateCarousel(i,true)});
+        dots.appendChild(d);
       });
+
+      if(allSlides.length>1){
+        track.parentElement.addEventListener('wheel',function(e){
+          e.preventDefault();
+          if(e.deltaY>0&&curIdx<allSlides.length-1)updateCarousel(curIdx+1,true);
+          else if(e.deltaY<0&&curIdx>0)updateCarousel(curIdx-1,true);
+        },{passive:false});
+      }
+
+      // ── Process images
+      if(p.processImages&&p.processImages.length){
+        document.getElementById('processSection').style.display='';
+        var phtml='';
+        p.processImages.forEach(function(pi){phtml+='<img src="images/'+pi.src+'" alt="'+pi.alt+'" loading="lazy" onclick="openLbImg(this.src)">'});
+        document.getElementById('processImages').innerHTML=phtml;
+      }
+
+      // ── Video
+      var vw=document.getElementById('videoWrap');
+      if(p.video&&p.video.src){vw.innerHTML='<video controls poster="'+(p.video.poster||p.hero)+'" preload="metadata"><source src="'+p.video.src+'" type="video/mp4"></video>'}
+      else{vw.innerHTML='<div class="video-placeholder">Video demo available upon request — <a href="mailto:'+(config.site?config.site.email:'')+'">contact me</a></div>'}
+
+      // ── Nav
+      var prevId=(id-1+projects.length)%projects.length,nextId=(id+1)%projects.length;
+      document.getElementById('prevLink').href='project.html?id='+prevId;
+      document.getElementById('nextLink').href='project.html?id='+nextId;
+
+      // ── Lightbox
+      var lb=document.getElementById('lb'),lbImg=document.getElementById('lbImg'),lbCtr=document.getElementById('lbCtr'),lbIdx=0;
+      window.openLb=function(idx){lbIdx=idx;lbImg.src=allSlides[idx];lbCtr.textContent=(idx+1)+'/'+allSlides.length;lb.classList.add('active');document.body.style.overflow='hidden'};
+      window.openLbImg=function(src){lbIdx=-1;lbImg.src=src;lbCtr.textContent='';lb.classList.add('active');document.body.style.overflow='hidden'};
+      function closeLb(){lb.classList.remove('active');document.body.style.overflow=''}
+      document.getElementById('lbClose').addEventListener('click',closeLb);
+      lb.addEventListener('click',function(e){if(e.target===lb)closeLb()});
+      document.addEventListener('keydown',function(e){if(!lb.classList.contains('active'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowLeft'&&lbIdx>=0&&lbIdx>0)openLb(lbIdx-1);if(e.key==='ArrowRight'&&lbIdx>=0&&lbIdx<allSlides.length-1)openLb(lbIdx+1)});
     });
   </script>
 </body>
