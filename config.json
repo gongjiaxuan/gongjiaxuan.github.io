@@ -37,10 +37,10 @@
   ],
   "interests": [
     "Human–AI Interaction",
-    "Mixed-Methods HCI & UX Research",
-    "Accessibility & Assistive AI",
-    "AI-Mediated Communication and Learning",
-    "Immersive Media & Cultural Interaction"
+    "Agent-Based Systems",
+    "Accessible & Assistive Technology",
+    "Immersive Media (AR/VR)",
+    "User Experience"
   ],
   "publications": [
     {
@@ -87,7 +87,7 @@
       "doi": "https://doi.org/10.3390/heritage8120503",
       "badge": "Published",
       "badgeType": "pub",
-      "authorNote": "Co-first author"
+      "authorNote": "† Co-first author"
     },
     {
       "year": "2025",
@@ -141,16 +141,16 @@
   ],
   "skills": [
     {
-      "name": "User Research",
-      "items": "Interviews · Survey Design (N>500) · Thematic Analysis · PRISMA · Mixed Methods · Usability Testing"
+      "name": "Research",
+      "items": "Interviews · Survey Design · Thematic Analysis · PRISMA Systematic Review · Mixed Methods"
     },
     {
-      "name": "Quantitative Analysis",
-      "items": "CB-SEM (SPSS, AMOS) · SEM-ANN · Hypothesis Testing · Python (scikit-learn) · MATLAB"
+      "name": "Technical",
+      "items": "Python · LaTeX · MATLAB · SPSS · AMOS · Microsoft Office"
     },
     {
       "name": "Design & Prototyping",
-      "items": "Unity3D (Vuforia AR) · TouchDesigner · Arduino · Figma · Blender · C4D · Adobe Creative Suite"
+      "items": "Figma · Blender · C4D · Unity3D · Unreal Engine · TouchDesigner · Arduino · Adobe Suite (Photoshop, Illustrator, After Effects, Premiere)"
     },
     {
       "name": "Languages",
