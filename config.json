@@ -3,23 +3,23 @@
     "name": "Jiaxuan Gong",
     "title": "HCI Researcher & Designer",
     "email": "gongjiaxuan169@gmail.com",
-    "scholar": "https://scholar.google.com/citations?hl=zh-CN&user=FtQ2NOUAAAAJ",
-    "github": "https://github.com/gongjiaxuan",
-    "photo": "images/photo.png",
+    "scholar": "https://scholar.google.com/citations?user=FtQ2NOUAAAAJ",
+    "github": "gongjiaxuan",
+    "photo": "images/photo.jpg",
     "cvPath": "cv/CV_JiaxuanGong_HCI+.pdf",
     "tagline": ""
   },
   "hero": {
     "line1": "Hi, I'm Jiaxuan.",
-    "line2": "I'm an M.F.A. candidate at Jiangnan University, working at the intersection of human-computer interaction, accessibility, and immersive media. I build prototypes, run mixed-methods user studies, and write about how people engage with emerging technologies."
+    "line2": "I'm an M.F.A. candidate at Jiangnan University studying how people interpret, trust, and rely on emerging AI and immersive systems in situated contexts. I build interactive prototypes, conduct mixed-methods user studies, and translate empirical findings into design implications for accessibility, AI-mediated communication, and cultural interaction."
   },
   "about": {
     "paragraphs": [
-      "My research asks how people actually experience the technologies we build. I make interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — then test them with real users through surveys, interviews, and structural equation models. My M.F.A. thesis explored how augmented reality can bring traditional Yixing Zisha pottery to life in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
-      "I've led a PRISMA systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is (and isn't) serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
+      "My research asks how people experience, interpret, and evaluate the technologies we build. I combine interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — with surveys, interviews, and structural equation models. My M.F.A. thesis research examines how augmented reality can support cultural heritage experiences in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
+      "I am developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is, and is not, serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
       "I came to research through design. My B.F.A. in visual communication taught me to care about how things look and feel; my M.F.A. taught me to care about whether they actually work. These days I split my time between making things and measuring their impact — a combination I'd like to keep pursuing in a PhD. Outside of work: I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
     ],
-    "highlight": "I'm currently looking for a summer 2026 research internship — especially projects at the intersection of AI-mediated communication, accessibility, or immersive media. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
+    "highlight": "I'm currently looking for a summer 2026 research internship — especially projects in human-AI interaction, accessibility, AI-mediated communication, learning, or immersive cultural interaction. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
   },
   "education": [
     {
@@ -37,10 +37,10 @@
   ],
   "interests": [
     "Human–AI Interaction",
-    "Accessible & Assistive Technology",
-    "Immersive Media (AR/VR)",
-    "AI-Mediated Communication",
-    "UX & Technology Acceptance"
+    "Mixed-Methods HCI & UX Research",
+    "Accessibility & Assistive AI",
+    "AI-Mediated Communication and Learning",
+    "Immersive Media & Cultural Interaction"
   ],
   "publications": [
     {
@@ -161,7 +161,7 @@
     {
       "date": "May 2026",
       "title": "Applying to HCI+ 2026 Summer Research Program",
-      "detail": "Advisors: Nan Gao (Nankai), Yang Jiao (Tsinghua), Chun Yu (Tsinghua)"
+      "detail": "Focus: human-AI interaction, accessibility, AI-mediated communication, and immersive cultural interaction"
     },
     {
       "date": "May 2026",
@@ -180,29 +180,6 @@
     }
   ],
   "projects": [
-    {
-      "id": "dunhuang",
-      "title": "敦煌奇妙夜",
-      "subtitle": "Immersive Interactive Installation with Physical Computing",
-      "cardBlurb": "Flashlight-driven immersive installation exploring Dunhuang murals. TouchDesigner + real-time 3D animation triggered by visitor interaction.",
-      "tags": [
-        "Interaction Design",
-        "Physical Computing",
-        "TouchDesigner",
-        "Cultural Heritage"
-      ],
-      "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore — when the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. Built with TouchDesigner, Blender, projection mapping, and webcam-based light tracking. Multiple visitors can interact simultaneously. The project explores how tangible interaction can collapse the distance between ancient art and contemporary audiences.",
-      "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · Physical Construction",
-      "hero": "images/dunhuang_hero.jpg",
-      "images": [],
-      "processImages": [],
-      "video": {
-        "src": "videos/dunhuang.mp4",
-        "poster": "images/dunhuang_hero.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/dunhuang_hero.jpg"
-    },
     {
       "id": "remembery",
       "title": "REMEMBERY",
@@ -231,19 +208,28 @@
           "alt": "Device mockup showing doctor monitoring view"
         },
         {
-          "src": "remembery/ui1.jpg",
-          "alt": "Patient interface — simplified navigation with high contrast"
+          "src": "remembery/2.jpg",
+          "alt": "2.jpg"
         },
         {
-          "src": "remembery/ui2.jpg",
-          "alt": "Family interface — emergency response and care coordination"
-        },
-        {
-          "src": "remembery/ui3.jpg",
-          "alt": "Doctor interface — patient progress tracking"
+          "src": "remembery/6.jpg",
+          "alt": "6.jpg"
         }
       ],
-      "processImages": [],
+      "processImages": [
+        {
+          "src": "remembery/1_1.jpg",
+          "alt": "1~1.jpg"
+        },
+        {
+          "src": "remembery/2_1.jpg",
+          "alt": "2~1.jpg"
+        },
+        {
+          "src": "remembery/3_1.jpg",
+          "alt": "3~1.jpg"
+        }
+      ],
       "video": {
         "src": "videos/remembery.mp4",
         "poster": "images/remembery/mockup1.jpg"
@@ -450,6 +436,29 @@
       },
       "layout": "stacked",
       "cardImage": "images/huiyi.jpg"
+    },
+    {
+      "id": "dunhuang",
+      "title": "敦煌奇妙夜",
+      "subtitle": "Immersive Interactive Installation with Physical Computing",
+      "cardBlurb": "Flashlight-driven immersive installation exploring Dunhuang murals. TouchDesigner + real-time 3D animation triggered by visitor interaction.",
+      "tags": [
+        "Interaction Design",
+        "Physical Computing",
+        "TouchDesigner",
+        "Cultural Heritage"
+      ],
+      "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore: when the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. The installation was built with TouchDesigner for projection mapping and webcam-based light tracking, Blender for 3D character modeling, and AIGC tools for generating reference imagery. Multiple visitors can interact simultaneously, with different light-triggered regions activating different animations. The physical space was constructed from cardboard, foam, and paint to recreate the texture and atmosphere of the original cave. The project explores how tangible interaction, spatial storytelling, and real-time media can make cultural heritage feel alive and participatory.",
+      "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · AIGC · Physical Construction",
+      "hero": "images/dunhuang_hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": {
+        "src": "videos/dunhuang.mp4",
+        "poster": "images/dunhuang_hero.jpg"
+      },
+      "layout": "stacked",
+      "cardImage": "images/dunhuang_hero.jpg"
     }
   ]
 }
