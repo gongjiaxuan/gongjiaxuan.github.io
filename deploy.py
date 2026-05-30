@@ -5,6 +5,7 @@ import json, os, base64, subprocess, sys, shutil, tempfile
 PORT = 8765
 ROOT = os.path.dirname(os.path.abspath(__file__))
 VIDEO_EXTS = {'.mp4', '.mov', '.m4v', '.webm', '.avi', '.mkv'}
+SERVER_VERSION = 'file-safe-v2'
 
 def safe_join(root, rel_path):
     rel_path = rel_path.replace('\\', '/').lstrip('/')
@@ -149,6 +150,18 @@ def write_uploaded_file(root, path, b64):
                 pass
 
 class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path.startswith('/version'):
+            self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(f'DEPLOY_SERVER_VERSION:{SERVER_VERSION}'.encode())
+        else:
+            self.send_response(404)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -216,7 +229,7 @@ class Handler(BaseHTTPRequestHandler):
                     if push.returncode != 0:
                         raise RuntimeError(push.stderr.strip() or push.stdout.strip() or 'git push failed')
 
-                msg = f'OK: config saved, {written} files written'
+                msg = f'DEPLOY_SERVER_VERSION:{SERVER_VERSION}\nOK: config saved, {written} files written'
                 if notes:
                     msg += '\n' + '\n'.join(notes)
                 if did_commit:
@@ -244,7 +257,7 @@ class Handler(BaseHTTPRequestHandler):
         print(f'[{self.log_date_time_string()}] {args[0]}')
 
 if __name__ == '__main__':
-    print(f'Deploy server running at http://localhost:{PORT}')
+    print(f'Deploy server running at http://localhost:{PORT} ({SERVER_VERSION})')
     print('Press Ctrl+C to stop.')
     sys.stdout.flush()
     HTTPServer(('127.0.0.1', PORT), Handler).serve_forever()
