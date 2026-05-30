@@ -149,18 +149,31 @@ def write_uploaded_file(root, path, b64):
             except OSError:
                 pass
 
+MIME = {'.html':'text/html','.js':'application/javascript','.json':'application/json','.css':'text/css','.jpg':'image/jpeg','.jpeg':'image/jpeg','.png':'image/png','.gif':'image/gif','.svg':'image/svg+xml','.mp4':'video/mp4','.webm':'video/webm','.pdf':'application/pdf','.docx':'application/vnd.openxmlformats-officedocument.wordprocessingml.document','.ico':'image/x-icon'}
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/version'):
-            self.send_response(200)
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
+            self.send_response(200); self.send_header('Access-Control-Allow-Origin','*'); self.send_header('Content-Type','text/plain'); self.end_headers()
             self.wfile.write(f'DEPLOY_SERVER_VERSION:{SERVER_VERSION}'.encode())
-        else:
-            self.send_response(404)
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
+            return
+        # Serve static files
+        path = self.path.split('?')[0].lstrip('/') or 'index.html'
+        filepath = safe_join(ROOT, path)
+        if not os.path.isfile(filepath):
+            self.send_response(404); self.send_header('Access-Control-Allow-Origin','*'); self.end_headers(); return
+        ext = os.path.splitext(path)[1].lower()
+        ct = MIME.get(ext, 'application/octet-stream')
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin','*')
+        self.send_header('Content-Type', ct)
+        if ct.startswith('video/'): self.send_header('Accept-Ranges','bytes')
+        self.end_headers()
+        with open(filepath, 'rb') as f:
+            self.wfile.write(f.read())
+
+    def log_message(self, format, *args):
+        if '/deploy' in str(args): print(f'[{self.log_date_time_string()}] {args[0]}')
 
     def do_OPTIONS(self):
         self.send_response(200)
