@@ -239,7 +239,7 @@
       var ih='';I.forEach(function(t){ih+='<span class="tag">'+t+'</span>'});document.getElementById('interestTags').innerHTML=ih;
 
       // Publications timeline
-      var ph='',lastYr='';P.forEach(function(p){if(p.year!==lastYr){ph+='<div class="tl-yr">'+p.year+'</div>';lastYr=p.year}var tbl=p.badgeType==='prep'?' tl-badge-prep':' tl-badge-pub';ph+='<div class="tl-it paper"><div class="tlt">'+(p.doi?'<a href="'+p.doi+'" target="_blank" rel="noopener">'+p.title+'</a>':p.title)+'<span class="tl-badge'+tbl+'">'+p.badge+'</span></div><div class="tlv"><em>'+p.venue+'</em></div></div>'});document.getElementById('pubTimeline').innerHTML=ph;
+      var ph='',lastYr='';P.forEach(function(p){if(p.year!==lastYr){ph+='<div class="tl-yr">'+p.year+'</div>';lastYr=p.year}var tbl=p.badgeType==='prep'?' tl-badge-prep':' tl-badge-pub';var authorStr='';if(Array.isArray(p.authors)){authorStr=p.authors.map(function(a){return a==='Jiaxuan Gong'?'<strong>'+a+'</strong>':a}).join(', ').replace(/, ([^,]*)$/,' and $1')}else{authorStr=p.authors}ph+='<div class="tl-it paper"><div class="tlt">'+(p.doi?'<a href="'+p.doi+'" target="_blank" rel="noopener">'+p.title+'</a>':p.title)+'<span class="tl-badge'+tbl+'">'+p.badge+'</span></div><div class="tlv">'+authorStr+'</div><div class="tlv"><em>'+p.venue+'</em>'+(p.authorNote?' <span style="color:var(--acc);font-size:0.72rem">· '+p.authorNote+'</span>':'')+'</div></div>'});document.getElementById('pubTimeline').innerHTML=ph;
 
       // Skills
       var kh='';K.forEach(function(s){kh+='<div class="sk-group"><strong>'+s.name+'</strong>'+s.items+'</div>'});document.getElementById('skillsGrid').innerHTML=kh;
