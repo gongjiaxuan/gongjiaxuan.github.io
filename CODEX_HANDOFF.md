@@ -253,11 +253,294 @@ E:\PHD_27\portfolio\           ← GitHub Pages 仓库根目录
 - **Yang Jiao**: 项目明确要求 "Design + HCI + user study + system evaluation"，Jiaxuan 的 AR 原型开发经验（硕士论文）直接对口
 - **Chun Yu**: 项目开放度高，明确说"不要求论文经验，全程指导"，愿意培养学生
 
-## 最新 CV
+## 最新 CV（Overleaf LaTeX）
 
-**文件位置**: `E:\PHD_27\01_个人材料\CV\CV_JiaxuanGong_HCI+.docx`
-**格式**: LaTeX → Overleaf 编译 → PDF
-**LaTeX 代码**: 见本对话中最终版本（已在 Overleaf 编译通过）
+**工具**: Overleaf 在线编译
+**已编译通过**，可直接复制粘贴到 Overleaf 项目
+
+```latex
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot,
+    top=2 cm, bottom=2 cm, left=2 cm, right=2 cm,
+    footskip=1.0 cm,
+]{geometry}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{primaryColor}{RGB}{0, 0, 0}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage[
+    pdftitle={Jiaxuan Gong's CV},
+    pdfauthor={Jiaxuan Gong},
+    pdfcreator={LaTeX with RenderCV},
+    colorlinks=true,
+    urlcolor=MidnightBlue,
+    citecolor=black
+]{hyperref}
+\usepackage[pscoord]{eso-pic}
+\usepackage{calc}
+\usepackage{bookmark}
+\usepackage{lastpage}
+\usepackage{changepage}
+\usepackage{paracol}
+\usepackage{ifthen}
+\usepackage{needspace}
+\usepackage{iftex}
+
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+% Some settings:
+\raggedright
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt}
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+\titlespacing{\section}{-1pt}{0.3 cm}{0.2 cm}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$}
+
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm, parsep=0.10 cm, partopsep=0pt, itemsep=0pt,
+        leftmargin=0 cm + 10pt
+    ]
+}{\end{itemize}}
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{0 cm + 0.00001 cm}{0 cm + 0.00001 cm}
+}{\end{adjustwidth}}
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{\switchcolumn \raggedleft \secondColumn \end{paracol} \endonecolentry}
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{\par\kern\topsep}
+
+\let\hrefWithoutArrow\href
+
+\newenvironment{honors}{
+  \begin{itemize}[
+    label={}, leftmargin=0pt, itemsep=0pt, topsep=0pt, parsep=0pt
+  ]
+}{\end{itemize}}
+\newcommand{\honor}[2]{\item \mbox{#1}\hfill #2}
+
+\begin{document}
+    \newcommand{\AND}{\unskip
+        \cleaders\copy\ANDbox\hskip\wd\ANDbox
+        \ignorespaces
+    }
+    \newsavebox\ANDbox
+    \sbox\ANDbox{}
+
+    \begin{header}
+        \fontsize{25 pt}{25 pt}\selectfont Jiaxuan Gong
+
+        \vspace{5 pt}
+
+        \normalsize
+        \mbox{\hrefWithoutArrow{mailto:gongjiaxuan169@gmail.com}{gongjiaxuan169@gmail.com}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{https://gongjiaxuan.github.io}{gongjiaxuan.github.io}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{\hrefWithoutArrow{https://scholar.google.com/citations?user=FtQ2NOUAAAAJ}{Scholar}}%
+        \kern 5.0 pt%
+        \AND%
+        \kern 5.0 pt%
+        \mbox{(+86) 18912122391}
+    \end{header}
+
+    \vspace{5 pt - 0.3 cm}
+
+    \section{Research Interests}
+
+        \begin{onecolentry}
+            Human--AI Interaction, Accessible \& Assistive Technology, Immersive Media (AR/VR), AI-Mediated Communication, User Experience \& Technology Acceptance
+        \end{onecolentry}
+
+    \section{Education}
+
+    \begin{twocolentry}{Sept 2023 -- Jun 2026 (expected)}
+        \textbf{Jiangnan University}, Wuxi, China \\
+        \textit{M.F.A. in Design Science} -- GPA: 89/100
+    \end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+            \item Core Courses: Public Art and Digital Innovation (94, using Python)
+        \end{highlights}
+    \end{onecolentry}
+
+    \vspace{0.2 cm}
+
+    \begin{twocolentry}{Sept 2019 -- Jun 2023}
+        \textbf{Nanjing University of the Arts}, Nanjing, China \\
+        \textit{B.F.A. in Visual Communication Design} -- GPA: 88/100
+    \end{twocolentry}
+
+    \vspace{0.10 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+            \item Core Courses: Technological innovation and design (90, using Python), Digital media interaction design (90)
+        \end{highlights}
+    \end{onecolentry}
+
+    \section{Research Experiences}
+
+    \begin{twocolentry}{Sep 2024 -- May 2026}
+        \textbf{Master's Thesis: AR Display Design for Cultural Heritage \& User Acceptance}\\
+        \textit{Advisor: Prof.\ Feng Wang, Jiangnan University}
+    \end{twocolentry}
+    \vspace{0.08 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+            \item \textbf{AR Prototype:} Designed and developed a mobile AR application for Yixing Zisha pottery heritage using Unity and Vuforia SDK, covering pot form knowledge, clay comparison, and craftsmanship display modules.
+            \item \textbf{Empirical Study:} Integrated SOR framework, TAM, and flow theory into a seven-construct model; surveyed 388 users and tested ten hypotheses via CB-SEM (AMOS), with nine supported.
+            \item \textbf{Design Implications:} Identified perceived authenticity as the strongest acceptance driver (\beta=0.541 on PU, \beta=0.452 on Flow) and derived a five-dimension AR display design strategy for public cultural spaces.
+        \end{highlights}
+    \end{onecolentry}
+
+    \vspace{0.15 cm}
+
+    \begin{twocolentry}{Jun 2024 -- Jun 2025}
+        \textbf{Enhancing Public Access to Cultural Heritage via Immersive VR Experiences}\\
+        \textit{Advisor: Prof.\ Feng Wang, Jiangnan University}
+    \end{twocolentry}
+    \vspace{0.08 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+            \item \textbf{Project Lead \& Co-First Author:} Developed an HCI-grounded Technology Acceptance Model (TAM) tailored to interactive museum contexts, proposing 16 testable hypotheses.
+            \item Validated constructs via a 29-item Likert survey (N=566) using CB-SEM (AMOS) and triangulated findings through thematic analysis of 20 semi-structured interviews.
+            \item \textbf{Outcome:} Co-first-author paper published in \textit{Heritage}; contributed actionable guidelines for digital museum experience design.
+        \end{highlights}
+    \end{onecolentry}
+
+    \vspace{0.15 cm}
+
+    \begin{twocolentry}{Jun 2025 -- Nov 2025}
+        \textbf{Generative AI for Accessibility in HCI}\\
+        \textit{Advisor: Prof.\ Feng Wang, Jiangnan University}
+    \end{twocolentry}
+    \vspace{0.08 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+            \item \textbf{Project Lead \& First Author:} Spearheaded a PRISMA-based systematic literature review (2020--2025), screening 3,570 records to map the nascent GenAI accessibility landscape.
+            \item Constructed a multi-dimensional coding scheme to qualitatively analyze 136 eligible studies, exposing systemic gaps (e.g., neglected motor impairments) and ethical risks including algorithmic ableism.
+            \item \textbf{Outcome:} First-author manuscript in preparation; proposed a ``Born Accessible'' paradigm for GenAI development and disability-centered governance.
+        \end{highlights}
+    \end{onecolentry}
+
+    \vspace{0.15 cm}
+
+    \begin{twocolentry}{Jan 2025 -- Jun 2025}
+        \textbf{Human-AI Collaboration in Sustainable Online Consumption}\\
+        \textit{Advisor: Prof.\ Ken Nah, Hongik University}
+    \end{twocolentry}
+    \vspace{0.08 cm}
+    \begin{onecolentry}
+        \begin{highlights}
+            \item Spearheaded reliability and validity testing for an extended TAM framework using SPSS and AMOS.
+            \item Operationalized a hybrid SEM--ANN approach to capture non-linear behavioral drivers of LLM-assisted consumption.
+            \item \textbf{Outcome:} Co-authored paper published in \textit{Applied Sciences}; advanced understanding of AI transparency in e-commerce behavior.
+        \end{highlights}
+    \end{onecolentry}
+
+    \section{Papers}
+
+        \begin{onecolentry}
+            \begin{enumerate}[label={[\arabic*]}, topsep=0.10 cm, parsep=0.10 cm, partopsep=0pt, itemsep=5pt, leftmargin=0 cm + 20pt]
+
+                \item \textbf{Jiaxuan Gong}, Wen Zhong, Bai Liu, Zhengyang Lu, and Feng Wang. 2025.
+                \href{https://doi.org/10.3390/heritage8120503}{{Engaging the Next Generation: A Validated Model of VR Acceptance to Inform Design in Cultural Heritage Institutions}}.
+                \textit{Heritage} 8, 12 (2025), 503. (Co-first author.)
+
+                \item Shunfeng Zhang, \textbf{Jiaxuan Gong}, Haiyan Wu, Zhengyang Lu, and Wanying Zhang. 2026.
+                \href{https://doi.org/10.1177/21582440251413067}{{Public Sentiment Towards Interactive Art on Multi-Modal Social Media: Insights from Jiangsu Province}}.
+                \textit{SAGE Open} 16, 1 (2026), 21582440251413067.
+
+                \item Junjie Yu, Wanying Yan, \textbf{Jiaxuan Gong}, Siqin Wang, Ken Nah, and Wei Cheng. 2025.
+                \href{https://doi.org/10.3390/app15148088}{{Motivation of University Students to Use LLMs to Assist with Online Consumption of Sustainable Products: An Analysis Based on a Hybrid SEM-ANN Approach}}.
+                \textit{Applied Sciences} 15, 14 (2025), 8088.
+
+                \item Renjing Hu, Xiaonan Tao, \textbf{Jiaxuan Gong}, and Feng Wang. 2024.
+                \href{https://doi.org/10.1038/s41598-024-73156-7}{{Quality Function Deployment Approach to Urban Ecological Public Art Design Centred on Resident Needs}}.
+                \textit{Scientific Reports} 14, 1 (2024), 22814.
+
+                \item Siqin Wang, \textbf{Jiaxuan Gong}, Xiaoshan Li, Yuting Peng, Chenhui Du, and Ken Nah. 2025.
+                \href{https://doi.org/10.3390/jtaer20040324}{{Integrated Office Applications Promote the Sustainable Development of E-Commerce Enterprises: A Study Based on the TPB-TAM-IS Success Model}}.
+                \textit{Journal of Theoretical and Applied Electronic Commerce Research} 20, 4 (2025), 324.
+
+                \item \textbf{Jiaxuan Gong}, Zhengyang Lu, Feng Wang, et al. 2026.
+                {Generative AI for Accessibility in Human--Computer Interaction: A PRISMA-Based Systematic Review}.
+                Manuscript in preparation.
+
+            \end{enumerate}
+        \end{onecolentry}
+
+    \section{Honors and Awards}
+
+        \begin{honors}
+            \honor{First-Class Scholarship from Jiangnan University (Top 5\%)}{2025}
+            \honor{First-Class Scholarship from Jiangnan University (Top 5\%)}{2024}
+            \honor{National Second Prize, \textit{Milan Design Week China Collegiate Design Competition \& Exhibition}}{2024}
+            \honor{National Third Prize, \textit{Milan Design Week China Collegiate Design Competition \& Exhibition}}{2024}
+            \honor{Outstanding Graduate of Nanjing University of the Arts (Top 3\%)}{2023}
+            \honor{First-Class Scholarship from Nanjing University of the Arts (Top 4\%)}{2022}
+            \honor{Bronze Award, \textit{Singapore Fine Art Research Association Competition}}{2022}
+            \honor{National Silver Award, China International College Students' Innovation Competition}{2021}
+            \honor{First-Class Scholarship from Nanjing University of the Arts (Top 4\%)}{2021}
+            \honor{First-Class Scholarship from Nanjing University of the Arts (Top 4\%)}{2020}
+        \end{honors}
+
+    \section{Skills}
+
+        \begin{onecolentry}
+            \textbf{User Research:} Semi-structured Interviews, Survey Design (N\textgreater 500), Thematic Analysis, PRISMA Systematic Review, Mixed Methods, Usability Testing
+        \end{onecolentry}
+        \vspace{0.2 cm}
+        \begin{onecolentry}
+            \textbf{Quantitative Analysis:} CB-SEM (SPSS, AMOS), SEM-ANN, Hypothesis Testing, Descriptive \& Inferential Statistics, Python (scikit-learn), MATLAB
+        \end{onecolentry}
+        \vspace{0.2 cm}
+        \begin{onecolentry}
+            \textbf{Prototyping \& Development:} Unity3D (Vuforia AR), Unreal Engine, TouchDesigner, Arduino, Figma, Blender, C4D, Adobe Suite (Photoshop, Illustrator, After Effects, Premiere)
+        \end{onecolentry}
+        \vspace{0.2 cm}
+        \begin{onecolentry}
+            \textbf{Languages:} Mandarin (Native), English (TOEFL 106, GRE 333+4.0)
+        \end{onecolentry}
+
+\end{document}
+```
 
 **CV 关键内容**:
 - Header: 邮箱 + 网站 + Scholar + 手机
