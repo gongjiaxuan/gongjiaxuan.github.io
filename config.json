@@ -432,6 +432,21 @@
       "video": null,
       "layout": "stacked",
       "cardImage": ""
+    },
+    {
+      "id": "dunhuang",
+      "title": "敦煌奇妙夜",
+      "subtitle": "Immersive Interactive Installation with Physical Computing",
+      "cardBlurb": "Flashlight-driven immersive installation exploring Dunhuang murals. TouchDesigner + real-time 3D animation triggered by visitor interaction.",
+      "tags": ["Interaction Design", "Physical Computing", "TouchDesigner", "Cultural Heritage"],
+      "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore — when the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. The installation was built with TouchDesigner for projection mapping and webcam-based light tracking, Blender for 3D character modeling, and AIGC tools for generating reference imagery. Multiple visitors can interact simultaneously, each flashlight triggering different animations. The physical space was constructed from cardboard, foam, and paint to recreate the texture and atmosphere of the original cave. The project explores how tangible interaction — the simple gesture of shining a light — can collapse the distance between ancient art and contemporary audiences, making cultural heritage feel alive and participatory.",
+      "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · AIGC · Physical Construction",
+      "hero": "images/dunhuang_hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": { "src": "videos/dunhuang.mp4", "poster": "images/dunhuang_hero.jpg" },
+      "layout": "stacked",
+      "cardImage": "images/dunhuang_hero.jpg"
     }
   ]
 }
