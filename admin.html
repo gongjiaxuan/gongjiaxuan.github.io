@@ -467,7 +467,7 @@
       var type = uploadTarget.type || 'gallery';
       var added = 0;
       pendingFiles.forEach(function(item) {
-        var fn = item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        var fn = Date.now().toString(36) + '_' + item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         if (type === 'process') {
           if (!p.processImages) p.processImages = [];
           p.processImages.push({ src: p.id + '/' + fn, alt: item.file.name });
@@ -487,7 +487,7 @@
     function confirmVideoUpload() {
       if (!pendingVideo) return;
       var p = cfg.projects[curIdx];
-      var rawName = pendingVideo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var rawName = Date.now().toString(36) + '_' + pendingVideo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       var fn = rawName.replace(/\.[^.]+$/, '') + '.mp4';
       var vpath = 'videos/' + fn;
       p.video = { src: vpath, poster: p.hero || '' };
