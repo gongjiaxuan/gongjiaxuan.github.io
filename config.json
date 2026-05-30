@@ -237,7 +237,7 @@
       ],
       "description": "An iPad application designed to teach the centuries-old craft of Zhuxianzhen woodblock printing through interactive, gamified learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app organizes content across three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project demonstrates how structured UX research methods — from information architecture to prototyping — can transform passive cultural consumption into active, self-directed discovery.",
       "tools": "Adobe XD · Card Sorting · Information Architecture · Wireframing · High-Fidelity Prototyping",
-      "hero": "images/woodblock/ipad1.jpg",
+      "hero": "images/woodblock/wireframe.jpg",
       "images": [
         {
           "src": "woodblock/ipad2.jpg",
@@ -254,14 +254,6 @@
         {
           "src": "woodblock/onboarding.jpg",
           "alt": "Onboarding flow introducing the app experience"
-        },
-        {
-          "src": "woodblock/ia.jpg",
-          "alt": "Information architecture diagram — card-sorting output"
-        },
-        {
-          "src": "woodblock/wireframe.jpg",
-          "alt": "Low-fidelity wireframe — early-stage layout exploration"
         }
       ],
       "video": null,
