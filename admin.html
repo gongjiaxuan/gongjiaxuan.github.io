@@ -368,6 +368,19 @@
       if (vname) h += '<button class="btn" onclick="setVideo(\'\');renderEditor()" style="color:var(--red);border-color:#fca5a5">✕</button>';
       h += '</div></div>';
 
+      // Process images
+      h += '<div class="field"><label>Process Images <span class="opt">(research diagrams, wireframes, user journey maps — appears between text and video)</span></label>';
+      h += '<div class="gitems">';
+      (p.processImages||[]).forEach(function(pi, j) {
+        var src = 'images/' + pi.src;
+        h += '<div class="gitem">';
+        h += '<img src="' + src + '" onerror="this.style.background=\'#ddd\'">';
+        h += '<button class="gi-del" onclick="event.stopPropagation();rmProcImg(' + j + ')">×</button>';
+        h += '</div>';
+      });
+      h += '<button class="upload-slot" onclick="event.stopPropagation();openProcUpload()">+</button>';
+      h += '</div></div>';
+
       // Delete + Preview
       h += '<div style="display:flex;gap:0.4rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--bdr)">';
       h += '<button class="btn" onclick="window.open(\'project.html?id=' + curIdx + '\',\'_blank\')">↗ Open Live</button>';
@@ -394,13 +407,44 @@
       markChanged();
     }
     function setHero(j) {
-      cfg.projects[curIdx].hero = 'images/' + cfg.projects[curIdx].images[j].src;
-      markChanged(); renderEditor(); toast('Hero image set ✓');
+      var p = cfg.projects[curIdx];
+      p.hero = 'images/' + p.images[j].src;
+      p.cardImage = 'images/' + p.id + '.jpg';  // sync card image
+      markChanged(); renderEditor(); toast('Hero + card image synced ✓');
     }
     function addTag(ev) { if (ev.key !== 'Enter') return; ev.preventDefault(); var v = ev.target.value.trim(); if (v && cfg.projects[curIdx].tags.indexOf(v) === -1) { cfg.projects[curIdx].tags.push(v); markChanged(); renderEditor(); } }
     function rmTag(t) { cfg.projects[curIdx].tags = cfg.projects[curIdx].tags.filter(function(x) { return x !== t; }); markChanged(); renderEditor(); }
     function rmImg(j) { cfg.projects[curIdx].images.splice(j, 1); markChanged(); renderEditor(); }
     function setCaption(j, val) { cfg.projects[curIdx].images[j].caption = val; markChanged(); }
+
+    // Process images
+    var procPending = [];
+    function openProcUpload() {
+      procPending = []; document.getElementById('uploadPreviews').innerHTML = '';
+      document.getElementById('uploadCount').textContent = ''; document.getElementById('fileInput').value = '';
+      document.getElementById('modalTitle').textContent = 'Upload Process Images';
+      document.getElementById('uploadModal').classList.add('active');
+      uploadTarget.type = 'process';
+    }
+    // Override confirmUpload for process images
+    var origConfirmUpload = confirmUpload;
+    confirmUpload = function() {
+      if (uploadTarget.type === 'process') {
+        if (!procPending.length) { closeUpload(); return; }
+        var p = cfg.projects[curIdx]; if (!p.processImages) p.processImages = [];
+        if (!p._uploads) p._uploads = []; var added = 0;
+        procPending.forEach(function(item) {
+          var fn = item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          p.processImages.push({ src: p.id + '/' + fn, alt: item.file.name });
+          p._uploads.push({ file: item.file, path: 'images/' + p.id + '/' + fn }); added++;
+        });
+        markChanged(); renderEditor(); closeUpload(); toast('Added ' + added + ' process image(s)');
+        procPending = [];
+      } else {
+        origConfirmUpload();
+      }
+    };
+    function rmProcImg(j) { cfg.projects[curIdx].processImages.splice(j, 1); markChanged(); renderEditor(); }
 
     // ── Gallery drag reorder ──
     var gDragIdx = null;
@@ -423,13 +467,15 @@
     function openUpload() { pendingFiles = []; document.getElementById('uploadPreviews').innerHTML = ''; document.getElementById('uploadCount').textContent = ''; document.getElementById('fileInput').value = ''; document.getElementById('uploadModal').classList.add('active'); }
     function closeUpload() { document.getElementById('uploadModal').classList.remove('active'); pendingFiles.forEach(function(f) { URL.revokeObjectURL(f.objectURL); }); pendingFiles = []; }
     function handleFiles(files) {
-      pendingFiles.forEach(function(f) { URL.revokeObjectURL(f.objectURL); });
-      pendingFiles = [];
+      var target = uploadTarget.type === 'process' ? procPending : pendingFiles;
+      target.forEach(function(f) { URL.revokeObjectURL(f.objectURL); });
+      target.length = 0;
+      if (uploadTarget.type === 'process') procPending = target;
       document.getElementById('uploadPreviews').innerHTML = '';
       for (var i = 0; i < files.length; i++) {
         var f = files[i]; if (!f.type.match(/image\//)) continue;
         var url = URL.createObjectURL(f);
-        pendingFiles.push({ file: f, objectURL: url });
+        target.push({ file: f, objectURL: url });
         var d = document.createElement('div'); d.className = 'up-item';
         d.innerHTML = '<img src="' + url + '"><div class="fn">' + f.name + '</div>';
         document.getElementById('uploadPreviews').appendChild(d);
