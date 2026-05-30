@@ -11,15 +11,15 @@
   },
   "hero": {
     "line1": "Hi, I'm Jiaxuan.",
-    "line2": "I'm an M.F.A. candidate at Jiangnan University, working at the intersection of human-computer interaction, accessibility, and immersive media. I build prototypes, run mixed-methods user studies, and write about how people engage with emerging technologies."
+    "line2": "I'm an M.F.A. candidate at Jiangnan University studying how people interpret, trust, and rely on emerging AI and immersive systems in situated contexts. I build interactive prototypes, conduct mixed-methods user studies, and translate empirical findings into design implications for accessibility, AI-mediated communication, and cultural interaction."
   },
   "about": {
     "paragraphs": [
-      "My research asks how people actually experience the technologies we build. I make interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — then test them with real users through surveys, interviews, and structural equation models. My M.F.A. thesis explored how augmented reality can bring traditional Yixing Zisha pottery to life in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
-      "I've led a PRISMA systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is (and isn't) serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
+      "My research asks how people experience, interpret, and evaluate the technologies we build. I combine interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — with surveys, interviews, and structural equation models. My M.F.A. thesis research examines how augmented reality can support cultural heritage experiences in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
+      "I am developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is, and is not, serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
       "I came to research through design. My B.F.A. in visual communication taught me to care about how things look and feel; my M.F.A. taught me to care about whether they actually work. These days I split my time between making things and measuring their impact — a combination I'd like to keep pursuing in a PhD. Outside of work: I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
     ],
-    "highlight": "I'm currently looking for a summer 2026 research internship — especially projects at the intersection of AI-mediated communication, accessibility, or immersive media. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
+    "highlight": "I'm currently looking for a summer 2026 research internship — especially projects in human-AI interaction, accessibility, AI-mediated communication, learning, or immersive cultural interaction. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
   },
   "education": [
     {
@@ -37,10 +37,10 @@
   ],
   "interests": [
     "Human–AI Interaction",
-    "Accessible & Assistive Technology",
-    "Immersive Media (AR/VR)",
-    "AI-Mediated Communication",
-    "UX & Technology Acceptance"
+    "Mixed-Methods HCI & UX Research",
+    "Accessibility & Assistive AI",
+    "AI-Mediated Communication and Learning",
+    "Immersive Media & Cultural Interaction"
   ],
   "publications": [
     {
@@ -161,7 +161,7 @@
     {
       "date": "May 2026",
       "title": "Applying to HCI+ 2026 Summer Research Program",
-      "detail": "Advisors: Nan Gao (Nankai), Yang Jiao (Tsinghua), Chun Yu (Tsinghua)"
+      "detail": "Focus: human-AI interaction, accessibility, AI-mediated communication, and immersive cultural interaction"
     },
     {
       "date": "May 2026",
