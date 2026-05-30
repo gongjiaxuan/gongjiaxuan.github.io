@@ -667,7 +667,7 @@
       clean.projects.forEach(function(p) { delete p._uploads; });
 
       function checkDeployServerVersion() {
-        return fetch('http://localhost:8765/version?t=' + Date.now())
+        return fetch('/version?t=' + Date.now())
           .then(function(r) {
             if (!r.ok) throw new Error('Deploy server is outdated. Stop it and restart deploy.py.');
             return r.text();
@@ -680,7 +680,7 @@
       Promise.all(promises).then(function() {
         var body = JSON.stringify({ config: clean, files: files, message: 'Update from CMS' });
         checkDeployServerVersion().then(function() {
-          return fetch('http://localhost:8765/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body });
+          return fetch('/deploy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body });
         })
           .then(function(r) {
             return r.text().then(function(text) {
