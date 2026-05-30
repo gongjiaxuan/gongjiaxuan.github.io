@@ -418,32 +418,7 @@
     function setCaption(j, val) { cfg.projects[curIdx].images[j].caption = val; markChanged(); }
 
     // Process images
-    var procPending = [];
-    function openProcUpload() {
-      procPending = []; document.getElementById('uploadPreviews').innerHTML = '';
-      document.getElementById('uploadCount').textContent = ''; document.getElementById('fileInput').value = '';
-      document.getElementById('modalTitle').textContent = 'Upload Process Images';
-      document.getElementById('uploadModal').classList.add('active');
-      uploadTarget.type = 'process';
-    }
-    // Override confirmUpload for process images
-    var origConfirmUpload = confirmUpload;
-    confirmUpload = function() {
-      if (uploadTarget.type === 'process') {
-        if (!procPending.length) { closeUpload(); return; }
-        var p = cfg.projects[curIdx]; if (!p.processImages) p.processImages = [];
-        if (!p._uploads) p._uploads = []; var added = 0;
-        procPending.forEach(function(item) {
-          var fn = item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-          p.processImages.push({ src: p.id + '/' + fn, alt: item.file.name });
-          p._uploads.push({ file: item.file, path: 'images/' + p.id + '/' + fn }); added++;
-        });
-        markChanged(); renderEditor(); closeUpload(); toast('Added ' + added + ' process image(s)');
-        procPending = [];
-      } else {
-        origConfirmUpload();
-      }
-    };
+    function openProcUpload() { openUpload('process'); }
     function rmProcImg(j) { cfg.projects[curIdx].processImages.splice(j, 1); markChanged(); renderEditor(); }
 
     // ── Gallery drag reorder ──
@@ -464,18 +439,21 @@
     function drop(ev, to) { ev.preventDefault(); if (pDragIdx === null || pDragIdx === to) return; var item = cfg.projects.splice(pDragIdx, 1)[0]; cfg.projects.splice(to, 0, item); curIdx = cfg.projects.indexOf(item); pDragIdx = null; markChanged(); renderSidebar(); renderEditor(); }
 
     // ── Upload ──
-    function openUpload() { pendingFiles = []; document.getElementById('uploadPreviews').innerHTML = ''; document.getElementById('uploadCount').textContent = ''; document.getElementById('fileInput').value = ''; document.getElementById('uploadModal').classList.add('active'); }
+    var uploadTarget = { type: 'gallery' };
+    function openUpload(type) {
+      uploadTarget.type = type || 'gallery';
+      pendingFiles = []; document.getElementById('uploadPreviews').innerHTML = '';
+      document.getElementById('uploadCount').textContent = ''; document.getElementById('fileInput').value = '';
+      document.getElementById('uploadModal').classList.add('active');
+      document.getElementById('modalTitle').textContent = type === 'process' ? 'Upload Process Images' : (type === 'hero' ? 'Upload Hero Image' : 'Upload Gallery Images');
+    }
     function closeUpload() { document.getElementById('uploadModal').classList.remove('active'); pendingFiles.forEach(function(f) { URL.revokeObjectURL(f.objectURL); }); pendingFiles = []; }
     function handleFiles(files) {
-      var target = uploadTarget.type === 'process' ? procPending : pendingFiles;
-      target.forEach(function(f) { URL.revokeObjectURL(f.objectURL); });
-      target.length = 0;
-      if (uploadTarget.type === 'process') procPending = target;
-      document.getElementById('uploadPreviews').innerHTML = '';
+      pendingFiles = []; document.getElementById('uploadPreviews').innerHTML = '';
       for (var i = 0; i < files.length; i++) {
         var f = files[i]; if (!f.type.match(/image\//)) continue;
         var url = URL.createObjectURL(f);
-        target.push({ file: f, objectURL: url });
+        pendingFiles.push({ file: f, objectURL: url });
         var d = document.createElement('div'); d.className = 'up-item';
         d.innerHTML = '<img src="' + url + '"><div class="fn">' + f.name + '</div>';
         document.getElementById('uploadPreviews').appendChild(d);
@@ -486,15 +464,21 @@
       if (!pendingFiles.length) { closeUpload(); return; }
       var p = cfg.projects[curIdx];
       if (!p._uploads) p._uploads = [];
+      var type = uploadTarget.type || 'gallery';
       var added = 0;
       pendingFiles.forEach(function(item) {
         var fn = item.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        p.images.push({ src: p.id + '/' + fn, alt: item.file.name });
+        if (type === 'process') {
+          if (!p.processImages) p.processImages = [];
+          p.processImages.push({ src: p.id + '/' + fn, alt: item.file.name });
+        } else {
+          p.images.push({ src: p.id + '/' + fn, alt: item.file.name });
+        }
         p._uploads.push({ file: item.file, path: 'images/' + p.id + '/' + fn });
         added++;
       });
       markChanged(); renderEditor(); closeUpload();
-      toast('Added ' + added + ' image(s)');
+      toast('Added ' + added + ' image(s) to ' + type);
     }
 
     function openVideoUpload() { pendingVideo = null; document.getElementById('videoInput').value = ''; document.getElementById('videoPreview').innerHTML = ''; document.getElementById('videoModal').classList.add('active'); }
