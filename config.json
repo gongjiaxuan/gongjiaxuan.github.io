@@ -193,7 +193,7 @@
       ],
       "description": "A mobile application co-designed for four user groups within the Alzheimer's care ecosystem: patients managing cognitive decline, family caregivers coordinating daily support, doctors tracking clinical progress, and social workers allocating community resources. The design process began with stakeholder interviews and persona development to map the distinct needs of each group. For patients, the interface prioritizes simplified navigation, high-contrast visuals, and cognitive training exercises. For caregivers, it surfaces emergency workflows and care coordination tools. For clinicians, it provides a monitoring dashboard. For social workers, it supports case management and resource matching. Accessibility was not retrofitted — WCAG guidelines informed every wireframe from the start, shaping decisions about font sizing, touch targets, color contrast, and navigation hierarchy. The project demonstrates a complete user-centered design process from needs assessment through iterative prototyping to high-fidelity interactive mockups.",
       "tools": "Figma · Stakeholder Interviews · Persona Development · Iterative Prototyping · WCAG Accessibility Guidelines",
-      "hero": "images/remembery/board.jpg",
+      "hero": "images/remembery/mockup1.jpg",
       "images": [
         {
           "src": "remembery/mockup1.jpg",
@@ -208,16 +208,12 @@
           "alt": "Device mockup showing doctor monitoring view"
         },
         {
-          "src": "remembery/ui1.jpg",
-          "alt": "Patient interface — simplified navigation with high contrast"
+          "src": "remembery/2.jpg",
+          "alt": "2.jpg"
         },
         {
-          "src": "remembery/ui2.jpg",
-          "alt": "Family interface — emergency response and care coordination"
-        },
-        {
-          "src": "remembery/ui3.jpg",
-          "alt": "Doctor interface — patient progress tracking"
+          "src": "remembery/6.jpg",
+          "alt": "6.jpg"
         }
       ],
       "video": {
