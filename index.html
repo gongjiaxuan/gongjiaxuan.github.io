@@ -93,13 +93,13 @@
     .paper.dimmed{opacity:0.25}
 
     .proj-section{width:100vw;margin-left:calc(-50vw + 50%);padding:0}
-    .proj-section .sec-hd{max-width:var(--mw);margin-left:auto;margin-right:auto;padding:0 2rem}
-    .proj-wrap{position:relative;display:flex;align-items:center;padding:0 2rem}
+    .proj-section .sec-hd{max-width:var(--mw);margin-left:auto;margin-right:auto;padding:0 1.25rem}
+    .proj-wrap{position:relative;display:flex;align-items:center;padding:0 calc((100vw - var(--mw)) / 2 + 1.25rem)}
     .proj-row{display:flex;gap:1.2rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0.25rem 0.5rem 0.5rem 0;flex:1}
     .proj-row::-webkit-scrollbar{display:none}
     .proj-scroll{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#18181b;cursor:pointer;flex-shrink:0;margin:0 0.4rem}
     .proj-scroll:disabled{opacity:0.2;pointer-events:none}
-    .proj-card{flex:0 0 320px;scroll-snap-align:start;border-radius:10px;border:1px solid rgba(16,24,40,0.06);overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,0.03);transition:transform 0.25s,box-shadow 0.25s;text-decoration:none;color:inherit;display:block}
+    .proj-card{flex:0 0 300px;scroll-snap-align:start;border-radius:10px;border:1px solid rgba(16,24,40,0.06);overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,0.03);transition:transform 0.25s,box-shadow 0.25s;text-decoration:none;color:inherit;display:block}
     .proj-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(16,24,40,0.1);text-decoration:none}
     .proj-card .pc-preview{position:relative;width:100%;aspect-ratio:4/5;background:#e5e7eb;overflow:hidden}
     .proj-card .pc-preview img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s}
@@ -155,7 +155,7 @@
       .nav-toggle{display:block}
       .edu-grid{grid-template-columns:1fr}
       .sk-grid{grid-template-columns:1fr;gap:1rem}
-      .proj-card{flex:0 0 240px}.proj-section .sec-hd{padding:0 1.15rem}.proj-wrap{padding:0 1.15rem}
+      .proj-card{flex:0 0 260px}.proj-wrap{padding:0 1.15rem}
     }
   </style>
 </head>
