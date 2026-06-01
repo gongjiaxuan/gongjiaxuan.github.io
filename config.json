@@ -341,38 +341,6 @@
       "cardImage": "images/textile.jpg"
     },
     {
-      "id": "huiyi",
-      "title": "会意AD",
-      "subtitle": "Immersive Health Communication Space",
-      "cardBlurb": "Immersive spatial experience communicating Alzheimer's awareness. Environmental storytelling translates medical concepts into embodied experience.",
-      "tags": [
-        "Health Communication",
-        "Immersive Design",
-        "Accessibility",
-        "Spatial Design"
-      ],
-      "description": "An immersive spatial experience designed to communicate Alzheimer's disease awareness to the general public. The installation uses environmental storytelling — spatial design, curated lighting, soundscapes, and information graphics — to translate complex neurological concepts into an embodied, emotionally resonant visitor experience. Visitors move through spaces that simulate memory fragmentation, temporal disorientation, and sensory overload, using metaphor and sensory immersion to make invisible cognitive conditions tangibly felt. The project demonstrates how human-centered spatial design can bridge the gap between clinical knowledge and public understanding, turning abstract medical information into experiential knowledge.",
-      "tools": "Spatial Design · Environmental Graphics · Exhibition Design · Lighting Design · Storyboarding",
-      "hero": "images/huiyi/board1.jpg",
-      "images": [
-        {
-          "src": "huiyi/board2.jpg",
-          "alt": "Exhibition board — concept overview and design rationale"
-        },
-        {
-          "src": "huiyi/board3.jpg",
-          "alt": "Exhibition board — spatial layout and visitor flow"
-        }
-      ],
-      "processImages": [],
-      "video": {
-        "src": "videos/huiyi.mp4",
-        "poster": "images/huiyi/board1.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/huiyi.jpg"
-    },
-    {
       "id": "dunhuang",
       "title": "敦煌奇妙夜",
       "subtitle": "Immersive Interactive Installation with Physical Computing",
