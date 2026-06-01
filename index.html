@@ -92,15 +92,20 @@
     .paper[data-tags]{transition:opacity 0.3s}
     .paper.dimmed{opacity:0.25}
 
-    .proj-section{width:100vw;margin-left:calc(-50vw + 50%);padding:0}
-    .proj-section .sec-hd{max-width:var(--mw);margin-left:auto;margin-right:auto;padding:0 1.25rem}
-    .proj-wrap{position:relative;display:flex;align-items:center;padding:0 calc((100vw - var(--mw)) / 2 + 1.25rem)}
-    .proj-row{display:flex;gap:1.2rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0.25rem 0.5rem 0.5rem 0;flex:1}
-    .proj-row::-webkit-scrollbar{display:none}
-    .proj-scroll{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#18181b;cursor:pointer;flex-shrink:0;margin:0 0.4rem}
-    .proj-scroll:disabled{opacity:0.2;pointer-events:none}
-    .proj-card{flex:0 0 300px;scroll-snap-align:start;border-radius:10px;border:1px solid rgba(16,24,40,0.06);overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,0.03);transition:transform 0.25s,box-shadow 0.25s;text-decoration:none;color:inherit;display:block}
+    /* ── Filter tags ── */
+    .filter-bar{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1.5rem}
+    .filter-tag{padding:0.35rem 0.8rem;border:1px solid var(--bdr);border-radius:20px;font-size:0.78rem;color:var(--tm);cursor:pointer;transition:all 0.2s;user-select:none;font-weight:500;background:#fff}
+    .filter-tag:hover{border-color:var(--acc);color:var(--acc)}
+    .filter-tag.active{background:var(--acc);border-color:var(--acc);color:#fff}
+    /* ── Project grid ── */
+    .proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;max-height:640px;overflow-y:auto;scroll-behavior:smooth;padding:0.25rem 0.5rem 0.5rem 0;scrollbar-width:thin;scrollbar-color:#ddd transparent}
+    .proj-grid::-webkit-scrollbar{width:5px}
+    .proj-grid::-webkit-scrollbar-thumb{background:#ddd;border-radius:10px}
+    @media(max-width:900px){.proj-grid{grid-template-columns:repeat(2,1fr);max-height:500px}}
+    @media(max-width:600px){.proj-grid{grid-template-columns:1fr;max-height:420px}}
+    .proj-card{scroll-snap-align:start;border-radius:10px;border:1px solid rgba(16,24,40,0.06);overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,0.03);transition:all 0.25s,opacity 0.4s;text-decoration:none;color:inherit;display:block}
     .proj-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(16,24,40,0.1);text-decoration:none}
+    .proj-card.hidden{display:none}
     .proj-card .pc-preview{position:relative;width:100%;aspect-ratio:4/5;background:#e5e7eb;overflow:hidden}
     .proj-card .pc-preview img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s}
     .proj-card:hover .pc-preview img{transform:scale(1.04)}
@@ -188,7 +193,7 @@
   <div class="wrap"><hr class="divider"></div>
 
   <!-- Projects -->
-  <div class="proj-section"><section class="rv" id="projects"><div class="sec-hd"><h2>Some of my work</h2></div><div class="proj-wrap"><button class="proj-scroll proj-l" aria-label="Scroll left" disabled><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg></button><div class="proj-row" id="projRow"></div><button class="proj-scroll proj-r" aria-label="Scroll right"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button></div></section></div>
+  <div class="wrap"><section class="rv" id="projects"><div class="sec-hd"><h2>Some of my work</h2></div><div class="filter-bar" id="filterBar"></div><div class="proj-grid" id="projGrid"></div></section></div>
 
   <div class="wrap"><hr class="divider"></div>
 
@@ -247,8 +252,11 @@
       // Skills
       var kh='';K.forEach(function(s){kh+='<div class="sk-group"><strong>'+s.name+'</strong>'+s.items+'</div>'});document.getElementById('skillsGrid').innerHTML=kh;
 
-      // Projects
-      var prh='',prIndex=0;PR.forEach(function(p){prh+='<a class="proj-card" href="project.html?id='+prIndex+'"><div class="pc-preview"><img src="'+(p.cardImage||p.hero||'')+'" alt="'+p.title+'" loading="lazy" onerror="this.style.background=\'#e5e5e5\'"><span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+(p.tags||[]).slice(0,3).map(function(t){return'<span class="pc-tag">'+t+'</span>'}).join('')+'</div></a>';prIndex++});document.getElementById('projRow').innerHTML=prh;initProjScroll();
+      // Projects — filterable grid
+      var cats=['All'];PR.forEach(function(p){var c=p.category||'';if(c&&cats.indexOf(c)===-1)cats.push(c)});
+      var fhtml='';cats.forEach(function(c){fhtml+='<span class=\"filter-tag'+(c==='All'?' active':'')+'\" data-cat=\"'+c+'\" onclick=\"filterProjects(\''+c+'\')\">'+c+'</span>'});
+      document.getElementById('filterBar').innerHTML=fhtml;
+      var prh='',prIndex=0;PR.forEach(function(p){prh+='<a class=\"proj-card\" href=\"project.html?id='+prIndex+'\" data-cat=\"'+(p.category||'')+'\"><div class=\"pc-preview\"><img src=\"'+(p.cardImage||p.hero||'')+'\" alt=\"'+p.title+'\" loading=\"lazy\" onerror=\"this.style.background=\\'#e5e5e5\\'\"><span class=\"pc-name\">'+p.title+'</span></div><div class=\"pc-tags\">'+(p.tags||[]).slice(0,2).map(function(t){return'<span class=\"pc-tag\">'+t+'</span>'}).join('')+'</div></a>';prIndex++});document.getElementById('projGrid').innerHTML=prh;
 
       // Footer
       if(S.email)document.getElementById('ftEmail').href='mailto:'+S.email;
@@ -264,7 +272,9 @@
     // ── Post-render initializers (called after config data is rendered) ──
     function initReveal(){var o=new IntersectionObserver(function(e){e.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.rv').forEach(function(e){o.observe(e)})}
     function initTimeline(){var tl=document.querySelector('.tl');if(!tl)return;var items=document.querySelectorAll('.tl-it');if(!items.length)return;var tp=0,cp=0,cy=window.innerHeight*0.45;function ct(){var b=null,bd=Infinity;items.forEach(function(item){var r=item.getBoundingClientRect();var m=r.top+r.height/2;var d=Math.abs(m-cy);if(d<bd){bd=d;b=item}});if(b){var tr=tl.getBoundingClientRect();var ir=b.getBoundingClientRect();var im=ir.top+ir.height/2-tr.top;tp=(im/tl.offsetHeight)*100}}function tick(){cp+=(tp-cp)*0.1;tl.style.setProperty('--tl-pos',cp.toFixed(1)+'%');requestAnimationFrame(tick)}window.addEventListener('scroll',ct,{passive:true});ct();tick()}
-    function initProjScroll(){var r=document.getElementById('projRow'),l=document.querySelector('.proj-l'),rt=document.querySelector('.proj-r');if(!r)return;function u(){if(l)l.disabled=r.scrollLeft<=1;if(rt)rt.disabled=r.scrollLeft>=r.scrollWidth-r.clientWidth-1}if(l)l.addEventListener('click',function(){r.scrollBy({left:-280,behavior:'smooth'})});if(rt)rt.addEventListener('click',function(){r.scrollBy({left:280,behavior:'smooth'})});r.addEventListener('scroll',u,{passive:true});u()}
+    window.filterProjects=function(cat){document.querySelectorAll('.filter-tag').forEach(function(t){t.classList.toggle('active',t.dataset.cat===cat)});document.querySelectorAll('.proj-card').forEach(function(c){c.classList.toggle('hidden',cat!=='All'&&c.dataset.cat!==cat)})}
+    // Grid wheel scroll
+    (function(){var grid=document.getElementById('projGrid');if(grid){grid.addEventListener('wheel',function(e){e.preventDefault();grid.scrollTop+=e.deltaY},{passive:false})}})();
 
     // ── Mobile nav ──
     document.getElementById('navToggle').addEventListener('click',function(){document.getElementById('navMenu').classList.toggle('open')});
