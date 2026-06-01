@@ -332,10 +332,6 @@
       "hero": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg",
       "images": [
         {
-          "src": "dunhuang/编辑中pdf_pages-to-jpg-0001.jpg",
-          "alt": "Dunhuang page 1"
-        },
-        {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0002.jpg",
           "alt": "Dunhuang page 2"
         },
@@ -366,14 +362,14 @@
       "cardImage": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg",
       "videos": [
         {
-          "title": "Full Demo",
-          "src": "videos/dunhuang_demo.mp4",
-          "poster": "images/dunhuang/hero.jpg"
-        },
-        {
           "title": "Effect Showcase",
           "src": "videos/dunhuang_effects.mp4",
-          "poster": "images/dunhuang/hero.jpg"
+          "poster": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg"
+        },
+        {
+          "title": "Full Interactive Demo",
+          "src": "videos/dunhuang_demo.mp4",
+          "poster": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg"
         }
       ],
       "category": "Interactive",
