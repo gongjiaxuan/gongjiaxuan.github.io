@@ -341,46 +341,6 @@
       "cardImage": "images/textile.jpg"
     },
     {
-      "id": "listen",
-      "title": "LISTEN",
-      "subtitle": "Multimodal Sensory Interaction Concept",
-      "cardBlurb": "Interactive installation concept exploring auditory-visual synesthesia. TouchDesigner real-time graphics driven by spatial audio input.",
-      "tags": [
-        "Interaction Design",
-        "Creative Coding",
-        "Multimodal",
-        "Sensory Design"
-      ],
-      "description": "An interactive installation concept that explores auditory-visual synesthesia — the perceptual crossing of sound and sight. Using TouchDesigner for real-time generative graphics synchronized with a spatial audio system, the installation creates an immersive environment where visual forms — colors, patterns, and movements — respond dynamically to sonic input. A 3D environment modeled in Blender serves as the spatial canvas for this cross-modal experience. The concept investigates how feedback across sensory channels shapes perception and emotional response: when hearing and seeing intertwine, what new dimensions of experience emerge? The project contributes to research on multisensory interaction design by demonstrating how creative coding and spatial design can be composed into a unified, perception-driven experience.",
-      "tools": "TouchDesigner · Blender · Spatial Audio System · 3D Modeling · Creative Coding",
-      "hero": "images/listen/3.jpg",
-      "images": [
-        {
-          "src": "listen/1.jpg",
-          "alt": "Installation render — overview of the immersive environment"
-        },
-        {
-          "src": "listen/2.jpg",
-          "alt": "Installation render — detail view of generative visual elements"
-        },
-        {
-          "src": "listen/4.jpg",
-          "alt": "Installation render — audience perspective within the space"
-        },
-        {
-          "src": "listen/5.jpg",
-          "alt": "Installation render — closeup of visual-sonic interaction"
-        }
-      ],
-      "processImages": [],
-      "video": {
-        "src": "videos/listen.mp4",
-        "poster": "images/listen/3.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/listen.jpg"
-    },
-    {
       "id": "huiyi",
       "title": "会意AD",
       "subtitle": "Immersive Health Communication Space",
