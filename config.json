@@ -330,7 +330,19 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/dunhuang.jpg"
+      "cardImage": "images/dunhuang.jpg",
+      "videos": [
+        {
+          "title": "Full Demo",
+          "src": "videos/dunhuang_demo.mp4",
+          "poster": "images/dunhuang/hero.jpg"
+        },
+        {
+          "title": "Effect Showcase",
+          "src": "videos/dunhuang_effects.mp4",
+          "poster": "images/dunhuang/hero.jpg"
+        }
+      ]
     },
     {
       "id": "zisha",
