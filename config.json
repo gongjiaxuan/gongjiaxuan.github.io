@@ -211,7 +211,8 @@
         "poster": "images/remembery/mockup1.jpg"
       },
       "layout": "stacked",
-      "cardImage": "images/remembery.jpg"
+      "cardImage": "images/remembery.jpg",
+      "category": "UI/UX"
     },
     {
       "id": "museum",
@@ -255,7 +256,8 @@
         "poster": "images/museum/home.jpg"
       },
       "layout": "stacked",
-      "cardImage": "images/museum.jpg"
+      "cardImage": "images/museum.jpg",
+      "category": "UI/UX"
     },
     {
       "id": "woodblock",
@@ -290,7 +292,8 @@
         "poster": "images/woodblock/wireframe.jpg"
       },
       "layout": "stacked",
-      "cardImage": "images/woodblock.jpg"
+      "cardImage": "images/woodblock.jpg",
+      "category": "UI/UX"
     },
     {
       "id": "piao",
@@ -310,7 +313,8 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/piao.jpg"
+      "cardImage": "images/piao.jpg",
+      "category": "Interactive"
     },
     {
       "id": "dunhuang",
@@ -342,7 +346,8 @@
           "src": "videos/dunhuang_effects.mp4",
           "poster": "images/dunhuang/hero.jpg"
         }
-      ]
+      ],
+      "category": "Interactive"
     },
     {
       "id": "zisha",
@@ -362,7 +367,8 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/zisha.jpg"
+      "cardImage": "images/zisha.jpg",
+      "category": "AR/VR"
     },
     {
       "id": "textile",
@@ -382,7 +388,8 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/textile.jpg"
+      "cardImage": "images/textile.jpg",
+      "category": "Interactive"
     },
     {
       "id": "huansheng",
@@ -402,7 +409,8 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/huansheng.jpg"
+      "cardImage": "images/huansheng.jpg",
+      "category": "3D Art"
     },
     {
       "id": "matrix",
@@ -422,7 +430,8 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/matrix.jpg"
+      "cardImage": "images/matrix.jpg",
+      "category": "3D Art"
     },
     {
       "id": "yunjin",
@@ -442,7 +451,8 @@
       "processImages": [],
       "video": null,
       "layout": "stacked",
-      "cardImage": "images/yunjin.jpg"
+      "cardImage": "images/yunjin.jpg",
+      "category": "UI/UX"
     }
   ]
 }
