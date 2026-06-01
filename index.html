@@ -254,9 +254,22 @@
 
       // Projects — filterable grid
       var cats=['All'];PR.forEach(function(p){var c=p.category||'';if(c&&cats.indexOf(c)===-1)cats.push(c)});
-      var fhtml='';cats.forEach(function(c){fhtml+='<span class=\"filter-tag'+(c==='All'?' active':'')+'\" data-cat=\"'+c+'\" onclick=\"filterProjects(\''+c+'\')\">'+c+'</span>'});
+      var fhtml='';cats.forEach(function(c){fhtml+='<span class="filter-tag'+(c==='All'?' active':'')+'" data-cat="'+c+'">'+c+'</span>'});
       document.getElementById('filterBar').innerHTML=fhtml;
-      var prh='',prIndex=0;PR.forEach(function(p){prh+='<a class=\"proj-card\" href=\"project.html?id='+prIndex+'\" data-cat=\"'+(p.category||'')+'\"><div class=\"pc-preview\"><img src=\"'+(p.cardImage||p.hero||'')+'\" alt=\"'+p.title+'\" loading=\"lazy\" onerror=\"this.style.background=\\'#e5e5e5\\'\"><span class=\"pc-name\">'+p.title+'</span></div><div class=\"pc-tags\">'+(p.tags||[]).slice(0,2).map(function(t){return'<span class=\"pc-tag\">'+t+'</span>'}).join('')+'</div></a>';prIndex++});document.getElementById('projGrid').innerHTML=prh;var grid=document.getElementById('projGrid');if(grid){grid.addEventListener('wheel',function(e){e.preventDefault();grid.scrollTop+=e.deltaY},{passive:false})}
+
+      var prh='',prIndex=0;
+      PR.forEach(function(p){
+        var cat=p.category||'';
+        var imgSrc=p.cardImage||p.hero||'';
+        var tagHtml=(p.tags||[]).slice(0,2).map(function(t){return '<span class="pc-tag">'+t+'</span>'}).join('');
+        var imgHtml=imgSrc?'<img src="'+imgSrc+'" alt="'+p.title+'" loading="lazy" onerror="this.remove()">':'';
+        prh+='<a class="proj-card" href="project.html?id='+prIndex+'" data-cat="'+cat+'"><div class="pc-preview">'+imgHtml+'<span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+tagHtml+'</div></a>';
+        prIndex++;
+      });
+      document.getElementById('projGrid').innerHTML=prh;
+      document.querySelectorAll('.filter-tag').forEach(function(tag){
+        tag.addEventListener('click',function(){window.filterProjects(this.dataset.cat)});
+      });
 
       // Footer
       if(S.email)document.getElementById('ftEmail').href='mailto:'+S.email;
