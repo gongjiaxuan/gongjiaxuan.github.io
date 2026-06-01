@@ -10,16 +10,14 @@
     "tagline": ""
   },
   "hero": {
-    "line1": "Hi, I'm Jiaxuan.",
-    "line2": "I'm an M.F.A. candidate at Jiangnan University studying how people interpret, trust, and rely on emerging AI and immersive systems in situated contexts. I build interactive prototypes, conduct mixed-methods user studies, and translate empirical findings into design implications for accessibility, AI-mediated communication, and cultural interaction."
+    "line1": "Hi, I am Jiaxuan.",
+    "line2": "I study how people experience emerging technologies — building interactive prototypes and running mixed-methods user studies to understand what works and why."
   },
   "about": {
     "paragraphs": [
-      "My research asks how people experience, interpret, and evaluate the technologies we build. I combine interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — with surveys, interviews, and structural equation models. My M.F.A. thesis research examines how augmented reality can support cultural heritage experiences in museum spaces, using SOR theory, TAM, and flow models to understand visitor engagement (N=388, CB-SEM).",
-      "I am developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and qualitatively coding 136 of them to map how the field is, and is not, serving people with disabilities. I've published across venues including Heritage, SAGE Open, Applied Sciences, and Scientific Reports — six papers so far, with more in the pipeline.",
-      "I came to research through design. My B.F.A. in visual communication taught me to care about how things look and feel; my M.F.A. taught me to care about whether they actually work. These days I split my time between making things and measuring their impact — a combination I'd like to keep pursuing in a PhD. Outside of work: I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
+      "I am an M.F.A. candidate at Jiangnan University School of Design, advised by Prof. Feng Wang. My research sits at the intersection of human-AI interaction, immersive media, and accessibility. I build interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — and evaluate them through surveys, interviews, and structural equation models. My thesis explored how AR can support cultural heritage experiences (N=388, CB-SEM), and I am currently developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and coding 136 of them. I came to research through design: my B.F.A. taught me to care about how things look and feel, and my M.F.A. taught me to care about whether they actually work. Outside of work, I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
     ],
-    "highlight": "I'm currently looking for a summer 2026 research internship — especially projects in human-AI interaction, accessibility, AI-mediated communication, learning, or immersive cultural interaction. If your lab could use a researcher who can prototype and run rigorous user studies, I'd love to chat."
+    "highlight": "I am currently looking for a summer 2026 research internship — especially projects in human-AI interaction, accessibility, AI-mediated communication, or immersive cultural interaction. If your lab needs someone who can prototype and run rigorous user studies, I would love to chat."
   },
   "education": [
     {
@@ -159,14 +157,9 @@
   ],
   "news": [
     {
-      "date": "May 2026",
-      "title": "Applying to HCI+ 2026 Summer Research Program",
-      "detail": "Focus: human-AI interaction, accessibility, AI-mediated communication, and immersive cultural interaction"
-    },
-    {
-      "date": "May 2026",
-      "title": "Master's thesis defended: AR Display Design for Cultural Heritage & User Acceptance",
-      "detail": "Unity + Vuforia AR prototype, SOR-TAM-Flow model, N=388 CB-SEM study"
+      "date": "May 22, 2026 🎓",
+      "title": "Successfully defended my M.F.A. thesis!",
+      "detail": "AR Display Design for Cultural Heritage & User Acceptance. After two years of prototyping, surveying 388 visitors, and running a lot of SEM models, I am officially an M.F.A. candidate."
     },
     {
       "date": "Jan 2026",
