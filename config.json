@@ -211,7 +211,7 @@
         "poster": "images/remembery/mockup1.jpg"
       },
       "layout": "stacked",
-      "cardImage": "images/remembery/mpsayq95_2.jpg"
+      "cardImage": "images/remembery.jpg"
     },
     {
       "id": "museum",
@@ -290,7 +290,147 @@
         "poster": "images/woodblock/wireframe.jpg"
       },
       "layout": "stacked",
-      "cardImage": "images/woodblock/ipad2.jpg"
+      "cardImage": "images/woodblock.jpg"
+    },
+    {
+      "id": "piao",
+      "title": "飘 FLUTTER",
+      "subtitle": "Interactive Projection Mapping Installation",
+      "cardBlurb": "Interactive projection installation exploring visual storytelling through Unreal Engine and spatial audio.",
+      "tags": [
+        "Interaction Design",
+        "Projection Mapping",
+        "Unreal Engine",
+        "Spatial Audio"
+      ],
+      "description": "An interactive projection mapping installation that explores the poetry of visual storytelling. Using Unreal Engine for real-time rendering and spatial audio to create an immersive experience, the installation transforms a physical space into a living canvas where light, sound, and movement respond to one another.",
+      "tools": "Unreal Engine · Projection Mapping · Spatial Audio · Interactive Design",
+      "hero": "images/piao/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/piao.jpg"
+    },
+    {
+      "id": "dunhuang",
+      "title": "敦煌奇妙夜",
+      "subtitle": "Immersive Heritage Installation with Physical Computing",
+      "cardBlurb": "Flashlight-driven immersive installation exploring Dunhuang murals. TouchDesigner + real-time 3D animation triggered by visitor interaction.",
+      "tags": [
+        "Interaction Design",
+        "Physical Computing",
+        "TouchDesigner",
+        "Cultural Heritage"
+      ],
+      "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore. When the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. Built with TouchDesigner, Blender, projection mapping, and webcam-based light tracking. Multiple visitors can interact simultaneously.",
+      "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · Physical Construction",
+      "hero": "images/dunhuang/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/dunhuang.jpg"
+    },
+    {
+      "id": "zisha",
+      "title": "宜兴紫砂 AR",
+      "subtitle": "AR Display Design for Cultural Heritage & User Acceptance",
+      "cardBlurb": "Mobile AR application for Yixing Zisha pottery. Unity + Vuforia prototype, N=388 CB-SEM evaluation — M.F.A. thesis project.",
+      "tags": [
+        "AR/VR",
+        "User Research",
+        "Cultural Heritage",
+        "Unity"
+      ],
+      "description": "A mobile AR application designed as my M.F.A. thesis project, exploring how augmented reality can bring traditional Yixing Zisha pottery craftsmanship to museum visitors. The prototype covers three modules: pot form knowledge, clay material comparison, and craftsmanship display. Built with Unity and Vuforia SDK. Evaluated through a CB-SEM study (N=388, SOR-TAM-Flow model) that identified perceived authenticity as the strongest driver of visitor engagement.",
+      "tools": "Unity · Vuforia SDK · CB-SEM (AMOS) · Mixed Methods · Prototyping",
+      "hero": "images/zisha/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/zisha.jpg"
+    },
+    {
+      "id": "textile",
+      "title": "TEXTILE 2050",
+      "subtitle": "Interactive Installation with Physical Computing",
+      "cardBlurb": "Arduino + TouchDesigner installation exploring sustainable futures. Exhibited at university gallery.",
+      "tags": [
+        "Physical Computing",
+        "Prototyping",
+        "Interactive Media",
+        "Sustainability"
+      ],
+      "description": "A future-sustainability themed interactive installation inviting visitors to engage with textile-inspired interfaces. Arduino pressure and ultrasonic sensors detect touch and proximity, triggering real-time generative visuals through TouchDesigner. A speculative factory environment modeled in Blender serves as the visual canvas. Exhibited at the university gallery.",
+      "tools": "Arduino · TouchDesigner · Blender · 3D Modeling · Exhibition Design",
+      "hero": "images/textile/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/textile.jpg"
+    },
+    {
+      "id": "huansheng",
+      "title": "焕生·幻生",
+      "subtitle": "Generative Visual Art Installation",
+      "cardBlurb": "Generative visual art exploring transformation between decay and rebirth. Digital media installation.",
+      "tags": [
+        "Generative Art",
+        "Digital Media",
+        "Installation",
+        "Visual Design"
+      ],
+      "description": "A generative visual art installation exploring the transformation between decay and rebirth. Using digital media and projection techniques, the work creates an evolving visual narrative that shifts between organic forms of deterioration and regeneration, questioning the boundary between destruction and creation.",
+      "tools": "Digital Media · Projection · Visual Design · Generative Techniques",
+      "hero": "images/huansheng/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/huansheng.jpg"
+    },
+    {
+      "id": "matrix",
+      "title": "矩阵·造物",
+      "subtitle": "Experimental Visual Identity & Motion Graphics",
+      "cardBlurb": "Experimental visual identity exploring geometric abstraction. Poster series + motion graphics.",
+      "tags": [
+        "Visual Design",
+        "Poster Design",
+        "Motion Graphics",
+        "Geometric Abstraction"
+      ],
+      "description": "An experimental visual identity project exploring geometric abstraction and systematic design methods. The project includes a poster series and motion graphics that investigate how rigid modular systems can generate organic visual expressions, challenging the boundary between order and chaos in visual communication.",
+      "tools": "Adobe Illustrator · After Effects · Motion Graphics · Poster Design",
+      "hero": "images/matrix/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/matrix.jpg"
+    },
+    {
+      "id": "yunjin",
+      "title": "南京云锦",
+      "subtitle": "Cultural Heritage Infographic & Interactive Display",
+      "cardBlurb": "Infographic and interactive display for Nanjing Yunjin intangible cultural heritage. Information design + mobile showcase.",
+      "tags": [
+        "Information Design",
+        "Cultural Heritage",
+        "UI/UX",
+        "Infographic"
+      ],
+      "description": "An infographic and interactive display project showcasing Nanjing Yunjin, a UNESCO-recognized intangible cultural heritage of silk brocade craftsmanship. The project combines traditional information design with mobile interactive display, translating the complex weaving history and techniques into accessible visual narratives for contemporary audiences.",
+      "tools": "Adobe XD · Illustrator · Information Design · UI Design",
+      "hero": "images/yunjin/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/yunjin.jpg"
     }
   ]
 }
