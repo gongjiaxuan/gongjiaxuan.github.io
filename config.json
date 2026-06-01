@@ -327,7 +327,7 @@
         "TouchDesigner",
         "Cultural Heritage"
       ],
-      "description": "An immersive interactive installation that brings the ancient murals of Dunhuang Mogao Cave 220 to life. Visitors enter a dimly lit cave-like space and use a custom flashlight to explore. When the light beam touches specific figures in the mural, those characters awaken as real-time 3D animations accompanied by traditional Chinese music. Built with TouchDesigner, Blender, projection mapping, and webcam-based light tracking. Multiple visitors can interact simultaneously.",
+      "description": "This project aims to create a dynamic, immersive, and participatory exhibition experience by integrating historical art with contemporary interactive technology. It presents an immersive installation themed around Dunhuang culture, transforming traditional cultural imagery into an interactive spatial experience. In this work, visitors are invited to enter a virtual Dunhuang cave constructed through projection and 3D modeling. The mural figures and traditional Dunhuang musical instruments within the cave are reactivated as interactive elements awaiting exploration. Visitors hold infrared flashlights, and when the beam illuminates a figure on the mural, the corresponding character appears to be awakened and begins to play their instrument. At the same time, the sound of that instrument is triggered within the space, creating an immersive experience that combines visual perception, auditory feedback, and bodily interaction. The installation supports multi-user participation, allowing visitors to collaboratively activate different figures and instruments, collectively creating a unique Dunhuang-inspired visual and musical performance. The core concept of this work is to use digital technology to bridge the temporal and spatial distance between ancient cultural heritage and contemporary audiences. Through the interaction mechanism of illumination, awakening, and performance, visitors are no longer passive observers of the mural, but active participants in the reactivation of Dunhuang art. Each triggered beam of light symbolizes the renewal and continuation of traditional culture within a contemporary context.",
       "tools": "TouchDesigner · Blender · Projection Mapping · Webcam Tracking · Physical Construction",
       "hero": "images/dunhuang/hero.jpg",
       "images": [],
@@ -347,7 +347,8 @@
           "poster": "images/dunhuang/hero.jpg"
         }
       ],
-      "category": "Interactive"
+      "category": "Interactive",
+      "theme": "dark"
     },
     {
       "id": "zisha",
