@@ -430,12 +430,48 @@
       ],
       "description": "A generative visual art installation exploring the transformation between decay and rebirth. Using digital media and projection techniques, the work creates an evolving visual narrative that shifts between organic forms of deterioration and regeneration, questioning the boundary between destruction and creation.",
       "tools": "Digital Media · Projection · Visual Design · Generative Techniques",
-      "hero": "images/huansheng/hero.jpg",
-      "images": [],
+      "hero": "images/huansheng/1.jpg",
+      "images": [
+        {
+          "src": "huansheng/2.jpg",
+          "alt": "Huansheng image 2"
+        },
+        {
+          "src": "huansheng/3.jpg",
+          "alt": "Huansheng image 3"
+        },
+        {
+          "src": "huansheng/4.jpg",
+          "alt": "Huansheng image 4"
+        },
+        {
+          "src": "huansheng/5.jpg",
+          "alt": "Huansheng image 5"
+        },
+        {
+          "src": "huansheng/6.jpg",
+          "alt": "Huansheng image 6"
+        },
+        {
+          "src": "huansheng/7.jpg",
+          "alt": "Huansheng image 7"
+        },
+        {
+          "src": "huansheng/8.jpg",
+          "alt": "Huansheng image 8"
+        },
+        {
+          "src": "huansheng/9.jpg",
+          "alt": "Huansheng image 9"
+        }
+      ],
       "processImages": [],
-      "video": null,
+      "video": {
+        "src": "videos/huansheng.mp4",
+        "poster": "images/huansheng/1.jpg"
+      },
       "layout": "stacked",
-      "cardImage": "images/huansheng.jpg",
+      "cardImage": "images/huansheng/1.jpg",
       "category": "3D Art"
     },
     {
