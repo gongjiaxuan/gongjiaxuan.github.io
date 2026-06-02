@@ -409,12 +409,84 @@
       ],
       "description": "A future-sustainability themed interactive installation inviting visitors to engage with textile-inspired interfaces. Arduino pressure and ultrasonic sensors detect touch and proximity, triggering real-time generative visuals through TouchDesigner. A speculative factory environment modeled in Blender serves as the visual canvas. Exhibited at the university gallery.",
       "tools": "Arduino · TouchDesigner · Blender · 3D Modeling · Exhibition Design",
-      "hero": "images/textile/hero.jpg",
-      "images": [],
+      "hero": "images/textile/TEXTILE2050_作品图片1 全景海报.png",
+      "images": [
+        {
+          "src": "textile/TEXTILE2050_作品图片10 理想国4.jpg",
+          "alt": "TEXTILE2050_作品图片10 理想国4"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片11 理想国5.jpg",
+          "alt": "TEXTILE2050_作品图片11 理想国5"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片17 展示效果图1.jpg",
+          "alt": "TEXTILE2050_作品图片17 展示效果图1"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片18 展示效果图2.jpg",
+          "alt": "TEXTILE2050_作品图片18 展示效果图2"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片19 展示效果图3.jpg",
+          "alt": "TEXTILE2050_作品图片19 展示效果图3"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片2 毁灭号1.png",
+          "alt": "TEXTILE2050_作品图片2 毁灭号1"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片20 展示效果图4.jpg",
+          "alt": "TEXTILE2050_作品图片20 展示效果图4"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片21 展示效果图5.jpg",
+          "alt": "TEXTILE2050_作品图片21 展示效果图5"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片22 展示效果图6.jpg",
+          "alt": "TEXTILE2050_作品图片22 展示效果图6"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片23 展示效果图7.jpg",
+          "alt": "TEXTILE2050_作品图片23 展示效果图7"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片3 毁灭号2.png",
+          "alt": "TEXTILE2050_作品图片3 毁灭号2"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片4 毁灭号3.png",
+          "alt": "TEXTILE2050_作品图片4 毁灭号3"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片5 毁灭号4.png",
+          "alt": "TEXTILE2050_作品图片5 毁灭号4"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片6 毁灭号5.png",
+          "alt": "TEXTILE2050_作品图片6 毁灭号5"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片7 理想国1.jpg",
+          "alt": "TEXTILE2050_作品图片7 理想国1"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片8 理想国2.jpg",
+          "alt": "TEXTILE2050_作品图片8 理想国2"
+        },
+        {
+          "src": "textile/TEXTILE2050_作品图片9 理想国3.jpg",
+          "alt": "TEXTILE2050_作品图片9 理想国3"
+        }
+      ],
       "processImages": [],
-      "video": null,
+      "video": {
+        "src": "videos/textile.mp4",
+        "poster": "images/textile/TEXTILE2050_作品图片1 全景海报.png"
+      },
       "layout": "stacked",
-      "cardImage": "images/textile.jpg",
+      "cardImage": "images/textile/TEXTILE2050_作品图片1 全景海报.png",
       "category": "Interactive"
     },
     {
