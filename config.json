@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Jiaxuan Gong",
-    "title": "HCI Researcher & Designer",
+    "title": "HCI Researcher | Situated Human-AI Interaction",
     "email": "gongjiaxuan169@gmail.com",
     "scholar": "https://scholar.google.com/citations?user=FtQ2NOUAAAAJ",
     "github": "gongjiaxuan",
@@ -11,13 +11,13 @@
   },
   "hero": {
     "line1": "Hi, I am Jiaxuan.",
-    "line2": "I study how people experience emerging technologies — building interactive prototypes and running mixed-methods user studies to understand what works and why."
+    "line2": "I study situated human-AI interaction and evaluation: how people understand, rely on, and adapt emerging AI and immersive systems in real-world contexts."
   },
   "about": {
     "paragraphs": [
-      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. My research sits at the intersection of human-AI interaction, immersive media, and accessibility. I build interactive prototypes — Unity AR apps, TouchDesigner installations, Figma interfaces — and evaluate them through surveys, interviews, and structural equation models. My thesis explored how AR can support cultural heritage experiences (N=388, CB-SEM), and I am currently developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and coding 136 of them. I came to research through design: my B.F.A. taught me to care about how things look and feel, and my M.F.A. taught me to care about whether they actually work. Outside of work, I design typefaces, take too many photos, and have strong opinions about museum exhibition design."
+      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. My work sits in situated human-AI interaction and evaluation, with interests in AI-mediated sensemaking, accessibility, immersive interaction, and cultural participation. I build interactive prototypes — Unity AR apps, TouchDesigner installations, and Figma interfaces — and evaluate them with mixed methods, including surveys, interviews, systematic reviews, and structural equation modeling. My thesis examined AR for cultural heritage experiences (N=388, CB-SEM), and I am currently developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and coding 136 of them. I came to HCI through design: my B.F.A. trained me to care about form and experience, while my M.F.A. pushed me to ask how interactive systems work for people in situated contexts."
     ],
-    "highlight": "I am currently looking for a summer 2026 research internship — especially projects in human-AI interaction, accessibility, AI-mediated communication, or immersive cultural interaction. If your lab needs someone who can prototype and run rigorous user studies, I would love to chat."
+    "highlight": "I am currently exploring PhD-fit research directions around situated human-AI interaction, evidence-based evaluation, accessibility, and immersive interactive systems. I am especially interested in labs that study how people understand, trust, appropriate, and evaluate emerging technologies in real-world settings."
   },
   "education": [
     {
@@ -34,11 +34,11 @@
     }
   ],
   "interests": [
-    "Human–AI Interaction",
-    "Agent-Based Systems",
-    "Accessible & Assistive Technology",
-    "Immersive Media (AR/VR)",
-    "User Experience"
+    "Situated Human-AI Interaction",
+    "Human-AI Evaluation & Trust",
+    "Accessibility & Inclusive Interaction",
+    "Immersive Interaction (AR/VR)",
+    "Mixed-Methods UX Research"
   ],
   "publications": [
     {
