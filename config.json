@@ -15,7 +15,8 @@
   },
   "about": {
     "paragraphs": [
-      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. My work sits in situated human-AI interaction and evaluation, with interests in AI-mediated sensemaking, accessibility, immersive interaction, and cultural participation. I build interactive prototypes — Unity AR apps, TouchDesigner installations, and Figma interfaces — and evaluate them with mixed methods, including surveys, interviews, systematic reviews, and structural equation modeling. My thesis examined AR for cultural heritage experiences (N=388, CB-SEM), and I am currently developing a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and coding 136 of them. I came to HCI through design: my B.F.A. trained me to care about form and experience, while my M.F.A. pushed me to ask how interactive systems work for people in situated contexts."
+      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I study situated human-AI interaction and evaluation: how people understand, rely on, and adapt emerging AI and immersive systems in real-world contexts.",
+      "My background is design-trained and research-driven. I build interactive prototypes — Unity AR apps, TouchDesigner installations, and Figma interfaces — and evaluate them with mixed methods, including surveys, interviews, systematic reviews, and structural equation modeling. Recent work includes an AR cultural heritage study (N=388, CB-SEM) and a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and coding 136 of them."
     ],
     "highlight": "I am currently exploring PhD-fit research directions around situated human-AI interaction, evidence-based evaluation, accessibility, and immersive interactive systems. I am especially interested in labs that study how people understand, trust, appropriate, and evaluate emerging technologies in real-world settings."
   },
@@ -174,10 +175,31 @@
   ],
   "projects": [
     {
+      "id": "zisha",
+      "title": "宜兴紫砂 AR",
+      "subtitle": "AR Display Design for Cultural Heritage & User Acceptance",
+      "cardBlurb": "M.F.A. thesis project: Unity + Vuforia AR prototype evaluated with N=388 CB-SEM. Focused on situated evaluation, perceived authenticity, and visitor engagement.",
+      "tags": [
+        "AR/VR",
+        "User Research",
+        "Cultural Heritage",
+        "Unity"
+      ],
+      "description": "A mobile AR application designed as my M.F.A. thesis project, exploring how augmented reality can bring traditional Yixing Zisha pottery craftsmanship to museum visitors. The prototype covers three modules: pot form knowledge, clay material comparison, and craftsmanship display. Built with Unity and Vuforia SDK. Evaluated through a CB-SEM study (N=388, SOR-TAM-Flow model) that identified perceived authenticity as the strongest driver of visitor engagement.",
+      "tools": "Unity · Vuforia SDK · CB-SEM (AMOS) · Mixed Methods · Prototyping",
+      "hero": "images/zisha/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/zisha.jpg",
+      "category": "AR/VR"
+    },
+    {
       "id": "remembery",
       "title": "REMEMBERY",
       "subtitle": "Multi-Stakeholder Alzheimer's Care App",
-      "cardBlurb": "UX design across four user groups — patients, family caregivers, doctors, and social workers. Accessibility-first approach to cognitive decline and care coordination.",
+      "cardBlurb": "Accessibility-oriented health UX project across patients, caregivers, doctors, and social workers. Useful evidence for inclusive interaction and multi-stakeholder design.",
       "tags": [
         "User Research",
         "Accessibility",
@@ -215,112 +237,10 @@
       "category": "UI/UX"
     },
     {
-      "id": "museum",
-      "title": "NUA Museum",
-      "subtitle": "Website UX Redesign for University Museum",
-      "cardBlurb": "Heuristic evaluation + task analysis + IA redesign for Nanjing University of the Arts museum website. Structured around visitor goals.",
-      "tags": [
-        "UX Design",
-        "Information Architecture",
-        "Visual Design",
-        "Heuristic Evaluation"
-      ],
-      "description": "A comprehensive UX redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around three primary visitor goals. A visual refresh updated typography, color palette, and spacing while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context: from diagnostic evaluation through structural redesign to visual implementation.",
-      "tools": "Figma · Heuristic Evaluation · Task Analysis · Information Architecture · Visual Design",
-      "hero": "images/museum/_______1___1.png",
-      "images": [
-        {
-          "src": "museum/_______1___1.png",
-          "alt": "南艺美术馆首页1 – 1.png"
-        },
-        {
-          "src": "museum/_______1___2.png",
-          "alt": "南艺美术馆首页1 – 2.png"
-        },
-        {
-          "src": "museum/_______1___3.png",
-          "alt": "南艺美术馆首页1 – 3.png"
-        },
-        {
-          "src": "museum/_______1___4.png",
-          "alt": "南艺美术馆首页1 – 4.png"
-        },
-        {
-          "src": "museum/_______1___5.png",
-          "alt": "南艺美术馆首页1 – 5.png"
-        }
-      ],
-      "processImages": [],
-      "video": {
-        "src": "videos/museum.mp4",
-        "poster": "images/museum/home.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/museum.jpg",
-      "category": "UI/UX"
-    },
-    {
-      "id": "woodblock",
-      "title": "木上生画",
-      "subtitle": "Gamified Cultural Heritage EdTech App",
-      "cardBlurb": "iPad app for exploring traditional woodblock print heritage. Full UX process from card-sorting to high-fidelity interactive prototype.",
-      "tags": [
-        "UX Research",
-        "EdTech",
-        "Information Architecture",
-        "Gamification"
-      ],
-      "description": "An iPad application designed to teach the centuries-old craft of Zhuxianzhen woodblock printing through interactive, gamified learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app organizes content across three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project demonstrates how structured UX research methods — from information architecture to prototyping — can transform passive cultural consumption into active, self-directed discovery.",
-      "tools": "Adobe XD · Card Sorting · Information Architecture · Wireframing · High-Fidelity Prototyping",
-      "hero": "images/woodblock/ipad2.jpg",
-      "images": [
-        {
-          "src": "woodblock/mpsbbuve_____2.png",
-          "alt": "引导界面2.png"
-        },
-        {
-          "src": "woodblock/mpsbbgv9_2-2____.png",
-          "alt": "2-2年画故事.png"
-        },
-        {
-          "src": "woodblock/ipad3.jpg",
-          "alt": "Craft technique module — step-by-step production process"
-        }
-      ],
-      "video": {
-        "src": "videos/mpsbb559______.mp4",
-        "poster": "images/woodblock/wireframe.jpg"
-      },
-      "layout": "stacked",
-      "cardImage": "images/woodblock.jpg",
-      "category": "UI/UX"
-    },
-    {
-      "id": "piao",
-      "title": "飘 FLUTTER",
-      "subtitle": "Interactive Projection Mapping Installation",
-      "cardBlurb": "Interactive projection installation exploring visual storytelling through Unreal Engine and spatial audio.",
-      "tags": [
-        "Interaction Design",
-        "Projection Mapping",
-        "Unreal Engine",
-        "Spatial Audio"
-      ],
-      "description": "An interactive projection mapping installation that explores the poetry of visual storytelling. Using Unreal Engine for real-time rendering and spatial audio to create an immersive experience, the installation transforms a physical space into a living canvas where light, sound, and movement respond to one another.",
-      "tools": "Unreal Engine · Projection Mapping · Spatial Audio · Interactive Design",
-      "hero": "images/piao/hero.jpg",
-      "images": [],
-      "processImages": [],
-      "video": null,
-      "layout": "stacked",
-      "cardImage": "images/piao.jpg",
-      "category": "Interactive"
-    },
-    {
       "id": "dunhuang",
       "title": "敦煌奇妙夜",
       "subtitle": "Immersive Heritage Installation with Physical Computing",
-      "cardBlurb": "Flashlight-driven immersive installation exploring Dunhuang murals. TouchDesigner + real-time 3D animation triggered by visitor interaction.",
+      "cardBlurb": "Immersive cultural interaction installation using TouchDesigner, projection, and physical interaction. Shows prototype-building capacity for situated interactive systems.",
       "tags": [
         "Interaction Design",
         "Physical Computing",
@@ -376,25 +296,81 @@
       "theme": "dark"
     },
     {
-      "id": "zisha",
-      "title": "宜兴紫砂 AR",
-      "subtitle": "AR Display Design for Cultural Heritage & User Acceptance",
-      "cardBlurb": "Mobile AR application for Yixing Zisha pottery. Unity + Vuforia prototype, N=388 CB-SEM evaluation — M.F.A. thesis project.",
+      "id": "woodblock",
+      "title": "木上生画",
+      "subtitle": "Gamified Cultural Heritage EdTech App",
+      "cardBlurb": "Gamified cultural heritage learning app with card sorting, information architecture, wireframes, and high-fidelity iPad prototype.",
       "tags": [
-        "AR/VR",
-        "User Research",
-        "Cultural Heritage",
-        "Unity"
+        "UX Research",
+        "EdTech",
+        "Information Architecture",
+        "Gamification"
       ],
-      "description": "A mobile AR application designed as my M.F.A. thesis project, exploring how augmented reality can bring traditional Yixing Zisha pottery craftsmanship to museum visitors. The prototype covers three modules: pot form knowledge, clay material comparison, and craftsmanship display. Built with Unity and Vuforia SDK. Evaluated through a CB-SEM study (N=388, SOR-TAM-Flow model) that identified perceived authenticity as the strongest driver of visitor engagement.",
-      "tools": "Unity · Vuforia SDK · CB-SEM (AMOS) · Mixed Methods · Prototyping",
-      "hero": "images/zisha/hero.jpg",
-      "images": [],
-      "processImages": [],
-      "video": null,
+      "description": "An iPad application designed to teach the centuries-old craft of Zhuxianzhen woodblock printing through interactive, gamified learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app organizes content across three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project demonstrates how structured UX research methods — from information architecture to prototyping — can transform passive cultural consumption into active, self-directed discovery.",
+      "tools": "Adobe XD · Card Sorting · Information Architecture · Wireframing · High-Fidelity Prototyping",
+      "hero": "images/woodblock/ipad2.jpg",
+      "images": [
+        {
+          "src": "woodblock/mpsbbuve_____2.png",
+          "alt": "引导界面2.png"
+        },
+        {
+          "src": "woodblock/mpsbbgv9_2-2____.png",
+          "alt": "2-2年画故事.png"
+        },
+        {
+          "src": "woodblock/ipad3.jpg",
+          "alt": "Craft technique module — step-by-step production process"
+        }
+      ],
+      "video": {
+        "src": "videos/mpsbb559______.mp4",
+        "poster": "images/woodblock/wireframe.jpg"
+      },
       "layout": "stacked",
-      "cardImage": "images/zisha.jpg",
-      "category": "AR/VR"
+      "cardImage": "images/woodblock.jpg",
+      "category": "UI/UX"
+    },
+    {
+      "id": "museum",
+      "title": "NUA Museum",
+      "subtitle": "Website UX Redesign for University Museum",
+      "cardBlurb": "Museum website UX redesign using heuristic evaluation, visitor task analysis, and information architecture redesign.",
+      "tags": [
+        "UX Design",
+        "Information Architecture",
+        "Visual Design",
+        "Heuristic Evaluation"
+      ],
+      "description": "A comprehensive UX redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around three primary visitor goals. A visual refresh updated typography, color palette, and spacing while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context: from diagnostic evaluation through structural redesign to visual implementation.",
+      "tools": "Figma · Heuristic Evaluation · Task Analysis · Information Architecture · Visual Design",
+      "hero": "images/museum/page1.jpg",
+      "images": [
+        {
+          "src": "museum/page1.jpg",
+          "alt": "NUA Museum redesigned home page"
+        },
+        {
+          "src": "museum/page2.jpg",
+          "alt": "NUA Museum exhibition browsing page"
+        },
+        {
+          "src": "museum/page3.jpg",
+          "alt": "NUA Museum collection or information page"
+        },
+        {
+          "src": "museum/page4.jpg",
+          "alt": "NUA Museum detail page"
+        }
+      ],
+      "processImages": [],
+      "video": {
+        "src": "videos/museum.mp4",
+        "poster": "images/museum/home.jpg"
+      },
+      "layout": "stacked",
+      "cardImage": "images/museum.jpg",
+      "category": "UI/UX"
     },
     {
       "id": "textile",
@@ -490,6 +466,48 @@
       "category": "Interactive"
     },
     {
+      "id": "yunjin",
+      "title": "南京云锦",
+      "subtitle": "Cultural Heritage Infographic & Interactive Display",
+      "cardBlurb": "Infographic and interactive display for Nanjing Yunjin intangible cultural heritage. Information design + mobile showcase.",
+      "tags": [
+        "Information Design",
+        "Cultural Heritage",
+        "UI/UX",
+        "Infographic"
+      ],
+      "description": "An infographic and interactive display project showcasing Nanjing Yunjin, a UNESCO-recognized intangible cultural heritage of silk brocade craftsmanship. The project combines traditional information design with mobile interactive display, translating the complex weaving history and techniques into accessible visual narratives for contemporary audiences.",
+      "tools": "Adobe XD · Illustrator · Information Design · UI Design",
+      "hero": "images/yunjin/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/yunjin.jpg",
+      "category": "UI/UX"
+    },
+    {
+      "id": "piao",
+      "title": "飘 FLUTTER",
+      "subtitle": "Interactive Projection Mapping Installation",
+      "cardBlurb": "Interactive projection installation exploring visual storytelling through Unreal Engine and spatial audio.",
+      "tags": [
+        "Interaction Design",
+        "Projection Mapping",
+        "Unreal Engine",
+        "Spatial Audio"
+      ],
+      "description": "An interactive projection mapping installation that explores the poetry of visual storytelling. Using Unreal Engine for real-time rendering and spatial audio to create an immersive experience, the installation transforms a physical space into a living canvas where light, sound, and movement respond to one another.",
+      "tools": "Unreal Engine · Projection Mapping · Spatial Audio · Interactive Design",
+      "hero": "images/piao/hero.jpg",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/piao.jpg",
+      "category": "Interactive"
+    },
+    {
       "id": "huansheng",
       "title": "焕生·幻生",
       "subtitle": "Generative Visual Art Installation",
@@ -566,27 +584,23 @@
       "layout": "stacked",
       "cardImage": "images/matrix.jpg",
       "category": "3D Art"
+    }
+  ],
+  "researchAgenda": [
+    {
+      "title": "Human-AI Evaluation",
+      "summary": "I am interested in how people calibrate trust, reliance, control, and evidence use when working with AI systems.",
+      "evidence": "Grounded in mixed-methods evaluation, SEM modeling, and current HCI work on trustworthy AI interfaces."
     },
     {
-      "id": "yunjin",
-      "title": "南京云锦",
-      "subtitle": "Cultural Heritage Infographic & Interactive Display",
-      "cardBlurb": "Infographic and interactive display for Nanjing Yunjin intangible cultural heritage. Information design + mobile showcase.",
-      "tags": [
-        "Information Design",
-        "Cultural Heritage",
-        "UI/UX",
-        "Infographic"
-      ],
-      "description": "An infographic and interactive display project showcasing Nanjing Yunjin, a UNESCO-recognized intangible cultural heritage of silk brocade craftsmanship. The project combines traditional information design with mobile interactive display, translating the complex weaving history and techniques into accessible visual narratives for contemporary audiences.",
-      "tools": "Adobe XD · Illustrator · Information Design · UI Design",
-      "hero": "images/yunjin/hero.jpg",
-      "images": [],
-      "processImages": [],
-      "video": null,
-      "layout": "stacked",
-      "cardImage": "images/yunjin.jpg",
-      "category": "UI/UX"
+      "title": "Accessibility & Inclusive Interaction",
+      "summary": "I want to study how emerging AI systems can support inclusive information work, assistive practices, and accessible design decisions.",
+      "evidence": "Built from my generative AI for accessibility systematic review and accessibility-focused UX projects."
+    },
+    {
+      "title": "Immersive & Situated Systems",
+      "summary": "I examine how AR/VR and interactive media shape sensemaking, participation, and engagement in cultural and everyday settings.",
+      "evidence": "Supported by my AR thesis, VR acceptance research, and interactive installation prototypes."
     }
   ]
 }
