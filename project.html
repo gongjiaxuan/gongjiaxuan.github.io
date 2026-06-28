@@ -213,7 +213,6 @@
       // ── Build carousel ──
       var allSlides=[];
       if(p.hero)allSlides.push(p.hero);
-      else if(p.cardImage)allSlides.push(p.cardImage);
       if(p.images&&p.images.length)allSlides=allSlides.concat(p.images.map(function(img){return'images/'+img.src}));
       var curIdx=0,total=allSlides.length,track=document.getElementById('track'),dots=document.getElementById('dots'),hint=document.getElementById('hint');
       var prevArrow=document.getElementById('prevArrow'),nextArrow=document.getElementById('nextArrow');

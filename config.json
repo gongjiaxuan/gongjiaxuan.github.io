@@ -15,8 +15,8 @@
   },
   "about": {
     "paragraphs": [
-      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I study situated human-AI interaction and evaluation: how people understand, rely on, and adapt emerging AI and immersive systems in real-world contexts.",
-      "My background is design-trained and research-driven. I build interactive prototypes — Unity AR apps, TouchDesigner installations, and Figma interfaces — and evaluate them with mixed methods, including surveys, interviews, systematic reviews, and structural equation modeling. Recent work includes an AR cultural heritage study (N=388, CB-SEM) and a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 papers and coding 136 of them."
+      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. My approach pairs design craft with empirical evaluation — building interactive prototypes and studying them with mixed methods to see where emerging AI and immersive systems genuinely help people, and where they break down in practice.",
+      "My background is design-trained and research-driven. I build interactive prototypes — Unity AR apps, TouchDesigner installations, and Figma interfaces — and evaluate them with mixed methods, including surveys, interviews, systematic reviews, and structural equation modeling. Recent work includes an AR cultural heritage study (N=388, CB-SEM) and a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 records and coding 136 studies."
     ],
     "highlight": "I am currently exploring PhD-fit research directions around situated human-AI interaction, evidence-based evaluation, accessibility, and immersive interactive systems. I am especially interested in labs that study how people understand, trust, appropriate, and evaluate emerging technologies in real-world settings."
   },
@@ -66,7 +66,7 @@
         "Zhengyang Lu",
         "Feng Wang"
       ],
-      "venue": "First author · 3,570 records screened, 136 publications coded",
+      "venue": "3,570 records screened, 136 studies coded",
       "doi": "",
       "badge": "In Preparation",
       "badgeType": "prep",
@@ -160,7 +160,7 @@
     {
       "date": "May 22, 2026 🎓",
       "title": "Successfully defended my M.F.A. thesis!",
-      "detail": "AR Display Design for Cultural Heritage & User Acceptance. After two years of prototyping, surveying 388 visitors, and running a lot of SEM models, I am officially an M.F.A. candidate."
+      "detail": "AR Display Design for Cultural Heritage & User Acceptance. After two years of prototyping, surveying 388 visitors, and running structural equation models, I have successfully defended my thesis — M.F.A. degree expected June 2026."
     },
     {
       "date": "Jan 2026",
@@ -187,10 +187,13 @@
       ],
       "description": "A mobile AR application designed as my M.F.A. thesis project, exploring how augmented reality can bring traditional Yixing Zisha pottery craftsmanship to museum visitors. The prototype covers three modules: pot form knowledge, clay material comparison, and craftsmanship display. Built with Unity and Vuforia SDK. Evaluated through a CB-SEM study (N=388, SOR-TAM-Flow model) that identified perceived authenticity as the strongest driver of visitor engagement.",
       "tools": "Unity · Vuforia SDK · CB-SEM (AMOS) · Mixed Methods · Prototyping",
-      "hero": "images/zisha/hero.jpg",
+      "hero": null,
       "images": [],
       "processImages": [],
-      "video": null,
+      "video": {
+        "src": "videos/zisha_demo.mp4",
+        "poster": "images/zisha.jpg"
+      },
       "layout": "stacked",
       "cardImage": "images/zisha.jpg",
       "category": "AR/VR"
