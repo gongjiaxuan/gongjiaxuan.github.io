@@ -481,12 +481,32 @@
       ],
       "description": "An infographic and interactive display project showcasing Nanjing Yunjin, a UNESCO-recognized intangible cultural heritage of silk brocade craftsmanship. The project combines traditional information design with mobile interactive display, translating the complex weaving history and techniques into accessible visual narratives for contemporary audiences.",
       "tools": "Adobe XD · Illustrator · Information Design · UI Design",
-      "hero": "images/yunjin/hero.jpg",
-      "images": [],
+      "hero": "images/yunjin/mockup_2.jpg",
+      "images": [
+        {
+          "src": "yunjin/homepage.jpg",
+          "alt": "南京云锦 — 交互展示首页"
+        },
+        {
+          "src": "yunjin/screen_1.jpg",
+          "alt": "南京云锦 — 信息架构与内容展示"
+        },
+        {
+          "src": "yunjin/screen_2.jpg",
+          "alt": "南京云锦 — 织造工艺交互说明"
+        },
+        {
+          "src": "yunjin/mockup_3.jpg",
+          "alt": "南京云锦 — 移动端样机展示"
+        }
+      ],
       "processImages": [],
-      "video": null,
+      "video": {
+        "src": "videos/yunjin_demo.mp4",
+        "poster": "images/yunjin/mockup_1.jpg"
+      },
       "layout": "stacked",
-      "cardImage": "images/yunjin.jpg",
+      "cardImage": "images/yunjin/mockup_1.jpg",
       "category": "UI/UX"
     },
     {
