@@ -15,14 +15,14 @@
   },
   "about": {
     "paragraphs": [
-      "I am an M.F.A. candidate at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. My approach pairs design craft with empirical evaluation — building interactive prototypes and studying them with mixed methods to see where emerging AI and immersive systems genuinely help people, and where they break down in practice.",
-      "My background is design-trained and research-driven. I build interactive prototypes — Unity AR apps, TouchDesigner installations, and Figma interfaces — and evaluate them with mixed methods, including surveys, interviews, systematic reviews, and structural equation modeling. Recent work includes an AR cultural heritage study (N=388, CB-SEM) and a PRISMA-based systematic review on generative AI for accessibility, screening 3,570 records and coding 136 studies."
+      "I recently completed my M.F.A. in Design Science at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I am a design-trained, mixed-methods empirical HCI researcher. My work pairs interactive prototyping with rigorous evaluation — surveys, interviews, structural equation modeling, thematic analysis, and systematic review — to investigate how people understand, trust, and adapt to emerging AI and immersive systems in real-world contexts.",
+      "My research sits at the intersection of human-AI interaction, accessibility, and immersive systems. I build functional prototypes — Unity AR apps, TouchDesigner installations, Arduino-driven interactive environments — and evaluate them with mixed-methods designs that combine quantitative modeling (CB-SEM, N=388–566) with qualitative evidence from interviews and thematic coding. Recent projects include a PRISMA-based systematic review on generative AI for accessibility (3,570 records screened, 136 studies coded) and a co-first-author study on VR acceptance in cultural heritage (N=566 survey + 20 semi-structured interviews, published in Heritage)."
     ],
-    "highlight": "I am currently exploring PhD-fit research directions around situated human-AI interaction, evidence-based evaluation, accessibility, and immersive interactive systems. I am especially interested in labs that study how people understand, trust, appropriate, and evaluate emerging technologies in real-world settings."
+    "highlight": "I am seeking PhD positions for Fall 2027 in labs that study situated human-AI interaction, evidence-based evaluation, accessibility, or immersive interactive systems. I am particularly drawn to research that examines how people calibrate trust and reliance on AI, how interactive systems can support inclusive and accessible experiences, and how prototyping and empirical methods can jointly produce rigorous HCI knowledge."
   },
   "education": [
     {
-      "year": "2023 – 2026 (expected)",
+      "year": "2023 – 2026",
       "degree": "M.F.A. in Design Science",
       "school": "<a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>",
       "note": "GPA 89/100"
