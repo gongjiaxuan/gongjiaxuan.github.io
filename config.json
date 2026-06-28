@@ -596,12 +596,28 @@
       ],
       "description": "An experimental visual identity project exploring geometric abstraction and systematic design methods. The project includes a poster series and motion graphics that investigate how rigid modular systems can generate organic visual expressions, challenging the boundary between order and chaos in visual communication.",
       "tools": "Adobe Illustrator · After Effects · Motion Graphics · Poster Design",
-      "hero": "images/matrix/hero.jpg",
-      "images": [],
+      "hero": "images/matrix/frame_02.jpg",
+      "images": [
+        {
+          "src": "matrix/frame_03.jpg",
+          "alt": "矩阵·造物 — 几何抽象动画帧"
+        },
+        {
+          "src": "matrix/frame_04.jpg",
+          "alt": "矩阵·造物 — 模块系统生成有机表达"
+        },
+        {
+          "src": "matrix/frame_05.jpg",
+          "alt": "矩阵·造物 — 秩序与混沌的视觉边界"
+        }
+      ],
       "processImages": [],
-      "video": null,
+      "video": {
+        "src": "videos/matrix_demo.mp4",
+        "poster": "images/matrix/frame_01.jpg"
+      },
       "layout": "stacked",
-      "cardImage": "images/matrix.jpg",
+      "cardImage": "images/matrix/frame_01.jpg",
       "category": "3D Art"
     }
   ],
