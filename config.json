@@ -502,12 +502,28 @@
       ],
       "description": "An interactive projection mapping installation that explores the poetry of visual storytelling. Using Unreal Engine for real-time rendering and spatial audio to create an immersive experience, the installation transforms a physical space into a living canvas where light, sound, and movement respond to one another.",
       "tools": "Unreal Engine · Projection Mapping · Spatial Audio · Interactive Design",
-      "hero": "images/piao/hero.jpg",
-      "images": [],
+      "hero": "images/piao/piao_2.jpg",
+      "images": [
+        {
+          "src": "piao/piao_1.jpg",
+          "alt": "投影交互装置现场 — 用户与红色轨迹反馈"
+        },
+        {
+          "src": "piao/piao_3.jpg",
+          "alt": "Arduino硬件原型 — 手持输入端与开发板连接"
+        },
+        {
+          "src": "piao/piao_4.jpg",
+          "alt": "人·硬件·投影三位一体交互场景"
+        }
+      ],
       "processImages": [],
-      "video": null,
+      "video": {
+        "src": "videos/piao_demo.mp4",
+        "poster": "images/piao/piao_2.jpg"
+      },
       "layout": "stacked",
-      "cardImage": "images/piao.jpg",
+      "cardImage": "images/piao/piao_2.jpg",
       "category": "Interactive"
     },
     {
