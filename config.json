@@ -16,20 +16,20 @@
   "about": {
     "paragraphs": [
       "I recently completed my M.F.A. in Design Science at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I am a design-trained, mixed-methods empirical HCI researcher. My work pairs interactive prototyping with rigorous evaluation: surveys, interviews, structural equation modeling, thematic analysis, and systematic review. Together, these methods help me investigate how people understand, trust, and adapt to emerging AI and immersive systems in real-world contexts.",
-      "My work spans human-AI interaction, accessibility, and immersive systems. I build functional prototypes (AR apps, interactive installations, physical computing environments) and evaluate them through mixed methods: surveys at scale, structural equation modeling, semi-structured interviews, and systematic review. Two recent projects ground my current thinking: a PRISMA-based systematic review on generative AI for accessibility (3,570 records screened, 136 studies coded), and a co-first-author study on VR acceptance in cultural heritage (N=566 survey + 20 interviews, published in Heritage).",
-      "When I'm not prototyping or knee-deep in survey data, you'll find me vibe coding late into the night, experimenting with new tools just to see what they can do, or hanging out with my three birds: a lutino cockatiel named 凤梨 (Fengli) and two lovebirds. They're the real bosses of my home office."
+      "My work spans human-AI interaction, accessibility, and immersive systems. I build functional prototypes (AR apps, interactive installations, physical computing environments) and evaluate them through mixed methods: surveys at scale, structural equation modeling, semi-structured interviews, and systematic review. Two recent projects ground my current thinking: a PRISMA-based systematic review on generative AI for accessibility (3,570 initial records; 136 eligible studies synthesized), and a co-first-author study on VR acceptance in cultural heritage (N=566 survey + 20 interviews, published in Heritage).",
+      "Outside research, I enjoy experimenting with creative coding tools and caring for my three companion birds: a lutino cockatiel named 凤梨 (Fengli) and two lovebirds."
     ],
     "highlight": "I am seeking PhD positions for Fall 2027 in labs that study situated human-AI interaction, evidence-based evaluation, accessibility, or immersive interactive systems. I am particularly drawn to research that examines how people calibrate trust and reliance on AI, how interactive systems can support inclusive and accessible experiences, and how prototyping and empirical methods can jointly produce rigorous HCI knowledge."
   },
   "education": [
     {
-      "year": "🎓 2023 – 2026",
+      "year": "2023 – 2026",
       "degree": "M.F.A. in Design Science",
       "school": "<a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>",
       "note": "GPA 89/100"
     },
     {
-      "year": "🎨 2019 – 2023",
+      "year": "2019 – 2023",
       "degree": "B.F.A. in Visual Communication Design",
       "school": "<a href=\"https://dc.nua.edu.cn/\" target=\"_blank\" rel=\"noopener\">Nanjing University of the Arts, School of Design</a>",
       "note": "GPA 3.84/5.0 · Outstanding Graduate (Top 3%)"
@@ -67,7 +67,7 @@
         "Zhengyang Lu",
         "Feng Wang"
       ],
-      "venue": "3,570 records screened, 136 studies coded",
+      "venue": "3,570 initial records; 136 eligible studies synthesized",
       "doi": "",
       "badge": "In Preparation",
       "badgeType": "prep",
@@ -141,45 +141,45 @@
   ],
   "skills": [
     {
-      "name": "🔬 Research",
+      "name": "Research",
       "items": "Interviews · Survey Design · Thematic Analysis · PRISMA Systematic Review · Mixed Methods"
     },
     {
-      "name": "💻 Technical",
+      "name": "Technical",
       "items": "Python · LaTeX · MATLAB · SPSS · AMOS · Microsoft Office"
     },
     {
-      "name": "🎨 Design & Prototyping",
+      "name": "Design & Prototyping",
       "items": "Figma · Blender · C4D · Unity3D · Unreal Engine · TouchDesigner · Arduino · Adobe Suite (Photoshop, Illustrator, After Effects, Premiere)"
     },
     {
-      "name": "🌐 Languages",
+      "name": "Languages",
       "items": "Mandarin (Native) · English — TOEFL 106, GRE 333 + 4.0"
     }
   ],
   "news": [
     {
-      "date": "🎓 June 15, 2026",
+      "date": "June 15, 2026",
       "title": "M.F.A. degree conferred by Jiangnan University. Moving full-time into PhD preparation.",
       "detail": ""
     },
     {
-      "date": "🏆 May 2026",
+      "date": "May 2026",
       "title": "Outstanding Master's Thesis Award, Jiangnan University.",
       "detail": ""
     },
     {
-      "date": "🎓 May 22, 2026",
+      "date": "May 22, 2026",
       "title": "Successfully defended my M.F.A. thesis on AR cultural heritage and user acceptance.",
       "detail": ""
     },
     {
-      "date": "📄 Jan–Mar 2026",
+      "date": "Jan–Mar 2026",
       "title": "New publication in SAGE Open on multi-modal sentiment analysis of interactive art.",
       "detail": ""
     },
     {
-      "date": "📄 Nov 2025",
+      "date": "Nov 2025",
       "title": "Co-first-author paper in Heritage on VR acceptance in cultural heritage institutions.",
       "detail": ""
     }
@@ -203,7 +203,8 @@
       "processImages": [],
       "video": {
         "src": "videos/zisha_demo.mp4",
-        "poster": "images/zisha.jpg"
+        "poster": "images/zisha.jpg",
+        "summary": "Demo video showing the mobile AR flow for exploring Yixing Zisha pottery forms, clay materials, and craft knowledge."
       },
       "layout": "stacked",
       "cardImage": "images/zisha.jpg",
@@ -220,7 +221,7 @@
         "UX Design",
         "Health Tech"
       ],
-      "description": "A mobile application co-designed for four user groups within the Alzheimer's care ecosystem: patients managing cognitive decline, family caregivers coordinating daily support, doctors tracking clinical progress, and social workers allocating community resources. The design process began with stakeholder interviews and persona development to map the distinct needs of each group. For patients, the interface prioritizes simplified navigation, high-contrast visuals, and cognitive training exercises. For caregivers, it surfaces emergency workflows and care coordination tools. For clinicians, it provides a monitoring dashboard. For social workers, it supports case management and resource matching. Accessibility was not retrofitted — WCAG guidelines informed every wireframe from the start, shaping decisions about font sizing, touch targets, color contrast, and navigation hierarchy. The project demonstrates a complete user-centered design process from needs assessment through iterative prototyping to high-fidelity interactive mockups.",
+      "description": "A mobile application concept designed for four user groups within the Alzheimer's care ecosystem: patients managing cognitive decline, family caregivers coordinating daily support, doctors tracking clinical progress, and social workers allocating community resources. The design process used stakeholder mapping and persona development to clarify the distinct needs of each group. For patients, the interface prioritizes simplified navigation, high-contrast visuals, and cognitive training exercises. For caregivers, it surfaces emergency workflows and care coordination tools. For clinicians, it provides a monitoring dashboard. For social workers, it supports case management and resource matching. WCAG-informed accessibility checks shaped decisions about font sizing, touch targets, color contrast, and navigation hierarchy. The project demonstrates a user-centered design process from problem framing through iterative prototyping to high-fidelity interactive mockups.",
       "tools": "Figma · WCAG Accessibility Guidelines",
       "hero": "images/remembery/mpsayq95_2.jpg",
       "images": [
@@ -238,13 +239,14 @@
         },
         {
           "src": "remembery/6.jpg",
-          "alt": "6.jpg"
+          "alt": "Overview board summarizing the REMEMBERY Alzheimer's care app design system and user flows"
         }
       ],
       "processImages": [],
       "video": {
         "src": "videos/remembery.mp4",
-        "poster": "images/remembery/mockup1.jpg"
+        "poster": "images/remembery/mockup1.jpg",
+        "summary": "Demo video showing high-fidelity mobile screens for patient support, caregiver coordination, and clinical monitoring workflows."
       },
       "layout": "stacked",
       "cardImage": "images/remembery.jpg",
@@ -267,27 +269,27 @@
       "images": [
         {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0002.jpg",
-          "alt": "Dunhuang page 2"
+          "alt": "Storyboard panel showing the illuminated mural interaction in the Dunhuang installation"
         },
         {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0003.jpg",
-          "alt": "Dunhuang page 3"
+          "alt": "Visual design panel showing Dunhuang mural figures and projected cave atmosphere"
         },
         {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0004.jpg",
-          "alt": "Dunhuang page 4"
+          "alt": "Interaction design panel showing how visitors use light to activate mural characters"
         },
         {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0005.jpg",
-          "alt": "Dunhuang page 5"
+          "alt": "Experience flow panel showing visual and musical feedback in the immersive installation"
         },
         {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0006.jpg",
-          "alt": "Dunhuang page 6"
+          "alt": "Technical setup panel showing projection, tracking, and physical interaction components"
         },
         {
           "src": "dunhuang/编辑中pdf_pages-to-jpg-0007.jpg",
-          "alt": "Dunhuang page 7"
+          "alt": "Exhibition outcome panel showing the completed Dunhuang-inspired interactive space"
         }
       ],
       "processImages": [],
@@ -298,12 +300,14 @@
         {
           "title": "Effect Showcase",
           "src": "videos/dunhuang_effects.mp4",
-          "poster": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg"
+          "poster": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg",
+          "summary": "Short video showing the visual and audio effects triggered when visitors illuminate Dunhuang mural figures."
         },
         {
           "title": "Full Interactive Demo",
           "src": "videos/dunhuang_demo.mp4",
-          "poster": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg"
+          "poster": "images/dunhuang/编辑中pdf_pages-to-jpg-0001.jpg",
+          "summary": "Full demo video showing the interactive installation workflow, from physical input to projected mural response."
         }
       ],
       "category": "Interactive",
@@ -320,17 +324,17 @@
         "Information Architecture",
         "Gamification"
       ],
-      "description": "An iPad application designed to teach the centuries-old craft of Zhuxianzhen woodblock printing through interactive, gamified learning. The UX process followed a structured methodology: card-sorting exercises to define the information architecture, low-fidelity wireframes for rapid concept validation, and high-fidelity interactive prototypes built in Adobe XD. The app organizes content across three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project demonstrates how structured UX research methods — from information architecture to prototyping — can transform passive cultural consumption into active, self-directed discovery.",
+      "description": "An iPad application designed to teach the centuries-old craft of Zhuxianzhen woodblock printing through interactive, gamified learning. The UX process used structured information architecture, low-fidelity wireframes for rapid concept development, and high-fidelity interactive prototypes built in Adobe XD. The app organizes content across three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project demonstrates how information architecture and prototyping can transform passive cultural consumption into active, self-directed discovery.",
       "tools": "Adobe XD · Card Sorting · Information Architecture · Wireframing · High-Fidelity Prototyping",
       "hero": "images/woodblock/ipad2.jpg",
       "images": [
         {
           "src": "woodblock/mpsbbuve_____2.png",
-          "alt": "引导界面2.png"
+          "alt": "Onboarding screen introducing the Zhuxianzhen woodblock printing learning app"
         },
         {
           "src": "woodblock/mpsbbgv9_2-2____.png",
-          "alt": "2-2年画故事.png"
+          "alt": "Interactive story screen explaining traditional New Year woodblock print narratives"
         },
         {
           "src": "woodblock/ipad3.jpg",
@@ -339,7 +343,8 @@
       ],
       "video": {
         "src": "videos/mpsbb559______.mp4",
-        "poster": "images/woodblock/wireframe.jpg"
+        "poster": "images/woodblock/wireframe.jpg",
+        "summary": "Demo video showing the iPad learning prototype, including onboarding, craft modules, and gamified cultural content."
       },
       "layout": "stacked",
       "cardImage": "images/woodblock.jpg",
@@ -356,7 +361,7 @@
         "Visual Design",
         "Heuristic Evaluation"
       ],
-      "description": "A comprehensive UX redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor task analysis — based on observing how students, faculty, and external visitors used the site — revealed that key functions like exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around three primary visitor goals. A visual refresh updated typography, color palette, and spacing while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context: from diagnostic evaluation through structural redesign to visual implementation.",
+      "description": "A comprehensive UX redesign for the Nanjing University of the Arts museum website. The project began with a heuristic evaluation identifying pain points in content discovery, navigation clarity, and visual hierarchy. Visitor-task analysis suggested that key functions such as exhibition browsing, event registration, and collection exploration were buried under unclear navigation paths. The redesigned information architecture restructured content around three primary visitor goals. A visual refresh updated typography, color palette, and spacing while maintaining the institution's brand identity. The project demonstrates applied UX methodology in a real-world cultural institution context: from diagnostic evaluation through structural redesign to visual implementation.",
       "tools": "Figma · Heuristic Evaluation · Task Analysis · Information Architecture · Visual Design",
       "hero": "images/museum/page1.jpg",
       "images": [
@@ -380,7 +385,8 @@
       "processImages": [],
       "video": {
         "src": "videos/museum.mp4",
-        "poster": "images/museum/home.jpg"
+        "poster": "images/museum/home.jpg",
+        "summary": "Demo video showing the redesigned museum website navigation, exhibition browsing, and content hierarchy."
       },
       "layout": "stacked",
       "cardImage": "images/museum.jpg",
@@ -473,7 +479,8 @@
       "processImages": [],
       "video": {
         "src": "videos/textile.mp4",
-        "poster": "images/textile/TEXTILE2050_作品图片1 全景海报.png"
+        "poster": "images/textile/TEXTILE2050_作品图片1 全景海报.png",
+        "summary": "Demo video showing sensor-triggered generative visuals in the textile-themed interactive installation."
       },
       "layout": "stacked",
       "cardImage": "images/textile/TEXTILE2050_作品图片1 全景海报.png",
@@ -514,7 +521,8 @@
       "processImages": [],
       "video": {
         "src": "videos/yunjin_demo.mp4",
-        "poster": "images/yunjin/mockup_1.jpg"
+        "poster": "images/yunjin/mockup_1.jpg",
+        "summary": "Demo video showing the mobile interactive display for Nanjing Yunjin heritage information design."
       },
       "layout": "stacked",
       "cardImage": "images/yunjin/mockup_1.jpg",
@@ -551,7 +559,8 @@
       "processImages": [],
       "video": {
         "src": "videos/piao_demo.mp4",
-        "poster": "images/piao/piao_2.jpg"
+        "poster": "images/piao/piao_2.jpg",
+        "summary": "Demo video showing the projection mapping installation and its spatial audio-visual interaction."
       },
       "layout": "stacked",
       "cardImage": "images/piao/piao_2.jpg",
@@ -574,41 +583,42 @@
       "images": [
         {
           "src": "huansheng/2.jpg",
-          "alt": "Huansheng image 2"
+          "alt": "Generative visual composition showing organic decay and rebirth forms in the Huansheng installation"
         },
         {
           "src": "huansheng/3.jpg",
-          "alt": "Huansheng image 3"
+          "alt": "Close-up frame of layered generative visuals from the Huansheng digital media installation"
         },
         {
           "src": "huansheng/4.jpg",
-          "alt": "Huansheng image 4"
+          "alt": "Projected visual sequence exploring transformation between deterioration and regeneration"
         },
         {
           "src": "huansheng/5.jpg",
-          "alt": "Huansheng image 5"
+          "alt": "Exhibition image showing evolving generative patterns in the Huansheng installation"
         },
         {
           "src": "huansheng/6.jpg",
-          "alt": "Huansheng image 6"
+          "alt": "Digital media frame with abstract organic textures from the Huansheng project"
         },
         {
           "src": "huansheng/7.jpg",
-          "alt": "Huansheng image 7"
+          "alt": "Installation visual showing luminous abstract forms in a dark exhibition setting"
         },
         {
           "src": "huansheng/8.jpg",
-          "alt": "Huansheng image 8"
+          "alt": "Generative art frame showing spatial layers and color transitions"
         },
         {
           "src": "huansheng/9.jpg",
-          "alt": "Huansheng image 9"
+          "alt": "Final visual frame from the Huansheng generative art sequence"
         }
       ],
       "processImages": [],
       "video": {
         "src": "videos/huansheng.mp4",
-        "poster": "images/huansheng/1.jpg"
+        "poster": "images/huansheng/1.jpg",
+        "summary": "Demo video showing the evolving generative visual sequence in the Huansheng installation."
       },
       "layout": "stacked",
       "cardImage": "images/huansheng/1.jpg",
@@ -645,7 +655,8 @@
       "processImages": [],
       "video": {
         "src": "videos/matrix_demo.mp4",
-        "poster": "images/matrix/frame_01.jpg"
+        "poster": "images/matrix/frame_01.jpg",
+        "summary": "Demo video showing motion graphics generated from the project's modular geometric visual system."
       },
       "layout": "stacked",
       "cardImage": "images/matrix/frame_01.jpg",
