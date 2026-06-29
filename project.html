@@ -278,10 +278,10 @@
       if(!hasCustomSections){
         if(p.videos&&p.videos.length){
           var vhtml='<div class=\"videos-grid\">';
-          p.videos.forEach(function(v){vhtml+='<div class=\"video-item\"><div class=\"v-label\">'+v.title+'</div><video controls poster=\"'+(v.poster||p.hero)+'\" preload=\"metadata\"><source src=\"'+v.src+'\" type=\"video/mp4\"></video></div>'});
+          p.videos.forEach(function(v){vhtml+='<div class=\"video-item\"><div class=\"v-label\">'+v.title+'</div><video controls poster=\"'+(v.poster||p.hero)+'\" preload=\"metadata\"><source src=\"'+v.src+'\" type=\"video/mp4\"></video>'+(v.summary?'<div class=\"case-caption\">'+esc(v.summary)+'</div>':'')+'</div>'});
           vhtml+='</div>';vw.innerHTML=vhtml;
         }else if(p.video&&p.video.src){
-          vw.innerHTML='<video controls poster=\"'+(p.video.poster||p.hero)+'\" preload=\"metadata\"><source src=\"'+p.video.src+'\" type=\"video/mp4\"></video>';
+          vw.innerHTML='<video controls poster=\"'+(p.video.poster||p.hero)+'\" preload=\"metadata\"><source src=\"'+p.video.src+'\" type=\"video/mp4\"></video>'+(p.video.summary?'<div class=\"case-caption\">'+esc(p.video.summary)+'</div>':'');
         }else{vw.innerHTML='<div class=\"video-placeholder\">Video demo available upon request — <a href=\"mailto:'+(config.site?config.site.email:'')+'\">contact me</a></div>'}
       }
 
