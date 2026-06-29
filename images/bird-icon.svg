@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Tiny bird silhouette for section decoration -->
+  <path d="M12 3 C8 3 4 8 4 14 C4 17 7 20 12 20 C17 20 20 17 20 14 C20 8 16 3 12 3Z" fill="#FDF3B8" stroke="#E8D898" stroke-width="0.5"/>
+  <circle cx="8" cy="11" r="1.2" fill="#1A1A1A"/>
+  <circle cx="8.4" cy="10.5" r="0.4" fill="white"/>
+  <ellipse cx="6.5" cy="13" rx="2" ry="1.5" fill="#FF8C42" opacity="0.7"/>
+  <path d="M12 3 L11 1 L13 1Z" fill="#F5E6A3"/>
+</svg>
