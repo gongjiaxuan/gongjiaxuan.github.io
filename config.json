@@ -23,13 +23,13 @@
   },
   "education": [
     {
-      "year": "2023 – 2026",
+      "year": "🎓 2023 – 2026",
       "degree": "M.F.A. in Design Science",
       "school": "<a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>",
       "note": "GPA 89/100"
     },
     {
-      "year": "2019 – 2023",
+      "year": "🎨 2019 – 2023",
       "degree": "B.F.A. in Visual Communication Design",
       "school": "<a href=\"https://dc.nua.edu.cn/\" target=\"_blank\" rel=\"noopener\">Nanjing University of the Arts, School of Design</a>",
       "note": "GPA 3.84/5.0 · Outstanding Graduate (Top 3%)"
@@ -141,40 +141,40 @@
   ],
   "skills": [
     {
-      "name": "Research",
+      "name": "🔬 Research",
       "items": "Interviews · Survey Design · Thematic Analysis · PRISMA Systematic Review · Mixed Methods"
     },
     {
-      "name": "Technical",
+      "name": "💻 Technical",
       "items": "Python · LaTeX · MATLAB · SPSS · AMOS · Microsoft Office"
     },
     {
-      "name": "Design & Prototyping",
+      "name": "🎨 Design & Prototyping",
       "items": "Figma · Blender · C4D · Unity3D · Unreal Engine · TouchDesigner · Arduino · Adobe Suite (Photoshop, Illustrator, After Effects, Premiere)"
     },
     {
-      "name": "Languages",
+      "name": "🌐 Languages",
       "items": "Mandarin (Native) · English — TOEFL 106, GRE 333 + 4.0"
     }
   ],
   "news": [
     {
-      "date": "June 15, 2026",
+      "date": "🎓 June 15, 2026",
       "title": "M.F.A. degree conferred by Jiangnan University. Moving full-time into PhD preparation.",
       "detail": ""
     },
     {
-      "date": "May 2026",
+      "date": "🏆 May 2026",
       "title": "Outstanding Master's Thesis Award, Jiangnan University.",
       "detail": ""
     },
     {
-      "date": "May 22, 2026",
+      "date": "🎓 May 22, 2026",
       "title": "Successfully defended my M.F.A. thesis on AR cultural heritage and user acceptance.",
       "detail": ""
     },
     {
-      "date": "Jan–Mar 2026",
+      "date": "📄 Jan–Mar 2026",
       "title": "New publication in SAGE Open on multi-modal sentiment analysis of interactive art.",
       "detail": ""
     },
