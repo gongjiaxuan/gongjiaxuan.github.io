@@ -187,7 +187,7 @@
   "projects": [
     {
       "id": "zisha",
-      "title": "宜兴紫砂 AR",
+      "title": "Yixing Zisha AR",
       "subtitle": "AR Display Design for Cultural Heritage & User Acceptance",
       "cardBlurb": "M.F.A. thesis project: Unity + Vuforia AR prototype evaluated with N=388 CB-SEM. Focused on situated evaluation, perceived authenticity, and visitor engagement.",
       "tags": [
@@ -254,7 +254,7 @@
     },
     {
       "id": "dunhuang",
-      "title": "敦煌奇妙夜",
+      "title": "Dunhuang Fantasy Night",
       "subtitle": "Immersive Heritage Installation with Physical Computing",
       "cardBlurb": "Immersive cultural interaction installation using TouchDesigner, projection, and physical interaction. Shows prototype-building capacity for situated interactive systems.",
       "tags": [
@@ -315,7 +315,7 @@
     },
     {
       "id": "woodblock",
-      "title": "木上生画",
+      "title": "Woodblock Reimagined",
       "subtitle": "Gamified Cultural Heritage EdTech App",
       "cardBlurb": "Gamified cultural heritage learning app with card sorting, information architecture, wireframes, and high-fidelity iPad prototype.",
       "tags": [
@@ -488,7 +488,7 @@
     },
     {
       "id": "yunjin",
-      "title": "南京云锦",
+      "title": "Nanjing Yunjin Brocade",
       "subtitle": "Cultural Heritage Infographic & Interactive Display",
       "cardBlurb": "Infographic and interactive display for Nanjing Yunjin intangible cultural heritage. Information design + mobile showcase.",
       "tags": [
@@ -530,7 +530,7 @@
     },
     {
       "id": "piao",
-      "title": "飘 FLUTTER",
+      "title": "FLUTTER",
       "subtitle": "Interactive Projection Mapping Installation",
       "cardBlurb": "Interactive projection installation exploring visual storytelling through Unreal Engine and spatial audio.",
       "tags": [
@@ -568,7 +568,7 @@
     },
     {
       "id": "huansheng",
-      "title": "焕生·幻生",
+      "title": "Metamorphosis",
       "subtitle": "Generative Visual Art Installation",
       "cardBlurb": "Generative visual art exploring transformation between decay and rebirth. Digital media installation.",
       "tags": [
@@ -626,7 +626,7 @@
     },
     {
       "id": "matrix",
-      "title": "矩阵·造物",
+      "title": "Matrix Genesis",
       "subtitle": "Experimental Visual Identity & Motion Graphics",
       "cardBlurb": "Experimental visual identity exploring geometric abstraction. Poster series + motion graphics.",
       "tags": [
