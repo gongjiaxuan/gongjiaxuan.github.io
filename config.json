@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Jiaxuan Gong",
-    "title": "HCI Researcher | Situated Human-AI Interaction",
+    "title": "Jiaxuan Gong | HCI Researcher | Trust, Accessibility & Immersive Interaction",
     "email": "gongjiaxuan169@gmail.com",
     "scholar": "https://scholar.google.com/citations?user=FtQ2NOUAAAAJ",
     "github": "gongjiaxuan",
@@ -11,24 +11,25 @@
   },
   "hero": {
     "line1": "Hi, I am Jiaxuan.",
-    "line2": "I study situated human-AI interaction and evaluation: how people understand, rely on, and adapt emerging AI and immersive systems in real-world contexts."
+    "line2": "I build interactive systems and study how people trust, rely on, and make sense of AI."
   },
   "about": {
     "paragraphs": [
-      "I recently completed my M.F.A. in Design Science at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I am a design-trained, mixed-methods empirical HCI researcher. My work pairs interactive prototyping with rigorous evaluation — surveys, interviews, structural equation modeling, thematic analysis, and systematic review — to investigate how people understand, trust, and adapt to emerging AI and immersive systems in real-world contexts.",
-      "My research sits at the intersection of human-AI interaction, accessibility, and immersive systems. I build functional prototypes — Unity AR apps, TouchDesigner installations, Arduino-driven interactive environments — and evaluate them with mixed-methods designs that combine quantitative modeling (CB-SEM, N=388–566) with qualitative evidence from interviews and thematic coding. Recent projects include a PRISMA-based systematic review on generative AI for accessibility (3,570 records screened, 136 studies coded) and a co-first-author study on VR acceptance in cultural heritage (N=566 survey + 20 semi-structured interviews, published in Heritage)."
+      "I recently completed my M.F.A. in Design Science at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I am a design-trained, mixed-methods empirical HCI researcher. My work pairs interactive prototyping with rigorous evaluation: surveys, interviews, structural equation modeling, thematic analysis, and systematic review. Together, these methods help me investigate how people understand, trust, and adapt to emerging AI and immersive systems in real-world contexts.",
+      "My work spans human-AI interaction, accessibility, and immersive systems. I build functional prototypes (AR apps, interactive installations, physical computing environments) and evaluate them through mixed methods: surveys at scale, structural equation modeling, semi-structured interviews, and systematic review. Two recent projects ground my current thinking: a PRISMA-based systematic review on generative AI for accessibility (3,570 records screened, 136 studies coded), and a co-first-author study on VR acceptance in cultural heritage (N=566 survey + 20 interviews, published in Heritage).",
+      "When I'm not prototyping or knee-deep in survey data, you'll find me vibe coding late into the night, experimenting with new tools just to see what they can do, or hanging out with my three birds: a lutino cockatiel named 凤梨 (Fengli) and two lovebirds. They're the real bosses of my home office."
     ],
     "highlight": "I am seeking PhD positions for Fall 2027 in labs that study situated human-AI interaction, evidence-based evaluation, accessibility, or immersive interactive systems. I am particularly drawn to research that examines how people calibrate trust and reliance on AI, how interactive systems can support inclusive and accessible experiences, and how prototyping and empirical methods can jointly produce rigorous HCI knowledge."
   },
   "education": [
     {
-      "year": "2023 – 2026",
+      "year": "🎓 2023 – 2026",
       "degree": "M.F.A. in Design Science",
       "school": "<a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>",
       "note": "GPA 89/100"
     },
     {
-      "year": "2019 – 2023",
+      "year": "🎨 2019 – 2023",
       "degree": "B.F.A. in Visual Communication Design",
       "school": "<a href=\"https://dc.nua.edu.cn/\" target=\"_blank\" rel=\"noopener\">Nanjing University of the Arts, School of Design</a>",
       "note": "GPA 3.84/5.0 · Outstanding Graduate (Top 3%)"
@@ -140,37 +141,42 @@
   ],
   "skills": [
     {
-      "name": "Research",
+      "name": "🔬 Research",
       "items": "Interviews · Survey Design · Thematic Analysis · PRISMA Systematic Review · Mixed Methods"
     },
     {
-      "name": "Technical",
+      "name": "💻 Technical",
       "items": "Python · LaTeX · MATLAB · SPSS · AMOS · Microsoft Office"
     },
     {
-      "name": "Design & Prototyping",
+      "name": "🎨 Design & Prototyping",
       "items": "Figma · Blender · C4D · Unity3D · Unreal Engine · TouchDesigner · Arduino · Adobe Suite (Photoshop, Illustrator, After Effects, Premiere)"
     },
     {
-      "name": "Languages",
+      "name": "🌐 Languages",
       "items": "Mandarin (Native) · English — TOEFL 106, GRE 333 + 4.0"
     }
   ],
   "news": [
     {
-      "date": "May 22, 2026 🎓",
-      "title": "Successfully defended my M.F.A. thesis!",
-      "detail": "AR Display Design for Cultural Heritage & User Acceptance. After two years of prototyping, surveying 388 visitors, and running structural equation models, I have successfully defended my thesis — M.F.A. degree expected June 2026."
+      "date": "🎓 June 15, 2026",
+      "title": "M.F.A. degree conferred by Jiangnan University. Moving full-time into PhD preparation.",
+      "detail": ""
     },
     {
-      "date": "Jan 2026",
-      "title": "Paper published in SAGE Open",
-      "detail": "Multi-modal sentiment analysis of interactive art on social media — 15,201 Weibo posts"
+      "date": "🎓 May 22, 2026",
+      "title": "Successfully defended my M.F.A. thesis on AR cultural heritage and user acceptance.",
+      "detail": ""
     },
     {
-      "date": "2025",
-      "title": "Co-first-author paper published in Heritage",
-      "detail": "VR acceptance in cultural heritage — N=566 survey + 20 semi-structured interviews"
+      "date": "📄 Jan–Mar 2026",
+      "title": "New publication in SAGE Open on multi-modal sentiment analysis of interactive art.",
+      "detail": ""
+    },
+    {
+      "date": "📄 Nov 2025",
+      "title": "Co-first-author paper in Heritage on VR acceptance in cultural heritage institutions.",
+      "detail": ""
     }
   ],
   "projects": [
@@ -643,19 +649,16 @@
   ],
   "researchAgenda": [
     {
-      "title": "Human-AI Evaluation",
-      "summary": "I am interested in how people calibrate trust, reliance, control, and evidence use when working with AI systems.",
-      "evidence": "Grounded in mixed-methods evaluation, SEM modeling, and current HCI work on trustworthy AI interfaces."
+      "title": "Human-AI Trust & Reliance Calibration",
+      "summary": "I study how people calibrate their trust in AI, not as a one-time attitude, but as a dynamic decision process shaped by what's at stake, what the system tells them, and what they've learned from past interactions. My work combines large-scale surveys, structural equation modeling, and qualitative methods to understand when and why people appropriately rely on, or rightly reject, AI systems."
     },
     {
-      "title": "Accessibility & Inclusive Interaction",
-      "summary": "I want to study how emerging AI systems can support inclusive information work, assistive practices, and accessible design decisions.",
-      "evidence": "Built from my generative AI for accessibility systematic review and accessibility-focused UX projects."
+      "title": "Accessibility as Shared Infrastructure",
+      "summary": "I investigate how AI can support inclusive information work: not as individual assistive tools, but as shared infrastructure that distributes accessibility labor across teams and platforms. My PRISMA-based systematic review on generative AI for accessibility and my multi-stakeholder health UX projects inform this direction."
     },
     {
-      "title": "Immersive & Situated Systems",
-      "summary": "I examine how AR/VR and interactive media shape sensemaking, participation, and engagement in cultural and everyday settings.",
-      "evidence": "Supported by my AR thesis, VR acceptance research, and interactive installation prototypes."
+      "title": "Immersive & Situated Interactive Systems",
+      "summary": "I build and evaluate AR/VR installations and physical computing prototypes to understand how immersive media shape sensemaking and participation, and how people appropriate these systems in cultural, educational, and everyday settings."
     }
   ]
 }
