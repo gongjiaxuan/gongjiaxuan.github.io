@@ -316,16 +316,16 @@
     {
       "id": "woodblock",
       "title": "Woodblock Reimagined",
-      "subtitle": "Gamified Cultural Heritage EdTech App",
-      "cardBlurb": "Gamified cultural heritage learning app with card sorting, information architecture, wireframes, and high-fidelity iPad prototype.",
+      "subtitle": "Interactive Learning Experience for Zhuxianzhen Woodblock Prints",
+      "cardBlurb": "An interactive learning prototype for Zhuxianzhen woodblock New Year print heritage, designed with information architecture and low-to-high fidelity prototyping.",
       "tags": [
         "UX Research",
         "EdTech",
         "Information Architecture",
         "Gamification"
       ],
-      "description": "An iPad application designed to teach the centuries-old craft of Zhuxianzhen woodblock printing through interactive, gamified learning. The UX process used structured information architecture, low-fidelity wireframes for rapid concept development, and high-fidelity interactive prototypes built in Adobe XD. The app organizes content across three learning modules: History Tracing explores the origins and evolution of woodblock printing across Chinese dynasties; Craft Techniques demonstrates the step-by-step production process through interactive animations; and Proverb Games transforms traditional folk sayings into playful matching and puzzle challenges. The project demonstrates how information architecture and prototyping can transform passive cultural consumption into active, self-directed discovery.",
-      "tools": "Adobe XD · Card Sorting · Information Architecture · Wireframing · High-Fidelity Prototyping",
+      "description": "An interactive learning prototype designed to introduce the centuries-old craft of Zhuxianzhen woodblock New Year printing to contemporary audiences. The project applies an information architecture and prototyping workflow: structured content organization across knowledge modules, low-fidelity wireframes for rapid layout exploration, and high-fidelity interactive mockups built in Adobe XD. The design organizes woodblock printing heritage into browsable learning modules covering history, production techniques, and folk proverb culture, with the goal of transforming passive cultural consumption into active, self-directed discovery on tablet devices.",
+      "tools": "Adobe XD · Information Architecture · Wireframing · High-Fidelity Prototyping",
       "hero": "images/woodblock/ipad2.jpg",
       "images": [
         {
@@ -489,16 +489,16 @@
     {
       "id": "yunjin",
       "title": "Nanjing Yunjin Brocade",
-      "subtitle": "Cultural Heritage Infographic & Interactive Display",
-      "cardBlurb": "Infographic and interactive display for Nanjing Yunjin intangible cultural heritage. Information design + mobile showcase.",
+      "subtitle": "Museum Interactive Display on Human-Nature Harmony in Silk Craft",
+      "cardBlurb": "A museum large-screen interactive display tracing Nanjing Yunjin brocade from plant fiber to finished textile, framed around the harmony between human craft and nature.",
       "tags": [
         "Information Design",
         "Cultural Heritage",
         "UI/UX",
         "Infographic"
       ],
-      "description": "An infographic and interactive display project showcasing Nanjing Yunjin, a UNESCO-recognized intangible cultural heritage of silk brocade craftsmanship. The project combines traditional information design with mobile interactive display, translating the complex weaving history and techniques into accessible visual narratives for contemporary audiences.",
-      "tools": "Adobe XD · Illustrator · Information Design · UI Design",
+      "description": "A museum interactive display (30 × 60 cm large-screen) that traces the journey of Nanjing Yunjin silk brocade from raw plant materials to exquisite finished textiles. The project centers on the theme of harmonious coexistence between humans and nature, highlighting how this UNESCO-recognized intangible cultural heritage embodies an ecologically sustainable craft tradition. The interface guides visitors through the complete production process—mulberry cultivation, silkworm cocooning, silk reeling, weaving, and pattern knotting—using an immersive scroll-style layout with a pastoral aesthetic. Rather than a conventional infographic, the design frames Yunjin as a narrative of nature transformed by human hands.",
+      "tools": "Adobe XD · Illustrator · Information Design · Museum UX",
       "hero": "images/yunjin/mockup_2.jpg",
       "images": [
         {
@@ -522,7 +522,7 @@
       "video": {
         "src": "videos/yunjin_demo.mp4",
         "poster": "images/yunjin/mockup_1.jpg",
-        "summary": "Demo video showing the mobile interactive display for Nanjing Yunjin heritage information design."
+        "summary": "Demo video showing the museum interactive display tracing Yunjin brocade from plant fiber to finished textile."
       },
       "layout": "stacked",
       "cardImage": "images/yunjin/mockup_1.jpg",
@@ -531,16 +531,16 @@
     {
       "id": "piao",
       "title": "FLUTTER",
-      "subtitle": "Interactive Projection Mapping Installation",
-      "cardBlurb": "Interactive projection installation exploring visual storytelling through Unreal Engine and spatial audio.",
+      "subtitle": "Biofeedback-Driven Immersive Installation",
+      "cardBlurb": "An immersive installation that visualizes heart rate through a drifting balloon in a serene Unreal Engine natural environment, using biosensor input to create a meditative interactive experience.",
       "tags": [
         "Interaction Design",
-        "Projection Mapping",
+        "Biosignal Visualization",
         "Unreal Engine",
-        "Spatial Audio"
+        "Projection Mapping"
       ],
-      "description": "An interactive projection mapping installation that explores the poetry of visual storytelling. Using Unreal Engine for real-time rendering and spatial audio to create an immersive experience, the installation transforms a physical space into a living canvas where light, sound, and movement respond to one another.",
-      "tools": "Unreal Engine · Projection Mapping · Spatial Audio · Interactive Design",
+      "description": "An immersive installation that translates the user\"s heartbeat into visual poetry. A heart rate sensor worn by the participant feeds real-time biosignal data into Unreal Engine, where it controls the rise and fall of a luminous balloon drifting through a vast natural landscape. As the heart rate slows, the balloon ascends gently through sunlit forests and open skies; as it quickens, the movement becomes more turbulent. There is no goal to achieve and no score to track—the installation creates a space for slowing down, turning inward, and letting the mind drift. By making an invisible physiological rhythm visible and spatial, FLUTTER invites participants into a quiet dialogue between body, technology, and the natural world.",
+      "tools": "Unreal Engine · Arduino · Heart Rate Sensor · Projection Mapping · Biosignal Visualization",
       "hero": "images/piao/piao_2.jpg",
       "images": [
         {
@@ -560,7 +560,7 @@
       "video": {
         "src": "videos/piao_demo.mp4",
         "poster": "images/piao/piao_2.jpg",
-        "summary": "Demo video showing the projection mapping installation and its spatial audio-visual interaction."
+        "summary": "Demo video showing the heart-rate-driven balloon visualization within the natural Unreal Engine environment."
       },
       "layout": "stacked",
       "cardImage": "images/piao/piao_2.jpg",
@@ -569,16 +569,16 @@
     {
       "id": "huansheng",
       "title": "Metamorphosis",
-      "subtitle": "Generative Visual Art Installation",
-      "cardBlurb": "Generative visual art exploring transformation between decay and rebirth. Digital media installation.",
+      "subtitle": "Digital Media Installation on Plant Protection & Ecological Crisis",
+      "cardBlurb": "A digital media installation responding to global vegetation decline, using artificial materials to reconstruct plant life and provoke reflection on the human-plant relationship.",
       "tags": [
-        "Generative Art",
         "Digital Media",
         "Installation",
+        "Environmental Art",
         "Visual Design"
       ],
-      "description": "A generative visual art installation exploring the transformation between decay and rebirth. Using digital media and projection techniques, the work creates an evolving visual narrative that shifts between organic forms of deterioration and regeneration, questioning the boundary between destruction and creation.",
-      "tools": "Digital Media · Projection · Visual Design · Generative Techniques",
+      "description": "A digital media installation created in response to the marked decline in global vegetation resilience since the 21st century. The work uses artificial materials—metal, plaster, and LCD screens—to reconstruct the life, skeleton, and genes of plants, placing organic forms within cold industrial media. Through the visual tension between mechanical surfaces and botanical imagery, the installation invites viewers to reconsider the impact of human civilization on plant life and to reawaken the emotional bond between people and the natural world.",
+      "tools": "Digital Media · Projection · Installation Art · Visual Design",
       "hero": "images/huansheng/1.jpg",
       "images": [
         {
@@ -627,16 +627,16 @@
     {
       "id": "matrix",
       "title": "Matrix Genesis",
-      "subtitle": "Experimental Visual Identity & Motion Graphics",
-      "cardBlurb": "Experimental visual identity exploring geometric abstraction. Poster series + motion graphics.",
+      "subtitle": "3D Particle Animation Reimagining Cultural Heritage",
+      "cardBlurb": "A 3D particle animation project that transforms traditional Chinese cultural symbols into digital form, preserving fading heritage through motion graphics.",
       "tags": [
-        "Visual Design",
-        "Poster Design",
         "Motion Graphics",
-        "Geometric Abstraction"
+        "3D Animation",
+        "Cultural Heritage",
+        "Visual Design"
       ],
-      "description": "An experimental visual identity project exploring geometric abstraction and systematic design methods. The project includes a poster series and motion graphics that investigate how rigid modular systems can generate organic visual expressions, challenging the boundary between order and chaos in visual communication.",
-      "tools": "Adobe Illustrator · After Effects · Motion Graphics · Poster Design",
+      "description": "A 3D particle animation project motivated by the fading of traditional cultural memory in contemporary life. The work deconstructs traditional Chinese cultural symbols—including the historical legend of Taibo\"s Journey to Wu, the Jade Flying Phoenix, and artifacts from various dynasties—and reconstructs them as dynamic three-dimensional particle animations. By translating these symbols from static historical texts into an evolving digital visual language, the project aims to rekindle public engagement with traditional culture and demonstrate how motion graphics can serve as a medium for cultural preservation.",
+      "tools": "Adobe After Effects · Cinema 4D · 3D Particle Animation · Motion Graphics",
       "hero": "images/matrix/frame_02.jpg",
       "images": [
         {
