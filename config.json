@@ -212,7 +212,7 @@
     },
     {
       "id": "remembery",
-      "title": "REMEMBERY",
+      "title": "REMEMBERY: Designed for Alzheimer's",
       "subtitle": "Multi-Stakeholder Alzheimer's Care App",
       "cardBlurb": "Accessibility-oriented health UX project across patients, caregivers, doctors, and social workers. Useful evidence for inclusive interaction and multi-stakeholder design.",
       "tags": [
@@ -315,7 +315,7 @@
     },
     {
       "id": "woodblock",
-      "title": "Woodblock Reimagined",
+      "title": "Woodblock Reimagined: Zhuxianzhen New Year Prints",
       "subtitle": "Interactive Learning Experience for Zhuxianzhen Woodblock Prints",
       "cardBlurb": "An interactive learning prototype for Zhuxianzhen woodblock New Year print heritage, designed with information architecture and low-to-high fidelity prototyping.",
       "tags": [
@@ -352,7 +352,7 @@
     },
     {
       "id": "museum",
-      "title": "NUA Museum",
+      "title": "NUA Museum Website Redesign",
       "subtitle": "Website UX Redesign for University Museum",
       "cardBlurb": "Museum website UX redesign using heuristic evaluation, visitor task analysis, and information architecture redesign.",
       "tags": [
@@ -488,7 +488,7 @@
     },
     {
       "id": "yunjin",
-      "title": "Nanjing Yunjin Brocade",
+      "title": "Harmony with Nature: Nanjing Yunjin Brocade",
       "subtitle": "Museum Interactive Display on Human-Nature Harmony in Silk Craft",
       "cardBlurb": "A museum large-screen interactive display tracing Nanjing Yunjin brocade from plant fiber to finished textile, framed around the harmony between human craft and nature.",
       "tags": [
@@ -530,7 +530,7 @@
     },
     {
       "id": "piao",
-      "title": "FLUTTER",
+      "title": "FLUTTER: A Drifting Mind",
       "subtitle": "Biofeedback-Driven Immersive Installation",
       "cardBlurb": "An immersive installation that visualizes heart rate through a drifting balloon in a serene Unreal Engine natural environment, using biosensor input to create a meditative interactive experience.",
       "tags": [
@@ -568,7 +568,7 @@
     },
     {
       "id": "huansheng",
-      "title": "Metamorphosis",
+      "title": "Rebirth & Illusion",
       "subtitle": "Digital Media Installation on Plant Protection & Ecological Crisis",
       "cardBlurb": "A digital media installation responding to global vegetation decline, using artificial materials to reconstruct plant life and provoke reflection on the human-plant relationship.",
       "tags": [
@@ -626,7 +626,7 @@
     },
     {
       "id": "matrix",
-      "title": "Matrix Genesis",
+      "title": "Matrix Creation",
       "subtitle": "3D Particle Animation Reimagining Cultural Heritage",
       "cardBlurb": "A 3D particle animation project that transforms traditional Chinese cultural symbols into digital form, preserving fading heritage through motion graphics.",
       "tags": [
