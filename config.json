@@ -15,11 +15,11 @@
   },
   "about": {
     "paragraphs": [
-      "I recently completed my M.F.A. in Design Science at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I am a design-trained, mixed-methods empirical HCI researcher. My work pairs interactive prototyping with rigorous evaluation: surveys, interviews, structural equation modeling, thematic analysis, and systematic review. Together, these methods help me investigate how people understand, trust, and adapt to emerging AI and immersive systems in real-world contexts.",
-      "My work spans human-AI interaction, accessibility, and immersive systems. I build functional prototypes (AR apps, interactive installations, physical computing environments) and evaluate them through mixed methods: surveys at scale, structural equation modeling, semi-structured interviews, and systematic review. Two recent projects ground my current thinking: a PRISMA-based systematic review on generative AI for accessibility (3,570 initial records; 136 eligible studies synthesized), and a co-first-author study on VR acceptance in cultural heritage (N=566 survey + 20 interviews, published in Heritage).",
+      "I recently completed my M.F.A. in Design Science at <a href=\"https://sodcn.jiangnan.edu.cn/\" target=\"_blank\" rel=\"noopener\">Jiangnan University, School of Design</a>, advised by <a href=\"https://sodcn.jiangnan.edu.cn/info/1084/4119.htm\" target=\"_blank\" rel=\"noopener\">Prof. Feng Wang</a>. I am a design-trained HCI researcher working across human-AI interaction, accessibility, and immersive interaction. I combine interactive prototyping with mixed-methods evaluation, including surveys, interviews, structural equation modelling, thematic analysis, and systematic review.",
+      "My current work includes a first-author systematic review of generative AI for accessibility in HCI (7,184 unique records screened; 703 full texts assessed; 248 studies retained) and a co-first-author study of VR acceptance in cultural heritage (N=566 survey and 20 interviews, published in <i>Heritage</i>). I also build and evaluate AR applications, interactive installations, and physical-computing prototypes.",
       "Outside research, I enjoy experimenting with creative coding tools and caring for my three companion birds: a lutino cockatiel named 凤梨 (Fengli) and two lovebirds."
     ],
-    "highlight": "I am seeking PhD positions for Fall 2027 in labs that study situated human-AI interaction, evidence-based evaluation, accessibility, or immersive interactive systems. I am particularly drawn to research that examines how people calibrate trust and reliance on AI, how interactive systems can support inclusive and accessible experiences, and how prototyping and empirical methods can jointly produce rigorous HCI knowledge."
+    "highlight": "I am seeking PhD opportunities in human-AI interaction, accessibility, creativity support, and immersive HCI. I am particularly interested in how interactive AI systems affect user agency, reflection, trust, and participation, and in evaluating these systems through mixed-methods HCI research."
   },
   "education": [
     {
@@ -36,11 +36,11 @@
     }
   ],
   "interests": [
-    "Situated Human-AI Interaction",
-    "Human-AI Evaluation & Trust",
+    "Human-AI Interaction & Evaluation",
     "Accessibility & Inclusive Interaction",
-    "Immersive Interaction (AR/VR)",
-    "Mixed-Methods UX Research"
+    "Creativity Support & Professional Practice",
+    "Immersive & Situated Interaction (AR/VR)",
+    "Mixed-Methods HCI"
   ],
   "publications": [
     {
@@ -49,9 +49,9 @@
       "authors": [
         "Shunfeng Zhang",
         "Jiaxuan Gong",
-        "Haiyan Wu",
+        "Haodong Wu",
         "Zhengyang Lu",
-        "Wanying Zhang"
+        "Wenjing Zhang"
       ],
       "venue": "SAGE Open 16, 1 (2026), 21582440251413067",
       "doi": "https://doi.org/10.1177/21582440251413067",
@@ -61,13 +61,30 @@
     },
     {
       "year": "2026",
-      "title": "Generative AI for Accessibility in HCI: A PRISMA-Based Systematic Review",
+      "title": "Tropical Island Visual Strategies for Sustainable Tourism: Contrasting Real Photographs and AI-Generated Images",
+      "authors": [
+        "Wei Cheng",
+        "Junjie Yu",
+        "Siqin Wang",
+        "Wenjun Yan",
+        "Ken Nah",
+        "Jiaxuan Gong"
+      ],
+      "venue": "Sustainability 18, 1 (2026), 285",
+      "doi": "https://doi.org/10.3390/su18010285",
+      "badge": "Published",
+      "badgeType": "pub",
+      "authorNote": ""
+    },
+    {
+      "year": "2026",
+      "title": "Generative AI for Accessibility in HCI: A Systematic Review of Evaluation, Participation, and Design Responsibilities",
       "authors": [
         "Jiaxuan Gong",
         "Zhengyang Lu",
         "Feng Wang"
       ],
-      "venue": "3,570 initial records; 136 eligible studies synthesized",
+      "venue": "7,184 unique records screened; 703 full texts assessed; 248 studies retained",
       "doi": "",
       "badge": "In Preparation",
       "badgeType": "prep",
@@ -94,7 +111,7 @@
       "title": "Motivation of University Students to Use LLMs for Online Consumption of Sustainable Products",
       "authors": [
         "Junjie Yu",
-        "Wanying Yan",
+        "Wenjun Yan",
         "Jiaxuan Gong",
         "Siqin Wang",
         "Ken Nah",
@@ -108,13 +125,27 @@
     },
     {
       "year": "2025",
-      "title": "Integrated Office Applications Promote Sustainable Development of E-Commerce Enterprises",
+      "title": "Creating Human-Centered Museums: User Experience in Digital Exhibitions from a Multimodal Perspective",
+      "authors": [
+        "Wen Zhong",
+        "Jiaxuan Gong",
+        "Yawei Hao"
+      ],
+      "venue": "AHFE International, Usability and User Experience 194 (2025)",
+      "doi": "https://doi.org/10.54941/ahfe1006680",
+      "badge": "Conference Paper",
+      "badgeType": "pub",
+      "authorNote": ""
+    },
+    {
+      "year": "2025",
+      "title": "Integrated Office Applications Promote the Sustainable Development of E-Commerce Enterprises: A Study Based on the TPB-TAM-IS Success Model",
       "authors": [
         "Siqin Wang",
         "Jiaxuan Gong",
         "Xiaoshan Li",
-        "Yuting Peng",
-        "Chenhui Du",
+        "Yuhao Peng",
+        "Changyan Du",
         "Ken Nah"
       ],
       "venue": "JTAER 20, 4 (2025), 324",
@@ -128,7 +159,7 @@
       "title": "Quality Function Deployment Approach to Urban Ecological Public Art Design",
       "authors": [
         "Renjing Hu",
-        "Xiaonan Tao",
+        "Xuanyu Tao",
         "Jiaxuan Gong",
         "Feng Wang"
       ],
@@ -160,7 +191,7 @@
   "news": [
     {
       "date": "🎓 June 15, 2026",
-      "title": "M.F.A. degree conferred by Jiangnan University. Moving full-time into PhD preparation.",
+      "title": "M.F.A. degree conferred by Jiangnan University.",
       "detail": ""
     },
     {
@@ -539,7 +570,7 @@
         "Unreal Engine",
         "Projection Mapping"
       ],
-      "description": "An immersive installation that translates the user\"s heartbeat into visual poetry. A heart rate sensor worn by the participant feeds real-time biosignal data into Unreal Engine, where it controls the rise and fall of a luminous balloon drifting through a vast natural landscape. As the heart rate slows, the balloon ascends gently through sunlit forests and open skies; as it quickens, the movement becomes more turbulent. There is no goal to achieve and no score to track—the installation creates a space for slowing down, turning inward, and letting the mind drift. By making an invisible physiological rhythm visible and spatial, FLUTTER invites participants into a quiet dialogue between body, technology, and the natural world.",
+      "description": "An immersive installation that translates the user's heartbeat into visual poetry. A heart rate sensor worn by the participant feeds real-time biosignal data into Unreal Engine, where it controls the rise and fall of a luminous balloon drifting through a vast natural landscape. As the heart rate slows, the balloon ascends gently through sunlit forests and open skies; as it quickens, the movement becomes more turbulent. There is no goal to achieve and no score to track—the installation creates a space for slowing down, turning inward, and letting the mind drift. By making an invisible physiological rhythm visible and spatial, FLUTTER invites participants into a quiet dialogue between body, technology, and the natural world.",
       "tools": "Unreal Engine · Arduino · Heart Rate Sensor · Projection Mapping · Biosignal Visualization",
       "hero": "images/piao/piao_2.jpg",
       "images": [
@@ -635,7 +666,7 @@
         "Cultural Heritage",
         "Visual Design"
       ],
-      "description": "A 3D particle animation project motivated by the fading of traditional cultural memory in contemporary life. The work deconstructs traditional Chinese cultural symbols—including the historical legend of Taibo\"s Journey to Wu, the Jade Flying Phoenix, and artifacts from various dynasties—and reconstructs them as dynamic three-dimensional particle animations. By translating these symbols from static historical texts into an evolving digital visual language, the project aims to rekindle public engagement with traditional culture and demonstrate how motion graphics can serve as a medium for cultural preservation.",
+      "description": "A 3D particle animation project motivated by the fading of traditional cultural memory in contemporary life. The work deconstructs traditional Chinese cultural symbols—including the historical legend of Taibo's Journey to Wu, the Jade Flying Phoenix, and artifacts from various dynasties—and reconstructs them as dynamic three-dimensional particle animations. By translating these symbols from static historical texts into an evolving digital visual language, the project aims to rekindle public engagement with traditional culture and demonstrate how motion graphics can serve as a medium for cultural preservation.",
       "tools": "Adobe After Effects · Cinema 4D · 3D Particle Animation · Motion Graphics",
       "hero": "images/matrix/frame_02.jpg",
       "images": [
@@ -665,16 +696,16 @@
   ],
   "researchAgenda": [
     {
-      "title": "Human-AI Trust & Reliance Calibration",
-      "summary": "I study how people calibrate their trust in AI, not as a one-time attitude, but as a dynamic decision process shaped by what's at stake, what the system tells them, and what they've learned from past interactions. My work combines large-scale surveys, structural equation modeling, and qualitative methods to understand when and why people appropriately rely on, or rightly reject, AI systems."
+      "title": "Human-AI Interaction & Evaluation",
+      "summary": "I study how AI systems affect user agency, reflection, trust, and decision-making. I use surveys, interviews, behavioural measures, and mixed-methods evaluation to examine both system performance and users' experience of working with AI."
     },
     {
-      "title": "Accessibility as Shared Infrastructure",
-      "summary": "I investigate how AI can support inclusive information work: not as individual assistive tools, but as shared infrastructure that distributes accessibility labor across teams and platforms. My PRISMA-based systematic review on generative AI for accessibility and my multi-stakeholder health UX projects inform this direction."
+      "title": "Accessibility & Inclusive Interaction",
+      "summary": "I investigate how AI and interactive systems can support access without shifting verification and correction work onto disabled users. My systematic review of generative AI for accessibility and my multi-stakeholder health UX projects inform this direction."
     },
     {
       "title": "Immersive & Situated Interactive Systems",
-      "summary": "I build and evaluate AR/VR installations and physical computing prototypes to understand how immersive media shape sensemaking and participation, and how people appropriate these systems in cultural, educational, and everyday settings."
+      "summary": "I build and evaluate AR/VR applications, interactive installations, and physical-computing prototypes to study how immersive media shape participation and experience in cultural, educational, and everyday settings."
     }
   ]
 }
