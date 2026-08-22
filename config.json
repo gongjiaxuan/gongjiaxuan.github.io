@@ -45,6 +45,8 @@
   "publications": [
     {
       "year": "2026",
+      "timelineGroup": "2026",
+      "sortDate": "2026-01-15",
       "title": "Public Sentiment Towards Interactive Art on Multi-Modal Social Media",
       "authors": [
         "Shunfeng Zhang",
@@ -61,6 +63,8 @@
     },
     {
       "year": "2026",
+      "timelineGroup": "2026",
+      "sortDate": "2025-12-26",
       "title": "Tropical Island Visual Strategies for Sustainable Tourism: Contrasting Real Photographs and AI-Generated Images",
       "authors": [
         "Wei Cheng",
@@ -77,7 +81,9 @@
       "authorNote": ""
     },
     {
-      "year": "2026",
+      "year": "In preparation",
+      "timelineGroup": "In preparation",
+      "sortDate": "9999-12-31",
       "title": "Generative AI for Accessibility in HCI: A Systematic Review of Evaluation, Participation, and Design Responsibilities",
       "authors": [
         "Jiaxuan Gong",
@@ -92,6 +98,8 @@
     },
     {
       "year": "2025",
+      "timelineGroup": "2025",
+      "sortDate": "2025-11-28",
       "title": "Engaging the Next Generation: A Validated Model of VR Acceptance to Inform Design in Cultural Heritage Institutions",
       "authors": [
         "Jiaxuan Gong",
@@ -108,6 +116,8 @@
     },
     {
       "year": "2025",
+      "timelineGroup": "2025",
+      "sortDate": "2025-07-21",
       "title": "Motivation of University Students to Use LLMs for Online Consumption of Sustainable Products",
       "authors": [
         "Junjie Yu",
@@ -125,6 +135,8 @@
     },
     {
       "year": "2025",
+      "timelineGroup": "2025",
+      "sortDate": "2025-01-01",
       "title": "Creating Human-Centered Museums: User Experience in Digital Exhibitions from a Multimodal Perspective",
       "authors": [
         "Wen Zhong",
@@ -139,6 +151,8 @@
     },
     {
       "year": "2025",
+      "timelineGroup": "2025",
+      "sortDate": "2025-11-19",
       "title": "Integrated Office Applications Promote the Sustainable Development of E-Commerce Enterprises: A Study Based on the TPB-TAM-IS Success Model",
       "authors": [
         "Siqin Wang",
@@ -156,6 +170,8 @@
     },
     {
       "year": "2024",
+      "timelineGroup": "2024",
+      "sortDate": "2024-10-01",
       "title": "Quality Function Deployment Approach to Urban Ecological Public Art Design",
       "authors": [
         "Renjing Hu",
