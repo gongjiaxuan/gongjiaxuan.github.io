@@ -361,7 +361,7 @@
       position: relative;
       display: flex;
       align-items: center;
-      padding: 0 calc((100vw - var(--mw)) / 2 + 2rem);
+      padding: 0 2rem 0 calc((100vw - var(--mw)) / 2 + 2rem);
     }
     .proj-row {
       display: flex;
@@ -395,13 +395,13 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     .proj-scroll.proj-l { left: calc((100vw - var(--mw)) / 2 - 1.25rem); }
-    .proj-scroll.proj-r { right: calc((100vw - var(--mw)) / 2 - 1.25rem); }
+    .proj-scroll.proj-r { right: 1rem; }
     @media(max-width: 960px) { .proj-scroll { display: none; } }
     .proj-scroll:hover { border-color: var(--th); transform: scale(1.04); }
     .proj-scroll:disabled { opacity: 0; pointer-events: none; }
 
     .proj-card {
-      flex: 0 0 340px;
+      flex: 0 0 210px;
       scroll-snap-align: start;
       border-radius: 12px;
       border: 1px solid var(--bdr);
@@ -744,8 +744,12 @@
       document.getElementById('agendaGrid').innerHTML=rh;
 
       var ph='',lastYr='';
-      P.forEach(function(p){
-        if(p.year!==lastYr){ph+='<div class="tl-yr">'+p.year+'</div>';lastYr=p.year}
+      var sortedPublications=P.slice().sort(function(a,b){
+        return String(b.sortDate||b.year||'').localeCompare(String(a.sortDate||a.year||''));
+      });
+      sortedPublications.forEach(function(p){
+        var timelineGroup=p.timelineGroup||p.year;
+        if(timelineGroup!==lastYr){ph+='<div class="tl-yr">'+timelineGroup+'</div>';lastYr=timelineGroup}
         var tbl=p.badgeType==='prep'?' tl-badge-prep':' tl-badge-pub';
         var authorStr='';
         if(Array.isArray(p.authors)){
@@ -828,7 +832,9 @@
     window.filterProjects=function(cat){
       document.querySelectorAll('.filter-tag').forEach(function(t){t.classList.toggle('active',t.dataset.cat===cat)});
       document.querySelectorAll('.proj-card').forEach(function(c){c.classList.toggle('hidden',cat!=='All'&&c.dataset.cat!==cat)});
-      initProjScroll();
+      var row=document.getElementById('projRow');
+      if(row)row.scrollTo({left:0,behavior:'auto'});
+      requestAnimationFrame(initProjScroll);
     }
 
     function initProjScroll(){
@@ -838,8 +844,9 @@
         l.disabled=r.scrollLeft<=2;
         rt.disabled=r.scrollLeft>=r.scrollWidth-r.clientWidth-2;
       }
-      l.onclick=function(){r.scrollBy({left:-350,behavior:'smooth'})};
-      rt.onclick=function(){r.scrollBy({left:350,behavior:'smooth'})};
+      function scrollStep(){return Math.max(226,Math.round(r.clientWidth*0.8))}
+      l.onclick=function(){r.scrollBy({left:-scrollStep(),behavior:'smooth'})};
+      rt.onclick=function(){r.scrollBy({left:scrollStep(),behavior:'smooth'})};
       r.onscroll=verifyButtons;
       verifyButtons();
     }
