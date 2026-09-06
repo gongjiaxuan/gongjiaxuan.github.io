@@ -2889,24 +2889,51 @@ function shuffle(){ shuffleState(); sync(); sel=false;tsel=false;draw(); }
 // 在一份复制品上生成，不动当前画布 —— 候选是"摆在旁边给你看"，不是"替你改掉"
 function genState(){
   const keep=JSON.parse(JSON.stringify(S));
+  // 六张候选顶着同一句标题 —— 实测 propose(6) 的 texts[0].text 六个全一样。
+  // 文字在 feat() 里只占几维，但眼睛给它的权重远高于此，所以六张看着比数字说的要像。
+  // 「字」没被锁上的时候，候选也可以换一个题；锁上了就老老实实用当前这个。
+  if(!LOCKS.type && Math.random()<0.45) newBrief();
   shuffleState();
   const got=JSON.parse(JSON.stringify(S));
   S=keep;
   return got;
 }
 // 归一化特征向量：用来保证六个候选彼此真的看得出差别
+// 「两张海报差多少」的尺子。整个候选托盘（最远点采样保证六个可分辨、
+// 变奏按带拒绝采样）全部押在它身上，所以**它漏掉的维度就等于不存在**。
+//
+// 上一版只有 16 维，漏掉的是：纸张、纸纹、网目粗细、套印错位、版记、立体、
+// 第二个元素。也就是说，换一张牛皮纸、把网目从 13px 改成 3px、给器物开立体 ——
+// 这些一眼就能看见的变化，尺子上是 **0**。核验 agent 把这条列为最要紧的补充：
+// 「整套可玩性机制押在一个从没和眼睛对过账的距离上」。
+//
+// ⚠️ 改动这个函数会让所有距离整体变化，VARY_BAND 的常数必须跟着重新标定。
+//    标定方法见 VARY_BAND 上面那段注释。
 function feat(st){
   const horiz = st.cut ? Math.abs(st.cut.x2-st.cut.x1)>Math.abs(st.cut.y2-st.cut.y1) : true;
   const pos = st.cut ? (horiz ? (st.cut.y1+st.cut.y2)/2 : (st.cut.x1+st.cut.x2)/2) : .5;
   const es = st.els||[], e = es[0] || {k:0,x:.5,y:.5,s:.2,fill:0,rep:1};
+  const e2 = es[1];
   const tx=(st.texts&&st.texts[0])||{font:0,size:1,dir:'v'};
+  const nv=(st.texts||[]).filter(t=>t.dir==='v').length;
   return [pos*1.4, horiz?0:1.4,
           Lstar(st.a)/100, Lstar(st.b)/100,
           hex2lch(st.a)[1]*2.2, hex2lch(st.b)[1]*2.2,
           e.k/9, e.x, e.y, e.s*2.4,
           (e.fill||0)/3, ((e.rep||1)-1)/4, (tx.font||0)*.24, (tx.size||0)/3,
           tx.dir==='h' ? .35 : 0,
-          es.length*0.7];                      // 元素个数本身就是一个可分辨的维度
+          es.length*0.7,                       // 元素个数本身就是一个可分辨的维度
+          // ↓ 以下这些以前全是盲区
+          (e.d3?1:0)*0.62,                     // 平面 / 立体：一眼就能看出来
+          (st.dot||0)*0.50,                    // 网目 3px 还是 13px，画面质地完全不同
+          (st.stock||0)/5*0.42,                // 纸：颜色已经进了 a/b，但纹理与可印区间没有
+          (st.tex||0)/2*0.30,                  // 纸纹强度
+          (st.mis||0)/3*0.34,                  // 套印错位
+          (st.mark||0)/2*0.24,                 // 版记 / 套准
+          e2 ? (e2.k/9)*0.46 : 0,              // 第二个元素是什么
+          e2 ? (e2.s*1.4) : 0,                 // 第二个元素多大
+          ((st.texts||[]).length)*0.40,        // 画布上有几行字
+          nv*0.30];                            // 其中几行是竖排
 }
 const fdist=(a,b)=>{let t=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];t+=d*d;}return Math.sqrt(t);};
 // ---- 锁：锁住你喜欢的，只重掷其余 ----
@@ -2960,14 +2987,25 @@ function applyLocks(got, base, L){
 // 变奏：不是六个全新的，是六个近亲。做法就是「除了一两个维度，其余全锁」——
 // 和手动锁是同一个机制，只是锁的组合由程序逐个候选换一套。
 //
-// 「按一下应该变多少」不是拍脑袋定的。在线上页面里跑 600 个随机状态、
-// 179700 对两两配对量出来的 fdist 分布，加上单轴扰动的标定，给出三条带：
-//   死区   < 0.25  —— 看不出发生了什么（元素横移 10% 画布 = 0.10，放大 1.3 倍 = 0.18）
-//   抖一下 0.35–0.9 —— 恰好一个决定被换掉了（换字体 0.48、换填充 0.67、换形 0.89）
-//   近亲   0.9–1.4  —— 还是同一张海报的另一个版本
-//   全新   中位数 1.53，四分位 1.20–1.83
-// 所以变奏用拒绝采样把候选卡进指定的带里，而不是只设一个下限。
-const VARY_BAND={1:[0.90,1.42], 2:[0.35,0.90]};      // 1 = 近亲，2 = 抖一下
+// 「按一下应该变多少」不是拍脑袋定的，是量出来的。
+//
+// 【标定方法 —— feat() 一旦改动就必须重跑这一步】
+//   1. 生成 220 个 genState()，两两配对算 fdist（24090 对），取分位数当基准尺度
+//   2. 在同一个 base 上做单轴扰动，看每一个"决定"值多少距离
+//   3. 三条带按中位数的相对位置定，不写死绝对值
+//
+// 【本次标定（feat 25 维）】随机两两配对：p05 1.08 / p25 1.45 / **中位 1.75** / p75 2.03 / p95 2.30
+//   单轴：元素移10% 0.10 · 换字体 0.24 · 放大1.3倍 0.26 · 纸纹 0.30 · 套印 0.34
+//         少一行字 0.40 · 标题横竖互换 0.46 · 网目 0.50 · 换形 0.56 · 开立体 0.62
+//         换填充 0.67 · 加一个元素 0.70
+//   死区   < 0.29（≈0.17×中位）—— 元素挪 10%、换个字体，看不出发生了什么
+//   抖一下 0.40–1.02（0.23–0.58×中位）—— 恰好一个决定被换掉，人能指认出改了哪件事
+//   近亲   1.02–1.62（0.58–0.93×中位）—— 还是同一张海报的另一个版本
+//
+// 上一版的常数（0.35–0.9 / 0.9–1.4）是在 16 维的 feat 上量的，中位数 1.53。
+// feat 补上纸/网目/立体/套印/版记/第二个元素之后所有距离整体涨了约 15%，
+// 常数跟着按同一比例挪。**这不是调参，是换了尺子之后重新读数。**
+const VARY_BAND={1:[1.02,1.62], 2:[0.40,1.02]};      // 1 = 近亲，2 = 抖一下
 function proposeVary(want, base, mode){
   const keys=LOCK_DIMS.map(d=>d.k), pool=[], f0=feat(base);
   const band=VARY_BAND[mode]||VARY_BAND[1], lo=band[0], hi=band[1];
@@ -3054,11 +3092,16 @@ let TRAY=[];
 // 托盘不关，立刻从这一张再出六个。用户的一次点击就是在特征空间里走一步，
 // 不需要重新下决心，循环自动续上。原来「选一个 → 托盘关闭 → 探索结束」，
 // 而且六个候选完全不参考当前这张，等于惩罚已经投入三分钟的人。
+// 「走过的路」里存的是 {状态, 那一步看到的六张}。
+// 只存状态是不够的：看到六张、挑中第 3 张，另外五张（尤其是"我还想再看看的第 5 张"）
+// 就永远找不回来了 —— 回到上一步只会重新抽六张全新的。
+// 核验 agent 把这条列为「可玩性最大的漏水口」。
 let TRAY_PATH=[];
 let TRAY_VARY=1;                     // 默认「近亲」：机器建立在你的投入之上
-function showTray(){
+function showTray(reuse){
   const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
-  const r=propose(6, TRAY_VARY);
+  const allLock=LOCK_DIMS.every(d=>LOCKS[d.k]);
+  const r=reuse || propose(6, TRAY_VARY);
   TRAY=r.list; trayEl.hidden=false; trayEl.innerHTML='';
   const head=document.createElement('div'); head.className='tray-head';
   head.innerHTML='<div><p class="tray-kicker">Contact sheet / 06</p><p class="tray-title">'+
@@ -3097,7 +3140,8 @@ function showTray(){
   ctl.appendChild(done);
 
   const note=document.createElement('p'); note.className='tray-note';
-  note.textContent = TRAY_VARY===2
+  note.textContent = allLock ? '六把锁全上着 —— 什么都变不了。松开一两把再看。'
+    : TRAY_VARY===2
     ? '抖一下：每一个只有一个决定被换掉，你能看出改的是哪一件事。'
     : TRAY_VARY===1
       ? '近亲：每一个都是你现在这版的另一个版本。选中一个，托盘不关，立刻从它再出六个。'
@@ -3121,13 +3165,15 @@ function showTray(){
       const b=document.createElement('button'); b.type='button'; b.title='回到这一步';
       const w=72, h=Math.round(w*H/W);
       const c2=document.createElement('canvas'); c2.width=w; c2.height=h;
-      renderTo(c2.getContext('2d'), st, w, h);
+      renderTo(c2.getContext('2d'), st.state, w, h);
       b.appendChild(c2);
       b.onclick=function(){
         pushHist();
-        S=JSON.parse(JSON.stringify(st)); TRAY_PATH=TRAY_PATH.slice(0,i);
-        sel=false;tsel=false; sync(); draw(); showTray();
-        setHint('回到了第 '+(i+1)+' 步');
+        S=JSON.parse(JSON.stringify(st.state)); const back=st.cands;
+        TRAY_PATH=TRAY_PATH.slice(0,i);
+        sel=false;tsel=false; sync(); draw();
+        showTray(back);                       // 把当时那六张原样端回来
+        setHint('回到了第 '+(i+1)+' 步 —— 当时那六张都还在');
       };
       path.appendChild(b);
     });
@@ -3148,7 +3194,7 @@ function showTray(){
     b.append(c,label);
     b.onclick=()=>{
       pushHist();
-      TRAY_PATH.push(JSON.parse(JSON.stringify(S)));
+      TRAY_PATH.push({state:JSON.parse(JSON.stringify(S)), cands:r});
       if(TRAY_PATH.length>8) TRAY_PATH.shift();
       S=JSON.parse(JSON.stringify(st));sel=false;tsel=false;sync();draw();
       showTray();                       // 不关：立刻从这一张再出六个
@@ -3847,7 +3893,7 @@ function selfTest(){
       const fm=avg(fr.map(r=>r.mid)), vm=avg(vr.map(r=>r.mid)), km=avg(sk.map(r=>r.mid));
       const vn=Math.min.apply(null,vr.map(r=>r.near)), kn=Math.min.apply(null,sk.map(r=>r.near));
       ok('三档变奏各自落在实测的距离带里',
-         km<vm && vm<fm && kn>0.25 && vn>0.30,
+         km<vm && vm<fm && kn>0.38 && vn>0.95,
          '抖一下 '+km.toFixed(2)+' / 近亲 '+vm.toFixed(2)+' / 全新 '+fm.toFixed(2)+
          '　最近的：抖 '+kn.toFixed(2)+' 近 '+vn.toFixed(2));
     })();
