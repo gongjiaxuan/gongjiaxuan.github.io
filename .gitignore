@@ -4,3 +4,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# 1.1GB 的调研资料，只留在本地，绝不进仓库
+genai-ideation-study/
+*.zip
