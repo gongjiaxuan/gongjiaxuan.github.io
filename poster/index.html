@@ -443,6 +443,14 @@
     <div class="row" id="dot" style="margin-top:7px">
       <button data-d="0">网目细</button><button data-d="1" aria-pressed="true">网目粗</button>
     </div>
+    <h3 style="margin-top:18px">版面信息</h3>
+    <div class="row" id="mark">
+      <button data-k="0">无</button><button data-k="1" aria-pressed="true">版记</button
+      ><button data-k="2">版记＋套准</button>
+    </div>
+    <p class="note" style="margin-top:8px">印刷品边上那些小字和标记 —— 用的是这张海报
+      <b>真实的</b>墨、纸、网屏、套印参数，不是装饰。它小到读作肌理，
+      但正是它让画面一眼像个印出来的东西。</p>
     <h3 style="margin-top:18px">套印</h3>
     <div class="row" id="mis">
       <button data-m="0" aria-pressed="true">对准</button><button data-m="1">轻</button
@@ -633,7 +641,7 @@ const blank={ex:null,lang:'zh',lat:{a:0,b:1,m:0,t:0.22},cut:null,pair:0,paper:PA
 // 候选预览的基准构图。启动时不再展示它，避免示例锚定用户。
 const demo={ex:null,lat:{a:0,b:1,m:0,t:0.22},cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
   inkA:PAIRS[1][1], covA:0, inkB:PAIRS[1][1], covB:.86, a:PAIRS[1][0], b:PAIRS[1][1],
-  mis:0,
+  mis:0, mark:1,
   els:[{k:6,x:.60,y:.46,s:.193,r:0.03,fill:3,rep:1}], si:0,
   texts:[],ti:-1,stock:0,tex:1,dot:1};
 let S=JSON.parse(JSON.stringify(blank));
@@ -1822,6 +1830,70 @@ function drawInfo(col){                     // 信息行永远贴住下边距，
   const iw=ctx.measureText(info).width,max=W-M*2;if(iw>max){z*=max/iw;ctx.font='500 '+z+'px "Archivo","Noto Sans SC",sans-serif';}
   ctx.fillText(info, M, H-M);ctx.restore();
 }
+// 印刷品边上那一圈小字和标记。它不是装饰 —— 每一个数都是这张海报真实的参数。
+// 之所以有效，是因为它小到读作肌理而不是内容：眼睛不去读它，
+// 只登记「这里有印刷该有的东西」。TypeGeist 那批海报靠的就是这一手。
+function colophonCols(){
+  const nm=h=>{const c=LIB.find(x=>x[0].toUpperCase()===String(h).toUpperCase());return c?c[1]:h;};
+  const pct=v=>Math.round((v||0)*100)+'%';
+  // 覆盖率 0 = 这一侧根本没落墨，是裸纸。报「某某墨 0%」是错的。
+  const ink=(h,c)=>(c||0)<0.005 ? '裸纸 NO INK' : nm(h)+'  '+pct(c);
+  const ps=stockSpec();
+  return [
+    ['INKS', ink(S.inkA,S.covA), ink(S.inkB,S.covB)],
+    ['STOCK', ps.name, 'SCREEN 45°  '+PITCH[S.dot]+'PX'],
+    ['PRESS', 'REG '+['ALIGNED','+0.9','+2.2','+4.2'][S.mis||0], 'EDITION 01 · TWO INKS']
+  ];
+}
+function drawMarks(col){
+  const mk=(S.mark==null?1:S.mark); if(!mk) return;
+  const M=MARGIN(), u=SC();
+  ctx.save();
+  ctx.fillStyle=col; ctx.strokeStyle=col;
+  // ---- 版记：三栏，每栏一行标签两行值，栏首一个小圆点 ----
+  const z=Math.max(5.2, 7*u);
+  ctx.font='600 '+z.toFixed(2)+'px "Archivo","Noto Sans SC",sans-serif';
+  ctx.textBaseline='alphabetic'; ctx.textAlign='left';
+  const cols=colophonCols(), lh=z*1.62, dot=Math.max(1.6,2.2*u), gap=z*0.9;
+  const wid=cols.map(c=>Math.max.apply(null,c.map(t=>ctx.measureText(t).width))+dot*2+gap);
+  let total=wid.reduce(function(a,b){return a+b;},0)+gap*(cols.length-1);
+  const right=W-M, bottom=H-M;
+  // 放不下就退回两栏，再放不下就只留一栏 —— 挤成一团比没有更糟
+  let use=cols.length;
+  while(use>1 && total > (W-M*2)*0.62){ total-=wid[use-1]+gap; use--; }
+  let x=right-total;
+  for(let i=0;i<use;i++){
+    const c=cols[i];
+    ctx.beginPath(); ctx.arc(x+dot, bottom-lh*(c.length-1)-z*0.34, dot, 0, Math.PI*2); ctx.fill();
+    for(let j=0;j<c.length;j++){
+      ctx.globalAlpha = j===0 ? 1 : 0.72;          // 标签实、值淡，栏内自己有层次
+      ctx.fillText(c[j], x+dot*2+gap*0.55, bottom-lh*(c.length-1-j));
+    }
+    ctx.globalAlpha=1;
+    x+=wid[i]+gap;
+  }
+  // ---- 套准标记：四角的十字靶 + 一条色标 ----
+  if(mk>=2){
+    const r=Math.max(3.4,4.6*u), inset=M*0.46;
+    const tgt=(cx,cy)=>{
+      ctx.lineWidth=Math.max(.6,.8*u);
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx-r*1.75,cy); ctx.lineTo(cx+r*1.75,cy);
+      ctx.moveTo(cx,cy-r*1.75); ctx.lineTo(cx,cy+r*1.75);
+      ctx.stroke();
+    };
+    tgt(inset,inset); tgt(W-inset,inset); tgt(inset,H-inset); tgt(W-inset,H-inset);
+    // 色标：三格 —— 两支墨各一格，第三格是它们叠印的样子
+    const sw=Math.max(5,7*u), sy=H/2-sw*1.5;
+    for(let i=0;i<3;i++){
+      ctx.globalAlpha=[1,.62,.34][i];
+      ctx.fillRect(W-inset-sw/2, sy+i*(sw+2*u), sw, sw);
+    }
+    ctx.globalAlpha=1;
+  }
+  ctx.restore();
+}
 function textBox(t){const m=textMetrics(t);return {x:t.x*W,y:t.y*H,w:m.w,h:m.h,s:m.z};}
 function syncSelectionDelete(){
   if(thumb||(!sel&&!tsel)){selectionDeleteEl.hidden=true;return;}
@@ -2105,8 +2177,9 @@ function draw(){
     // 因为它每次都会把变换重置掉 —— 两处加的是同一个量，形和它的网点不会脱节。
     const off=PLATE[0]||PLATE[1];
     if(off) ctx.save(), ctx.translate(PLATE[0],PLATE[1]);
-    drawEl(ink,idx,inv,overprint); drawTitle(ink); drawInfo(ink);
-    if(EP){ ctx.save();ctx.clip(EP,'evenodd');drawTitle(field);drawInfo(field);ctx.restore(); }
+    drawEl(ink,idx,inv,overprint); drawTitle(ink); drawInfo(ink); drawMarks(ink);
+    if(EP){ ctx.save();ctx.clip(EP,'evenodd');
+      drawTitle(field);drawInfo(field);drawMarks(field);ctx.restore(); }
     if(off) ctx.restore();
   }
   if(l){
@@ -2567,6 +2640,11 @@ document.getElementById('tfont').onclick=e=>{const b=e.target.closest('button'),
   t.font=+b.dataset.font;t.autoStyle=false;clampText(t);syncTextPanel();draw();};
 document.getElementById('tsize').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
   t.size=+b.dataset.size;t.autoStyle=false;clampText(t);syncTextPanel();setStep(4);draw();};
+document.getElementById('mark').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  pushHist(); S.mark=+b.dataset.k;
+  setHint(['去掉了版面信息','版记：三栏小字，写的是这张海报真实的墨、纸、网屏',
+           '加上套准靶和色标 —— 印刷该有的东西都在了'][S.mark]);
+  sync(); draw();};
 document.getElementById('mis').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   pushHist(); S.mis=+b.dataset.m;
   setHint(['两块版对准了','轻微错位 —— 跨切线的形开始有一道细台阶',
@@ -2681,6 +2759,7 @@ function shuffleState(){
   }
   S.dot=Math.random()<.5?0:1;
   S.mis=pick([0,0,0,1,1,2,3]);          // 大多数时候对准，偶尔来一次明显的错位
+  S.mark=pick([1,1,1,1,2,2,0]);         // 版记默认在，偶尔加套准，偶尔全去掉
   if(B.dark && Lstar(S.a)>Lstar(S.b)){   // 深底：把深的那块做成大色域
     const i=S.inkA,c=S.covA;S.inkA=S.inkB;S.covA=S.covB;S.inkB=i;S.covB=c;applyInks();
   }
@@ -2733,7 +2812,7 @@ function applyLocks(got, base, L){
   L=L||LOCKS;
   if(L.cut)  got.cut=cloneJ(base.cut);
   if(L.ink)  for(const k of INK_KEYS) got[k]=cloneJ(base[k]);
-  if(L.print){ got.dot=base.dot; got.tex=base.tex; got.mis=base.mis; }
+  if(L.print){ got.dot=base.dot; got.tex=base.tex; got.mis=base.mis; got.mark=base.mark; }
   if(L.type){ got.texts=cloneJ(base.texts); got.ti=base.ti; }
   if(L.shape||L.place||L.print){
     const src=base.els||[], dst=got.els||[];
@@ -2812,7 +2891,7 @@ function sync(){
     String(Math.abs(+x.dataset.p-(ce?(ce.d3||0):0))<0.01)));
   set('rep','r',ce?(ce.rep||1):1);set('stock','stock',S.stock||0);
   set('tex','t',S.tex); set('fill','l',ce?(ce.fill||0):0); set('dot','d',S.dot);
-  set('mis','m',S.mis||0);
+  set('mis','m',S.mis||0); set('mark','k',S.mark==null?1:S.mark);
   allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(!!ce&&j===ce.k)));
   const cnt=document.getElementById('elcount');
   if(cnt) cnt.textContent=(S.els?S.els.length:0)+' 个元素'+(ce?'　选中第 '+(S.si+1)+' 个':'');
