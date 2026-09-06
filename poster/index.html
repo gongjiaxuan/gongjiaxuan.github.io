@@ -435,6 +435,9 @@
 
   <div class="blk" data-tool="form">
     <h3>重复</h3>
+    <div class="row" id="dep" style="margin-bottom:7px">
+      <button data-p="0" aria-pressed="true">平</button><button data-p="0.34">浅</button><button data-p="0.66">中</button><button data-p="1">深</button>
+    </div>
     <div class="row" id="rep">
       <button data-r="1" aria-pressed="true">1</button><button data-r="3">3</button><button data-r="5">5</button>
     </div>
@@ -1474,6 +1477,27 @@ function drawOne(e, col, side, inv, isLast){
     ctx.translate(-EX(e), -EY(e));
     ctx.globalAlpha=Math.min(1, elA*3.2);
   }
+  // 立体感用「分层错位」，不做挤出成柱体 —— 后者读作 PPT 的 3D 艺术字，
+  // 而多层套印本来就是丝网印的样子，和这套双色语言是同一件事。
+  // 层沿切线的法线方向后退，越远越淡（等价于覆盖率越低）。
+  const dep=e.dep||0;
+  if(dep>0){
+    const K=2+Math.round(dep*4), step=dep*13*SC(), ra2=rowAngle()+Math.PI/2;
+    const ux=Math.cos(ra2)*step, uy=Math.sin(ra2)*step;
+    ctx.save(); ctx.fillStyle=col;
+    for(let L=K; L>=1; L--){
+      ctx.globalAlpha = 0.16 + 0.30*(1-L/K);
+      for(let i=0;i<m;i++){
+        const off=(i-(m-1)/2)*gap;
+        const cx=EX(e)+Math.cos(ra)*off+ux*L, cy=EY(e)+Math.sin(ra)*off+uy*L;
+        const P=new Path2D(), sub=new Path2D();
+        elInto(sub,e,R0);
+        P.addPath(sub,new DOMMatrix().translateSelf(cx,cy).rotateSelf(e.r*180/Math.PI));
+        ctx.fill(P,'evenodd');
+      }
+    }
+    ctx.restore();
+  }
   ctx.fillStyle=col;
   for(let i=0;i<m;i++){
     const off=(i-(m-1)/2)*gap;
@@ -1579,7 +1603,7 @@ function fontSpec(t,z){
 function textMetrics(t){
   t=t||titleSeed();
   const chars=textChars(t), vert=t.dir==='v', M=MARGIN();
-  let z=[34,50,68][t.size==null?1:t.size]*SC();
+  let z=[34,50,68][t.size==null?1:t.size]*SC()*(t.zs||1);
   const f=TEXT_FONTS[t.font||0]||TEXT_FONTS[0];
   const maxW=W-M*2, maxH=H-M*2.6;
   if(vert){
@@ -1884,15 +1908,31 @@ function draw(){
     ctx.save();ctx.translate(EX(ce),EY(ce));ctx.rotate(ce.r);
     ctx.strokeStyle='#00000055';ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.strokeRect(-R0*1.08,-hh*1.06,R0*2.16,hh*2.12);ctx.restore();
-    const hx=EX(ce)+Math.cos(ce.r+0.7)*hr, hy=EY(ce)+Math.sin(ce.r+0.7)*hr;
-    ctx.save();ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(hx,hy,5.5,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();
+    const hp=handlePos(ce), hx=hp.x, hy=hp.y;
+    ctx.save();
+    ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.arc(hx,hy,8,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.strokeStyle='#15161a';ctx.lineWidth=1.4;ctx.lineCap='round';   // 斜箭头 = 可拖
+    ctx.beginPath();ctx.moveTo(hx-3.1,hy-3.1);ctx.lineTo(hx+3.1,hy+3.1);
+    ctx.moveTo(hx+3.1,hy+0.4);ctx.lineTo(hx+3.1,hy+3.1);ctx.lineTo(hx+0.4,hy+3.1);
+    ctx.moveTo(hx-3.1,hy-0.4);ctx.lineTo(hx-3.1,hy-3.1);ctx.lineTo(hx-0.4,hy-3.1);
+    ctx.stroke();ctx.restore();
   }
   if((tsel||hoverText>=0)&&!sel){
     const ti=tsel?S.ti:hoverText, tt=S.texts&&S.texts[ti], t=tt?textBox(tt):null;
     if(t){
     ctx.save();ctx.strokeStyle='#00000044';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-    ctx.strokeRect(t.x-9,t.y-9,t.w+18,t.h+18);ctx.restore();}
+    ctx.strokeRect(t.x-9,t.y-9,t.w+18,t.h+18);ctx.restore();
+    if(tsel){                                   // 右下角的把手：拖它自由缩放字号
+      const h=textHandlePos(tt);
+      ctx.save();ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1.3;
+      ctx.beginPath();ctx.arc(h.x,h.y,8,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.strokeStyle='#15161a';ctx.lineWidth=1.4;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(h.x-3.1,h.y-3.1);ctx.lineTo(h.x+3.1,h.y+3.1);
+      ctx.moveTo(h.x+3.1,h.y+0.4);ctx.lineTo(h.x+3.1,h.y+3.1);ctx.lineTo(h.x+0.4,h.y+3.1);
+      ctx.moveTo(h.x-3.1,h.y-0.4);ctx.lineTo(h.x-3.1,h.y-3.1);ctx.lineTo(h.x-0.4,h.y-3.1);
+      ctx.stroke();ctx.restore();
+    }}
   }
   syncSelectionDelete();
 }
@@ -1920,14 +1960,26 @@ const prefersStill=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-mo
 const pos=e=>{const r=cv.getBoundingClientRect();
   return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};};
 const inEl=p=>hitEl(p)>=0;
-const onHandle=p=>{ const e=CE(); if(!e||!sel)return false; const hr=handleR(e);
-  return Math.hypot(p.x-(EX(e)+Math.cos(e.r+0.7)*hr), p.y-(EY(e)+Math.sin(e.r+0.7)*hr))<11; };
+// 命中半径原来是 11px —— 鼠标偏 10px 就点不中，触屏根本摸不着
+//（Android 的 touch slop 本身就有 8dp）。所以指针粗的时候给到 26px。
+const COARSE = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+const HANDLE_HIT = COARSE ? 26 : 17;
+const handlePos = e=>{ const hr=handleR(e);
+  return {x:EX(e)+Math.cos(e.r+0.7)*hr, y:EY(e)+Math.sin(e.r+0.7)*hr}; };
+const onHandle=p=>{ const e=CE(); if(!e||!sel)return false; const h=handlePos(e);
+  return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT; };
+// 文字也要能自由放大缩小 —— 三档字号不够用
+const textHandlePos = t=>{ const b=textBox(t); return {x:b.x+b.w+11, y:b.y+b.h+11}; };
+const onTextHandle=p=>{ const t=CT(); if(!t||!tsel)return false; const h=textHandlePos(t);
+  return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT; };
 
 cv.addEventListener('pointerdown',e=>{
   if(demoRAF) stopDemo();
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
   const p=pos(e);
   if(onHandle(p)){drag={m:'handle'};return;}
+  if(onTextHandle(p)){ const t=CT(), b=textBox(t);
+    drag={m:'thandle', d0:Math.hypot(p.x-b.x,p.y-b.y)||1, z0:(t.zs||1)}; return; }
   // 文字和图形始终可以直接操作；不强迫用户先完成「切」这一步。
   const ht=hitText(p);
   if(ht>=0){S.ti=ht;tsel=true;sel=false;const t=CT();
@@ -1954,6 +2006,13 @@ cv.addEventListener('pointermove',e=>{
       const R0=(ce2.k>=6||ce2.k===12)? d/(asp/2) : d;
       ce2.s=Math.max(.06,Math.min(.42,R0/W));
       ce2.r=snapAngle(Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7);}
+    else if(drag.m==='thandle'){
+      const t=CT();
+      if(t){ const b=textBox(t);
+        const d=Math.hypot(p.x-b.x,p.y-b.y);
+        t.zs=Math.max(.35, Math.min(4.2, drag.z0*d/drag.d0));
+        clampText(t); }
+    }
     else if(drag.m==='text'){
       const t=CT();if(t){t.x=(p.x-drag.dx)/W;t.y=(p.y-drag.dy)/H;}
     }
@@ -1961,7 +2020,7 @@ cv.addEventListener('pointermove',e=>{
   }
   const hT=hitText(p), hE=!!(hT<0&&inEl(p));
   if(hT!==hoverText||hE!==hoverEl){hoverText=hT;hoverEl=hE;
-    cv.style.cursor=onHandle(p)?'nwse-resize':(hE||hT>=0?'grab':(S.cut?'pointer':'crosshair'));draw();}
+    cv.style.cursor=(onHandle(p)||onTextHandle(p))?'nwse-resize':(hE||hT>=0?'grab':(S.cut?'pointer':'crosshair'));draw();}
 });
 window.addEventListener('pointerup',()=>{
   if(cutting){
@@ -2233,6 +2292,9 @@ document.getElementById('fill').onclick=e=>{const b=e.target.closest('button');i
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('tex').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   S.tex=+b.dataset.t;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
+document.getElementById('dep').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  const ce=CE(); if(ce) ce.dep=+b.dataset.p;
+  [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('rep').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   const ce=CE(); if(ce) ce.rep=+b.dataset.r;
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
@@ -2379,6 +2441,9 @@ function sync(){
   const set=(id,attr,val)=>[...document.getElementById(id).children]
     .forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset[attr]===val)));
   const ce=CE();
+  const dp=document.getElementById('dep');
+  if(dp) [...dp.children].forEach(x=>x.setAttribute('aria-pressed',
+    String(Math.abs(+x.dataset.p-(ce?(ce.dep||0):0))<0.01)));
   set('rep','r',ce?(ce.rep||1):1);set('stock','stock',S.stock||0);
   set('tex','t',S.tex); set('fill','l',ce?(ce.fill||0):0); set('dot','d',S.dot);
   allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(!!ce&&j===ce.k)));
