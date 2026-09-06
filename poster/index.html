@@ -63,6 +63,29 @@
   .tray{position:fixed;inset:70px 0 0;z-index:40;background:#d9d7d1f5;padding:34px 42px 40px;
     display:flex;flex-direction:column;align-items:center;overflow:auto}
   .tray[hidden]{display:none}
+  /* 成品态：把版面从「正在改」切到「印出来了」。
+     Kern Type 的乐趣其实不在做，在按下 Done 之后揭晓的那 0.5 秒。
+     我们没有标准答案可以对，但可以给一次零风险、必然好看的揭晓 —— 它不评判用户，只奖励用户。 */
+  .press{position:fixed;inset:0;z-index:60;background:#c9c6bf;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:22px;padding:32px}
+  .press[hidden]{display:none}
+  .press-sheet{position:relative;filter:drop-shadow(0 24px 40px #00000055) drop-shadow(0 3px 6px #00000033)}
+  .press-sheet img{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .press-sheet img:first-child{position:relative}
+  .press-sheet .pl{opacity:0;animation:plate .62s cubic-bezier(.2,.9,.25,1) forwards}
+  @keyframes plate{
+    0%{opacity:0;transform:translate(var(--px),var(--py)) scale(1.004)}
+    55%{opacity:1}
+    100%{opacity:1;transform:none}
+  }
+  .press-cap{font-family:var(--ui);font-size:11px;letter-spacing:.13em;color:#5a5b55;
+    text-transform:uppercase;text-align:center;line-height:1.9}
+  .press-act{display:flex;gap:10px}
+  .press-act button{font-family:var(--ui);font-size:12.5px;letter-spacing:.04em;padding:10px 18px;
+    border:1px solid #8e8c86;background:transparent;color:#3a3b36;cursor:pointer;min-height:42px}
+  .press-act button:hover{border-color:#3a3b36}
+  .press-act .go{background:var(--ink);border-color:var(--ink);color:#fff}
+  @media (prefers-reduced-motion: reduce){ .press-sheet .pl{animation-duration:.01ms} }
   .tray-head{width:min(100%,970px);display:flex;justify-content:space-between;align-items:end;
     padding-bottom:18px;border-bottom:1px solid #aaa8a2;margin-bottom:22px}
   .tray-head p{margin:0}
@@ -311,6 +334,7 @@
     <button id="topUndo" title="撤销" aria-label="撤销" disabled>↶</button>
     <button id="topReset" title="清空画布" aria-label="清空画布">清空</button>
     <button id="topVariants">六个方向</button>
+    <button id="topPress">印出来</button>
     <button class="export" id="topDownload">导出 PNG ↓</button>
   </div>
 </header>
@@ -325,6 +349,7 @@
   </div>
   <div class="hint" id="hint">在海报上按住并拖动 —— 划一刀</div>
   <div class="tray" id="tray" hidden></div>
+  <div class="press" id="press" hidden></div>
   <div class="hist" id="hist"></div>
 </div>
 
@@ -1858,9 +1883,20 @@ function drawMarks(col){
   const wid=cols.map(c=>Math.max.apply(null,c.map(t=>ctx.measureText(t).width))+dot*2+gap);
   let total=wid.reduce(function(a,b){return a+b;},0)+gap*(cols.length-1);
   const right=W-M, bottom=H-M;
+  // 底部那行展期与场馆也贴着下边距，两个都往那儿放就必然撞上。
+  // 先量出它占多宽，剩下的才是版记能用的地方。
+  let infoW=0;
+  if(S.cut){
+    ctx.save();
+    let zi=12.5*u; ctx.font='500 '+zi+'px "Archivo","Noto Sans SC",sans-serif';
+    infoW=Math.min(ctx.measureText(INFO()).width, W-M*2);
+    ctx.restore();
+    ctx.font='600 '+z.toFixed(2)+'px "Archivo","Noto Sans SC",sans-serif';
+  }
+  const avail=(W-M*2)-(infoW?infoW+gap*2.4:0);
   // 放不下就退回两栏，再放不下就只留一栏 —— 挤成一团比没有更糟
   let use=cols.length;
-  while(use>1 && total > (W-M*2)*0.62){ total-=wid[use-1]+gap; use--; }
+  while(use>1 && total > avail){ total-=wid[use-1]+gap; use--; }
   let x=right-total;
   for(let i=0;i<use;i++){
     const c=cols[i];
@@ -1884,13 +1920,24 @@ function drawMarks(col){
       ctx.stroke();
     };
     tgt(inset,inset); tgt(W-inset,inset); tgt(inset,H-inset); tgt(W-inset,H-inset);
-    // 色标：三格 —— 两支墨各一格，第三格是它们叠印的样子
-    const sw=Math.max(5,7*u), sy=H/2-sw*1.5;
-    for(let i=0;i<3;i++){
-      ctx.globalAlpha=[1,.62,.34][i];
-      ctx.fillRect(W-inset-sw/2, sy+i*(sw+2*u), sw, sw);
-    }
-    ctx.globalAlpha=1;
+  }
+  ctx.restore();
+}
+// 色标不属于任何一侧：它要同时给出两支墨和它们叠印的样子，
+// 所以不能画在 side() 里（那儿只拿得到当前这一侧的墨，还会被挖白翻成底色）。
+function drawColourBar(){
+  if((S.mark==null?1:S.mark)<2) return;
+  const M=MARGIN(), u=SC(), inset=M*0.46;
+  const sw=Math.max(5,7*u), sy=H/2-sw*1.6;
+  const mul=(h1,h2)=>{const a=hex2rgb(h1),b=hex2rgb(h2);
+    return rgb2hex([0,1,2].map(i=>Math.round(a[i]*b[i]/255)));};
+  const bars=[S.a, S.b, mul(S.a,S.b)];        // 墨 A / 墨 B / 两版叠印
+  ctx.save();
+  for(let i=0;i<3;i++){
+    ctx.fillStyle=bars[i];
+    ctx.fillRect(W-inset-sw/2, sy+i*(sw+1.6*u), sw, sw);
+    ctx.strokeStyle='#00000026'; ctx.lineWidth=Math.max(.5,.6*u);
+    ctx.strokeRect(W-inset-sw/2, sy+i*(sw+1.6*u), sw, sw);
   }
   ctx.restore();
 }
@@ -2209,6 +2256,7 @@ function draw(){
     ctx.restore();
   }
 
+  drawColourBar();
   if(!thumb){ noteChange(); recipeSoon(); }
   if(thumb) return;
   if(cutting){
@@ -2970,6 +3018,61 @@ function showTray(){
   setHint(TRAY_VARY?'六个近亲，都是这一版改一两处。不选也不会动你现在这版'
                    :'六个方案，挑一个点进去。不选也不会动你现在这版');
 }
+// ---- 成品态：一版一版压上去 ----
+// 丝网印和 riso 是分版印的：先底色，再图形，最后文字。
+// 每一版落下来的时候都会先偏一点点再对准 —— 这里把那个过程放出来给人看。
+// 三张图都是完整画面（后一张比前一张多一层），叠着放，靠淡入把新增的那层显出来。
+const pressEl=document.getElementById('press');
+function showPress(){
+  const st=JSON.parse(JSON.stringify(S));
+  const sc=Math.min(2, Math.max(1, 1400/Math.max(W,H)));
+  const shot=mut=>{
+    const c=document.createElement('canvas'); c.width=Math.round(W*sc); c.height=Math.round(H*sc);
+    const s2=JSON.parse(JSON.stringify(st)); mut(s2);
+    renderTo(c.getContext('2d'), s2, c.width, c.height);
+    return c.toDataURL('image/png');
+  };
+  const plates=[
+    shot(s=>{ s.els=[]; s.texts=[]; s.mark=0; }),   // 一版：底色与纸
+    shot(s=>{ s.texts=[]; s.mark=0; }),             // 二版：形
+    shot(s=>{})                                     // 三版：文字与版记
+  ];
+  // 画面里的高度按视口给，宽度按画幅比例
+  const maxH=Math.min(window.innerHeight-230, 720), maxW=Math.min(window.innerWidth-80, 620);
+  let ph=maxH, pw=ph*W/H;
+  if(pw>maxW){ pw=maxW; ph=pw*H/W; }
+  const off=[[0,0],[7,-5],[-6,6]];                  // 每一版落下来时的偏移，然后归零
+  pressEl.innerHTML='';
+  const sheet=document.createElement('div'); sheet.className='press-sheet';
+  sheet.style.width=Math.round(pw)+'px'; sheet.style.height=Math.round(ph)+'px';
+  plates.forEach((u,i)=>{
+    const im=document.createElement('img'); im.src=u; im.alt='';
+    if(i>0){ im.className='pl';
+      im.style.setProperty('--px', off[i][0]+'px');
+      im.style.setProperty('--py', off[i][1]+'px');
+      im.style.animationDelay=(0.34+i*0.42)+'s'; }
+    sheet.appendChild(im);
+  });
+  const cap=document.createElement('p'); cap.className='press-cap';
+  const c=colophonCols();
+  const tt=titleText();
+  const shown=String((tt&&tt.text)||TITLE()||'').trim()||'UNTITLED';
+  cap.innerHTML = shown+'　·　'+INFO()+'<br>'+
+    c[0][1]+'　+　'+c[0][2]+'　·　'+c[1][1]+'　·　'+c[2][2];
+  const act=document.createElement('div'); act.className='press-act';
+  const back=document.createElement('button'); back.type='button'; back.textContent='回去改';
+  back.onclick=()=>{ pressEl.hidden=true; };
+  const dl=document.createElement('button'); dl.type='button'; dl.className='go'; dl.textContent='导出 PNG ↓';
+  dl.onclick=()=>document.getElementById('download').click();
+  const again=document.createElement('button'); again.type='button'; again.textContent='再印一次';
+  again.onclick=()=>showPress();
+  act.append(back,again,dl);
+  pressEl.append(sheet,cap,act);
+  pressEl.hidden=false;
+  setHint('印好了 —— 回去改，或者导出');
+}
+document.getElementById('topPress').onclick=showPress;
+
 // ---- 图片进来的三条路：选文件、拖到画布、Ctrl+V ----
 const imgBlk=document.getElementById('imgblk');
 const iThr=document.getElementById('iThr'), iDet=document.getElementById('iDet');
@@ -3346,6 +3449,7 @@ document.getElementById('topDownload').onclick=()=>document.getElementById('down
 document.getElementById('topUndo').onclick=undo;
 document.getElementById('topReset').onclick=()=>document.getElementById('reset').click();
 document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!pressEl.hidden){pressEl.hidden=true;e.preventDefault();return;}
   if(e.key==='Escape'&&!trayEl.hidden){trayEl.hidden=true;e.preventDefault();}
 });
 
