@@ -11,9 +11,20 @@
 
 ## 一、开工前必做的两件事
 
-```bash
-git pull                      # 别在旧版本上改
+海报现在有一个独立的干净工作区，避免卷入主网站尚未解决的 CV 冲突：
+
+```text
+E:\PHD_27\portfolio_poster_collab
 ```
+
+在这个目录开工，并先同步协作分支：
+
+```bash
+git pull --rebase origin poster-collab
+```
+
+暂时不要在 `E:\PHD_27\portfolio` 里提交海报改动。那个主工作区保留着用户的
+网站、图片与 CV 改动，其中 CV 文件仍有待用户确认；海报代码没有冲突。
 
 然后在浏览器里打开 **`poster/index.html?selftest=1`** ——
 它会跑一遍全部不变量，在页面上印出 `自检 15 / 15 全部通过`。
@@ -91,7 +102,9 @@ S = {
 
 ## 四、协作规矩（防止两个 agent 打架）
 
-1. **开工先 `git pull`**，收工 `git push`。别攒一大堆再推。
+1. 在 `E:\PHD_27\portfolio_poster_collab` 开工，先运行
+   `git pull --rebase origin poster-collab`；收工运行 `git push origin poster-collab`。
+   别攒一大堆再推。通过审核的版本再合并到 `main` 上线。
 2. **每次收工在 `poster/WORKLOG.md` 顶部追加一条**：日期、你是谁、改了什么、自检结果。
    下一个人靠它知道现在到哪了。
 3. **一次只做一件事，做完就提交。** 这个文件 120KB，冲突起来很难合。
