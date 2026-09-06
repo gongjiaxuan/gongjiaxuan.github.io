@@ -1465,7 +1465,24 @@ function delEl(){
 // 网屏属于「纸」，不属于「图形」。全画面共用一张 45° 网，原点固定在画布中心：
 // 图形怎么转怎么挪、切线两侧怎么反色，间距和相位都不变，只换墨色。
 // 之前的写法让网屏跟着图形转，接缝处会错开半个点，眼睛立刻读成两张图拼贴。
-const SANG=Math.PI/4;
+// 网屏角度按墨的明度分配。这是 riso 的硬规矩（Exploriso 技术手册）：
+//   单色 45° · 双色 深墨 75° / 浅墨 45° · 三色 45°/75°/15° · 四色 K45 M75 C15 Y0
+// 顺序不能乱 —— 越暗的墨给越"刺眼"的角度，越亮的给越无害的，乱了就起摩尔纹。
+//
+// 我们原来两块版共用一个 45°。那等于两层点完全重合成一个点阵，
+// 叠印区看起来是一块脏平涂，而不是 riso 那种"两层点互相咬"的肌理。
+//
+// ⚠️ 这不违反原来那条不变量。原来禁的是"网屏跟着图形转"（接缝处会错开半个点，
+//    眼睛立刻读成两张图拼贴）。**每块版一个固定角度**是另一回事，
+//    而且是真实印刷本来的样子：网屏仍然锚在纸坐标系，仍然不跟着形走。
+const SANG=Math.PI/4;                       // 浅墨那一版
+const SANG_DARK=75*Math.PI/180;             // 深墨那一版，和浅墨错开 30°
+let SANG_CUR=SANG;                          // 当前正在压的是哪一版
+function plateAngle(ink){
+  const other = (ink===S.a) ? S.b : S.a;
+  if(!ink||!other) return SANG;
+  return Lstar(ink) <= Lstar(other) ? SANG_DARK : SANG;
+}
 function hash2(i,j){const v=Math.sin(i*127.1+j*311.7)*43758.5453;return v-Math.floor(v);}
 function inkR(a,p,inv){
   if(inv) a=1-a;                                            // 反白侧翻转色阶
@@ -1486,11 +1503,11 @@ function misAmt(){ return MIS_PX[S.mis||0]*SC(); }
 let PLATE=[0,0];
 const screenCache=new Map();
 function screenSheet(col,p,inv,ox,oy){
-  const key=[col,p.toFixed(3),inv?1:0,W,H,ox.toFixed(2),oy.toFixed(2)].join('|');
+  const key=[col,p.toFixed(3),inv?1:0,W,H,ox.toFixed(2),oy.toFixed(2),SANG_CUR.toFixed(4)].join('|');
   const hit=screenCache.get(key); if(hit) return hit;
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const g=c.getContext('2d'); g.fillStyle=col;
-  const ca=Math.cos(SANG), sa=Math.sin(SANG), R=Math.ceil(Math.hypot(W,H)/p)+3;
+  const ca=Math.cos(SANG_CUR), sa=Math.sin(SANG_CUR), R=Math.ceil(Math.hypot(W,H)/p)+3;
   for(let i=-R;i<=R;i++) for(let j=-R;j<=R;j++){
     const u=i*p, v=j*p, x=ox+u*ca-v*sa, y=oy+u*sa+v*ca;
     if(x<-p||x>W+p||y<-p||y>H+p) continue;
@@ -1513,12 +1530,12 @@ function screenFill(col, box, band, inv){
   }
   // 套印微偏：网点层相对实色区永远偏同一个方向、同一个量（随机每层乱飘就不是套印了）
   const ps=stockSpec(), rough=S.tex===0?0:(S.tex===2?1.35:1);
-  const ca=Math.cos(SANG), sa=Math.sin(SANG),
+  const ca=Math.cos(SANG_CUR), sa=Math.sin(SANG_CUR),
         ox=W/2+(1.0+ps.mis*1.6)*SC()+PLATE[0], oy=H/2-(.7+ps.mis*1.2)*SC()+PLATE[1];
   if(band && band.tone){          // 三维明暗：每个网点的大小由该处的明暗决定
     const TB=band.tone, bx=band.bx, by=band.by, bw2=band.bw, bh2=band.bh;
     ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle=col;
-    const ca2=Math.cos(SANG), sa2=Math.sin(SANG);
+    const ca2=Math.cos(SANG_CUR), sa2=Math.sin(SANG_CUR);
     let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
     for(const q of [[box[0],box[1]],[box[2],box[1]],[box[0],box[3]],[box[2],box[3]]]){
       const dx=q[0]-ox, dy=q[1]-oy;
@@ -2304,11 +2321,12 @@ function draw(){
       // 两块版各偏半格，方向相反且固定 —— 网屏是版的一部分，跟着一起偏
       // 两块版相向偏：主要沿切线法线（跨线的形两半才会错开台阶），加一点切向
       PLATE = mis ? [(-l.nx*0.86 - l.ny*0.50)*g*mis, (-l.ny*0.86 + l.nx*0.50)*g*mis] : [0,0];
+      SANG_CUR = plateAngle(k?S.a:S.b);      // 这一侧落的是哪支墨，就用哪块版的角度
       side(k?S.b:S.a, k?S.a:S.b, k?invB:invA, k);
-      PLATE=[0,0];
+      SANG_CUR=SANG; PLATE=[0,0];
       ctx.restore();
     }
-  }else side(S.a,S.b,invA,0);
+  }else{ SANG_CUR=plateAngle(S.b); side(S.a,S.b,invA,0); SANG_CUR=SANG; }
 
   // 叠印的那几个：不分侧，整个画一次，用 multiply。
   // 两支墨叠在一起自然出第三个颜色 —— 那才是双色印刷的意义；
@@ -2317,7 +2335,9 @@ function draw(){
   if(l && overprint.length && S.els){
     ctx.save(); ctx.globalCompositeOperation='multiply';
     const dark = Lstar(S.a)<Lstar(S.b) ? S.a : S.b;
+    SANG_CUR=plateAngle(dark);
     for(const i of overprint){ const e=S.els[i]; if(e) drawOne(e, dark, 0, false, false); }
+    SANG_CUR=SANG;
     ctx.restore();
     // 这一遍在文字之后画，会把压在它下面的文字整段盖掉。
     // 实测（有文字 vs 无文字逐段比对，1632 段）：有叠印元素时文字彻底看不见的比例
@@ -3803,6 +3823,34 @@ function selfTest(){
       S.texts[1].text='EDIT';S.texts.splice(1,1);S.ti=0;
       ok('图形与文字：加/选/改/删',three&&hit&&S.els.length===2&&textHit&&S.texts.length===1);
       ok('旋转吸附到 0/90/180', snapAngle(0.03)===0 && Math.abs(snapAngle(1.54)-Math.PI/2)<1e-6);
+    })();
+
+    // 5b. 网屏：锚在纸上（形怎么转怎么挪，相位不动），但每块版一个角度。
+    // 前半条是这个引擎最早的一条不变量，一直靠人工验；这次补进自检。
+    // 后半条是 riso 的硬规矩：深墨 75° / 浅墨 45°，错开 30° 才有两层点互相咬的肌理，
+    // 同角度会重合成一个点阵、叠印区糊成脏平涂。
+    (function(){
+      const g=cv.getContext('2d');
+      S.cut={x1:0,y1:.40,x2:1,y2:.40}; S.dot=1; S.tex=0; S.mis=0; S.mark=0;
+      S.paper='#F4F1E8'; S.inkA='#F15060'; S.covA=.62; S.inkB='#404755'; S.covB=.80; applyInks();
+      S.texts=[]; S.ti=-1; elA=1; sel=false; tsel=false;
+      S.els=[{k:0,x:.5,y:.72,s:.42,r:0,fill:1,rep:1}]; S.si=0;
+      // 采样区必须在移动前后都落在形的内部，否则量的是形的边不是网屏相位
+      const R=.42*W, cx0=.5*W, cy0=.72*H, dx=90;
+      const lo=Math.max(cx0,cx0+dx)-R+18, hi=Math.min(cx0,cx0+dx)+R-18;
+      const sx=Math.round((lo+hi)/2-50), sy=Math.round(cy0-30);
+      const probe=()=>{ const d=g.getImageData(Math.max(0,sx),Math.max(0,sy),100,60).data;
+        let h=0; for(let i=0;i<d.length;i+=4) h=(h*33+d[i]+d[i+1]*5+d[i+2]*7)|0; return h; };
+      draw(); const a=probe();
+      S.els[0].r=0.9; draw(); const b=probe();
+      S.els[0].r=0; S.els[0].x=.5+dx/W; draw(); const c=probe();
+      S.els[0].x=.5;
+      const angLight=plateAngle(S.a)*180/Math.PI, angDark=plateAngle(S.b)*180/Math.PI;
+      const twoAngles = Math.abs(angLight-angDark)>25 &&
+        (Lstar(S.a)>Lstar(S.b) ? (angLight<50 && angDark>70) : (angDark<50 && angLight>70));
+      ok('网屏锚在纸上，且两块版各一个角度',
+         a===b && a===c && twoAngles,
+         '转/挪后相位 '+((a===b&&a===c)?'不变':'变了')+'　浅墨 '+angLight.toFixed(0)+'° 深墨 '+angDark.toFixed(0)+'°');
     })();
 
     // 6a. 文字必须真的看得见。
