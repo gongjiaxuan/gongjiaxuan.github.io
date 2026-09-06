@@ -1821,6 +1821,15 @@ function fontSpec(t,z){
   const f=TEXT_FONTS[Math.max(0,Math.min(TEXT_FONTS.length-1,t.font||0))];
   return {f,css:f.weight+' '+z+'px '+f.family};
 }
+// minCapPct(ΔL*) = 1.0 + 6.0·max(0,(35−ΔL*)/35)，单位是画幅高的百分比。
+// 三个实测校验点：ΔL*37.3→1.0%（观测 1.1% 可读）、18.5→3.8%（观测 7% 可读）、
+// 12.5→4.9%（观测 1.1% 不可读、11% 可读）。上限压在 9%H —— 那是实测标题字高的四分位上界，
+// 再高就不是「保证可读」而是「把信息行变成标题」了。
+function minCapPx(){
+  const d=Math.abs(Lstar(S.a||'#fff')-Lstar(S.b||'#000'));
+  const pct=1.0 + 6.0*Math.max(0,(35-d)/35);
+  return Math.min(pct/100, 0.09) * H;
+}
 function textMetrics(t){
   t=t||titleSeed();
   const chars=textChars(t), vert=t.dir==='v', M=MARGIN();
@@ -1835,7 +1844,11 @@ function textMetrics(t){
     let natural=0; chars.forEach((ch,i)=>natural+=ctx.measureText(ch).width+(i?z*f.track:0));ctx.restore();
     if(natural>maxW) z*=maxW/natural;
   }
-  z=Math.max(10*SC(),z);
+  // 最小可读字号取决于两支墨的明度差，不是一个常数。
+  // 实测同一版换墨换纸的控制变量对照：ΔL* 37.3 时 1.1%H 的字可读；
+  // ΔL* 12.5 时同样字号直接消失，但同一张里 11%H 的大字仍然可读。
+  // 生成器会守住 ΔL* ≥ 30，但用户手调颜色可以调到更低 —— 这条是给手调兜底的。
+  z=Math.max(10*SC(), minCapPx(), z);
   const spec=fontSpec(t,z);
   ctx.save();ctx.font=spec.css;
   const widths=chars.map(ch=>ctx.measureText(ch).width);ctx.restore();
@@ -2012,14 +2025,22 @@ function layoutLines(){
     return o.sort((a,b)=>a-b);
   };
   const inx=v=>v>M+2*U && v<W-M-2*U, iny=v=>v>M+2*U && v<botY-2*U;
+  // 色域的边也是对齐线：实测田中一光的文字块对齐的是图形自身平色域的边，
+  // 粟津洁的竖排列贴的是内场的边而不是纸的边。我们这里的色域边就是那一刀。
+  const cutLines={x:[],y:[]};
+  if(S.cut){
+    const hz=Math.abs(S.cut.x2-S.cut.x1)>Math.abs(S.cut.y2-S.cut.y1);
+    if(hz){ const cy=(S.cut.y1+S.cut.y2)/2*H; if(iny(cy)) cutLines.y.push(cy); }
+    else  { const cx=(S.cut.x1+S.cut.x2)/2*W; if(inx(cx)) cutLines.x.push(cx); }
+  }
   // 每一件形贡献自己的四条边。两件分开的形，它们的并集外框是一个横跨中间空地的
   // 大矩形 —— 按那个对齐，等于按一块根本不存在的东西对齐。
   const boxes=(S.els||[]).map(e=>{const q=elBBox(e); return q?{b:q,e}:null;}).filter(Boolean);
   const ex=[], ey=[];
   for(const {b:q} of boxes){ ex.push(q.x0,q.x1); ey.push(q.y0,q.y1); }
   return {
-    V: pick([M, W-M], ex.filter(inx)),
-    H: pick([M, botY], ey.filter(iny)),
+    V: pick([M, W-M], cutLines.x.concat(ex.filter(inx))),
+    H: pick([M, botY], cutLines.y.concat(ey.filter(iny))),
     M, U, botY, eb, boxes
   };
 }
@@ -2081,6 +2102,16 @@ function placeOnce(t){
       const roomy=(q.x1-q.x0)>m.w*1.45 && (q.y1-q.y0)>m.h*1.45;
       if(solid && roomy && fr>0.94) sc += 300;             // 整个进去：成立，但仍不是首选
       else sc += (t.role==='title'?1200:2600)*(1+Math.min(fr,1-fr)*2);
+    }
+    // ②b 间隙律。两块文字之间的纵向净间隙落在「危险区」时，直接读作没排好。
+    // 44 张实测：0.5×cap 读作同一段、0.8×cap 仍是一组、2.4×cap 以上读作两个独立构件；
+    // 中间那一段没有任何一张海报落在里面。
+    // 调研原话：这条比对齐更重要 —— 对齐错了只是不整齐，间隙落在危险区是直接读作错误。
+    for(const {b:z} of others){
+      if(Math.min(x+m.w, z.x+z.w) - Math.max(x, z.x) <= 0) continue;  // 横向不重叠就无所谓
+      const g=Math.max(z.y-(y+m.h), y-(z.y+z.h));
+      if(g<=0) continue;                                              // 重叠已经一票否决过了
+      if(g > 1.0*Math.min(m.z, z.s) && g < 2.4*Math.max(m.z, z.s)) sc += 700;
     }
     // ③ 每共用一条对齐线就减一次分
     let share=0;
@@ -2228,6 +2259,7 @@ function draw(){
   if(!l){ctx.fillStyle=S.a;ctx.fillRect(0,0,W,H);}
   // 反色：A 侧的底是 a，就用 b 落墨。浅墨压深底 = 反白，色阶要翻转再算扩张。
   const invA=lum(S.b)>lum(S.a), invB=!invA;
+  const EP=(S.els&&S.els.length)?elPath():null;
   // 标题压在图形上时必须从图形里挖出来：同一支墨叠同一支墨，印出来就是看不见
   // 反色之所以成立，是因为眼睛把跨界的那一个轮廓读成一个连续的整体。
   // 好几个元素各自反色时，反色就从"手法"退化成"材质"，切线本身反而消失了。
@@ -2250,7 +2282,6 @@ function draw(){
       else overprint.push(i);
     }
   }
-  const EP=(S.els&&S.els.length)?elPath():null;
   function side(field,ink,inv,idx){
     ctx.fillStyle=field; ctx.fillRect(-30,-30,W+60,H+60);
     drawPaperSurface(idx?S.covB:S.covA);
@@ -2287,6 +2318,16 @@ function draw(){
     ctx.save(); ctx.globalCompositeOperation='multiply';
     const dark = Lstar(S.a)<Lstar(S.b) ? S.a : S.b;
     for(const i of overprint){ const e=S.els[i]; if(e) drawOne(e, dark, 0, false, false); }
+    ctx.restore();
+    // 这一遍在文字之后画，会把压在它下面的文字整段盖掉。
+    // 实测（有文字 vs 无文字逐段比对，1632 段）：有叠印元素时文字彻底看不见的比例
+    // 0.69%，没有叠印元素时 0.00% —— 就是这里。
+    // 叠印区是整张画面最深的地方，所以补画一次，用浅的那支色。
+    const lightC = Lstar(S.a)>Lstar(S.b) ? S.a : S.b;
+    const OP=new Path2D();
+    for(const i of overprint){ const e=S.els[i]; if(e) OP.addPath(elPathOne(e)); }
+    ctx.save(); ctx.clip(OP,"evenodd");
+    drawTitle(lightC); drawInfo(lightC); drawMarks(lightC);
     ctx.restore();
   }
 
@@ -3762,6 +3803,39 @@ function selfTest(){
       S.texts[1].text='EDIT';S.texts.splice(1,1);S.ti=0;
       ok('图形与文字：加/选/改/删',three&&hit&&S.els.length===2&&textHit&&S.texts.length===1);
       ok('旋转吸附到 0/90/180', snapAngle(0.03)===0 && Math.abs(snapAngle(1.54)-Math.PI/2)<1e-6);
+    })();
+
+    // 6a. 文字必须真的看得见。
+    // 「不出边距」只保证它在纸上，不保证它没和底色同色。实测抓到过整段
+    // 像素变化 0% 的文字 —— 挖白把它翻成底色，而底下那块本来就是底色。
+    // 判据不看颜色算式，直接看画面：画一遍带文字的、一遍不带的，
+    // 把每行文字切成 12 段逐段比对，哪一段几乎没变化，哪一段就是没印上去。
+    (function(){
+      const g=cv.getContext('2d');
+      let inv=0, segs=0;
+      for(let i=0;i<10;i++){
+        shuffleState(); elA=1; sel=false; tsel=false;
+        draw(); const A=g.getImageData(0,0,W,H).data;
+        const keep=S.texts; S.texts=[];
+        draw(); const B=g.getImageData(0,0,W,H).data;
+        S.texts=keep;
+        for(const t of keep){
+          const b=textBox(t), N=12;
+          for(let k=0;k<N;k++){
+            const x0=Math.max(0,Math.round(b.x+b.w*k/N)), x1=Math.min(W,Math.round(b.x+b.w*(k+1)/N));
+            const y0=Math.max(0,Math.round(b.y)), y1=Math.min(H,Math.round(b.y+b.h));
+            if(x1<=x0||y1<=y0) continue;
+            let d=0, tot=0;
+            for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+              const p=(y*W+x)*4; tot++;
+              if(Math.abs(A[p]-B[p])>12||Math.abs(A[p+1]-B[p+1])>12||Math.abs(A[p+2]-B[p+2])>12) d++;
+            }
+            segs++; if(d/Math.max(1,tot)<0.012) inv++;
+          }
+        }
+      }
+      ok('文字真的印在纸上（不是同色隐形）', inv/Math.max(1,segs)<0.012,
+         inv+' / '+segs+' 段几乎没变化');
     })();
 
     // 6b. 放大有上限：把手拖到底也不能把形拖出画面
