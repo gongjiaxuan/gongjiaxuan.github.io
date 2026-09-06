@@ -1205,6 +1205,31 @@ function inkR(a,p,inv){
   a=Math.min(1, a+0.24*Math.sin(Math.PI*a));                // 网点扩张（丝网 G≈0.20–0.30）
   return p*Math.sqrt(a/Math.PI);                            // 半径由墨面积反解，不是由亮度线性映射
 }
+// 网屏锚在纸上、全画面共用一张 —— 那它就该整张缓存下来，而不是每帧重画。
+// 细网（3px）时一个器物的外接框里有一万多个点，×5 个重复实例 ×2 侧 = 每帧十几万次 arc()。
+// 平色那一档直接贴缓存好的整张网，剪影靠已经设好的 clip 裁出来，逐像素结果相同，
+// 代价从 8ms 掉到接近 0。渐变那一档点的大小随位置变，仍然走循环。
+const screenCache=new Map();
+function screenSheet(col,p,inv,ox,oy){
+  const key=[col,p.toFixed(3),inv?1:0,W,H,ox.toFixed(2),oy.toFixed(2)].join('|');
+  const hit=screenCache.get(key); if(hit) return hit;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d'); g.fillStyle=col;
+  const ca=Math.cos(SANG), sa=Math.sin(SANG), R=Math.ceil(Math.hypot(W,H)/p)+3;
+  for(let i=-R;i<=R;i++) for(let j=-R;j<=R;j++){
+    const u=i*p, v=j*p, x=ox+u*ca-v*sa, y=oy+u*sa+v*ca;
+    if(x<-p||x>W+p||y<-p||y>H+p) continue;
+    const h1=hash2(i,j), h2=hash2(j+7,i-3);
+    const r=inkR(.55,p,inv)*(1+(h2-.5)*.06);
+    if(r<.28) continue;
+    g.beginPath();
+    g.arc(x+(h1-.5)*p*.06, y+(h2-.5)*p*.06, r, 0, Math.PI*2);
+    g.fill();
+  }
+  screenCache.set(key,c);
+  if(screenCache.size>24) screenCache.delete(screenCache.keys().next().value);
+  return c;
+}
 function screenFill(col, box, band, inv){
   const p=Math.max(1.8, PITCH[S.dot]*SC());
   if(thumb && p<2.6){                                       // 缩略图上细网退化成平色，省算力
@@ -1215,6 +1240,11 @@ function screenFill(col, box, band, inv){
   const ps=stockSpec(), rough=S.tex===0?0:(S.tex===2?1.35:1);
   const ca=Math.cos(SANG), sa=Math.sin(SANG),
         ox=W/2+(1.0+ps.mis*1.6)*SC(), oy=H/2-(.7+ps.mis*1.2)*SC();
+  if(!band){                    // 平色：整张网已缓存，clip 已设好，直接贴
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+    ctx.drawImage(screenSheet(col,p,inv,ox,oy),0,0);
+    ctx.restore(); return;
+  }
   ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle=col;
   let i0=1e9,i1=-1e9,j0=1e9,j1=-1e9;                        // 只在图形外接框那几格里撒点
   for(const q of [[box[0],box[1]],[box[2],box[1]],[box[0],box[3]],[box[2],box[3]]]){
