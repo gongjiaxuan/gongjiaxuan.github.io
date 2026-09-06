@@ -708,6 +708,28 @@
       "layout": "stacked",
       "cardImage": "images/matrix/frame_01.jpg",
       "category": "3D Art"
+    },
+    {
+      "id": "genai-ideation-study",
+      "title": "GenAI Ideation Study",
+      "subtitle": "Intervention Timing and Rationale-Aware AI Support",
+      "cardBlurb": "A functional HCI research prototype examining when GenAI enters early design ideation and whether it extends or challenges a designer's stated rationale.",
+      "tags": [
+        "Human-AI Interaction",
+        "Research Prototype",
+        "Creativity Support"
+      ],
+      "description": "This functional research prototype operationalises a proposed 2 × 2 study of generative-AI-supported design ideation. It varies whether a controlled AI response appears before or after the first concept and whether that response extends the designer's rationale or challenges one stated assumption. The interface records response exposure, opening, adoption, transformation and rejection as separate events; maintains a visible concept lineage; and exports a session-level JSON record. It is a demonstration of a study design and does not report empirical findings.",
+      "tools": "JavaScript · Controlled Response Templates · Interaction Logging · JSON Export",
+      "hero": "images/genai-ideation-study/prototype_preview.png",
+      "images": [],
+      "processImages": [],
+      "video": null,
+      "layout": "stacked",
+      "cardImage": "images/genai-ideation-study/prototype_preview.png",
+      "category": "HCI Research",
+      "demoUrl": "genai-ideation-study/",
+      "featured": true
     }
   ],
   "researchAgenda": [
