@@ -436,7 +436,7 @@
   <div class="blk" data-tool="form">
     <h3>重复</h3>
     <div class="row" id="dep" style="margin-bottom:7px">
-      <button data-p="0" aria-pressed="true">平</button><button data-p="0.34">浅</button><button data-p="0.66">中</button><button data-p="1">深</button>
+      <button data-p="0" aria-pressed="true">平面</button><button data-p="1">立体</button>
     </div>
     <div class="row" id="rep">
       <button data-r="1" aria-pressed="true">1</button><button data-r="3">3</button><button data-r="5">5</button>
@@ -1422,6 +1422,32 @@ function screenFill(col, box, band, inv){
   const ps=stockSpec(), rough=S.tex===0?0:(S.tex===2?1.35:1);
   const ca=Math.cos(SANG), sa=Math.sin(SANG),
         ox=W/2+(1.0+ps.mis*1.6)*SC(), oy=H/2-(.7+ps.mis*1.2)*SC();
+  if(band && band.tone){          // 三维明暗：每个网点的大小由该处的明暗决定
+    const TB=band.tone, bx=band.bx, by=band.by, bw2=band.bw, bh2=band.bh;
+    ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle=col;
+    const ca2=Math.cos(SANG), sa2=Math.sin(SANG);
+    let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+    for(const q of [[box[0],box[1]],[box[2],box[1]],[box[0],box[3]],[box[2],box[3]]]){
+      const dx=q[0]-ox, dy=q[1]-oy;
+      const u=( dx*ca2+dy*sa2)/p, v=(-dx*sa2+dy*ca2)/p;
+      if(u<a0)a0=u; if(u>a1)a1=u; if(v<b0)b0=v; if(v>b1)b1=v;
+    }
+    a0=Math.floor(a0)-1;a1=Math.ceil(a1)+1;b0=Math.floor(b0)-1;b1=Math.ceil(b1)+1;
+    for(let i=a0;i<=a1;i++)for(let j=b0;j<=b1;j++){
+      const u=i*p, v=j*p, x=ox+u*ca2-v*sa2, y=oy+u*sa2+v*ca2;
+      const tx=Math.round((x-bx)/bw2*TB.w), ty=Math.round((y-by)/bh2*TB.h);
+      if(tx<0||ty<0||tx>=TB.w||ty>=TB.h) continue;
+      const lum=TB.buf[ty*TB.w+tx]/255;
+      const a=1-lum;                                  // 越暗墨越多
+      const h1=hash2(i,j), h2=hash2(j+7,i-3);
+      const r=inkR(a,p,inv)*(1+(h2-.5)*.06);
+      if(r<.28) continue;
+      ctx.beginPath();
+      ctx.arc(x+(h1-.5)*p*.06, y+(h2-.5)*p*.06, r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore(); return;
+  }
   if(!band){                    // 平色：整张网已缓存，clip 已设好，直接贴
     ctx.save(); ctx.setTransform(1,0,0,1,0,0);
     ctx.drawImage(screenSheet(col,p,inv,ox,oy),0,0);
@@ -1452,6 +1478,91 @@ function screenFill(col, box, band, inv){
 // side: 0 = 切线的 A 侧那一遍，1 = B 侧那一遍。fill===3 时只有 B 侧上网点。
 const elHH = e=>{const R0=ES(e);return (e.k>=6||e.k===12)?R0*aspOfE(e)/2:R0;};
 const handleR = e=>Math.max(ES(e),elHH(e))*1.10;
+// ===== 真三维：把 3D 渲染出来的明暗当作"墨的覆盖率地图"，再交给已有的半调网屏去印 =====
+// 关键不是"贴一张 3D 图上去"，而是**用两支墨把三维印出来**。
+// 光照、法线、环境光遮蔽都是真算的；输出的每一点是"这里该有多少墨"，
+// 然后由网屏把它变成大小不同的网点 —— 这正是丝网印和 riso 印立体物的做法。
+const toneCache=new Map();
+function toneKey(e){
+  return [e.k,e.k===12?(e.cu?e.cu.pts+'_'+e.cu.asp.toFixed(3):'0'):'',
+          (e.d3||0).toFixed(2),(e.lit||0.7).toFixed(2),Math.round(ES(e)),Math.round(elHH(e))].join('|');
+}
+// 光源：左上前方。rim 是边缘光，让形从底色里"浮"出来。
+const LIGHT=[-0.52,-0.62,0.59];
+function shadeAt(nx,ny,nz,ao){
+  const d=Math.max(0, nx*LIGHT[0]+ny*LIGHT[1]+nz*LIGHT[2]);
+  const rim=Math.pow(Math.max(0,1-nz),2.6)*0.34;           // 边缘光
+  const amb=0.30;
+  let v=amb + 0.78*d + rim;
+  v*= (0.55+0.45*ao);                                       // 环境光遮蔽
+  const spec=Math.pow(d,22)*0.55;                           // 一点点高光，陶瓷才像陶瓷
+  return Math.max(0, Math.min(1, v+spec));
+}
+// 生成一张与元素外接框等大的灰度图：白 = 亮（少墨），黑 = 暗（多墨）
+function toneBuffer(e){
+  const key=toneKey(e), hit=toneCache.get(key); if(hit) return hit;
+  const R0=ES(e), hh=elHH(e);
+  const bw=Math.max(8,Math.round(R0*2)), bh=Math.max(8,Math.round(hh*2));
+  const c=document.createElement('canvas'); c.width=bw; c.height=bh;
+  const g=c.getContext('2d',{willReadFrequently:true});
+  g.fillStyle='#fff'; g.fillRect(0,0,bw,bh);
+  const k=e.k;
+  if(k>=6 && k!==12){
+    // 器物：绕中轴的旋成体。每一圈在正交投影下是一条水平线，
+    // 线上每一点的法线由该点在圆周上的角度决定 —— 这就是真正的圆柱面明暗。
+    const P=PROF[SHAPES[k]], asp=aspOfE(e);
+    const N=bh*2;
+    for(let i=0;i<=N;i++){
+      const t=i/N, r=profAt(P,t);
+      if(r<=0.004) continue;
+      const y=t*bh, halfW=r*R0;
+      // 沿母线的斜率决定纵向法线分量
+      const t2=Math.min(1,t+1/N), r2=profAt(P,t2);
+      const dr=(r2-r)*R0, dy=bh/N;
+      const ln=Math.hypot(dr,dy)||1, ny0=dr/ln, tanY=-dy/ln;
+      const steps=Math.max(6,Math.round(halfW));
+      for(let sx=-steps;sx<=steps;sx++){
+        const u=sx/steps;                                    // -1..1，圆周上的横向位置
+        const sn=Math.sqrt(Math.max(0,1-u*u));               // 朝向观者的分量
+        const nx=u*sn+u*0, nz=sn;
+        const v=shadeAt(u, ny0*0.9, nz, 0.55+0.45*sn);
+        const px=bw/2+u*halfW;
+        g.fillStyle='rgb('+((v*255)|0)+','+((v*255)|0)+','+((v*255)|0)+')';
+        g.fillRect(px-1, y-1, 2.2, dy+2.2);
+      }
+    }
+  }else if(k===0||k===4){
+    // 圆 / 环：球面
+    const cx=bw/2, cy=bh/2, R=Math.min(bw,bh)/2;
+    const im=g.createImageData(bw,bh);
+    for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){
+      const dx=(x-cx)/R, dy=(y-cy)/R, q=dx*dx+dy*dy;
+      const i=(y*bw+x)*4;
+      let v=1;
+      if(q<=1){ const nz=Math.sqrt(1-q); v=shadeAt(dx,dy,nz,0.5+0.5*nz); }
+      const c8=(v*255)|0; im.data[i]=im.data[i+1]=im.data[i+2]=c8; im.data[i+3]=255;
+    }
+    g.putImageData(im,0,0);
+  }else{
+    // 其余：沿光源方向的柱面渐变（条、三角、点阵、上传的图）
+    const im=g.createImageData(bw,bh);
+    for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){
+      const u=(x/bw)*2-1;
+      const nz=Math.sqrt(Math.max(0.04,1-u*u));
+      const v=shadeAt(u,(y/bh)*0.5-0.25,nz,0.55+0.45*nz);
+      const i=(y*bw+x)*4, c8=(v*255)|0;
+      im.data[i]=im.data[i+1]=im.data[i+2]=c8; im.data[i+3]=255;
+    }
+    g.putImageData(im,0,0);
+  }
+  const d=g.getImageData(0,0,bw,bh).data;
+  const buf=new Uint8Array(bw*bh);
+  for(let i=0,p=0;i<buf.length;i++,p+=4) buf[i]=d[p];
+  const out={w:bw,h:bh,buf};
+  toneCache.set(key,out);
+  if(toneCache.size>16) toneCache.delete(toneCache.keys().next().value);
+  return out;
+}
 function drawEl(col, side, inv, skip){
   if(!S.els) return;
   for(let ei=0; ei<S.els.length; ei++){
@@ -1462,7 +1573,8 @@ function drawEl(col, side, inv, skip){
 function drawOne(e, col, side, inv, isLast){
   const R0=ES(e), m=e.rep||1, gap=R0*2.35, ra=rowAngle();
   const fl=e.fill||0;
-  const dots = fl===1 || fl===2 || (fl===3 && side===1);
+  const three = !!e.d3;
+  const dots = three || fl===1 || fl===2 || (fl===3 && side===1);
   const hh = (e.k>=6||e.k===12) ? R0*aspOfE(e)/2 : R0;
   const Rm = Math.max(R0,hh)*1.06;
   ctx.save();
@@ -1477,27 +1589,6 @@ function drawOne(e, col, side, inv, isLast){
     ctx.translate(-EX(e), -EY(e));
     ctx.globalAlpha=Math.min(1, elA*3.2);
   }
-  // 立体感用「分层错位」，不做挤出成柱体 —— 后者读作 PPT 的 3D 艺术字，
-  // 而多层套印本来就是丝网印的样子，和这套双色语言是同一件事。
-  // 层沿切线的法线方向后退，越远越淡（等价于覆盖率越低）。
-  const dep=e.dep||0;
-  if(dep>0){
-    const K=2+Math.round(dep*4), step=dep*13*SC(), ra2=rowAngle()+Math.PI/2;
-    const ux=Math.cos(ra2)*step, uy=Math.sin(ra2)*step;
-    ctx.save(); ctx.fillStyle=col;
-    for(let L=K; L>=1; L--){
-      ctx.globalAlpha = 0.16 + 0.30*(1-L/K);
-      for(let i=0;i<m;i++){
-        const off=(i-(m-1)/2)*gap;
-        const cx=EX(e)+Math.cos(ra)*off+ux*L, cy=EY(e)+Math.sin(ra)*off+uy*L;
-        const P=new Path2D(), sub=new Path2D();
-        elInto(sub,e,R0);
-        P.addPath(sub,new DOMMatrix().translateSelf(cx,cy).rotateSelf(e.r*180/Math.PI));
-        ctx.fill(P,'evenodd');
-      }
-    }
-    ctx.restore();
-  }
   ctx.fillStyle=col;
   for(let i=0;i<m;i++){
     const off=(i-(m-1)/2)*gap;
@@ -1505,9 +1596,15 @@ function drawOne(e, col, side, inv, isLast){
     const P=new Path2D(), sub=new Path2D();
     elInto(sub,e,R0);
     P.addPath(sub,new DOMMatrix().translateSelf(cx,cy).rotateSelf(e.r*180/Math.PI));
-    if(!dots){ ctx.fill(P,'evenodd'); }
+    if(!dots || (three&&drag)){ ctx.fill(P,'evenodd'); }
     else{ ctx.save(); ctx.clip(P,'evenodd');
       // 渐变沿主轴、跨度等于图形全高——短渐变和径向渐变一眼是滤镜
+      if(three && drag){ ctx.fill(P,'evenodd'); }   // 拖动中先给实色，松手再补网点
+      else if(three){
+        const TB=toneBuffer(e);
+        screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm],
+          {tone:TB, bx:cx-R0, by:cy-hh, bw:R0*2, bh:hh*2}, inv);
+      } else
       screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm], fl===2?[cy-hh,cy+hh]:null, inv);
       ctx.restore(); }
   }
@@ -2293,7 +2390,7 @@ document.getElementById('fill').onclick=e=>{const b=e.target.closest('button');i
 document.getElementById('tex').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   S.tex=+b.dataset.t;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('dep').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-  const ce=CE(); if(ce) ce.dep=+b.dataset.p;
+  const ce=CE(); if(ce){ ce.d3=+b.dataset.p; if(ce.d3&&!ce.fill) ce.fill=1; }
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('rep').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   const ce=CE(); if(ce) ce.rep=+b.dataset.r;
@@ -2443,7 +2540,7 @@ function sync(){
   const ce=CE();
   const dp=document.getElementById('dep');
   if(dp) [...dp.children].forEach(x=>x.setAttribute('aria-pressed',
-    String(Math.abs(+x.dataset.p-(ce?(ce.dep||0):0))<0.01)));
+    String(Math.abs(+x.dataset.p-(ce?(ce.d3||0):0))<0.01)));
   set('rep','r',ce?(ce.rep||1):1);set('stock','stock',S.stock||0);
   set('tex','t',S.tex); set('fill','l',ce?(ce.fill||0):0); set('dot','d',S.dot);
   allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(!!ce&&j===ce.k)));
