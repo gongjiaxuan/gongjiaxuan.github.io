@@ -1847,7 +1847,20 @@ function minCapPx(){
   const pct=1.0 + 6.0*Math.max(0,(35-d)/35);
   return Math.min(pct/100, 0.09) * H;
 }
+// 逐字 measureText 很贵，而落位一次要评几百个候选、每个都要量。
+// 同一行字在同一画幅、同一字号字体方向下，量出来永远是同一个结果，缓存掉。
+// key 里必须带 W/H（换画幅要重量）和最小字号（它随两支墨的 ΔL* 变）。
+const tmCache=new Map();
 function textMetrics(t){
+  t=t||titleSeed();
+  const ck=[t.text,t.size,t.font,t.dir,t.zs,W,H,Math.round(minCapPx())].join('\u0001');
+  const hit=tmCache.get(ck); if(hit) return hit;
+  const out=textMetricsRaw(t);
+  tmCache.set(ck,out);
+  if(tmCache.size>400) tmCache.delete(tmCache.keys().next().value);
+  return out;
+}
+function textMetricsRaw(t){
   t=t||titleSeed();
   const chars=textChars(t), vert=t.dir==='v', M=MARGIN();
   let z=[34,50,68][t.size==null?1:t.size]*SC()*(t.zs||1);
@@ -2109,8 +2122,8 @@ function placeOnce(t){
   for(const x of xs) for(const y of ys) cands.push([x,y]);
   // 沿着对齐线滑动：只用四个角是不够的 —— 画面一挤，四个角全被占，
   // 它就只能压到形上去。贴住同一条线上下（或左右）滑，对齐关系保住，位置让开。
-  for(const x of xs) for(let y=M; y<=maxY; y+=2*U) cands.push([x,y]);
-  for(const y of ys) for(let x=M; x<=maxX; x+=2*U) cands.push([x,y]);
+  for(const x of xs) for(let y=M; y<=maxY; y+=3*U) cands.push([x,y]);
+  for(const y of ys) for(let x=M; x<=maxX; x+=3*U) cands.push([x,y]);
   // 跟排：直接接在已有的某一行后面，共用它的对齐线 —— 海报里最常见也最好看的关系
   for(const {b:z,o} of others){
     const g=((o.dir==='v')===(t.dir==='v')) ? 1.6*U : 2.6*U;
@@ -3136,7 +3149,7 @@ function proposeVary(want, base, mode){
   const band=VARY_BAND[mode]||VARY_BAND[1], lo=band[0], hi=band[1];
   const nOpen = mode===2 ? 1 : 2;                     // 带越宽，放开的维度越多
   let tries=0;
-  while(pool.length < Math.max(30, want*5) && tries < 420){
+  while(pool.length < Math.max(16, want*3) && tries < 200){
     const i=tries++;
     const open=[keys[i%keys.length]];
     for(let j=1;j<nOpen;j++) open.push(keys[(i*3+j*2+1)%keys.length]);
@@ -3161,7 +3174,7 @@ function proposeVary(want, base, mode){
 function propose(want, vary){
   const base=JSON.parse(JSON.stringify(S));
   const pool = vary ? proposeVary(want, base, vary) : (function(){
-    const p=[]; for(let i=0;i<Math.max(28,want*5);i++) p.push(applyLocks(genState(), base));
+    const p=[]; for(let i=0;i<Math.max(18,want*3);i++) p.push(applyLocks(genState(), base));
     return p; })();
   const fs=pool.map(feat), out=[0];
   let last=0;                       // 最远点采样里最后一次的最小间距 = 这组候选的可分辨下限
@@ -3223,10 +3236,16 @@ let TRAY=[];
 // 核验 agent 把这条列为「可玩性最大的漏水口」。
 let TRAY_PATH=[];
 let TRAY_VARY=1;                     // 默认「近亲」：机器建立在你的投入之上
+// ⚠️ reuse 只接受 propose() 的返回值（回到上一步时把当时那六张原样端回来）。
+// 必须验一下它长什么样：这两个按钮原来是 onclick=showTray，
+// 于是点击事件对象被当成候选列表传了进来，r.list 是 undefined，
+// 托盘开出来是空的并且抛 TypeError。**用户点「六个方向」直接崩的就是这个。**
+// 教训还是那一条：程序化调用 showTray() 永远不带参数，所以测不出来；
+// 交互必须用真实事件走一遍。
 function showTray(reuse){
   const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
   const allLock=LOCK_DIMS.every(d=>LOCKS[d.k]);
-  const r=reuse || propose(6, TRAY_VARY);
+  const r=(reuse && Array.isArray(reuse.list)) ? reuse : propose(6, TRAY_VARY);
   TRAY=r.list; trayEl.hidden=false; trayEl.innerHTML='';
   const head=document.createElement('div'); head.className='tray-head';
   head.innerHTML='<div><p class="tray-kicker">Contact sheet / 06</p><p class="tray-title">'+
@@ -3727,7 +3746,7 @@ document.getElementById('download').onclick=()=>{
     setTimeout(()=>URL.revokeObjectURL(u),1200);setHint('高清 PNG 已生成');
   },'image/png');
 };
-document.getElementById('shuffle').onclick=showTray;
+document.getElementById('shuffle').onclick=()=>showTray();
 document.getElementById('reset').onclick=()=>{const keep=S.ex, kc=S.cust, lang=S.lang||'zh';
   pushHist();
   S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;S.cust=kc;sel=false;tsel=false;
@@ -3757,7 +3776,7 @@ function selectTool(tool){
 document.querySelector('.toolnav').onclick=e=>{
   const b=e.target.closest('[data-tool-tab]');if(b)selectTool(b.dataset.toolTab);
 };
-document.getElementById('topVariants').onclick=showTray;
+document.getElementById('topVariants').onclick=()=>showTray();
 document.getElementById('topDownload').onclick=()=>document.getElementById('download').click();
 document.getElementById('topUndo').onclick=undo;
 document.getElementById('topReset').onclick=()=>document.getElementById('reset').click();
@@ -3948,6 +3967,30 @@ function selfTest(){
       }
       ok('文字真的印在纸上（不是同色隐形）', inv/Math.max(1,segs)<0.012,
          inv+' / '+segs+' 段几乎没变化');
+    })();
+
+    // 6a2. 顶部那几个按钮必须真的能点。
+    // 上一版 showTray 加了参数之后，onclick=showTray 把点击事件当成候选列表传进去，
+    // 托盘开出来是空的并抛 TypeError —— 而所有程序化用例都是 showTray()，测不出来。
+    // 所以这条用例必须**派发真实事件**，不能调函数。
+    (function(){
+      const errs=[];
+      const onerr=e=>errs.push(String(e.message||e));
+      window.addEventListener('error', onerr);
+      let cands=0, closed=false;
+      try{
+        for(const id of ['topVariants','shuffle']){
+          const b=document.getElementById(id); if(!b) continue;
+          b.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+          cands=Math.max(cands, document.querySelectorAll('.cand').length);
+          trayEl.hidden=true;
+        }
+        closed=true;
+      }catch(e){ errs.push(String(e.message||e)); }
+      window.removeEventListener('error', onerr);
+      trayEl.hidden=true; TRAY_PATH=[];
+      ok('顶部按钮点下去真的出六个候选', cands===6 && closed && errs.length===0,
+         '候选 '+cands+' 个'+(errs.length?'　报错：'+errs[0].slice(0,60):''));
     })();
 
     // 6b. 放大有上限：把手拖到底也不能把形拖出画面
