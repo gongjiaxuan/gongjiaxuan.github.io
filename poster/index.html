@@ -104,7 +104,20 @@
   .tray-ctl .mode[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .tray-note{width:min(100%,970px);font-family:var(--ui);font-size:11px;color:#7a7b74;margin:0 0 16px;
     letter-spacing:.02em}
+  .tray-now{width:min(100%,970px);display:flex;gap:16px;align-items:flex-end;margin:0 0 18px}
+  .tray-now .cur{flex:0 0 auto}
+  .tray-now .cur canvas{display:block;box-shadow:0 0 0 2px var(--ink),0 6px 14px #00000033}
+  .tray-now .lb{font-family:var(--ui);font-size:10px;letter-spacing:.11em;color:#7a7b74;
+    text-transform:uppercase;padding-bottom:7px}
+  .tray-path{flex:1 1 auto;min-width:0;display:flex;gap:7px;align-items:flex-end;overflow-x:auto;
+    padding-bottom:2px}
+  .tray-path button{flex:0 0 auto;border:0;padding:0;background:transparent;cursor:pointer;line-height:0;
+    filter:drop-shadow(0 2px 5px #0000002e);transition:transform .12s}
+  .tray-path button:hover{transform:translateY(-3px)}
+  .tray-path canvas{display:block;box-shadow:0 0 0 1px #00000022}
   .cand-grid{width:min(100%,970px);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+  .cand .far{position:absolute;top:5px;left:5px;z-index:2;background:var(--accent);color:#fff;
+    font-family:var(--ui);font-size:9px;letter-spacing:.08em;padding:2px 5px;line-height:1.4}
   .cand{padding:0 0 10px;border:0;background:transparent;cursor:pointer;line-height:0;position:relative;
     text-align:left;filter:drop-shadow(0 4px 9px #0000002f);transition:transform .16s,filter .16s}
   .cand canvas{display:block;width:100%;height:auto;box-shadow:0 0 0 1px #0000001a}
@@ -1849,6 +1862,9 @@ function drawText(t,col){
 function drawTitle(col){ensureTexts();S.texts.forEach(t=>drawText(t,col));}
 function drawInfo(col){                     // 信息行永远贴住下边距，横排，小号
   if(!S.cut)return;
+  // 展讯的信息行如果已经作为一个可拖的文字块在画布上了，这里就不要再印一遍 ——
+  // 同一句话出现两次是排版事故，不是层次。
+  if(S.texts && S.texts.some(t=>t.source==="brief:meta" && String(t.text||"").trim())) return;
   const M=MARGIN();let z=12.5*SC(),info=INFO();
   ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.9;
   ctx.font='500 '+z+'px "Archivo","Noto Sans SC",sans-serif';
@@ -2010,8 +2026,8 @@ function layoutLines(){
 // 一行文字被加进来的时候，用户不动它也必须是对的。
 // 做法不是「找一块空地」，而是：只允许落在对齐线上，再在这些落点里挑一个
 // 不撞别的字、不压坏图形、并且能和别的字共用一条线的。
-function placeText(t){
-  if(!t)return;
+function placeOnce(t){
+  if(!t)return 0;
   const L=layoutLines(), m=textMetrics(t), M=L.M, U=L.U, eb=L.eb;
   if(!L.boxes) L.boxes=[];
   const maxX=Math.max(M, W-M-m.w), maxY=Math.max(M, L.botY-m.h);
@@ -2087,6 +2103,24 @@ function placeText(t){
     if(sc<bs){bs=sc;best=[x,y];}
   }
   if(best){ t.x=best[0]/W; t.y=best[1]/H; }
+  return bs;
+}
+// 有时候是真的排不下：两行竖排大字加一行横排，画面本来就不够。
+// 这时候正确的做法不是硬塞（塞出来就是两行字叠在一起），是把这一行缩小。
+// 标题不缩 —— 它是画面的主音，宁可让别的让它。
+function placeText(t){
+  if(!t) return;
+  let sc=placeOnce(t);
+  if(sc<1e6 || t.role==="title") return;
+  const z0=t.zs||1;
+  let bestZ=z0, bestSc=sc;
+  for(const k of [0.78,0.60]){
+    t.zs=z0*k;
+    sc=placeOnce(t);
+    if(sc<1e6) return;                     // 排开了就收工
+    if(sc<bestSc){ bestSc=sc; bestZ=t.zs; } // 没排开也留最轻的那一档，别盲目还原
+  }
+  t.zs=bestZ; placeOnce(t);
 }
 // 标题只落在四个规范锚点上，并挑一个不压住图形的。随手撒位置是画面显廉价的另一个自由度。
 function placeTitle(){
@@ -2795,6 +2829,35 @@ function shuffleState(){
   const tt=titleText();
   if(tt){tt.font=(Math.random()*TEXT_FONTS.length)|0;tt.size=pick([0,1,1,2,2]);
     tt.dir=Math.random()<.5?'v':'h';}
+  // 画布上放几行展讯文字，本身就是一个构成决定 —— 只有标题的海报和三行齐全的
+  // 海报是两种东西。原来六个候选永远共用同一套文字，文字在 feat() 里只占 3/16 维，
+  // 但眼睛给它的权重远高于此，于是六张看着比数字说的要像。
+  // 只动展讯来的那几行，用户自己敲的字一律不碰。
+  {
+    const en2=S.lang==='en';
+    const want=pick([1,2,2,3,3,3]);                    // 标题 / +正文 / +信息行
+    // 竖排的正文和竖排的标题都是通天的一整列，两列并存之后，
+    // 任何一行横排文字都必然横穿它们 —— 那是无解的，不是没排好。
+    // 所以一张海报最多留一行竖排。
+    const titleVert = !!(tt && tt.dir==='v');
+    const specs=[
+      ['body',{role:'brief',size:0,font:en2?2:0,dir:titleVert?'h':pick(['h','v'])}],
+      ['meta',{role:'meta', size:0,font:3,           dir:'h'}]
+    ];
+    for(let i=0;i<specs.length;i++){
+      const key=specs[i][0], src=briefSource(key);
+      const at=S.texts.findIndex(t=>t.source===src);
+      if(i+2<=want){
+        if(at<0){
+          // 这里先不落位：元素还没定下来，现在落等于躲上一版的形。
+          // 统一等到 shuffleState 末尾、clampEl 之后再排。
+          const t=Object.assign({text:briefValue(key),x:.1,y:.2,source:src,autoStyle:true}, specs[i][1]);
+          S.texts.push(t); clampText(t);
+        }else Object.assign(S.texts[at], specs[i][1]);
+      }else if(at>=0) S.texts.splice(at,1);
+    }
+    S.ti=Math.min(Math.max(0,S.ti|0), S.texts.length-1);
+  }
   S.tex=pick([0,1,1,1,2]);
   el0.fill = B.dots ? pick([1,2,2,3,3]) : B.quiet ? pick([0,0,0,3]) : pick([0,0,1,2,2,3,3]);
   S.els=[el0]; S.si=0;
@@ -2811,7 +2874,16 @@ function shuffleState(){
   if(B.dark && Lstar(S.a)>Lstar(S.b)){   // 深底：把深的那块做成大色域
     const i=S.inkA,c=S.covA;S.inkA=S.inkB;S.covA=S.covB;S.inkB=i;S.covB=c;applyInks();
   }
-  clampEl(); placeTitle();
+  clampEl(); placeAllTexts();
+}
+// 所有文字统一在元素定好之后再落位，标题先排（它最大，先占最好的位置），
+// 其余按顺序躲开已经排好的。原来只排标题，正文和信息行躲的是上一版的形 ——
+// 实测出现过信息行压在竖排正文上。
+function placeAllTexts(){
+  ensureTexts();
+  const tt=titleText();
+  if(tt) placeText(tt);
+  for(const t of S.texts) if(t!==tt) placeText(t);
 }
 function shuffle(){ shuffleState(); sync(); sel=false;tsel=false;draw(); }
 // 在一份复制品上生成，不动当前画布 —— 候选是"摆在旁边给你看"，不是"替你改掉"
@@ -2887,27 +2959,45 @@ function applyLocks(got, base, L){
 // 那"选哪个"这个动作就没有信息量了 —— 这既毁体验，也毁掉之后 AI 那一步的意义。
 // 变奏：不是六个全新的，是六个近亲。做法就是「除了一两个维度，其余全锁」——
 // 和手动锁是同一个机制，只是锁的组合由程序逐个候选换一套。
-// 这补上了「全局重掷」之外的第二档：局部微扰。两档随机（大的和小的）
-// 才让人有得搜索 —— 只有全局重掷时，越接近满意就越不敢按。
-function proposeVary(want, base){
+//
+// 「按一下应该变多少」不是拍脑袋定的。在线上页面里跑 600 个随机状态、
+// 179700 对两两配对量出来的 fdist 分布，加上单轴扰动的标定，给出三条带：
+//   死区   < 0.25  —— 看不出发生了什么（元素横移 10% 画布 = 0.10，放大 1.3 倍 = 0.18）
+//   抖一下 0.35–0.9 —— 恰好一个决定被换掉了（换字体 0.48、换填充 0.67、换形 0.89）
+//   近亲   0.9–1.4  —— 还是同一张海报的另一个版本
+//   全新   中位数 1.53，四分位 1.20–1.83
+// 所以变奏用拒绝采样把候选卡进指定的带里，而不是只设一个下限。
+const VARY_BAND={1:[0.90,1.42], 2:[0.35,0.90]};      // 1 = 近亲，2 = 抖一下
+function proposeVary(want, base, mode){
   const keys=LOCK_DIMS.map(d=>d.k), pool=[], f0=feat(base);
-  for(let i=0;i<Math.max(54,want*9);i++){
-    // 每个候选只放开 1–2 个维度，其余全锁；放开哪个轮着来，保证六个改的地方各不相同
+  const band=VARY_BAND[mode]||VARY_BAND[1], lo=band[0], hi=band[1];
+  const nOpen = mode===2 ? 1 : 2;                     // 带越宽，放开的维度越多
+  let tries=0;
+  while(pool.length < Math.max(30, want*5) && tries < 420){
+    const i=tries++;
     const open=[keys[i%keys.length]];
-    if(i%3===2) open.push(keys[(i*2+1)%keys.length]);
-    const L={}; for(const k of keys) L[k]= open.indexOf(k)>=0?0:1;
+    for(let j=1;j<nOpen;j++) open.push(keys[(i*3+j*2+1)%keys.length]);
+    if(mode!==2 && i%4===3) open.push(keys[(i*5+2)%keys.length]);
+    // 用户手动锁死的维度永远不许被「放开」—— 变奏为了制造差异会挑一两个维度重掷，
+    // 但那不能凌驾于锁之上。漏过一次：锁了「色」，近亲档里仍有 7/36 换了墨。
+    const L={}; for(const k of keys) L[k]= (LOCKS[k] || open.indexOf(k)<0) ? 1 : 0;
+    if(keys.every(k=>L[k])) break;                     // 全锁死了，变不出东西，不用白转
     const g=applyLocks(genState(), base, L);
-    // 「改了一处但看不出来」等于白按。低于这个距离的候选直接丢掉 ——
-    // 实测全新那一档到当前版的距离在 1.1–2.1，近亲要明显小于它但不能小到没有。
-    if(fdist(feat(g), f0) < 0.42) continue;
+    // 空画面在特征空间里是一个孤立的极端点（feat 里的 e 退回默认对象，
+    // 同时元素个数那一维直接掉 0.7），距离会假高；一次变奏看起来会像重置。
+    if(!g.els || !g.els.length) continue;
+    const d=fdist(feat(g), f0);
+    if(d<lo || d>hi) continue;
     pool.push(g);
   }
+  // 兜底也要守锁：原来传 {} 等于「一个都不锁」，把用户锁住的东西又放了出去
   return pool.length>=want ? pool : pool.concat(
-    Array.from({length:want}, function(){ return applyLocks(genState(), base, {}); }));
+    Array.from({length:Math.max(0,want-pool.length)},
+      function(){ return applyLocks(genState(), base); }));
 }
 function propose(want, vary){
   const base=JSON.parse(JSON.stringify(S));
-  const pool = vary ? proposeVary(want, base) : (function(){
+  const pool = vary ? proposeVary(want, base, vary) : (function(){
     const p=[]; for(let i=0;i<Math.max(28,want*5);i++) p.push(applyLocks(genState(), base));
     return p; })();
   const fs=pool.map(feat), out=[0];
@@ -2926,7 +3016,11 @@ function propose(want, vary){
   // 「意外但可控」是可以量出来的：候选离当前这版有多远。
   // 太近＝按了没感觉，太远＝失控。量出来，下一轮调参才有依据。
   const f0=feat(base), ds=out.map(i=>fdist(fs[i],f0));
-  return {list: out.map(i=>pool[i]), spread: last,
+  // 变奏档里固定留一格「远亲」：连点几次之后六个会全长一样（局部最优），
+  // 这一格是每一轮都保留的跳出机会。推荐系统里管这个叫 ε-greedy，这里 ε=1/6。
+  let far6=-1;
+  if(vary && out.length>=2){ far6=out.length-1; pool[out[far6]]=applyLocks(genState(), base); }
+  return {list: out.map(i=>pool[i]), spread: last, far6: far6,
           near:Math.min.apply(null,ds), far:Math.max.apply(null,ds),
           mid:ds.reduce(function(a,b){return a+b;},0)/ds.length};
 }
@@ -2956,7 +3050,12 @@ function renderTo(c2, st, w, h){
 }
 const trayEl=document.getElementById('tray');
 let TRAY=[];
-let TRAY_VARY=0;
+// 走过的路。选中一个候选不是终点动作，是起点动作 ——
+// 托盘不关，立刻从这一张再出六个。用户的一次点击就是在特征空间里走一步，
+// 不需要重新下决心，循环自动续上。原来「选一个 → 托盘关闭 → 探索结束」，
+// 而且六个候选完全不参考当前这张，等于惩罚已经投入三分钟的人。
+let TRAY_PATH=[];
+let TRAY_VARY=1;                     // 默认「近亲」：机器建立在你的投入之上
 function showTray(){
   const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
   const r=propose(6, TRAY_VARY);
@@ -2980,41 +3079,84 @@ function showTray(){
     ctl.appendChild(b);
   });
   const sep=document.createElement('span'); sep.className='sep'; ctl.appendChild(sep);
-  const mv=document.createElement('button'); mv.type='button'; mv.className='mode';
-  mv.textContent=TRAY_VARY?'近亲':'全新';
-  mv.title='「全新」六个互不相干；「近亲」六个都是当前这版只改一两处';
-  mv.setAttribute('aria-pressed', String(!!TRAY_VARY));
-  mv.onclick=function(){ TRAY_VARY=TRAY_VARY?0:1; showTray(); };
-  ctl.appendChild(mv);
+  [[2,'抖一下','只换掉一个决定，你能看出改了哪件事（fdist 0.35–0.9）'],
+   [1,'近亲','同一张海报的另一个版本（fdist 0.9–1.4）'],
+   [0,'全新','六个互不相干的方向']].forEach(function(m){
+    const mb=document.createElement('button'); mb.type='button'; mb.className='mode';
+    mb.textContent=m[1]; mb.title=m[2];
+    mb.setAttribute('aria-pressed', String(TRAY_VARY===m[0]));
+    mb.onclick=function(){ TRAY_VARY=m[0]; showTray(); };
+    ctl.appendChild(mb);
+  });
   const again=document.createElement('button'); again.type='button'; again.className='mode';
   again.textContent='再来六个'; again.onclick=function(){ showTray(); };
   ctl.appendChild(again);
+  const done=document.createElement('button'); done.type='button'; done.className='mode';
+  done.textContent='用这一版，收工';
+  done.onclick=function(){ trayEl.hidden=true; bounceEl(); setHint('这一版是你的了 —— 接着改，或者导出'); };
+  ctl.appendChild(done);
 
   const note=document.createElement('p'); note.className='tray-note';
-  note.textContent = TRAY_VARY
-    ? '近亲：每一个都是你现在这版只改一两处，改的地方六个各不相同。'
-    : (anyLock ? '锁上的部分原样保留，只有没锁的会变 —— 锁住喜欢的，再按「再来六个」。'
-               : '六个互不相干的方向。看到喜欢的局部，先把它锁住，再要六个。');
+  note.textContent = TRAY_VARY===2
+    ? '抖一下：每一个只有一个决定被换掉，你能看出改的是哪一件事。'
+    : TRAY_VARY===1
+      ? '近亲：每一个都是你现在这版的另一个版本。选中一个，托盘不关，立刻从它再出六个。'
+      : (anyLock ? '锁上的部分原样保留，只有没锁的会变 —— 锁住喜欢的，再按「再来六个」。'
+                 : '六个互不相干的方向。看到喜欢的局部，先把它锁住，再要六个。');
+
+  // 现在这张 + 走过的路
+  const now=document.createElement('div'); now.className='tray-now';
+  const cur=document.createElement('div'); cur.className='cur';
+  const clb=document.createElement('div'); clb.className='lb'; clb.textContent='现在这张';
+  const cc=document.createElement('canvas');
+  const cw=Math.round(Math.min(150, 150)), ch=Math.round(cw*H/W);
+  cc.width=cw; cc.height=ch; renderTo(cc.getContext('2d'), JSON.parse(JSON.stringify(S)), cw, ch);
+  cur.append(clb, cc);
+  const path=document.createElement('div'); path.className='tray-path';
+  if(TRAY_PATH.length){
+    const plb=document.createElement('div'); plb.className='lb'; plb.textContent='走过的路';
+    plb.style.cssText+=';flex:0 0 auto;align-self:flex-end';
+    path.appendChild(plb);
+    TRAY_PATH.forEach(function(st,i){
+      const b=document.createElement('button'); b.type='button'; b.title='回到这一步';
+      const w=72, h=Math.round(w*H/W);
+      const c2=document.createElement('canvas'); c2.width=w; c2.height=h;
+      renderTo(c2.getContext('2d'), st, w, h);
+      b.appendChild(c2);
+      b.onclick=function(){
+        pushHist();
+        S=JSON.parse(JSON.stringify(st)); TRAY_PATH=TRAY_PATH.slice(0,i);
+        sel=false;tsel=false; sync(); draw(); showTray();
+        setHint('回到了第 '+(i+1)+' 步');
+      };
+      path.appendChild(b);
+    });
+  }
+  now.append(cur, path);
   const grid=document.createElement('div'); grid.className='cand-grid';
   TRAY.forEach((st,i)=>{
     const b=document.createElement('button'); b.className='cand';
     b.setAttribute('aria-pressed','false');
-    b.title='用这一版';
+    b.title=r.far6===i?'一个跟当前无关的方向 —— 用来跳出局部最优':'从这一版接着往下走';
     const tw=180,th=Math.round(tw*H/W);
     const c=document.createElement('canvas'); c.width=tw; c.height=th;
     renderTo(c.getContext('2d'), st, tw, th);
-    const label=document.createElement('span');label.textContent='Direction '+String(i+1).padStart(2,'0');
+    const label=document.createElement('span');
+    label.textContent = r.far6===i ? '远亲' : 'Direction '+String(i+1).padStart(2,'0');
+    if(r.far6===i){ const tag=document.createElement('span'); tag.className='far'; tag.textContent='远';
+      b.appendChild(tag); }
     b.append(c,label);
     b.onclick=()=>{
       pushHist();
-      S=JSON.parse(JSON.stringify(st));sel=false;tsel=false;sync();bounceEl();draw();
-      [...trayEl.querySelectorAll('.cand')].forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));
-      setHint('这一版是你的了 —— 接着改，或者再要六个');
-      setTimeout(()=>{trayEl.hidden=true;},120);
+      TRAY_PATH.push(JSON.parse(JSON.stringify(S)));
+      if(TRAY_PATH.length>8) TRAY_PATH.shift();
+      S=JSON.parse(JSON.stringify(st));sel=false;tsel=false;sync();draw();
+      showTray();                       // 不关：立刻从这一张再出六个
+      setHint('走了一步 —— 接着挑，或者按「用这一版」收工');
     };
     grid.appendChild(b);
   });
-  trayEl.append(head,ctl,note,grid);
+  trayEl.append(head,ctl,note,now,grid);
   setHint(TRAY_VARY?'六个近亲，都是这一版改一两处。不选也不会动你现在这版'
                    :'六个方案，挑一个点进去。不选也不会动你现在这版');
 }
@@ -3459,9 +3601,24 @@ function setHint(t){document.getElementById('hint').textContent=t;}
 function setStep(n){[...document.getElementById('steps').children].forEach((li,i)=>{
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});
   setHint(HINT[n]);}
+// 第一帧落在一张**成品**上，不是空白画布。
+// 空白画布问的是「你想做什么」—— 这是用户答不出来的问题；
+// 成品问的是「你喜欢这张吗」—— 这是任何人半秒就能答的问题。
+// （原来这里刻意留白，理由是「避免示例锚定用户」。实测推翻了它：
+//   同类工具里留得住人的，第一帧全都不是空的 —— Infinite Craft 桌上先摆四个元素、
+//   Hofmann 开局就是网格、studio-ity 结构上根本不可能空白。
+//   而且我们的展讯本来就已经生成好了，只是躺在右边栏里要点三次「+」才上画布。）
+// 真正的空白态保留在「清空」按钮后面，给知道自己要干嘛的人。
+function seedPoster(){
+  newBrief();
+  shuffleState();          // 里面已经会把展讯的两三行摆到画布上
+  S.si=S.els&&S.els.length?0:-1; sel=false; tsel=false;
+}
 document.fonts&&document.fonts.ready.then(draw);
-newBrief();syncBrief();sync();
-setStep(1);setHint('从空白开始：在画布上划一刀，或先选择「形」「印」「字」');draw();pushHist();
+seedPoster();syncBrief();sync();
+setStep(2);
+setHint('这是今天的题，已经替你排了一版。直接改它，或者按「六个方向」换一批');
+draw();pushHist();
 // ===== 自检 =====
 // 打开 index.html?selftest=1 就跑一遍全部不变量并把结果印在页面上。
 // 这是留给**任何**协作者（另一个 agent、未来的自己）的安全网：
@@ -3613,16 +3770,18 @@ function selfTest(){
         shape:(st.els||[]).map(e=>e.k).join(','),
         place:(st.els||[]).map(e=>[e.x.toFixed(3),e.y.toFixed(3),e.s.toFixed(3),e.r.toFixed(3),e.rep].join('/')).join(','),
         type:(st.texts||[]).map(t=>[t.font,t.size,t.dir].join('/')).join(','),
-        print:[st.dot,st.tex,(st.els&&st.els[0])?((st.els[0].fill||0)+':'+(st.els[0].d3||0)):''].join('|')
+        print:[st.dot,st.tex,st.mis,st.mark,(st.els&&st.els[0])?((st.els[0].fill||0)+':'+(st.els[0].d3||0)):''].join('|')
       });
       const save={}; for(const k of DIMS) save[k]=LOCKS[k];
       let leak=0, stuck=0, tries=0;
-      for(let t=0;t<4;t++){
+      // 三种模式都要守锁。变奏为了制造差异会挑一两个维度重掷，
+      // 那不能凌驾于用户手动锁死的维度之上 —— 这里漏过一次（锁「色」，近亲档 7/36 换了墨）。
+      for(const mode of [0,1,2]) for(let t=0;t<2;t++){
         shuffleState(); const b=snap(JSON.parse(JSON.stringify(S)));
         for(const dim of DIMS){
           for(const k of DIMS) LOCKS[k]=0;
           LOCKS[dim]=1;
-          for(const st of propose(6,0).list){
+          for(const st of propose(6,mode).list){
             const q=snap(st); tries++;
             if(q[dim]!==b[dim]) leak++;                              // 锁住的漏了
             if(!DIMS.some(o=>o!==dim && q[o]!==b[o])) stuck++;        // 没锁的没变
@@ -3679,14 +3838,18 @@ function selfTest(){
 
     // 6e. 近亲要比全新近，但不能近到看不出变化
     (function(){
-      const fr=[], vr=[];
-      for(let i=0;i<5;i++){ shuffleState(); fr.push(propose(6,0)); vr.push(propose(6,1)); }
+      const fr=[], vr=[], sk=[];
+      for(let i=0;i<5;i++){ shuffleState(); fr.push(propose(6,0)); vr.push(propose(6,1)); sk.push(propose(6,2)); }
       const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
-      const fm=avg(fr.map(r=>r.mid)), vm=avg(vr.map(r=>r.mid));
-      const vn=Math.min.apply(null,vr.map(r=>r.near));
-      ok('近亲比全新近，但每一个都看得出变化',
-         vm<fm*0.75 && vn>0.30,
-         '全新 '+fm.toFixed(2)+' / 近亲 '+vm.toFixed(2)+' / 近亲最近的 '+vn.toFixed(2));
+      // 三条带来自线上实测（600 个状态两两配对 179700 对 + 单轴扰动标定）：
+      //   死区 <0.25 看不出变化 / 抖一下 0.35–0.9 恰好换掉一个决定 / 近亲 0.9–1.4 同一张的另一版
+      // 远亲那一格本来就该在带外（它是每轮保留的跳出机会），所以不算进来。
+      const fm=avg(fr.map(r=>r.mid)), vm=avg(vr.map(r=>r.mid)), km=avg(sk.map(r=>r.mid));
+      const vn=Math.min.apply(null,vr.map(r=>r.near)), kn=Math.min.apply(null,sk.map(r=>r.near));
+      ok('三档变奏各自落在实测的距离带里',
+         km<vm && vm<fm && kn>0.25 && vn>0.30,
+         '抖一下 '+km.toFixed(2)+' / 近亲 '+vm.toFixed(2)+' / 全新 '+fm.toFixed(2)+
+         '　最近的：抖 '+kn.toFixed(2)+' 近 '+vn.toFixed(2));
     })();
 
     // 7. 性能
