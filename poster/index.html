@@ -407,6 +407,7 @@
     <div class="row" id="iInv" style="margin-top:4px">
       <button data-v="0" aria-pressed="true">正</button><button data-v="1">反相</button>
     </div>
+    <div class="row" style="margin-top:6px"><button id="idel">删掉这张图</button></div>
     <p class="note" style="margin-top:9px">轮廓 <b id="ipts">0</b> 个点。
       图片只在<b>你自己的浏览器里</b>处理，不会上传到任何地方。</p>
   </div>
@@ -1311,6 +1312,7 @@ function elBBox(e){
 // 纯几何形反而允许出血裁切（Hofmann 把舞者的头脚裁掉，形就从物件退化成符号），只要求形心还在画面里。
 function clampEl(e){
   if(!e) return;
+  e.s=Math.min(e.s, maxElS(e));      // 先卡尺寸再谈位置：放不下的东西挪到哪都放不下
   const M=MARGIN()*0.95;
   if(e.k>=6||e.k===12){
     // 一排器物在画幅里放不下时先缩小再定位。只移动不缩小的话，重复排列必然被画布切掉。
@@ -1328,6 +1330,24 @@ function clampEl(e){
     e.x=Math.max(.06,Math.min(.94,e.x));
     e.y=Math.max(.06,Math.min(.94,e.y));
   }
+}
+// 这个形最大能放到多少 —— 「放大显示不全」的真正原因是从来没算过这件事。
+// 旧代码把手只卡死在 0.42*W：觚的高宽比是 5.20，0.42 宽就等于 1.09 个画布高，必然被切掉半截；
+// 而重复排（rep=5）的总宽是单件的 11.4 倍，s=0.2 就已经探出画面两倍宽了。
+// elBBox 的 ew/eh 都是 R0 的线性函数，所以最大值可以直接解出来，不用迭代试。
+function maxElS(e){
+  const M=MARGIN()*0.95, vessel=(e.k>=6||e.k===12);
+  const hf=vessel? aspOfE(e)/2 : 1;
+  const c=Math.abs(Math.cos(e.r)), sn=Math.abs(Math.sin(e.r)), ra=rowAngle();
+  const g=(((e.rep||1)-1)/2)*2.35;
+  const A=c+hf*sn+Math.abs(Math.cos(ra))*g;
+  const B=sn+hf*c+Math.abs(Math.sin(ra))*g;
+  // 器物和你自己的图必须整个留在边距里 —— 被画布切一刀的瓶子读作出错。
+  // 纯几何形允许出血（Hofmann 把舞者的头脚裁掉，形就从物件退化成符号），
+  // 但最多探出画面 22%：再多就不是裁切，是没放下。
+  const availW=vessel? (W-2*M)/2 : W*0.72;
+  const availH=vessel? (H-2*M)/2 : H*0.72;
+  return Math.max(.06, Math.min(availW/Math.max(A,1e-4), availH/Math.max(B,1e-4))/W);
 }
 function clampAll(){ if(S.els) for(const e of S.els) clampEl(e); }
 function allBBox(){
@@ -1438,7 +1458,18 @@ function screenFill(col, box, band, inv){
       const tx=Math.round((x-bx)/bw2*TB.w), ty=Math.round((y-by)/bh2*TB.h);
       if(tx<0||ty<0||tx>=TB.w||ty>=TB.h) continue;
       const lum=TB.buf[ty*TB.w+tx]/255;
-      const a=1-lum;                                  // 越暗墨越多
+      let a=1-lum;                                    // 越暗墨越多
+      // 立体开着时，四个「填充」是四种把三维明暗印出来的方式，不是四个摆设
+      const md=band.mode|0;
+      if(md===0){                     // 实心 → 色调分离：明暗压成三级，像丝网印的分色版
+        a = a<0.30 ? 0.10 : a<0.58 ? 0.46 : 0.88;
+      }else if(md===2){               // 渐变 → 明暗再乘一层上浓下淡，形往下化开
+        const gq=Math.min(1,Math.max(0,(y-band.y0)/Math.max(1,band.y1-band.y0)));
+        a = a*(1.15-0.95*gq);
+      }else if(md===3){               // 半网 → 只有暗面落墨，亮面留成白纸
+        if(a<0.42) continue;
+        a = (a-0.42)/0.58*0.78+0.16;
+      }
       const h1=hash2(i,j), h2=hash2(j+7,i-3);
       const r=inkR(a,p,inv)*(1+(h2-.5)*.06);
       if(r<.28) continue;
@@ -1574,7 +1605,17 @@ function drawOne(e, col, side, inv, isLast){
   const R0=ES(e), m=e.rep||1, gap=R0*2.35, ra=rowAngle();
   const fl=e.fill||0;
   const three = !!e.d3;
-  const dots = three || fl===1 || fl===2 || (fl===3 && side===1);
+  // 「半网」原本只在元素跨切线时才成立：一侧实心、另一侧网点。
+  // 元素没跨线（或者压根还没切）的时候它就退化成实心 —— 用户点了没反应，就是这个。
+  // 现在没跨线时改成沿元素自己的中线上下分半：手法不变，永远看得见。
+  let crosses=false;
+  if(fl===3 && !three){
+    const l=cutLine();
+    if(l){ const bb=elBBox(e), mx=(bb.x0+bb.x1)/2, my=(bb.y0+bb.y1)/2;
+           crosses = Math.abs(l.nx*mx+l.ny*my-l.c) < Math.max(bb.ew,bb.eh)*0.85; }
+  }
+  const halfSelf = fl===3 && !three && !crosses;
+  const dots = three || fl===1 || fl===2 || (fl===3 && !halfSelf && side===1);
   const hh = (e.k>=6||e.k===12) ? R0*aspOfE(e)/2 : R0;
   const Rm = Math.max(R0,hh)*1.06;
   ctx.save();
@@ -1596,14 +1637,24 @@ function drawOne(e, col, side, inv, isLast){
     const P=new Path2D(), sub=new Path2D();
     elInto(sub,e,R0);
     P.addPath(sub,new DOMMatrix().translateSelf(cx,cy).rotateSelf(e.r*180/Math.PI));
-    if(!dots || (three&&drag)){ ctx.fill(P,'evenodd'); }
+    if(halfSelf){
+      // 上半网点、下半实心。分界就是元素自己的中线。
+      ctx.save(); ctx.clip(P,'evenodd');
+      ctx.save(); ctx.beginPath(); ctx.rect(cx-Rm*1.3, cy, Rm*2.6, Rm*1.3); ctx.clip();
+        ctx.fill(P,'evenodd'); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.rect(cx-Rm*1.3, cy-Rm*1.3, Rm*2.6, Rm*1.3); ctx.clip();
+        screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm], null, inv); ctx.restore();
+      ctx.restore();
+    }
+    else if(!dots || (three&&drag)){ ctx.fill(P,'evenodd'); }
     else{ ctx.save(); ctx.clip(P,'evenodd');
       // 渐变沿主轴、跨度等于图形全高——短渐变和径向渐变一眼是滤镜
       if(three && drag){ ctx.fill(P,'evenodd'); }   // 拖动中先给实色，松手再补网点
       else if(three){
         const TB=toneBuffer(e);
         screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm],
-          {tone:TB, bx:cx-R0, by:cy-hh, bw:R0*2, bh:hh*2}, inv);
+          {tone:TB, bx:cx-R0, by:cy-hh, bw:R0*2, bh:hh*2,
+           mode:fl, y0:cy-hh, y1:cy+hh}, inv);
       } else
       screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm], fl===2?[cy-hh,cy+hh]:null, inv);
       ctx.restore(); }
@@ -1785,21 +1836,111 @@ function delText(){
   pushHist();
   S.texts.splice(S.ti,1);S.ti=Math.min(S.ti,S.texts.length-1);tsel=S.ti>=0;sync();draw();
 }
+// 版面对齐线。整张海报只允许存在少数几条，文字一律贴着它们落。
+// 「看起来是设计过的」这件事，来源就是同一条线被反复用到；
+// 每行字各找各的空地，哪怕互不重叠，看起来也是散的。
+// 两条页边距永远保留；图形的左右边、上下边最多再补进来一条 —— 线一多就等于没有线。
+function layoutLines(){
+  const M=MARGIN(), U=Math.max(4,Math.round(Math.min(W,H)/64));
+  const botY=H-M*2.4;                    // 底部信息行占住的地方，文字不越过它
+  const eb=allBBox();
+  const pick=(must,extra)=>{
+    const o=must.slice();
+    for(const v of extra) if(o.length<3 && o.every(q=>Math.abs(q-v)>3*U)) o.push(v);
+    return o.sort((a,b)=>a-b);
+  };
+  const inx=v=>v>M+2*U && v<W-M-2*U, iny=v=>v>M+2*U && v<botY-2*U;
+  // 每一件形贡献自己的四条边。两件分开的形，它们的并集外框是一个横跨中间空地的
+  // 大矩形 —— 按那个对齐，等于按一块根本不存在的东西对齐。
+  const boxes=(S.els||[]).map(e=>{const q=elBBox(e); return q?{b:q,e}:null;}).filter(Boolean);
+  const ex=[], ey=[];
+  for(const {b:q} of boxes){ ex.push(q.x0,q.x1); ey.push(q.y0,q.y1); }
+  return {
+    V: pick([M, W-M], ex.filter(inx)),
+    H: pick([M, botY], ey.filter(iny)),
+    M, U, botY, eb, boxes
+  };
+}
+// 一行文字被加进来的时候，用户不动它也必须是对的。
+// 做法不是「找一块空地」，而是：只允许落在对齐线上，再在这些落点里挑一个
+// 不撞别的字、不压坏图形、并且能和别的字共用一条线的。
 function placeText(t){
   if(!t)return;
-  const M=MARGIN(),m=textMetrics(t),b=allBBox();
-  const cands=[[M,M],[Math.max(M,W-M-m.w),M],[M,Math.max(M,H-M*2.6-m.h)],
-    [Math.max(M,W-M-m.w),Math.max(M,H-M*2.6-m.h)]];
-  let best=cands[0],score=Infinity;
-  for(const q of cands){
-    let overlap=b?Math.max(0,Math.min(q[0]+m.w,b.x1)-Math.max(q[0],b.x0))*
-      Math.max(0,Math.min(q[1]+m.h,b.y1)-Math.max(q[1],b.y0)):0;
-    for(const o of S.texts){if(o===t)continue;const z=textBox(o);
-      overlap+=Math.max(0,Math.min(q[0]+m.w,z.x+z.w)-Math.max(q[0],z.x))*
-        Math.max(0,Math.min(q[1]+m.h,z.y+z.h)-Math.max(q[1],z.y));}
-    if(overlap<score){score=overlap;best=q;}if(overlap===0)break;
+  const L=layoutLines(), m=textMetrics(t), M=L.M, U=L.U, eb=L.eb;
+  if(!L.boxes) L.boxes=[];
+  const maxX=Math.max(M, W-M-m.w), maxY=Math.max(M, L.botY-m.h);
+  const cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+  const others=S.texts.filter(o=>o!==t && String(o.text||'').trim())
+                      .map(o=>({b:textBox(o), o}));
+
+  // 候选：每条竖线可以当左边界也可以当右边界，横线同理
+  const xs=new Set(), ys=new Set();
+  for(const v of L.V){ xs.add(cl(v,M,maxX)); xs.add(cl(v-m.w,M,maxX)); }
+  for(const h of L.H){ ys.add(cl(h,M,maxY)); ys.add(cl(h-m.h,M,maxY)); }
+  ys.add(cl(H*0.30-m.h/2,M,maxY));       // 视觉三分之一：标题落这里比落正中稳
+  ys.add(cl(H*0.60,M,maxY));
+  const cands=[];
+  for(const x of xs) for(const y of ys) cands.push([x,y]);
+  // 沿着对齐线滑动：只用四个角是不够的 —— 画面一挤，四个角全被占，
+  // 它就只能压到形上去。贴住同一条线上下（或左右）滑，对齐关系保住，位置让开。
+  for(const x of xs) for(let y=M; y<=maxY; y+=2*U) cands.push([x,y]);
+  for(const y of ys) for(let x=M; x<=maxX; x+=2*U) cands.push([x,y]);
+  // 跟排：直接接在已有的某一行后面，共用它的对齐线 —— 海报里最常见也最好看的关系
+  for(const {b:z,o} of others){
+    const g=((o.dir==='v')===(t.dir==='v')) ? 1.6*U : 2.6*U;
+    const q = t.dir==='v'
+      ? [[z.x-m.w-g, z.y],[z.x+z.w+g, z.y]]
+      : [[z.x, z.y+z.h+g],[z.x, z.y-m.h-g]];
+    for(const c of q) cands.push([cl(c[0],M,maxX), cl(c[1],M,maxY)]);
   }
-  t.x=best[0]/W;t.y=best[1]/H;
+
+  const near=(a,b)=>Math.abs(a-b)<1.5;
+  const ov=(x,y,x0,y0,x1,y1)=>
+    Math.max(0,Math.min(x+m.w,x1)-Math.max(x,x0))*Math.max(0,Math.min(y+m.h,y1)-Math.max(y,y0));
+
+  let best=null, bs=Infinity;
+  for(const [x,y] of cands){
+    let sc=0;
+    // ① 撞到别的字（含一圈气口）—— 一票否决。
+    // 这必须比其它任何一项都贵一个数量级：上一版只给 4000，和「躲开三个网点形」
+    // 同一个量级，结果它宁可把副标题压在标题上。
+    for(const {b:z} of others)
+      if(ov(x,y,z.x-U,z.y-U*0.7,z.x+z.w+U,z.y+z.h+U*0.7)>0) sc+=1e6;
+    // ② 和图形的关系。形里面的字会被挖成底色，所以「整个压在形上」是成立的手法；
+    // 真正难看的是压一半 —— 一行字从中间断成两个颜色。所以罚的是「压一半」，不是「压」。
+    // 只有一种压是好看的：整行字完全落进一块够大的实地墨里 —— 形会把字挖成底色，
+    // 那是双色印刷最漂亮的一手。其余都要躲开：
+    // 压一半的字从中间断成两个颜色；压在网点形上的字直接读不出来（实测过，几乎看不清）。
+    const area=Math.max(1,m.w*m.h);
+    for(const {b:q,e:el} of L.boxes){
+      const fr=ov(x,y,q.x0,q.y0,q.x1,q.y1)/area;
+      if(fr<=0.02) continue;
+      const solid=!(el.fill||0) && !el.d3;                 // 实地墨才挖得干净
+      const roomy=(q.x1-q.x0)>m.w*1.45 && (q.y1-q.y0)>m.h*1.45;
+      if(solid && roomy && fr>0.94) sc += 300;             // 整个进去：成立，但仍不是首选
+      else sc += (t.role==='title'?1200:2600)*(1+Math.min(fr,1-fr)*2);
+    }
+    // ③ 每共用一条对齐线就减一次分
+    let share=0;
+    for(const {b:z} of others){
+      if(near(x,z.x))share++; if(near(x+m.w,z.x+z.w))share++;
+      if(near(y,z.y))share++; if(near(y+m.h,z.y+z.h))share++;
+    }
+    for(const v of L.V) if(near(x,v)||near(x+m.w,v)) share++;
+    for(const h of L.H) if(near(y,h)||near(y+m.h,h)) share++;
+    for(const {b:q} of L.boxes){ if(near(x,q.x0)||near(x+m.w,q.x1)) share++;
+                                 if(near(y,q.y0)||near(y+m.h,q.y1)) share++; }
+    sc -= share*140;
+    // ④ 竖排中文从右上起排，横排从左上起 —— 这是读的方向，不是审美偏好
+    sc += (m.vert ? (maxX-x) : (x-M))*0.16 + (y-M)*0.06;
+    // ⑤ 重心别跑偏：文字该往图形的反方向压，两边合起来落在光学中心附近
+    if(eb){
+      const bx=((eb.x0+eb.x1)/2 + x+m.w/2)/2, by=((eb.y0+eb.y1)/2 + y+m.h/2)/2;
+      sc += (Math.abs(bx-W*0.5)+Math.abs(by-H*0.47))*0.18;
+    }
+    if(sc<bs){bs=sc;best=[x,y];}
+  }
+  if(best){ t.x=best[0]/W; t.y=best[1]/H; }
 }
 // 标题只落在四个规范锚点上，并挑一个不压住图形的。随手撒位置是画面显廉价的另一个自由度。
 function placeTitle(){
@@ -2098,11 +2239,17 @@ cv.addEventListener('pointermove',e=>{
     if(drag.m==='el'&&ce2){ce2.x=Math.max(0,Math.min(1,(p.x-drag.dx)/W));ce2.y=Math.max(0,Math.min(1,(p.y-drag.dy)/H));}
     else if(drag.m==='handle'){
       if(!ce2) return;
+      // 角度要先定 —— 能放多大取决于它转成什么角度（竖着的瓶子和横着的瓶子上限差很多）
+      ce2.r=snapAngle(Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7);
       const d=Math.hypot(p.x-EX(ce2),p.y-EY(ce2))/1.10;
       const asp=aspOfE(ce2);
       const R0=(ce2.k>=6||ce2.k===12)? d/(asp/2) : d;
-      ce2.s=Math.max(.06,Math.min(.42,R0/W));
-      ce2.r=snapAngle(Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7);}
+      const hi=maxElS(ce2);
+      ce2.s=Math.max(.06,Math.min(hi,R0/W));
+      clampEl(ce2);                                  // 变大之后要把它挪回画面里
+      if(ce2.s>=hi-1e-4 && !drag.maxed){ drag.maxed=1;
+        setHint(ce2.rep>1?'到顶了 —— 重复排得越多，单件就越小；把重复调回 1 能再大一截'
+                        :'到顶了 —— 这张纸放得下的最大尺寸'); }}
     else if(drag.m==='thandle'){
       const t=CT();
       if(t){ const b=textBox(t);
@@ -2385,12 +2532,18 @@ document.getElementById('tfont').onclick=e=>{const b=e.target.closest('button'),
 document.getElementById('tsize').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
   t.size=+b.dataset.size;t.autoStyle=false;clampText(t);syncTextPanel();setStep(4);draw();};
 document.getElementById('fill').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-  const ce=CE(); if(ce) ce.fill=+b.dataset.l;
+  const ce=CE(); if(ce){ ce.fill=+b.dataset.l;
+    setHint((ce.d3?['色调分离：明暗压成三级，像分色版','连续调：网点大小跟着明暗走',
+                    '上浓下淡：形往下化开','只印暗面：亮的地方留白纸']
+                 :['实心：整块实地墨','网点：均匀的半调','渐变：从上到下由浓到淡',
+                   '半网：一半实心一半网点，跨切线时两侧各一种'])[+b.dataset.l]); }
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('tex').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   S.tex=+b.dataset.t;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('dep').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-  const ce=CE(); if(ce){ ce.d3=+b.dataset.p; if(ce.d3&&!ce.fill) ce.fill=1; }
+  const ce=CE(); if(ce){ ce.d3=+b.dataset.p;
+    setHint(ce.d3?'立体开了 —— 现在「图形填充」那四个按钮换成四种把明暗印出来的方式'
+                 :'回到平面'); }
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('rep').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   const ce=CE(); if(ce) ce.rep=+b.dataset.r;
@@ -2616,6 +2769,19 @@ iThr.addEventListener('input',()=>reExtract());
 iDet.addEventListener('input',()=>reExtract());
 document.getElementById('iInv').onclick=e=>{
   const b=e.target.closest('button'); if(!b) return; reExtract(+b.dataset.v===1);};
+// 上传的图必须能整个撤走：抠出来的形、形状架上的那个按钮、源图，一起清掉。
+// 只删画面上的形而留着源图，等于留了一个改不了也说不清的东西在架子上。
+document.getElementById('idel').onclick=()=>{
+  if(!SRC && !(S.cust && !S.cust.src)) return;
+  pushHist();
+  if(S.els) S.els=S.els.filter(e=>!(e.k===12 && !(e.cu&&e.cu.src==='lathe')));
+  if(S.cust && S.cust.src!=='lathe') S.cust=null;
+  SRC=null;
+  S.si=S.els?Math.min(S.si,S.els.length-1):-1;
+  sel=S.si>=0 && sel; if(!S.els||!S.els.length) sel=false;
+  syncImg(); sync(); draw();
+  setHint('图和它抠出来的形都删掉了 —— 顶部的撤销能拿回来');
+};
 function syncImg(){
   const on=!!(S.cust&&SRC);
   imgBlk.hidden=!on;
@@ -3060,6 +3226,48 @@ function selfTest(){
       S.texts[1].text='EDIT';S.texts.splice(1,1);S.ti=0;
       ok('图形与文字：加/选/改/删',three&&hit&&S.els.length===2&&textHit&&S.texts.length===1);
       ok('旋转吸附到 0/90/180', snapAngle(0.03)===0 && Math.abs(snapAngle(1.54)-Math.PI/2)<1e-6);
+    })();
+
+    // 6b. 放大有上限：把手拖到底也不能把形拖出画面
+    (function(){
+      let bad=0, tries=0;
+      for(const k of [0,1,2,3,4,5,6,7,8,9,10,11]) for(const rp of [1,3,5]) for(const a of [0,0.6,Math.PI/2]){
+        S.els=[{k, x:.5, y:.5, s:5, r:a, fill:0, rep:rp}]; S.si=0;
+        const e=S.els[0]; e.s=Math.min(e.s, maxElS(e)); clampEl(e);
+        const b=elBBox(e), M=MARGIN()*0.95; tries++;
+        const okq = (k>=6)
+          ? (b.x0>=M-1 && b.y0>=M-1 && b.x1<=W-M+1 && b.y1<=H-M+1)   // 器物必须整个在边距里
+          : ((b.x1-b.x0)/2<=W*0.72+1 && (b.y1-b.y0)/2<=H*0.72+1);    // 几何形允许出血，但有限
+        if(!okq) bad++;
+      }
+      ok('放大到顶仍在画面里', bad===0, bad+' / '+tries);
+    })();
+
+    // 6c. 四个填充必须各不相同 —— 点了没变化就是 bug
+    (function(){
+      const g=cv.getContext('2d');
+      const diff=(p,q)=>{let c=0;for(let i=0;i<p.length;i+=4)
+        if(Math.abs(p[i]-q[i])>6||Math.abs(p[i+1]-q[i+1])>6||Math.abs(p[i+2]-q[i+2])>6)c++;
+        return c/(p.length/4);};
+      // 状态要自己铺干净：上一个用例可能留下「覆盖率 0」，那时墨色等于纸色，
+      // 形本身就是隐形的，四个填充当然一模一样 —— 那是对的行为，不是 bug。
+      // 前一个用例 addEl 触发了落下动画，同步跑完的自检里 rAF 不会推进，
+      // elA 停在 0，drawOne 会把元素画成 alpha 0 —— 什么都看不见，四个填充当然一样。
+      elA=1;
+      S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
+      let minD=1, worst='';
+      for(const cut of [null,{x1:0,y1:.34,x2:1,y2:.34}]) for(const d3 of [0,1]){
+        S.cut=cut; S.texts=[]; const im=[];
+        for(const fl of [0,1,2,3]){
+          S.els=[{k:6,x:.5,y:.62,s:.20,r:0,fill:fl,rep:1,d3}]; S.si=0; sel=false; tsel=false;
+          draw(); im.push(g.getImageData(0,0,W,H).data);
+        }
+        for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
+          const d=diff(im[i],im[j]);
+          if(d<minD){ minD=d; worst=(cut?'有切线':'无切线')+(d3?'·立体':'·平面')+' '+i+'vs'+j; }
+        }
+      }
+      ok('四个填充互不相同', minD>0.004, '最小 '+(minD*100).toFixed(2)+'%（'+worst+'）');
     })();
 
     // 7. 性能
