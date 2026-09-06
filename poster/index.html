@@ -443,6 +443,14 @@
     <div class="row" id="dot" style="margin-top:7px">
       <button data-d="0">网目细</button><button data-d="1" aria-pressed="true">网目粗</button>
     </div>
+    <h3 style="margin-top:18px">套印</h3>
+    <div class="row" id="mis">
+      <button data-m="0" aria-pressed="true">对准</button><button data-m="1">轻</button
+      ><button data-m="2">中</button><button data-m="3">重</button>
+    </div>
+    <p class="note" style="margin-top:8px">riso 的灵魂是没对准。两块版各偏一点点：
+      跨切线的形，两半会错开一道台阶；网点也跟着错开半格 ——
+      <b>这是你的参数，不是机器的毛病</b>。</p>
   </div>
 
   <div class="blk" data-tool="form">
@@ -625,6 +633,7 @@ const blank={ex:null,lang:'zh',lat:{a:0,b:1,m:0,t:0.22},cut:null,pair:0,paper:PA
 // 候选预览的基准构图。启动时不再展示它，避免示例锚定用户。
 const demo={ex:null,lat:{a:0,b:1,m:0,t:0.22},cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
   inkA:PAIRS[1][1], covA:0, inkB:PAIRS[1][1], covB:.86, a:PAIRS[1][0], b:PAIRS[1][1],
+  mis:0,
   els:[{k:6,x:.60,y:.46,s:.193,r:0.03,fill:3,rep:1}], si:0,
   texts:[],ti:-1,stock:0,tex:1,dot:1};
 let S=JSON.parse(JSON.stringify(blank));
@@ -1422,6 +1431,13 @@ function inkR(a,p,inv){
 // 细网（3px）时一个器物的外接框里有一万多个点，×5 个重复实例 ×2 侧 = 每帧十几万次 arc()。
 // 平色那一档直接贴缓存好的整张网，剪影靠已经设好的 clip 裁出来，逐像素结果相同，
 // 代价从 8ms 掉到接近 0。渐变那一档点的大小随位置变，仍然走循环。
+// 套印错位。丝网/riso 里两块版是分两次压上去的，永远差那么一点点。
+// studio-ity 把它做成用户可控的滑块 —— 那一下把「瑕疵」从系统的错误变成了用户的表达。
+// 这里的量是固定方向的（随机每次乱飘就不是套印了，是噪声）。
+const MIS_PX=[0, 0.9, 2.2, 4.2];
+function misAmt(){ return MIS_PX[S.mis||0]*SC(); }
+// 当前正在画的是哪一块版的偏移。网屏是版的一部分，所以它跟着版一起偏。
+let PLATE=[0,0];
 const screenCache=new Map();
 function screenSheet(col,p,inv,ox,oy){
   const key=[col,p.toFixed(3),inv?1:0,W,H,ox.toFixed(2),oy.toFixed(2)].join('|');
@@ -1452,7 +1468,7 @@ function screenFill(col, box, band, inv){
   // 套印微偏：网点层相对实色区永远偏同一个方向、同一个量（随机每层乱飘就不是套印了）
   const ps=stockSpec(), rough=S.tex===0?0:(S.tex===2?1.35:1);
   const ca=Math.cos(SANG), sa=Math.sin(SANG),
-        ox=W/2+(1.0+ps.mis*1.6)*SC(), oy=H/2-(.7+ps.mis*1.2)*SC();
+        ox=W/2+(1.0+ps.mis*1.6)*SC()+PLATE[0], oy=H/2-(.7+ps.mis*1.2)*SC()+PLATE[1];
   if(band && band.tone){          // 三维明暗：每个网点的大小由该处的明暗决定
     const TB=band.tone, bx=band.bx, by=band.by, bw2=band.bw, bh2=band.bh;
     ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle=col;
@@ -2085,17 +2101,26 @@ function draw(){
   function side(field,ink,inv,idx){
     ctx.fillStyle=field; ctx.fillRect(-30,-30,W+60,H+60);
     drawPaperSurface(idx?S.covB:S.covA);
+    // 落墨的东西跟着自己那块版走。网屏在 screenFill 里另外走 PLATE，
+    // 因为它每次都会把变换重置掉 —— 两处加的是同一个量，形和它的网点不会脱节。
+    const off=PLATE[0]||PLATE[1];
+    if(off) ctx.save(), ctx.translate(PLATE[0],PLATE[1]);
     drawEl(ink,idx,inv,overprint); drawTitle(ink); drawInfo(ink);
     if(EP){ ctx.save();ctx.clip(EP,'evenodd');drawTitle(field);drawInfo(field);ctx.restore(); }
+    if(off) ctx.restore();
   }
   if(l){
-    const sep=cutA*4.6*SC();
+    const sep=cutA*4.6*SC(), mis=misAmt();
     for(let k=0;k<2;k++){
       const g=k?-1:1;
       ctx.save();
       if(sep) ctx.translate(l.nx*g*sep, l.ny*g*sep);
       if(pathPoly(clipPoly(g*l.nx,g*l.ny,g*l.c))) ctx.clip();
+      // 两块版各偏半格，方向相反且固定 —— 网屏是版的一部分，跟着一起偏
+      // 两块版相向偏：主要沿切线法线（跨线的形两半才会错开台阶），加一点切向
+      PLATE = mis ? [(-l.nx*0.86 - l.ny*0.50)*g*mis, (-l.ny*0.86 + l.nx*0.50)*g*mis] : [0,0];
       side(k?S.b:S.a, k?S.a:S.b, k?invB:invA, k);
+      PLATE=[0,0];
       ctx.restore();
     }
   }else side(S.a,S.b,invA,0);
@@ -2542,6 +2567,11 @@ document.getElementById('tfont').onclick=e=>{const b=e.target.closest('button'),
   t.font=+b.dataset.font;t.autoStyle=false;clampText(t);syncTextPanel();draw();};
 document.getElementById('tsize').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
   t.size=+b.dataset.size;t.autoStyle=false;clampText(t);syncTextPanel();setStep(4);draw();};
+document.getElementById('mis').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  pushHist(); S.mis=+b.dataset.m;
+  setHint(['两块版对准了','轻微错位 —— 跨切线的形开始有一道细台阶',
+           '中等错位，网点也跟着错开半格','重错位 —— 印坏了，但那正是 riso 的样子'][S.mis]);
+  sync(); draw();};
 document.getElementById('fill').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   const ce=CE(); if(ce){ ce.fill=+b.dataset.l;
     setHint((ce.d3?['色调分离：明暗压成三级，像分色版','连续调：网点大小跟着明暗走',
@@ -2650,6 +2680,7 @@ function shuffleState(){
                 fill:0, rep:1});
   }
   S.dot=Math.random()<.5?0:1;
+  S.mis=pick([0,0,0,1,1,2,3]);          // 大多数时候对准，偶尔来一次明显的错位
   if(B.dark && Lstar(S.a)>Lstar(S.b)){   // 深底：把深的那块做成大色域
     const i=S.inkA,c=S.covA;S.inkA=S.inkB;S.covA=S.covB;S.inkB=i;S.covB=c;applyInks();
   }
@@ -2702,7 +2733,7 @@ function applyLocks(got, base, L){
   L=L||LOCKS;
   if(L.cut)  got.cut=cloneJ(base.cut);
   if(L.ink)  for(const k of INK_KEYS) got[k]=cloneJ(base[k]);
-  if(L.print){ got.dot=base.dot; got.tex=base.tex; }
+  if(L.print){ got.dot=base.dot; got.tex=base.tex; got.mis=base.mis; }
   if(L.type){ got.texts=cloneJ(base.texts); got.ti=base.ti; }
   if(L.shape||L.place||L.print){
     const src=base.els||[], dst=got.els||[];
@@ -2781,6 +2812,7 @@ function sync(){
     String(Math.abs(+x.dataset.p-(ce?(ce.d3||0):0))<0.01)));
   set('rep','r',ce?(ce.rep||1):1);set('stock','stock',S.stock||0);
   set('tex','t',S.tex); set('fill','l',ce?(ce.fill||0):0); set('dot','d',S.dot);
+  set('mis','m',S.mis||0);
   allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(!!ce&&j===ce.k)));
   const cnt=document.getElementById('elcount');
   if(cnt) cnt.textContent=(S.els?S.els.length:0)+' 个元素'+(ce?'　选中第 '+(S.si+1)+' 个':'');
@@ -3416,6 +3448,50 @@ function selfTest(){
       }
       for(const k of DIMS) LOCKS[k]=save[k];
       ok('锁：锁上的保住、没锁的会变', leak===0&&stuck===0, leak+' 漏 / '+stuck+' 没动 / '+tries);
+    })();
+
+    // 6f. 套印错位：四档必须一档比一档明显，而且台阶要出现在切线附近
+    (function(){
+      const g=cv.getContext('2d');
+      elA=1; S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
+      S.cut={x1:0,y1:.42,x2:1,y2:.42}; S.texts=[];
+      const im=[];
+      for(const m of [0,1,2,3]){
+        S.mis=m;
+        S.els=[{k:6,x:.44,y:.42,s:.21,r:0,fill:0,rep:1}];   // 明确跨切线，会反色
+        S.si=0; sel=false; tsel=false; draw();
+        im.push(g.getImageData(0,0,W,H).data);
+      }
+      const diff=(p,q)=>{let c=0;for(let i=0;i<p.length;i+=4)
+        if(Math.abs(p[i]-q[i])>6||Math.abs(p[i+1]-q[i+1])>6||Math.abs(p[i+2]-q[i+2])>6)c++;
+        return c/(p.length/4);};
+      const d=[diff(im[0],im[1]), diff(im[0],im[2]), diff(im[0],im[3])];
+      // 要量的不是"哪里变了"，是那道台阶本身。
+      // 版偏移作用在整块版上，元素整体平移是物理正确的（版就是这么错的），
+      // 但均匀色域上的平移看不出来 —— 只有跨切线的那个形，两半分属两块版，才露出台阶。
+      // 所以直接量：切线上方一行和下方一行，剪影左沿差了多少。
+      const y=Math.round(.42*H);
+      const edge=(img,yy)=>{
+        const base=[img[(yy*W+4)*4],img[(yy*W+4)*4+1],img[(yy*W+4)*4+2]];
+        for(let x=6;x<W;x++){ const i=(yy*W+x)*4;
+          if(Math.abs(img[i]-base[0])>18||Math.abs(img[i+1]-base[1])>18||Math.abs(img[i+2]-base[2])>18) return x; }
+        return -1;
+      };
+      // 要带符号。器物本身在切线上下就有收腰，对准时两行的左沿本来就差几个像素；
+      // 取绝对值的话，版一错开反而把这个自带的差抵消掉，读数是 3→1，看着像在变小。
+      const step=img=>{ const a=edge(img,y-7), b=edge(img,y+7);
+        return (a<0||b<0)?null:(a-b); };
+      const st=[step(im[0]),step(im[1]),step(im[2]),step(im[3])];
+      S.mis=0;
+      const dv=st.every(v=>v!==null) ? st.map(v=>Math.abs(v-st[0])) : null;
+      // 读数会比理论偏移小：版是斜着偏的（法线为主、切向为辅），
+      // 而剪影左沿是斜的曲线，纵向那一半的位移会被收腰吃掉一部分。
+      // 这条用来防回归（错位没了就会掉到 0），不用来标定精度。
+      const okStep = !!dv && dv[1]<=dv[2] && dv[2]<=dv[3] && dv[3]>=1.5;
+      ok('套印：四档递进，跨切线的形两半错开台阶',
+         d[0]>0.004 && d[1]>d[0] && d[2]>d[1] && okStep,
+         '整图差异 轻 '+(d[0]*100).toFixed(1)+'% 中 '+(d[1]*100).toFixed(1)+'% 重 '+(d[2]*100).toFixed(1)+
+         '%　台阶相对对准 '+(dv?dv.join('/'):'量不到')+'px');
     })();
 
     // 6e. 近亲要比全新近，但不能近到看不出变化
