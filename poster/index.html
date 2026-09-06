@@ -1853,8 +1853,13 @@ function textMetrics(t){
   let z=[34,50,68][t.size==null?1:t.size]*SC()*(t.zs||1);
   const f=TEXT_FONTS[t.font||0]||TEXT_FONTS[0];
   const maxW=W-M*2, maxH=H-M*2.6;
+  // 竖排的字距见下面 adv 那一行：汉字 1.10、拉丁 1.30（44 张实测的中位值）。
+  // 「装不下就缩」这一步必须用**同一个**字距，否则算出来的高度和实际画出来的对不上，
+  // 缩完照样出边距 —— 自检抓到 24/168 行越界，就是这两处用了不同的字距。
+  const hasCJK=/[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]/.test(chars.join(''));
+  const VP = hasCJK ? 1.10 : 1.30;
   if(vert){
-    const natural=z+(chars.length-1)*z*(1+f.track);
+    const natural=z+(chars.length-1)*z*VP;
     if(natural>maxH) z*=maxH/natural;
   }else{
     ctx.save();ctx.font=fontSpec(t,z).css;
@@ -1869,7 +1874,11 @@ function textMetrics(t){
   const spec=fontSpec(t,z);
   ctx.save();ctx.font=spec.css;
   const widths=chars.map(ch=>ctx.measureText(ch).width);ctx.restore();
-  const adv=z*(1+spec.f.track);
+  // 竖排的字距不该跟着横排的字距走。实测：汉字竖排 pitch/size 中位 **1.10**
+  // （横尾忠则 1968 是 0.87 的负字距、王志弘 2018 是 1.10、陈幼堅 1998 是 1.18）；
+  // 拉丁字母正立堆叠要 **1.30**（何见平 1.21、王志弘 HKIPF 1.44）——
+  // 拉丁没有字腔支撑，按汉字的 1.10 堆会挤在一起。
+  const adv = vert ? z*VP : z*(1+spec.f.track);
   const w=vert?Math.max(z,...widths):widths.reduce((a,b)=>a+b,0)+Math.max(0,chars.length-1)*z*spec.f.track;
   const h=vert?z+(chars.length-1)*adv:z*1.12;
   return {z,vert,adv,chars,widths,w,h,spec};
@@ -1889,7 +1898,24 @@ function drawText(t,col){
   else{let dx=x;m.chars.forEach((ch,i)=>{ctx.fillText(ch,dx,y);dx+=m.widths[i]+m.z*m.spec.f.track;});}
   ctx.restore();
 }
-function drawTitle(col){ensureTexts();S.texts.forEach(t=>drawText(t,col));}
+function drawTitle(col){ensureTexts();S.texts.forEach(t=>{ if(!t.plate) drawText(t,col); });}
+// 兜底解：给排不下的那行文字铺一块自己的实地板，再把字挖在上面。
+// 44 张实测里这是「完全压入」最保险的形式 —— 不是把字硬压进复杂图形，
+// 而是先铺一块自己的实地（Cieslewicz 的板 35%W×16%H、Foroutan 的 82%W×22%H）。
+// 板必须画在最上面且不透明：它就是为了不受底下影响才铺的，
+// 所以不能参与挖白那一遍（被裁进形里会变成半块矩形）。
+function drawPlates(ink, field){
+  ensureTexts();
+  for(const t of S.texts){
+    if(!t.plate || !String(t.text||'').trim()) continue;
+    const m=textMetrics(t), x=t.x*W, y=t.y*H, pad=m.z*0.6;
+    ctx.save();
+    ctx.fillStyle=ink;                                  // 板用墨色实地
+    ctx.fillRect(x-pad, y-pad*0.55, m.w+pad*2, m.h+pad*1.1);
+    ctx.restore();
+    drawText(t, field);                                 // 字挖成底色
+  }
+}
 function drawInfo(col){                     // 信息行永远贴住下边距，横排，小号
   if(!S.cut)return;
   // 展讯的信息行如果已经作为一个可拖的文字块在画布上了，这里就不要再印一遍 ——
@@ -2141,6 +2167,18 @@ function placeOnce(t){
     for(const {b:q} of L.boxes){ if(near(x,q.x0)||near(x+m.w,q.x1)) share++;
                                  if(near(y,q.y0)||near(y+m.h,q.y1)) share++; }
     sc -= share*140;
+    // ③b 标题的纵向落点是**双峰**，不是围绕光学中心的单峰。
+    // 44 张实测：顶带 0–10%H 占 32%、底带 84–100%H 占 20%，
+    // 中段 30–80%H 合计只有 20% —— 而且那几张全都不是「居中」，是贴在某个色域的边上。
+    // 光学中心 0.40–0.45H 那条只在一种情况成立：居中栈的**整体重心**，不是单条标题。
+    // 所以：顶带和底带给奖励，中段只有正贴着一条对齐线时才不罚。
+    if(t.role==='title' && !m.vert){
+      const v=(y+m.h/2)/H;
+      const onLine=L.H.some(h=>Math.abs(y-h)<2 || Math.abs(y+m.h-h)<2);
+      if(v<=0.16) sc-=280;
+      else if(v>=0.80) sc-=170;
+      else if(!onLine) sc+=240;
+    }
     // ④ 竖排中文从右上起排，横排从左上起 —— 这是读的方向，不是审美偏好
     sc += (m.vert ? (maxX-x) : (x-M))*0.16 + (y-M)*0.06;
     // ⑤ 重心别跑偏：文字该往图形的反方向压，两边合起来落在光学中心附近
@@ -2156,19 +2194,43 @@ function placeOnce(t){
 // 有时候是真的排不下：两行竖排大字加一行横排，画面本来就不够。
 // 这时候正确的做法不是硬塞（塞出来就是两行字叠在一起），是把这一行缩小。
 // 标题不缩 —— 它是画面的主音，宁可让别的让它。
+// 什么时候该铺板：所有候选都被否决、这行字只能压在形上，而且它不是标题。
+// 标题不铺板 —— 它够大，压在形上靠挖白就成立；小字才需要自己的底。
+// 板面积上限 20% 画幅，超了说明该缩字号而不是铺更大的板。
+function maybePlate(t){
+  t.plate=0;
+  if(t.role==='title') return;              // 标题够大，压在形上靠挖白就成立
+  const m=textMetrics(t), x=t.x*W, y=t.y*H;
+  // 触发依据要是实情不是分数：这行字到底有没有压了一半在某个形上。
+  // 完全避开不用板；整个压进去也不用（挖白就成立）；只有压一半才需要自己的底。
+  let worst=0;
+  for(const e of (S.els||[])){
+    const q=elBBox(e); if(!q) continue;
+    const ar=Math.max(0,Math.min(x+m.w,q.x1)-Math.max(x,q.x0))*
+             Math.max(0,Math.min(y+m.h,q.y1)-Math.max(y,q.y0));
+    const fr=ar/Math.max(1,m.w*m.h);
+    worst=Math.max(worst, Math.min(fr,(1-fr)*1.6));
+  }
+  if(worst < 0.16) return;
+  const pad=m.z*0.6;
+  if((m.w+pad*2)*(m.h+pad*1.1) > 0.20*W*H) return;   // 板太大说明该缩字号，不是铺更大的板
+  t.plate=1;
+}
 function placeText(t){
   if(!t) return;
+  t.plate=0;
   let sc=placeOnce(t);
-  if(sc<1e6 || t.role==="title") return;
+  if(sc<1e6 || t.role==="title"){ maybePlate(t); return; }
   const z0=t.zs||1;
   let bestZ=z0, bestSc=sc;
   for(const k of [0.78,0.60]){
     t.zs=z0*k;
     sc=placeOnce(t);
-    if(sc<1e6) return;                     // 排开了就收工
-    if(sc<bestSc){ bestSc=sc; bestZ=t.zs; } // 没排开也留最轻的那一档，别盲目还原
+    if(sc<1e6) { maybePlate(t); return; }   // 排开了就收工
+    if(sc<bestSc){ bestSc=sc; bestZ=t.zs; }     // 没排开也留最轻的那一档，别盲目还原
   }
-  t.zs=bestZ; placeOnce(t);
+  t.zs=bestZ; sc=placeOnce(t);
+  maybePlate(t);
 }
 // 标题只落在四个规范锚点上，并挑一个不压住图形的。随手撒位置是画面显廉价的另一个自由度。
 function placeTitle(){
@@ -2309,6 +2371,7 @@ function draw(){
     drawEl(ink,idx,inv,overprint); drawTitle(ink); drawInfo(ink); drawMarks(ink);
     if(EP){ ctx.save();ctx.clip(EP,'evenodd');
       drawTitle(field);drawInfo(field);drawMarks(field);ctx.restore(); }
+    drawPlates(ink, field);
     if(off) ctx.restore();
   }
   if(l){
@@ -2349,6 +2412,7 @@ function draw(){
     ctx.save(); ctx.clip(OP,"evenodd");
     drawTitle(lightC); drawInfo(lightC); drawMarks(lightC);
     ctx.restore();
+    drawPlates(Lstar(S.a)<Lstar(S.b)?S.a:S.b, lightC);
   }
 
   drawColourBar();
