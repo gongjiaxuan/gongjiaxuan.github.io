@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Cut · 交互试验</title>
+<title>Cut / Print · 海报生成器</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
@@ -117,6 +117,8 @@
   .ghost{font-family:var(--ui);font-size:12.5px;padding:7px 12px 8px;border:1px solid var(--line);
     background:transparent;color:var(--ink3);cursor:pointer;width:100%;transition:.12s}
   .ghost:hover{border-color:var(--ink2);color:var(--ink)}
+  .primary{background:var(--ink);border-color:var(--ink);color:#fff}
+  .primary:hover{background:#303137;border-color:#303137;color:#fff}
   .brief{background:#f6f4ef;border:1px solid var(--line);padding:14px 14px 12px;margin:-4px 0 0}
   .brief .bt{font-family:"Noto Serif SC",serif;font-weight:900;font-size:19px;letter-spacing:.06em;
     line-height:1.25;margin:0 0 6px}
@@ -141,6 +143,39 @@
   .recipe b{font-weight:600;color:var(--ink)}
   .note{font-size:11.5px;line-height:1.6;color:var(--ink3);margin:0}
   .note b{color:var(--ink2);font-weight:500}
+  .text-list{display:flex;flex-direction:column;gap:5px;margin-bottom:9px}
+  .text-item{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border:1px solid var(--line);
+    background:#fff;color:var(--ink2);font:500 11.5px/1.2 var(--ui);cursor:pointer;text-align:left}
+  .text-item:hover{border-color:var(--ink3);color:var(--ink)}
+  .text-item[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+  .text-item .num{width:18px;height:18px;border:1px solid var(--line);display:grid;place-items:center;
+    color:var(--ink3);font-size:9px;flex:none}
+  .text-item[aria-pressed="true"] .num{background:var(--ink);border-color:var(--ink);color:#fff}
+  .text-item .copy{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .text-input{display:block;width:100%;height:38px;padding:8px 9px;border:1px solid var(--line);
+    background:#fff;color:var(--ink);font:600 13px/1.4 var(--ui);outline:0;margin-bottom:8px}
+  .text-input:focus{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+  .text-input:disabled{background:#f4f2ed;color:var(--ink3)}
+  .text-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}
+  .text-actions button:last-child{width:38px;padding:7px 0;font-size:16px;line-height:1}
+  .font-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .font-grid button{font-family:var(--ui);font-size:12px;padding:7px 0 8px;border:1px solid var(--line);
+    background:#fff;color:var(--ink2);cursor:pointer}
+  .font-grid button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .font-grid button:nth-child(1){font-family:"Noto Serif SC","Songti SC",serif;font-weight:900}
+  .font-grid button:nth-child(2){font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-weight:900}
+  .font-grid button:nth-child(3){font-family:"Fraunces","Noto Serif SC",serif;font-weight:800}
+  .font-grid button:nth-child(4){font-family:"Archivo","Noto Sans SC",sans-serif;font-weight:600}
+
+  @media (max-width:820px){
+    html,body{height:auto;min-height:100%}
+    body{display:block;padding:16px;overflow-x:hidden;background:var(--bg)}
+    .stage{width:100%;gap:11px}
+    .sheet{max-width:100%}
+    .sheet canvas{max-width:calc(100vw - 32px);height:auto}
+    .tray,.hist{width:100%;justify-content:flex-start;overflow-x:auto;padding:7px 2px 12px}
+    .panel{width:100%;max-width:560px;max-height:none;margin:22px auto 0;padding:20px}
+  }
 </style>
 
 <div class="stage">
@@ -157,7 +192,7 @@
       <li data-n="1" class="on">按住拖动，把画面切开</li>
       <li data-n="2">选两支墨</li>
       <li data-n="3">放一个器物，拖动它</li>
-      <li data-n="4">摆标题</li>
+      <li data-n="4">编辑文字</li>
     </ol>
   </div>
 
@@ -250,18 +285,27 @@
     </div>
   </div>
 
-  <div class="blk">
-    <h3>标题字体</h3>
-    <div class="row" id="ft">
-      <button data-f="0" aria-pressed="true">宋</button><button data-f="1">黑</button>
+  <div class="blk" id="textblk">
+    <h3>文字</h3>
+    <div class="text-list" id="textlist"></div>
+    <input class="text-input" id="textinput" type="text" maxlength="40" autocomplete="off" aria-label="编辑选中的文字">
+    <h4 class="mini">方向</h4>
+    <div class="row" id="tdir">
+      <button data-dir="h">横排</button><button data-dir="v">竖排</button>
     </div>
-  </div>
-
-  <div class="blk">
-    <h3>标题字号</h3>
-    <div class="row" id="sz">
-      <button data-s="0">小</button><button data-s="1" aria-pressed="true">中</button><button data-s="2">大</button>
+    <h4 class="mini">字体</h4>
+    <div class="font-grid" id="tfont">
+      <button data-font="0">宋</button><button data-font="1">黑</button><button data-font="2">衬</button><button data-font="3">窄</button>
     </div>
+    <h4 class="mini">字号</h4>
+    <div class="row" id="tsize">
+      <button data-size="0">小</button><button data-size="1">中</button><button data-size="2">大</button>
+    </div>
+    <div class="text-actions">
+      <button class="ghost" id="addtext">＋ 添加一行文字</button>
+      <button class="ghost" id="deltext" title="删除选中的文字" aria-label="删除选中的文字">×</button>
+    </div>
+    <p class="note" style="margin-top:7px">在画布上直接拖动文字。每一行都有自己的字体、方向与字号。</p>
   </div>
 
   <div class="blk" style="gap:0"><h3>这一版的配方</h3>
@@ -271,6 +315,7 @@
   </div>
 
   <div class="blk">
+    <button class="ghost primary" id="download" style="margin-bottom:7px">下载高清 PNG</button>
     <button class="ghost" id="shuffle" style="border-color:#15161a;color:#15161a;margin-bottom:7px">给我六个方案（空格）</button>
     <button class="ghost" id="reset">重来</button>
     <p class="note" style="margin-top:13px">切线会<b>自动吸附</b>到 0°/90° 或 ±7–12° 的微斜，
@@ -363,14 +408,14 @@ function elSize(k,frac,cu){
 }
 
 const blank={ex:null,lat:{a:0,b:1,m:0,t:0.22},cut:null,pair:0,paper:PAIRS[0][0],inkA:PAIRS[0][1],covA:0,inkB:PAIRS[0][1],covB:.88,
-  a:PAIRS[0][0],b:PAIRS[0][1],els:[],si:-1,font:0,tex:1,dot:1,tx:.07,ty:.52,size:1};
+  a:PAIRS[0][0],b:PAIRS[0][1],els:[],si:-1,texts:[],ti:-1,tex:1,dot:1};
 // 打开即是一张做好的海报（真实验版会是空白，避免示例把访客锚住）
 const demo={ex:null,lat:{a:0,b:1,m:0,t:0.22},cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
   inkA:PAIRS[1][1], covA:0, inkB:PAIRS[1][1], covB:.88, a:PAIRS[1][0], b:PAIRS[1][1],
   els:[{k:6,x:.60,y:.46,s:.193,r:0.03,fill:3,rep:1}], si:0,
-  font:0, tex:1, dot:1, tx:.07,ty:.075,size:2};
+  texts:[],ti:-1,tex:1,dot:1};
 let S=JSON.parse(JSON.stringify(demo));
-let holdShape=0, drag=null, cutting=null, hoverT=false, hoverEl=false, sel=false;
+let holdShape=0, drag=null, cutting=null, hoverText=-1, hoverEl=false, sel=false, tsel=false;
 
 // ---------- 几何 ----------
 function clipPoly(nx,ny,c){
@@ -391,6 +436,7 @@ function pathPoly(poly){if(!poly||poly.length<3)return false;ctx.beginPath();ctx
 // 不再假设"只有一个"。填充与重复也搬到元素身上——不同元素可以有不同的处理，
 // 只有网屏频率是全画面共用的（一张海报只能有一个网屏）。
 const CE = ()=> (S.els && S.si>=0) ? (S.els[S.si]||null) : null;
+const CT = ()=> (S.texts && S.ti>=0) ? (S.texts[S.ti]||null) : null;
 const EX = e=>e.x*W, EY = e=>e.y*H, ES = e=>e.s*W;
 const aspOfE = e=> e.k===12 ? (e.cu?e.cu.asp:2) : e.k>=6 ? (ASPECT[SHAPES[e.k]]||2.3) : 2;
 // 切线角度只允许 0°、90°、±7–12°：中间那段斜度读作「手滑」，是最容易让生成画面显廉价的自由度。
@@ -1239,60 +1285,122 @@ function newBrief(){
   let x, g=0;
   do{ x=BRIEFS[(Math.random()*BRIEFS.length)|0]; }while(S.ex && x.t===S.ex.t && ++g<12);
   S.ex={t:x.t, d:x.d, v:x.v, k:x.k, b:x.b||{}, date:rollDates(), src:'池'};
+  syncAutoTitle();
   return S.ex;
 }
 const TITLE=()=>S.ex.t;
 const INFO=()=>S.ex.date+'   '+S.ex.v;
-function titleMetrics(){
-  const t=TITLE(), n=Math.max(1,t.length), vert=S.font===0, M=MARGIN();
-  let z=[40,54,68][S.size]*SC();            // 主标题单字高 ≥ H/10（以四字计）
-  // 字数是可变的了，所以字号必须夹住：能放得下才是第一位的
-  const kv=1.075, kh=0.968;                 // 宋竖排 +75/1000em；黑横排 −32/1000em
-  z = vert ? Math.min(z, (H-M*2.6)/(kv*(n-1)+1))
-           : Math.min(z, (W-M*2  )/(kh*(n-1)+1));
-  z = Math.max(z, 16*SC());
-  const adv = vert ? z*kv : z*kh;
-  return {z,vert,adv,n,
-    w: vert? z : adv*(n-1)+z,
-    h: vert? adv*(n-1)+z : z};
-}
-function clampTitle(){
-  const m=titleMetrics(), M=MARGIN();
-  S.tx=Math.max(M/W, Math.min(Math.max(M,W-M-m.w)/W, S.tx));
-  S.ty=Math.max(M/H, Math.min(Math.max(M,H-M*2.4-m.h)/H, S.ty));
-}
-function drawTitle(col){
-  const m=titleMetrics(), x=S.tx*W, y=S.ty*H;
-  ctx.save();ctx.fillStyle=col;ctx.textBaseline='top';
-  ctx.font='900 '+m.z+'px '+(S.font?'"Noto Sans SC","PingFang SC",sans-serif':'"Noto Serif SC","Songti SC",serif');
-  const t=TITLE();
-  for(let i=0;i<t.length;i++){
-    if(m.vert) ctx.fillText(t[i], x, y+i*m.adv);
-    else       ctx.fillText(t[i], x+i*m.adv, y);
+const TEXT_FONTS=[
+  {name:'宋',family:'"Noto Serif SC","Songti SC",serif',weight:900,track:.075},
+  {name:'黑',family:'"Noto Sans SC","PingFang SC",sans-serif',weight:900,track:.015},
+  {name:'衬',family:'"Fraunces","Noto Serif SC",serif',weight:800,track:.025},
+  {name:'窄',family:'"Archivo","Noto Sans SC",sans-serif',weight:600,track:.010}
+];
+function titleSeed(){return {text:TITLE(),x:.07,y:.075,size:2,font:0,dir:'v',role:'title'};}
+function ensureTexts(){
+  // 兼容协作分支建立前生成的候选状态：旧标题字段只在这里迁移一次。
+  if(!Array.isArray(S.texts)){
+    S.texts=[{text:TITLE(),x:S.tx==null ? .07 : S.tx,y:S.ty==null ? .075 : S.ty,
+      size:S.size==null?1:S.size,font:S.font||0,dir:(S.font||0)===0?'v':'h',role:'title'}];
   }
+  if(S.ti==null) S.ti=S.texts.length?0:-1;
+}
+function syncAutoTitle(){
+  ensureTexts();
+  let t=S.texts.find(x=>x.role==='title');
+  if(!t){t=titleSeed();S.texts.unshift(t);S.ti=0;}
+  t.text=TITLE();
+}
+function textChars(t){return [...String((t&&t.text)||' ')];}
+function fontSpec(t,z){
+  const f=TEXT_FONTS[Math.max(0,Math.min(TEXT_FONTS.length-1,t.font||0))];
+  return {f,css:f.weight+' '+z+'px '+f.family};
+}
+function textMetrics(t){
+  t=t||titleSeed();
+  const chars=textChars(t), vert=t.dir==='v', M=MARGIN();
+  let z=[34,50,68][t.size==null?1:t.size]*SC();
+  const f=TEXT_FONTS[t.font||0]||TEXT_FONTS[0];
+  const maxW=W-M*2, maxH=H-M*2.6;
+  if(vert){
+    const natural=z+(chars.length-1)*z*(1+f.track);
+    if(natural>maxH) z*=maxH/natural;
+  }else{
+    ctx.save();ctx.font=fontSpec(t,z).css;
+    let natural=0; chars.forEach((ch,i)=>natural+=ctx.measureText(ch).width+(i?z*f.track:0));ctx.restore();
+    if(natural>maxW) z*=maxW/natural;
+  }
+  z=Math.max(10*SC(),z);
+  const spec=fontSpec(t,z);
+  ctx.save();ctx.font=spec.css;
+  const widths=chars.map(ch=>ctx.measureText(ch).width);ctx.restore();
+  const adv=z*(1+spec.f.track);
+  const w=vert?Math.max(z,...widths):widths.reduce((a,b)=>a+b,0)+Math.max(0,chars.length-1)*z*spec.f.track;
+  const h=vert?z+(chars.length-1)*adv:z*1.12;
+  return {z,vert,adv,chars,widths,w,h,spec};
+}
+function clampText(t){
+  if(!t)return;
+  const m=textMetrics(t), M=MARGIN();
+  t.x=Math.max(M/W,Math.min(Math.max(M,W-M-m.w)/W,t.x));
+  t.y=Math.max(M/H,Math.min(Math.max(M,H-M*2.4-m.h)/H,t.y));
+}
+function clampTitle(){ensureTexts();S.texts.forEach(clampText);}
+function drawText(t,col){
+  if(!t||!String(t.text||'').trim())return;
+  const m=textMetrics(t), x=t.x*W, y=t.y*H;
+  ctx.save();ctx.fillStyle=col;ctx.textBaseline='top';ctx.font=m.spec.css;
+  if(m.vert){m.chars.forEach((ch,i)=>ctx.fillText(ch,x,y+i*m.adv));}
+  else{let dx=x;m.chars.forEach((ch,i)=>{ctx.fillText(ch,dx,y);dx+=m.widths[i]+m.z*m.spec.f.track;});}
   ctx.restore();
 }
+function drawTitle(col){ensureTexts();S.texts.forEach(t=>drawText(t,col));}
 function drawInfo(col){                     // 信息行永远贴住下边距，横排，小号
   const M=MARGIN(), z=12.5*SC();
   ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.9;
   ctx.font='500 '+z+'px "Archivo","Noto Sans SC",sans-serif';
   ctx.fillText(INFO(), M, H-M);ctx.restore();
 }
-function titleBox(){const m=titleMetrics();return {x:S.tx*W,y:S.ty*H,w:m.w,h:m.h,s:m.z};}
+function textBox(t){const m=textMetrics(t);return {x:t.x*W,y:t.y*H,w:m.w,h:m.h,s:m.z};}
+function titleText(){ensureTexts();return S.texts.find(t=>t.role==='title')||S.texts[0]||null;}
+function titleMetrics(){return textMetrics(titleText());}
+function titleBox(){const t=CT()||titleText();return t?textBox(t):{x:0,y:0,w:0,h:0,s:0};}
+function hitText(p){
+  ensureTexts();
+  for(let i=S.texts.length-1;i>=0;i--){const b=textBox(S.texts[i]);
+    if(p.x>b.x-10&&p.x<b.x+b.w+10&&p.y>b.y-10&&p.y<b.y+b.h+10)return i;}
+  return -1;
+}
+function addText(value){
+  ensureTexts();
+  if(S.texts.length>=8){setHint('一张海报最多放八行文字');return null;}
+  const n=S.texts.length,t={text:value||'新文字',x:.10+(n%3)*.08,y:.18+(n%4)*.12,
+    size:n?0:1,font:n%TEXT_FONTS.length,dir:n%2?'h':'v',role:'custom'};
+  S.texts.push(t);S.ti=S.texts.length-1;tsel=true;sel=false;clampText(t);placeText(t);sync();draw();return t;
+}
+function delText(){
+  ensureTexts();if(S.ti<0)return;
+  S.texts.splice(S.ti,1);S.ti=Math.min(S.ti,S.texts.length-1);tsel=S.ti>=0;sync();draw();
+}
+function placeText(t){
+  if(!t)return;
+  const M=MARGIN(),m=textMetrics(t),b=allBBox();
+  const cands=[[M,M],[Math.max(M,W-M-m.w),M],[M,Math.max(M,H-M*2.6-m.h)],
+    [Math.max(M,W-M-m.w),Math.max(M,H-M*2.6-m.h)]];
+  let best=cands[0],score=Infinity;
+  for(const q of cands){
+    let overlap=b?Math.max(0,Math.min(q[0]+m.w,b.x1)-Math.max(q[0],b.x0))*
+      Math.max(0,Math.min(q[1]+m.h,b.y1)-Math.max(q[1],b.y0)):0;
+    for(const o of S.texts){if(o===t)continue;const z=textBox(o);
+      overlap+=Math.max(0,Math.min(q[0]+m.w,z.x+z.w)-Math.max(q[0],z.x))*
+        Math.max(0,Math.min(q[1]+m.h,z.y+z.h)-Math.max(q[1],z.y));}
+    if(overlap<score){score=overlap;best=q;}if(overlap===0)break;
+  }
+  t.x=best[0]/W;t.y=best[1]/H;
+}
 // 标题只落在四个规范锚点上，并挑一个不压住图形的。随手撒位置是画面显廉价的另一个自由度。
 function placeTitle(){
-  const M=MARGIN(), m=titleMetrics(), b=allBBox();
-  const yTop=M, yBot=Math.max(M, H-M*2.6-m.h), xL=M, xR=Math.max(M, W-M-m.w);
-  const cands = m.vert ? [[xL,yTop],[xR,yTop],[xL,yBot],[xR,yBot]]
-                       : [[xL,yBot],[xL,yTop],[xR,yBot],[xR,yTop]];
-  let best=cands[0], bestOv=Infinity;
-  for(const q of cands){
-    const ov = b ? Math.max(0,Math.min(q[0]+m.w,b.x1)-Math.max(q[0],b.x0))
-                  *Math.max(0,Math.min(q[1]+m.h,b.y1)-Math.max(q[1],b.y0)) : 0;
-    if(ov<bestOv){bestOv=ov;best=q;}
-    if(ov===0) break;
-  }
-  S.tx=best[0]/W; S.ty=best[1]/H;
+  ensureTexts();placeText(titleText());
 }
 
 // ---------- 肌理 ----------
@@ -1458,9 +1566,12 @@ function draw(){
     ctx.save();ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1;
     ctx.beginPath();ctx.arc(hx,hy,5.5,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();
   }
-  if(hoverT&&!sel){const t=titleBox();
+  if((tsel||hoverText>=0)&&!sel){
+    const ti=tsel?S.ti:hoverText, tt=S.texts&&S.texts[ti], t=tt?textBox(tt):null;
+    if(t){
     ctx.save();ctx.strokeStyle='#00000044';ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.strokeRect(t.x-9,t.y-9,t.w+18,t.h+18);ctx.restore();}
+  }
 }
 
 // 首屏 0 秒就是一张印好的成品，0.6 秒后机器自己慢慢演示一次「拖一刀」。
@@ -1486,8 +1597,6 @@ const prefersStill=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-mo
 // ---------- 交互 ----------
 const pos=e=>{const r=cv.getBoundingClientRect();
   return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};};
-const inTitle=p=>{const t=titleBox();
-  return p.x>t.x-12&&p.x<t.x+t.w+12&&p.y>t.y-12&&p.y<t.y+t.h+12;};
 const inEl=p=>hitEl(p)>=0;
 const onHandle=p=>{ const e=CE(); if(!e||!sel)return false; const hr=handleR(e);
   return Math.hypot(p.x-(EX(e)+Math.cos(e.r+0.7)*hr), p.y-(EY(e)+Math.sin(e.r+0.7)*hr))<11; };
@@ -1497,11 +1606,14 @@ cv.addEventListener('pointerdown',e=>{
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
   const p=pos(e);
   if(onHandle(p)){drag={m:'handle'};return;}
-  if(S.cut){ const hi=hitEl(p);
-    if(hi>=0){ S.si=hi; sel=true; const e=CE();
+  if(S.cut){
+    const ht=hitText(p);
+    if(ht>=0){S.ti=ht;tsel=true;sel=false;const t=CT();
+      drag={m:'text',dx:p.x-t.x*W,dy:p.y-t.y*H};setStep(4);sync();draw();return;}
+    const hi=hitEl(p);
+    if(hi>=0){ S.si=hi; sel=true;tsel=false; const e=CE();
       drag={m:'el',dx:p.x-EX(e),dy:p.y-EY(e)}; setStep(3); sync(); draw(); return; } }
-  if(S.cut&&inTitle(p)){sel=false;drag={m:'title',dx:p.x-S.tx*W,dy:p.y-S.ty*H};setStep(4);draw();return;}
-  if(S.cut){sel=false;
+  if(S.cut){sel=false;tsel=false;
     const i=S.inkA,c=S.covA; S.inkA=S.inkB;S.covA=S.covB; S.inkB=i;S.covB=c;
     applyInks(); syncColor(); setStep((S.els&&S.els.length)?4:3); draw(); return;}
   cutting={x1:p.x,y1:p.y,x2:p.x,y2:p.y};
@@ -1520,12 +1632,14 @@ cv.addEventListener('pointermove',e=>{
       const R0=(ce2.k>=6||ce2.k===12)? d/(asp/2) : d;
       ce2.s=Math.max(.06,Math.min(.42,R0/W));
       ce2.r=snapAngle(Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7);}
-    else if(drag.m==='title'){S.tx=(p.x-drag.dx)/W; S.ty=(p.y-drag.dy)/H;}
+    else if(drag.m==='text'){
+      const t=CT();if(t){t.x=(p.x-drag.dx)/W;t.y=(p.y-drag.dy)/H;}
+    }
     draw();return;
   }
-  const hT=!!(S.cut&&inTitle(p)&&!inEl(p)), hE=!!(S.cut&&inEl(p));
-  if(hT!==hoverT||hE!==hoverEl){hoverT=hT;hoverEl=hE;
-    cv.style.cursor=onHandle(p)?'nwse-resize':(hE?'grab':(hT?'grab':(S.cut?'pointer':'crosshair')));draw();}
+  const hT=S.cut?hitText(p):-1, hE=!!(S.cut&&hT<0&&inEl(p));
+  if(hT!==hoverText||hE!==hoverEl){hoverText=hT;hoverEl=hE;
+    cv.style.cursor=onHandle(p)?'nwse-resize':(hE||hT>=0?'grab':(S.cut?'pointer':'crosshair'));draw();}
 });
 window.addEventListener('pointerup',()=>{
   if(cutting){
@@ -1741,7 +1855,7 @@ SHAPES.forEach((name,i)=>{
     allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));
     if(i>=6){ S.lat.a=i-6; if(S.lat.b===S.lat.a) S.lat.b=(S.lat.a+1)%6;
               S.lat.m=0; syncLathe(); }
-    addEl(i); sel=true;
+    addEl(i); sel=true;tsel=false;
     setStep(S.cut?3:1); setHint('拖动图形换位置，拖右下角把手缩放并旋转'); draw();};
   allBtn.push(b);
   (i<6?shEl:veEl).appendChild(b);
@@ -1750,15 +1864,35 @@ const custBtn=document.createElement('button');
 custBtn.hidden=true; custBtn.title='我的图'; custBtn.setAttribute('aria-pressed','false');
 custBtn.onclick=()=>{
   if(!S.cust) return;
-  addEl(12,{cu:S.cust, s:elSize(12,0.22,S.cust)}); sel=true;
+  addEl(12,{cu:S.cust, s:elSize(12,0.22,S.cust)}); sel=true;tsel=false;
   allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(j===12)));
   placeTitle(); draw();
 };
 allBtn.push(custBtn); veEl.appendChild(custBtn);
 
-document.getElementById('sz').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-  S.size=+b.dataset.s;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
-  setStep(4);draw();};
+const textList=document.getElementById('textlist'), textInput=document.getElementById('textinput');
+function syncTextPanel(){
+  ensureTexts();const t=CT();textList.innerHTML='';
+  S.texts.forEach((x,i)=>{const b=document.createElement('button');b.className='text-item';
+    b.setAttribute('aria-pressed',String(i===S.ti));b.innerHTML='<span class="num">'+(i+1)+'</span><span class="copy"></span>';
+    b.querySelector('.copy').textContent=x.text||'（空文字）';b.onclick=()=>{S.ti=i;tsel=true;sel=false;sync();draw();};
+    textList.appendChild(b);});
+  textInput.disabled=!t;textInput.value=t?t.text:'';
+  const set=(id,key,val)=>[...document.getElementById(id).children].forEach(x=>
+    x.setAttribute('aria-pressed',String(String(x.dataset[key])===String(val))));
+  set('tdir','dir',t?t.dir:'');set('tfont','font',t?t.font:-1);set('tsize','size',t?t.size:-1);
+  document.getElementById('deltext').disabled=!t;
+}
+textInput.addEventListener('input',()=>{const t=CT();if(!t)return;t.text=textInput.value;t.role='custom';
+  clampText(t);const row=textList.children[S.ti];if(row)row.querySelector('.copy').textContent=t.text||'（空文字）';draw();});
+document.getElementById('addtext').onclick=()=>{const t=addText();if(t){syncTextPanel();textInput.focus();textInput.select();}};
+document.getElementById('deltext').onclick=delText;
+document.getElementById('tdir').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
+  t.dir=b.dataset.dir;clampText(t);syncTextPanel();draw();};
+document.getElementById('tfont').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
+  t.font=+b.dataset.font;clampText(t);syncTextPanel();draw();};
+document.getElementById('tsize').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
+  t.size=+b.dataset.size;clampText(t);syncTextPanel();setStep(4);draw();};
 document.getElementById('fill').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   const ce=CE(); if(ce) ce.fill=+b.dataset.l;
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
@@ -1769,8 +1903,6 @@ document.getElementById('rep').onclick=e=>{const b=e.target.closest('button');if
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 document.getElementById('dot').onclick=e=>{const b=e.target.closest('button');if(!b)return;
   S.dot=+b.dataset.d;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
-document.getElementById('ft').onclick=e=>{const b=e.target.closest('button');if(!b)return;
-  S.font=+b.dataset.f;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();};
 
 // 随机生成一版合法且有反差的构图。
 // 这段就是之后 AI 要用的「候选生成器」：由它出 8 个合法方案，模型只负责挑一个。
@@ -1779,6 +1911,7 @@ const pick=a=>a[(Math.random()*a.length)|0];
 // 这是模型唯一能触到几何的通道，而且是一张受控词表——它写不出非法的参数，
 // 因为它根本不写参数，只写标记。
 function shuffleState(){
+  ensureTexts();
   const B=(S.ex&&S.ex.b)||{};
   const inkPool = B.blue ? LIB.filter(c=>{const h=hex2lch(c[0])[2];return h>200&&h<300;})
                 : B.quiet ? LIB.filter(c=>hex2lch(c[0])[1]<.13)
@@ -1840,7 +1973,9 @@ function shuffleState(){
         r: vessel ? (Math.random()<.7?0:(Math.random()-.5)*.14)
                   : pick([0,0,0,Math.PI/2,cutAng,cutAng,cutAng+Math.PI/2])};
   el0.rep = B.rep ? pick([3,3,5]) : vessel ? pick([1,1,1,3]) : pick([1,1,1,3,5]);
-  S.font=(Math.random()*2)|0; S.size=pick([0,1,1,2,2]);
+  const tt=titleText();
+  if(tt){tt.font=(Math.random()*TEXT_FONTS.length)|0;tt.size=pick([0,1,1,2,2]);
+    tt.dir=Math.random()<.5?'v':'h';}
   S.tex=pick([0,1,1,1,2]);
   el0.fill = B.dots ? pick([1,2,2,3,3]) : B.quiet ? pick([0,0,0,3]) : pick([0,0,1,2,2,3,3]);
   S.els=[el0]; S.si=0;
@@ -1857,7 +1992,7 @@ function shuffleState(){
   }
   clampEl(); placeTitle();
 }
-function shuffle(){ shuffleState(); sync(); sel=false; draw(); }
+function shuffle(){ shuffleState(); sync(); sel=false;tsel=false;draw(); }
 // 在一份复制品上生成，不动当前画布 —— 候选是"摆在旁边给你看"，不是"替你改掉"
 function genState(){
   const keep=JSON.parse(JSON.stringify(S));
@@ -1871,11 +2006,13 @@ function feat(st){
   const horiz = st.cut ? Math.abs(st.cut.x2-st.cut.x1)>Math.abs(st.cut.y2-st.cut.y1) : true;
   const pos = st.cut ? (horiz ? (st.cut.y1+st.cut.y2)/2 : (st.cut.x1+st.cut.x2)/2) : .5;
   const es = st.els||[], e = es[0] || {k:0,x:.5,y:.5,s:.2,fill:0,rep:1};
+  const tx=(st.texts&&st.texts[0])||{font:0,size:1,dir:'v'};
   return [pos*1.4, horiz?0:1.4,
           Lstar(st.a)/100, Lstar(st.b)/100,
           hex2lch(st.a)[1]*2.2, hex2lch(st.b)[1]*2.2,
           e.k/9, e.x, e.y, e.s*2.4,
-          (e.fill||0)/3, ((e.rep||1)-1)/4, (st.font||0)*.6, (st.size||0)/3,
+          (e.fill||0)/3, ((e.rep||1)-1)/4, (tx.font||0)*.24, (tx.size||0)/3,
+          tx.dir==='h' ? .35 : 0,
           es.length*0.7];                      // 元素个数本身就是一个可分辨的维度
 }
 const fdist=(a,b)=>{let t=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];t+=d*d;}return Math.sqrt(t);};
@@ -1902,12 +2039,12 @@ function sync(){
   const set=(id,attr,val)=>[...document.getElementById(id).children]
     .forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset[attr]===val)));
   const ce=CE();
-  set('rep','r',ce?(ce.rep||1):1); set('ft','f',S.font); set('sz','s',S.size);
+  set('rep','r',ce?(ce.rep||1):1);
   set('tex','t',S.tex); set('fill','l',ce?(ce.fill||0):0); set('dot','d',S.dot);
   allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(!!ce&&j===ce.k)));
   const cnt=document.getElementById('elcount');
   if(cnt) cnt.textContent=(S.els?S.els.length:0)+' 个元素'+(ce?'　选中第 '+(S.si+1)+' 个':'');
-  syncColor(); syncImg(); syncRecipe(); if(typeof drawLathe==='function') drawLathe();
+  syncColor();syncTextPanel();syncImg();syncRecipe();if(typeof drawLathe==='function')drawLathe();
 }
 // 用同一套绘制代码渲染任意状态到任意画布 —— 最终的作品散点图也靠它
 function renderTo(c2, st, w, h){
@@ -1928,7 +2065,7 @@ function showTray(){
     renderTo(c.getContext('2d'), st, 86, 117);
     b.appendChild(c);
     b.onclick=()=>{
-      S=JSON.parse(JSON.stringify(st)); sel=false; sync(); bounceEl(); draw();
+      S=JSON.parse(JSON.stringify(st));sel=false;tsel=false;sync();bounceEl();draw();
       [...trayEl.children].forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));
       setHint('这一版是你的了 —— 接着改，或者再要六个');
     };
@@ -2037,7 +2174,7 @@ function pushHist(){
     const c=document.createElement('canvas'); c.width=52; c.height=71;
     renderTo(c.getContext('2d'), h, 52, 71);
     c.title='回到这一版';
-    c.onclick=()=>{S=JSON.parse(JSON.stringify(h)); sel=false; sync(); draw();};
+    c.onclick=()=>{S=JSON.parse(JSON.stringify(h));sel=false;tsel=false;sync();draw();};
     el.appendChild(c);
   });
 }
@@ -2077,7 +2214,9 @@ function syncRecipe(){
            '  '+['实心','网点','渐变','半网'][S_el.fill||0]);
   }
   if((S.els||[]).some(e=>e.fill)) L.push('网屏  45°  '+PITCH[S.dot]+'px  套印 +1.4/−1.0px');
-  L.push('标题  '+(S.font?'黑体横排':'宋体竖排')+'  '+Math.round(titleMetrics().z)+'px');
+  ensureTexts();
+  S.texts.forEach((t,i)=>{const m=textMetrics(t),f=TEXT_FONTS[t.font||0]||TEXT_FONTS[0];
+    L.push('文字'+(i+1)+'  '+f.name+(t.dir==='v'?'竖排':'横排')+'  '+Math.round(m.z)+'px  「'+(t.text||'')+'」');});
   el.textContent=L.join('\n');
 }
 function syncBrief(){
@@ -2091,7 +2230,7 @@ function syncBrief(){
 document.getElementById('newbrief').onclick=()=>{
   newBrief(); syncBrief();
   if(!trayEl.hidden) showTray();      // 换了题，候选也跟着换
-  clampTitle(); placeTitle(); draw();
+  clampTitle();placeTitle();sync();draw();
   setHint('新题目 —— 现在这张海报是给《'+S.ex.t+'》做的');
 };
 window.addEventListener('keydown',e=>{
@@ -2099,14 +2238,21 @@ window.addEventListener('keydown',e=>{
   if(e.code==='Space'){ e.preventDefault(); showTray(); return; }
   const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   const ce=CE();
+  const ct=CT();
+  if(d && ct && tsel){e.preventDefault();const step=(e.shiftKey?8:1);
+    ct.x+=d[0]*step/W;ct.y+=d[1]*step/H;draw();return;}
   if(d && ce && sel){ e.preventDefault();
     const step=(e.shiftKey?8:1);
     ce.x+=d[0]*step/W; ce.y+=d[1]*step/H; draw(); return; }
+  if((e.key==='Delete'||e.key==='Backspace')&&ct&&tsel){e.preventDefault();delText();return;}
   if((e.key==='Delete'||e.key==='Backspace') && ce && sel){ e.preventDefault(); delEl(); return; }
-  if(e.key==='Tab' && S.els && S.els.length>1){      // Tab 在元素之间轮选
-    e.preventDefault(); S.si=(S.si+1)%S.els.length; sel=true; sync(); draw(); }
+  if(e.key==='Tab'){
+    const ne=(S.els||[]).length,nt=(S.texts||[]).length,total=ne+nt;if(total<2)return;
+    e.preventDefault();let at=sel?S.si:(tsel?ne+S.ti:-1);at=(at+1)%total;
+    if(at<ne){S.si=at;sel=true;tsel=false;}else{S.ti=at-ne;sel=false;tsel=true;}sync();draw();}
 });
 cv.addEventListener('dblclick',e=>{                 // 双击图形循环填充方式，不用去右边找
+  if(hitText(pos(e))>=0)return;
   const hi=hitEl(pos(e)); if(hi<0) return;
   S.si=hi; const ce=CE(); ce.fill=((ce.fill||0)+1)%4; sync(); draw();
 });
@@ -2125,18 +2271,30 @@ document.getElementById('fmt').onclick=e=>{
   clampAll(); clampTitle(); placeTitle(); sync(); draw();
 };
 document.getElementById('delel').onclick=()=>{ if(sel) delEl(); };
+document.getElementById('download').onclick=()=>{
+  const out=document.createElement('canvas'),scale=3;
+  out.width=cv.width*scale;out.height=cv.height*scale;
+  renderTo(out.getContext('2d'),JSON.parse(JSON.stringify(S)),out.width,out.height);
+  out.toBlob(blob=>{
+    if(!blob)return;
+    const a=document.createElement('a'),u=URL.createObjectURL(blob);
+    const name=String(TITLE()||'poster').replace(/[\\/:*?"<>|\s]+/g,'-').replace(/^-|-$/g,'');
+    a.href=u;a.download='cut-print-'+(name||'poster')+'.png';a.click();
+    setTimeout(()=>URL.revokeObjectURL(u),1200);setHint('高清 PNG 已生成');
+  },'image/png');
+};
 document.getElementById('shuffle').onclick=showTray;
 document.getElementById('reset').onclick=()=>{const keep=S.ex, kc=S.cust;
-  S=JSON.parse(JSON.stringify(blank));S.ex=keep;S.cust=kc;sel=false;
-  [...shEl.children].forEach(x=>x.setAttribute('aria-pressed','false'));setStep(1);draw();};
+  S=JSON.parse(JSON.stringify(blank));S.ex=keep;S.cust=kc;syncAutoTitle();sel=false;tsel=false;
+  [...shEl.children].forEach(x=>x.setAttribute('aria-pressed','false'));setStep(1);sync();draw();};
 
 const HINT={1:'在海报上按住并拖动 —— 划一刀（会自动吸附到正角度）',2:'从右边选一对墨色；点画面可左右互换',
-  3:'从右边选一个图形放进去，然后拖动它',4:'拖动标题换位置，右边调字号'};
+  3:'从右边选一个图形放进去，然后拖动它',4:'添加或选中文字；可直接拖动、改字、换方向'};
 function setHint(t){document.getElementById('hint').textContent=t;}
 function setStep(n){[...document.getElementById('steps').children].forEach((li,i)=>{
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});setHint(HINT[n]);}
 document.fonts&&document.fonts.ready.then(draw);
-newBrief(); syncBrief(); syncColor(); syncImg(); syncRecipe(); syncLathe();
+newBrief();syncBrief();sync();
 setTimeout(playDemo,600);
 setStep(1);setHint('这是一个做好的示例 —— 直接在上面划一刀，或点「重来」从空白开始');draw();
 // ===== 自检 =====
@@ -2202,10 +2360,12 @@ function selfTest(){
         cv.width=W=fm[0]; cv.height=H=fm[1];
         for(const b of BRIEFS){
           S.ex={t:b.t,d:b.d,v:b.v,k:b.k,b:b.b||{},date:'01.01 — 02.02'};
+          syncAutoTitle();
           for(let i=0;i<3;i++){
             shuffleState(); clampAll(); placeTitle(); tries++;
-            const m=titleMetrics(), M=MARGIN();
-            if(m.w>W-M*2+1||m.h>H-M*2.6+1) bad.title++;
+            const M=MARGIN();
+            for(const t of S.texts){const m=textMetrics(t);
+              if(m.w>W-M*2+1||m.h>H-M*2.6+1)bad.title++;}
             if(Math.abs(Lstar(S.a)-Lstar(S.b))<30) bad.dl++;
             for(const c of [S.covA,S.covB]) if(c>0.001&&(c<0.099||c>FULL+0.005)) bad.cov++;
             for(const e of S.els){ const bb=elBBox(e);
@@ -2214,7 +2374,7 @@ function selfTest(){
           const p=propose(6); if(p.spread<minSp) minSp=p.spread;
         }
       }
-      ok('标题不出边距', bad.title===0, bad.title+' / '+tries);
+      ok('所有文字不出边距', bad.title===0, bad.title+' / '+tries);
       ok('两支墨明度差 ΔL* ≥ 30', bad.dl===0, bad.dl+' / '+tries);
       ok('覆盖率落在可印区间 0 或 10–88%', bad.cov===0, bad.cov+' / '+(tries*2));
       ok('器物不被画布切掉', bad.el===0, bad.el+' / '+tries);
@@ -2228,7 +2388,10 @@ function selfTest(){
       const three=S.els.length===3;
       const hit=hitEl({x:EX(CE()),y:EY(CE())})===2;
       delEl();
-      ok('多元素：加/选/删', three && hit && S.els.length===2);
+      S.texts=[titleSeed(),{text:'TEST',x:.2,y:.2,size:0,font:3,dir:'h',role:'custom'}];S.ti=1;
+      const textHit=hitText({x:S.texts[1].x*W+2,y:S.texts[1].y*H+2})===1;
+      S.texts[1].text='EDIT';S.texts.splice(1,1);S.ti=0;
+      ok('图形与文字：加/选/改/删',three&&hit&&S.els.length===2&&textHit&&S.texts.length===1);
       ok('旋转吸附到 0/90/180', snapAngle(0.03)===0 && Math.abs(snapAngle(1.54)-Math.PI/2)<1e-6);
     })();
 
