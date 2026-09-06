@@ -47,7 +47,7 @@ git pull --rebase origin poster-collab
 | 切线角度 | 只能是 0° / 90° / ±7~12°，中间那段读作"手滑" | `snapTilt` |
 | 切线位置 | 小色域占 28–36%（或 64–72%），禁止对半切 | `snapPos` |
 | 两支墨明度差 | ΔL\* ≥ 30，甜区 40–70 | `shuffleState` 的兜底循环 |
-| 覆盖率 | 只能是 0（裸纸）或 10–88%。riso 印不出 100% 实地 | `snapCov` / `FULL` |
+| 覆盖率 | 只能是 0（裸纸）或当前纸张的稳定区间（3–95%） | `PAPER_STOCKS` / `snapCov` |
 | 网屏 | 全画面**一张**网，锚定在纸坐标系。跨切线只换墨色不换网屏 | `screenFill` |
 | 网点半径 | r = p·√(a/π)，含网点扩张 a+0.24·sin(πa)，色阶裁 10–85% | `inkR` |
 | 器物比例 | 来自馆藏实测（Met / 故宫），不是画出来的 | `PROF` / `ASPECT` |
@@ -68,7 +68,7 @@ git pull --rebase origin poster-collab
 <div class="stage">  画布 + 提示 + 候选托盘 + 历史缩略图
 <div class="panel">  右侧全部控件
 <script>
-  ├─ PAIRS/LIB/PAPERS/PITCH/FULL     色板与常数
+  ├─ PAIRS/LIB/PAPERS/PAPER_STOCKS   色板、纸张与可印区间
   ├─ PROF / ASPECT / VNAME           六件器物的馆藏实测剖面
   ├─ mkCut / snapPos / snapTilt      切线的合法化
   ├─ profSegs / shapeInto / vesselInto / elInto    形的路径
@@ -76,6 +76,7 @@ git pull --rebase origin poster-collab
   ├─ 抠图：otsu / morph / traceSub / rdpClosed / extract / useImage
   ├─ 颜色：hex2lch / lch2hex / Lstar / mixInk / applyInks
   ├─ 元素：addEl / delEl / hitEl / elPath / elBBox / clampEl / snapAngle
+  ├─ 纸张：buildPaperSurface / drawPaperSurface
   ├─ 网屏：screenFill / inkR          ← 印刷物理都在这
   ├─ draw()                          唯一的渲染入口
   ├─ shuffleState / propose / feat    候选生成与多样性
@@ -88,7 +89,8 @@ git pull --rebase origin poster-collab
 S = {
   ex:   {t,d,v,k,b,date},        // 展览命题，b 是影响生成器的标记
   cut:  {x1,y1,x2,y2},           // 切线
-  paper, inkA, covA, inkB, covB, // 纸 + 两支墨 + 覆盖率
+  paper, stock, tex,              // 纸色 + 纸种 + 纹理强度
+  inkA, covA, inkB, covB,         // 两支墨 + 覆盖率
   a, b,                          // 由上面算出来的两块色（别直接改，改完调 applyInks()）
   els: [{k,x,y,s,r,fill,rep,cu}],// 画面上的元素，k=0..5 几何 6..11 器物 12 自定义
   si:   0,                       // 选中第几个
@@ -96,7 +98,7 @@ S = {
   ti:   0,                       // 选中第几行文字
   lat:  {a,b,m,t},               // 车床：两件器物 + 插值 + 俯仰
   cust: {loops,asp,pts,src},     // 当前抠出来/旋出来的形
-  dot, tex                       // 网屏粗细 / 颗粒
+  dot                             // 网屏粗细
 }
 ```
 
@@ -121,18 +123,17 @@ S = {
 
 **已完成**：切一刀（含吸附/切开动画/剪刀光标）· 纸与墨与覆盖率（Yule-Nielsen 半调混色）·
 6 几何形 + 6 件器物 · 器物在三维里旋转与插值 · 上传图片本地抠剪影 · 多元素（加/选/删/Tab/吸附）·
-四种画幅 · 跨切线反色 · 网目调 · 颗粒 · 多行文字（加/选/改/删/拖动/横竖排/四字体）·
+四种画幅 · 跨切线反色 · 网目调 · 六类纸张与吸墨差异 · 多行文字（加/选/改/删/拖动/横竖排/四字体）·
 16 条命题池 · 候选托盘 · 配方打印 · 高清 PNG 下载 · 窄屏布局 · 开场自演示
 
 **待办**（按用户给的优先级）：
 
-1. **纸张材质可调**（新闻纸/牛皮纸/宣纸/再生纸…）
-2. **上传图渲染成三维**——建议用**分层错位**（丝网印多层套印的样子），
+1. **上传图渲染成三维**——建议用**分层错位**（丝网印多层套印的样子），
    不要用挤出成柱体（会像 PPT 的 3D 艺术字）
-3. **更多风格预设**（riso / 丝网 / 活版 / 瑞士 / 日本战后 / 包豪斯 / 构成主义…），
+2. **更多风格预设**（riso / 丝网 / 活版 / 瑞士 / 日本战后 / 包豪斯 / 构成主义…），
    每套是一整组参数的联动，不是单个开关
-4. **多件器物同时旋**（现在一次只能转一件）
-5. AI 介入——**优先级：配色建议 > 文案生成 > 操作建议 > 图像生成 > 陪伴**。
+3. **多件器物同时旋**（现在一次只能转一件）
+4. AI 介入——**优先级：配色建议 > 文案生成 > 操作建议 > 图像生成 > 陪伴**。
    后端 `poster/worker.js` 已写好（Cloudflare Workers AI，免费额度，不需要 API key），
    等用户建好 Worker 给网址
 
