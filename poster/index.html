@@ -70,6 +70,17 @@
   .tray-title{font-family:"Noto Serif SC",serif;font-size:26px;font-weight:900;letter-spacing:.04em}
   .tray-close{width:40px;height:40px;border:1px solid #aaa8a2;background:transparent;font-size:22px;
     cursor:pointer;color:var(--ink2)}
+  .tray-ctl{width:min(100%,970px);display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-8px 0 18px}
+  .tray-ctl .lk{font-family:var(--ui);font-size:11.5px;letter-spacing:.04em;padding:7px 12px;
+    border:1px solid #aaa8a2;background:transparent;color:var(--ink2);cursor:pointer;min-height:34px}
+  .tray-ctl .lk:hover{border-color:var(--ink3);color:var(--ink)}
+  .tray-ctl .lk[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .tray-ctl .sep{flex:1 1 12px}
+  .tray-ctl .mode{font-family:var(--ui);font-size:11.5px;letter-spacing:.04em;padding:7px 13px;
+    border:1px solid #aaa8a2;background:transparent;color:var(--ink2);cursor:pointer;min-height:34px}
+  .tray-ctl .mode[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tray-note{width:min(100%,970px);font-family:var(--ui);font-size:11px;color:#7a7b74;margin:0 0 16px;
+    letter-spacing:.02em}
   .cand-grid{width:min(100%,970px);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
   .cand{padding:0 0 10px;border:0;background:transparent;cursor:pointer;line-height:0;position:relative;
     text-align:left;filter:drop-shadow(0 4px 9px #0000002f);transition:transform .16s,filter .16s}
@@ -2668,10 +2679,79 @@ function feat(st){
           es.length*0.7];                      // 元素个数本身就是一个可分辨的维度
 }
 const fdist=(a,b)=>{let t=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];t+=d*d;}return Math.sqrt(t);};
+// ---- 锁：锁住你喜欢的，只重掷其余 ----
+// 「全部重掷」的致命伤是：好不容易碰到一个喜欢的局部，一按随机就没了 ——
+// 于是人不敢按，随机按钮的使用率崩塌。加锁之后随机的期望收益永远为正
+// （喜欢的保住、不喜欢的换掉），按下去的心理成本归零：随机就从「赌博」变成「搜索」。
+// 锁 k 个维度等于把搜索空间从 D 维降到 D−k 维，人实际是在做坐标下降 ——
+// 那正好是人能感知因果的粒度，全维随机时人什么也学不到。
+const LOCK_DIMS=[
+  {k:'cut',   t:'切',  d:'切线的角度和位置'},
+  {k:'ink',   t:'色',  d:'纸、两支墨、浓淡'},
+  {k:'shape', t:'形',  d:'有哪几个形、各是什么'},
+  {k:'place', t:'摆',  d:'在哪、多大、转多少、重复几次'},
+  {k:'type',  t:'字',  d:'字体、字号、横竖、位置'},
+  {k:'print', t:'印',  d:'网目、纸纹、填充方式'}
+];
+const LOCKS={cut:0,ink:0,shape:0,place:0,type:0,print:0};
+const INK_KEYS=['stock','paper','inkA','covA','inkB','covB','a','b'];
+const SHAPE_KEYS=['k','cu'], PLACE_KEYS=['x','y','s','r','rep'], PRINT_KEYS=['fill','d3'];
+const cloneJ=v=>v==null?v:JSON.parse(JSON.stringify(v));
+// 把被锁住的部分从 base 抄回 got
+function applyLocks(got, base, L){
+  L=L||LOCKS;
+  if(L.cut)  got.cut=cloneJ(base.cut);
+  if(L.ink)  for(const k of INK_KEYS) got[k]=cloneJ(base[k]);
+  if(L.print){ got.dot=base.dot; got.tex=base.tex; }
+  if(L.type){ got.texts=cloneJ(base.texts); got.ti=base.ti; }
+  if(L.shape||L.place||L.print){
+    const src=base.els||[], dst=got.els||[];
+    // 锁「形」或锁「摆」都把个数一起锁上：三个形变成一个形，那不叫保留了形；
+    // 而「摆」如果不锁个数，多出来的那个只能复制上一个的位置，两个形会精确重叠。
+    const cnt = (L.shape||L.place) ? src.length : dst.length;
+    const out=[];
+    for(let i=0;i<cnt;i++){
+      const b=src[i]||src[src.length-1], g=dst[i]||dst[dst.length-1];
+      if(!b&&!g) continue;
+      const e=cloneJ(g||b);
+      const put=(keys,from)=>{ if(!from) return;
+        for(const k of keys){ if(from[k]===undefined) delete e[k]; else e[k]=cloneJ(from[k]); } };
+      if(L.shape) put(SHAPE_KEYS,b);
+      if(L.place) put(PLACE_KEYS,b);
+      if(L.print) put(PRINT_KEYS,b);
+      out.push(e);
+    }
+    if(out.length){ got.els=out; got.si=Math.max(0,Math.min(out.length-1, base.si|0)); }
+  }
+  return got;
+}
 // 约束越硬，随机出来的候选越同质。不做最远点采样的话，六个可能长得一模一样，
 // 那"选哪个"这个动作就没有信息量了 —— 这既毁体验，也毁掉之后 AI 那一步的意义。
-function propose(want){
-  const pool=[]; for(let i=0;i<Math.max(28,want*5);i++) pool.push(genState());
+// 变奏：不是六个全新的，是六个近亲。做法就是「除了一两个维度，其余全锁」——
+// 和手动锁是同一个机制，只是锁的组合由程序逐个候选换一套。
+// 这补上了「全局重掷」之外的第二档：局部微扰。两档随机（大的和小的）
+// 才让人有得搜索 —— 只有全局重掷时，越接近满意就越不敢按。
+function proposeVary(want, base){
+  const keys=LOCK_DIMS.map(d=>d.k), pool=[], f0=feat(base);
+  for(let i=0;i<Math.max(54,want*9);i++){
+    // 每个候选只放开 1–2 个维度，其余全锁；放开哪个轮着来，保证六个改的地方各不相同
+    const open=[keys[i%keys.length]];
+    if(i%3===2) open.push(keys[(i*2+1)%keys.length]);
+    const L={}; for(const k of keys) L[k]= open.indexOf(k)>=0?0:1;
+    const g=applyLocks(genState(), base, L);
+    // 「改了一处但看不出来」等于白按。低于这个距离的候选直接丢掉 ——
+    // 实测全新那一档到当前版的距离在 1.1–2.1，近亲要明显小于它但不能小到没有。
+    if(fdist(feat(g), f0) < 0.42) continue;
+    pool.push(g);
+  }
+  return pool.length>=want ? pool : pool.concat(
+    Array.from({length:want}, function(){ return applyLocks(genState(), base, {}); }));
+}
+function propose(want, vary){
+  const base=JSON.parse(JSON.stringify(S));
+  const pool = vary ? proposeVary(want, base) : (function(){
+    const p=[]; for(let i=0;i<Math.max(28,want*5);i++) p.push(applyLocks(genState(), base));
+    return p; })();
   const fs=pool.map(feat), out=[0];
   let last=0;                       // 最远点采样里最后一次的最小间距 = 这组候选的可分辨下限
   while(out.length<want){
@@ -2685,7 +2765,12 @@ function propose(want){
     if(best<0) break;
     out.push(best); last=bd;
   }
-  return {list: out.map(i=>pool[i]), spread: last};
+  // 「意外但可控」是可以量出来的：候选离当前这版有多远。
+  // 太近＝按了没感觉，太远＝失控。量出来，下一轮调参才有依据。
+  const f0=feat(base), ds=out.map(i=>fdist(fs[i],f0));
+  return {list: out.map(i=>pool[i]), spread: last,
+          near:Math.min.apply(null,ds), far:Math.max.apply(null,ds),
+          mid:ds.reduce(function(a,b){return a+b;},0)/ds.length};
 }
 function sync(){
   const set=(id,attr,val)=>[...document.getElementById(id).children]
@@ -2712,13 +2797,45 @@ function renderTo(c2, st, w, h){
 }
 const trayEl=document.getElementById('tray');
 let TRAY=[];
+let TRAY_VARY=0;
 function showTray(){
-  const r=propose(6);
+  const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
+  const r=propose(6, TRAY_VARY);
   TRAY=r.list; trayEl.hidden=false; trayEl.innerHTML='';
   const head=document.createElement('div'); head.className='tray-head';
-  head.innerHTML='<div><p class="tray-kicker">Contact sheet / 06</p><p class="tray-title">选择一个方向继续</p></div>'+
+  head.innerHTML='<div><p class="tray-kicker">Contact sheet / 06</p><p class="tray-title">'+
+    (TRAY_VARY?'六个近亲':'选择一个方向继续')+'</p></div>'+
     '<button class="tray-close" type="button" aria-label="关闭方案比较">×</button>';
   head.querySelector('button').onclick=()=>{trayEl.hidden=true;};
+
+  // 锁条
+  const ctl=document.createElement('div'); ctl.className='tray-ctl';
+  const lab=document.createElement('span');
+  lab.style.cssText='font-family:var(--ui);font-size:11px;letter-spacing:.1em;color:#7a7b74';
+  lab.textContent='锁住'; ctl.appendChild(lab);
+  LOCK_DIMS.forEach(function(d){
+    const b=document.createElement('button'); b.type='button'; b.className='lk';
+    b.textContent=d.t; b.title=d.d+'（锁上就不会被重掷）';
+    b.setAttribute('aria-pressed', String(!!LOCKS[d.k]));
+    b.onclick=function(){ LOCKS[d.k]=LOCKS[d.k]?0:1; showTray(); };
+    ctl.appendChild(b);
+  });
+  const sep=document.createElement('span'); sep.className='sep'; ctl.appendChild(sep);
+  const mv=document.createElement('button'); mv.type='button'; mv.className='mode';
+  mv.textContent=TRAY_VARY?'近亲':'全新';
+  mv.title='「全新」六个互不相干；「近亲」六个都是当前这版只改一两处';
+  mv.setAttribute('aria-pressed', String(!!TRAY_VARY));
+  mv.onclick=function(){ TRAY_VARY=TRAY_VARY?0:1; showTray(); };
+  ctl.appendChild(mv);
+  const again=document.createElement('button'); again.type='button'; again.className='mode';
+  again.textContent='再来六个'; again.onclick=function(){ showTray(); };
+  ctl.appendChild(again);
+
+  const note=document.createElement('p'); note.className='tray-note';
+  note.textContent = TRAY_VARY
+    ? '近亲：每一个都是你现在这版只改一两处，改的地方六个各不相同。'
+    : (anyLock ? '锁上的部分原样保留，只有没锁的会变 —— 锁住喜欢的，再按「再来六个」。'
+               : '六个互不相干的方向。看到喜欢的局部，先把它锁住，再要六个。');
   const grid=document.createElement('div'); grid.className='cand-grid';
   TRAY.forEach((st,i)=>{
     const b=document.createElement('button'); b.className='cand';
@@ -2738,8 +2855,9 @@ function showTray(){
     };
     grid.appendChild(b);
   });
-  trayEl.append(head,grid);
-  setHint('六个方案，挑一个点进去。不选也不会动你现在这版');
+  trayEl.append(head,ctl,note,grid);
+  setHint(TRAY_VARY?'六个近亲，都是这一版改一两处。不选也不会动你现在这版'
+                   :'六个方案，挑一个点进去。不选也不会动你现在这版');
 }
 // ---- 图片进来的三条路：选文件、拖到画布、Ctrl+V ----
 const imgBlk=document.getElementById('imgblk');
@@ -3268,6 +3386,48 @@ function selfTest(){
         }
       }
       ok('四个填充互不相同', minD>0.004, '最小 '+(minD*100).toFixed(2)+'%（'+worst+'）');
+    })();
+
+    // 6d. 锁：锁上的维度必须原样保住，没锁的必须真的变
+    (function(){
+      const DIMS=LOCK_DIMS.map(d=>d.k);
+      // 每个维度的快照都要跟元素个数无关，否则测的是个数不是这个维度本身
+      const snap=st=>({
+        cut:JSON.stringify(st.cut),
+        ink:[st.stock,st.inkA,st.covA,st.inkB,st.covB].join('|'),
+        shape:(st.els||[]).map(e=>e.k).join(','),
+        place:(st.els||[]).map(e=>[e.x.toFixed(3),e.y.toFixed(3),e.s.toFixed(3),e.r.toFixed(3),e.rep].join('/')).join(','),
+        type:(st.texts||[]).map(t=>[t.font,t.size,t.dir].join('/')).join(','),
+        print:[st.dot,st.tex,(st.els&&st.els[0])?((st.els[0].fill||0)+':'+(st.els[0].d3||0)):''].join('|')
+      });
+      const save={}; for(const k of DIMS) save[k]=LOCKS[k];
+      let leak=0, stuck=0, tries=0;
+      for(let t=0;t<4;t++){
+        shuffleState(); const b=snap(JSON.parse(JSON.stringify(S)));
+        for(const dim of DIMS){
+          for(const k of DIMS) LOCKS[k]=0;
+          LOCKS[dim]=1;
+          for(const st of propose(6,0).list){
+            const q=snap(st); tries++;
+            if(q[dim]!==b[dim]) leak++;                              // 锁住的漏了
+            if(!DIMS.some(o=>o!==dim && q[o]!==b[o])) stuck++;        // 没锁的没变
+          }
+        }
+      }
+      for(const k of DIMS) LOCKS[k]=save[k];
+      ok('锁：锁上的保住、没锁的会变', leak===0&&stuck===0, leak+' 漏 / '+stuck+' 没动 / '+tries);
+    })();
+
+    // 6e. 近亲要比全新近，但不能近到看不出变化
+    (function(){
+      const fr=[], vr=[];
+      for(let i=0;i<5;i++){ shuffleState(); fr.push(propose(6,0)); vr.push(propose(6,1)); }
+      const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+      const fm=avg(fr.map(r=>r.mid)), vm=avg(vr.map(r=>r.mid));
+      const vn=Math.min.apply(null,vr.map(r=>r.near));
+      ok('近亲比全新近，但每一个都看得出变化',
+         vm<fm*0.75 && vn>0.30,
+         '全新 '+fm.toFixed(2)+' / 近亲 '+vm.toFixed(2)+' / 近亲最近的 '+vn.toFixed(2));
     })();
 
     // 7. 性能
