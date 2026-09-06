@@ -118,6 +118,9 @@
   .cand-grid{width:min(100%,970px);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
   .cand .far{position:absolute;top:5px;left:5px;z-index:2;background:var(--accent);color:#fff;
     font-family:var(--ui);font-size:9px;letter-spacing:.08em;padding:2px 5px;line-height:1.4}
+  .cand-skel{background:#00000010;box-shadow:inset 0 0 0 1px #00000014;animation:skel 1.1s ease-in-out infinite}
+  @keyframes skel{0%,100%{opacity:.55}50%{opacity:.9}}
+  @media (prefers-reduced-motion: reduce){ .cand-skel{animation:none} }
   .cand{padding:0 0 10px;border:0;background:transparent;cursor:pointer;line-height:0;position:relative;
     text-align:left;filter:drop-shadow(0 4px 9px #0000002f);transition:transform .16s,filter .16s}
   .cand canvas{display:block;width:100%;height:auto;box-shadow:0 0 0 1px #0000001a}
@@ -3235,6 +3238,7 @@ let TRAY=[];
 // 就永远找不回来了 —— 回到上一步只会重新抽六张全新的。
 // 核验 agent 把这条列为「可玩性最大的漏水口」。
 let TRAY_PATH=[];
+let TRAY_FILL=null;                  // 待算的那一批候选；自检要能同步逼它算出来
 let TRAY_VARY=1;                     // 默认「近亲」：机器建立在你的投入之上
 // ⚠️ reuse 只接受 propose() 的返回值（回到上一步时把当时那六张原样端回来）。
 // 必须验一下它长什么样：这两个按钮原来是 onclick=showTray，
@@ -3245,8 +3249,7 @@ let TRAY_VARY=1;                     // 默认「近亲」：机器建立在你�
 function showTray(reuse){
   const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
   const allLock=LOCK_DIMS.every(d=>LOCKS[d.k]);
-  const r=(reuse && Array.isArray(reuse.list)) ? reuse : propose(6, TRAY_VARY);
-  TRAY=r.list; trayEl.hidden=false; trayEl.innerHTML='';
+  trayEl.innerHTML='';
   const head=document.createElement('div'); head.className='tray-head';
   head.innerHTML='<div><p class="tray-kicker">Contact sheet / 06</p><p class="tray-title">'+
     (TRAY_VARY?'六个近亲':'选择一个方向继续')+'</p></div>'+
@@ -3324,7 +3327,43 @@ function showTray(reuse){
   }
   now.append(cur, path);
   const grid=document.createElement('div'); grid.className='cand-grid';
-  TRAY.forEach((st,i)=>{
+  // 先把壳画出来，候选放到下一帧再算。
+  // propose() 加六张缩略图要 200–300ms，同步做的话点下去有一段时间画面完全不动 ——
+  // 那正是用户说的「卡」。先给骨架屏，浏览器就有机会把托盘画出来。
+  const tw0=180, th0=Math.round(tw0*H/W);
+  for(let i=0;i<6;i++){
+    const sk=document.createElement('div'); sk.className='cand cand-skel';
+    sk.style.height=th0+'px'; sk.style.borderRadius='0';
+    grid.appendChild(sk);
+  }
+  trayEl.append(head,ctl,note,now,grid);
+  trayEl.hidden=false;
+  setHint(TRAY_VARY?'六个近亲，都是这一版改一两处。不选也不会动你现在这版'
+                   :'六个方案，挑一个点进去。不选也不会动你现在这版');
+
+  TRAY_FILL=function(){
+    TRAY_FILL=null;
+    if(trayEl.hidden) return;
+    grid.innerHTML='';
+    const r2=(reuse && Array.isArray(reuse.list)) ? reuse : propose(6, TRAY_VARY);
+    TRAY=r2.list;
+    buildCands(grid, r2);
+  };
+  if(reuse && Array.isArray(reuse.list)) TRAY_FILL();      // 端回来的那六张不用等
+  else {
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(TRAY_FILL) TRAY_FILL(); }); });
+    // rAF 会被节流（后台标签页、或者这一帧没有任何东西要画），
+    // 只挂 rAF 的话候选可能一直不出现。实测递归那一步就这么空过一次。
+    setTimeout(function(){ if(TRAY_FILL) TRAY_FILL(); }, 90);
+  }
+  return;
+}
+// 六个候选的按钮。单独拎出来是因为它要么在下一帧被调用（新算的），
+// 要么立刻被调用（从「走过的路」端回来的那六张）。
+function buildCands(grid, r){
+  const TRAYL=r.list;
+  TRAY=TRAYL;
+  TRAYL.forEach((st,i)=>{
     const b=document.createElement('button'); b.className='cand';
     b.setAttribute('aria-pressed','false');
     b.title=r.far6===i?'一个跟当前无关的方向 —— 用来跳出局部最优':'从这一版接着往下走';
@@ -3346,9 +3385,6 @@ function showTray(reuse){
     };
     grid.appendChild(b);
   });
-  trayEl.append(head,ctl,note,now,grid);
-  setHint(TRAY_VARY?'六个近亲，都是这一版改一两处。不选也不会动你现在这版'
-                   :'六个方案，挑一个点进去。不选也不会动你现在这版');
 }
 // ---- 成品态：一版一版压上去 ----
 // 丝网印和 riso 是分版印的：先底色，再图形，最后文字。
@@ -3982,7 +4018,10 @@ function selfTest(){
         for(const id of ['topVariants','shuffle']){
           const b=document.getElementById(id); if(!b) continue;
           b.dispatchEvent(new MouseEvent('click',{bubbles:true}));
-          cands=Math.max(cands, document.querySelectorAll('.cand').length);
+          // 托盘先出骨架屏、候选放到下一帧算。自检是同步跑完的，rAF 不会推进，
+          // 所以这里同步逼它算出来 —— 否则量到的是六个骨架而不是六个候选。
+          if(typeof TRAY_FILL==='function') TRAY_FILL();
+          cands=Math.max(cands, document.querySelectorAll('.cand:not(.cand-skel)').length);
           trayEl.hidden=true;
         }
         closed=true;
