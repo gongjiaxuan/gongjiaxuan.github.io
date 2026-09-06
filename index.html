@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="images/bird-icon.svg" type="image/svg+xml">
   <title>Jiaxuan Gong — Design-trained HCI/UX Researcher</title>
   <meta name="description" content="Jiaxuan Gong — design-trained empirical HCI/UX researcher working on emerging technology evaluation, accessibility, immersive interaction, and service UX.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -432,6 +433,22 @@
     }
     .proj-card:hover .pc-preview img { transform: scale(1.045); }
 
+    .proj-card .pc-live {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      z-index: 2;
+      padding: 0.2rem 0.45rem;
+      border: 1px solid rgba(255,255,255,0.72);
+      border-radius: 4px;
+      color: #ffffff;
+      background: rgba(20,30,28,0.82);
+      font-size: 0.55rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
     .proj-card .pc-preview::after {
       content: '';
       position: absolute;
@@ -770,14 +787,20 @@
       cats.forEach(function(c){fhtml+='<span class="filter-tag'+(c==='All'?' active':'')+'" data-cat="'+c+'">'+c+'</span>'});
       document.getElementById('filterBar').innerHTML=fhtml;
 
-      var prh='',prIndex=0;
-      PR.forEach(function(p){
+      var prh='';
+      var orderedProjects=PR.map(function(p,index){return {project:p,index:index}}).sort(function(a,b){
+        return Number(Boolean(b.project.featured))-Number(Boolean(a.project.featured));
+      });
+      orderedProjects.forEach(function(item){
+        var p=item.project,prIndex=item.index;
         var cat=p.category||'';
         var imgSrc=p.cardImage||p.hero||'';
         var tagHtml=(p.tags||[]).slice(0,3).map(function(t){return '<span class="pc-tag">'+t+'</span>'}).join('');
         var imgHtml=imgSrc?'<img src="'+imgSrc+'" alt="'+p.title+'" loading="lazy" onerror="this.remove()">':'';
-        prh+='<a class="proj-card" href="project.html?id='+prIndex+'" data-cat="'+cat+'"><div class="pc-preview">'+imgHtml+'<span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+tagHtml+'</div></a>';
-        prIndex++;
+        var href=p.demoUrl||('project.html?id='+prIndex);
+        var live=p.demoUrl?'<span class="pc-live">Interactive prototype</span>':'';
+        var label=p.demoUrl?' aria-label="Open interactive prototype: '+p.title+'"':'';
+        prh+='<a class="proj-card'+(p.demoUrl?' is-demo':'')+'" href="'+href+'" data-cat="'+cat+'"'+label+'><div class="pc-preview">'+imgHtml+live+'<span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+tagHtml+'</div></a>';
       });
       document.getElementById('projRow').innerHTML=prh;
 
