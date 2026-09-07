@@ -11,25 +11,25 @@
 
 ## 一、开工前必做的两件事
 
-海报现在有一个独立的干净工作区，避免卷入主网站尚未解决的 CV 冲突：
+最新海报代码已经由 Claude 合并并上线，当前工作区是：
 
 ```text
-E:\PHD_27\portfolio_poster_collab
+E:\PHD_27\portfolio
 ```
 
-在这个目录开工，并先同步协作分支：
+在这个目录开工，并先同步主分支：
 
 ```bash
-git pull --rebase origin poster-collab
+git pull --rebase origin main
 ```
 
-暂时不要在 `E:\PHD_27\portfolio` 里提交海报改动。那个主工作区保留着用户的
-网站、图片与 CV 改动，其中 CV 文件仍有待用户确认；海报代码没有冲突。
+`E:\PHD_27\portfolio_poster_collab` 停在较早版本，不要从那里继续。主工作区有用户尚未
+提交的 CV、图片和视频；只提交自己改过的 `poster/` 文件，不要顺手暂存其他目录。
 
 然后在浏览器里打开 **`poster/index.html?selftest=1`** ——
-它会跑一遍全部不变量，在页面上印出 `自检 15 / 15 全部通过`。
+它会跑一遍全部不变量，在页面上印出 `自检 24 / 24 全部通过`。
 
-**收工前再跑一次。** 只要不是 15/15，就是你改坏了东西。整页耗时约 800ms。
+**收工前再跑一次。** 只要不是 24/24，就是你改坏了东西。整页耗时约 4–10 秒。
 
 > 直接双击打开 `file://` 就能跑。要本地服务器的话：
 > `python -m http.server 8000`，然后开 `http://localhost:8000/poster/?selftest=1`
@@ -78,7 +78,7 @@ git pull --rebase origin poster-collab
   ├─ PAIRS/LIB/PAPERS/PAPER_STOCKS   色板、纸张与可印区间
   ├─ PROF / ASPECT / VNAME           六件器物的馆藏实测剖面
   ├─ mkCut / snapPos / snapTilt      切线的合法化
-  ├─ profSegs / shapeInto / vesselInto / elInto    形的路径
+  ├─ profSegs / profInto / shapeInto / elInto      形的路径
   ├─ 旋成体：curLathe / latheMask / latheToShape / drawLathe
   ├─ 抠图：otsu / morph / traceSub / rdpClosed / extract / useImage
   ├─ 颜色：hex2lch / lch2hex / Lstar / mixInk / applyInks
@@ -99,12 +99,11 @@ S = {
   paper, stock, tex,              // 纸色 + 纸种 + 纹理强度
   inkA, covA, inkB, covB,         // 两支墨 + 覆盖率
   a, b,                          // 由上面算出来的两块色（别直接改，改完调 applyInks()）
-  els: [{k,x,y,s,r,fill,rep,cu}],// 画面上的元素，k=0..5 几何 6..11 器物 12 自定义
+  els: [{k,x,y,s,r,fill,rep,cu,lat}],// k=0..5 几何；k=12 自定义；器物另带 lat
   si:   0,                       // 选中第几个
   texts:[{text,x,y,size,font,dir,role}], // 可编辑文字；dir=h/v，role=title/custom
   ti:   0,                       // 选中第几行文字
-  lat:  {a,b,m,t},               // 车床：两件器物 + 插值 + 俯仰
-  cust: {loops,asp,pts,src},     // 当前抠出来/旋出来的形
+  cust: {loops,asp,pts,src},     // 当前上传图片抠出的形
   dot                             // 网屏粗细
 }
 ```
@@ -113,9 +112,9 @@ S = {
 
 ## 四、协作规矩（防止两个 agent 打架）
 
-1. 在 `E:\PHD_27\portfolio_poster_collab` 开工，先运行
-   `git pull --rebase origin poster-collab`；收工运行 `git push origin poster-collab`。
-   别攒一大堆再推。通过审核的版本再合并到 `main` 上线。
+1. 在 `E:\PHD_27\portfolio` 开工，先运行
+   `git pull --rebase origin main`；收工运行 `git push origin main`。
+   别攒一大堆再推，只暂存自己修改的 `poster/` 文件。
 2. **每次收工在 `poster/WORKLOG.md` 顶部追加一条**：日期、你是谁、改了什么、自检结果。
    下一个人靠它知道现在到哪了。
 3. **一次只做一件事，做完就提交。** 这个文件 120KB，冲突起来很难合。
@@ -129,7 +128,7 @@ S = {
 ## 五、现在的状态
 
 **已完成**：切一刀（含吸附/切开动画/剪刀光标）· 纸与墨与覆盖率（Yule-Nielsen 半调混色）·
-6 几何形 + 6 件器物 · 器物在三维里旋转与插值 · 上传图片本地抠剪影 · 多元素（加/选/删/Tab/吸附）·
+6 几何形 + 6 条馆藏器物剖面 · 每件器物独立旋转与插值 · 上传图片本地抠剪影 · 多元素（加/选/删/Tab/吸附）·
 四种画幅 · 跨切线反色 · 网目调 · 六类纸张与吸墨差异 · 多行文字（加/选/改/删/拖动/横竖排/四字体）·
 16 条命题池 · 候选托盘 · 配方打印 · 高清 PNG 下载 · 窄屏布局 · 开场自演示
 
@@ -139,8 +138,7 @@ S = {
    不要用挤出成柱体（会像 PPT 的 3D 艺术字）
 2. **更多风格预设**（riso / 丝网 / 活版 / 瑞士 / 日本战后 / 包豪斯 / 构成主义…），
    每套是一整组参数的联动，不是单个开关
-3. **多件器物同时旋**（现在一次只能转一件）
-4. AI 介入——**优先级：配色建议 > 文案生成 > 操作建议 > 图像生成 > 陪伴**。
+3. AI 介入——**优先级：配色建议 > 文案生成 > 操作建议 > 图像生成 > 陪伴**。
    后端 `poster/worker.js` 已写好（Cloudflare Workers AI，免费额度，不需要 API key），
    等用户建好 Worker 给网址
 

@@ -596,8 +596,11 @@ const minCov=()=>stockSpec().min;
 // 拉浓淡时会自然经过它，所以生成器每一步都要吸附回可印区间。
 const snapCov=v=>v<minCov() ? 0 : Math.min(fullCov(),v);
 const MARGIN=()=>0.07*Math.min(W,H);   // 外边距 = 短边 7%；文字图形都在里面，只有色域出血
-const SHAPES=['circle','arc','bar','tri','ring','dots','meiping','yuhuchun','suantou','hulu','gu','wan'];
+const SHAPES=['circle','arc','bar','tri','ring','dots'];
 const VNAME={meiping:'梅瓶',yuhuchun:'玉壶春瓶',suantou:'蒜头瓶',hulu:'葫芦瓶',gu:'觚',wan:'碗'};
+const VKEYS=['meiping','yuhuchun','suantou','hulu','gu','wan'];
+const LATHE_DEFAULT={a:0,b:1,m:0,t:0};
+let LATHE_DRAFT=Object.assign({},LATHE_DEFAULT);
 // 剖面 = [通高比例 t, 半宽/最大半宽, 标记]。标记 1 = 曲率极值（切线锁竖直），2 = 角点（不平滑），0 = 普通。
 // 剪影的信息几乎全部集中在曲率极值上（Attneave 1954；Hoffman & Richards 1984 minima rule；
 // Feldman & Singh 2005），所以控制点必须锚在极值上，凹段给最多的点。
@@ -647,7 +650,7 @@ const PROF={
 const ASPECT={meiping:2.98, yuhuchun:3.88, suantou:4.30, hulu:3.85, gu:5.20, wan:1.15};
 // 按外接框面积定尺寸，再夹住宽高上限——不然瘦长的瓶和扁宽的碗没法用同一个滑块
 // 自定义剪影的宽高比不是常数，来自被抠出来的那张图，所以统一走这个函数
-const aspOf=(k,cu)=> k===12 ? ((cu||S.cust)?(cu||S.cust).asp:2) : k>=6 ? (ASPECT[SHAPES[k]]||2.3) : 2;
+const aspOf=(k,cu)=> k===12 ? ((cu||S.cust)?(cu||S.cust).asp:2) : 2;
 // 同样大的外接框里，圆只有 78.5% 是墨，三角形只有 50% —— 并排放就是圆明显更小。
 // 所以尺寸必须按"墨的面积"定，不按外接框。这是让多个元素并排时不打架的第一件事，
 // 而且零算法成本。圆因此要放大到方的 112.84%（=√(4/π)），三角形放大 √2。
@@ -665,11 +668,7 @@ function fillRatio(k,cu){
     const bb=Math.max(1e-6,(x1-x0)*(y1-y0));
     return Math.min(1, Math.max(0.15, Math.abs(a/2)/bb));
   }
-  const P=PROF[SHAPES[k]]; if(!P) return 0.6;    // 器物：剖面半宽的平均值就是填充率
-  let sum=0, span=0;
-  for(let i=1;i<P.length;i++){ const dt=P[i][0]-P[i-1][0];
-    sum += (P[i][1]+P[i-1][1])/2*dt; span += dt; }
-  return Math.min(1, Math.max(0.15, sum/Math.max(1e-6,span)));
+  return 0.6;
 }
 function elSize(k,frac,cu){
   const asp = aspOf(k,cu);
@@ -677,16 +676,16 @@ function elSize(k,frac,cu){
   return r/W;
 }
 
-const blank={ex:null,lang:'zh',lat:{a:0,b:1,m:0,t:0.22},cut:null,pair:0,paper:PAIRS[0][0],inkA:PAIRS[0][1],covA:0,inkB:PAIRS[0][1],covB:.86,
+const blank={ex:null,lang:'zh',cut:null,pair:0,paper:PAIRS[0][0],inkA:PAIRS[0][1],covA:0,inkB:PAIRS[0][1],covB:.86,
   a:PAIRS[0][0],b:PAIRS[0][1],els:[],si:-1,texts:[],ti:-1,stock:0,tex:1,dot:1};
 // 候选预览的基准构图。启动时不再展示它，避免示例锚定用户。
-const demo={ex:null,lat:{a:0,b:1,m:0,t:0.22},cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
+const demo={ex:null,cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
   inkA:PAIRS[1][1], covA:0, inkB:PAIRS[1][1], covB:.86, a:PAIRS[1][0], b:PAIRS[1][1],
   mis:0, mark:1,
-  els:[{k:6,x:.60,y:.46,s:.193,r:0.03,fill:3,rep:1}], si:0,
+  els:[{k:0,x:.60,y:.46,s:.193,r:0.03,fill:3,rep:1}], si:0,
   texts:[],ti:-1,stock:0,tex:1,dot:1};
 let S=JSON.parse(JSON.stringify(blank));
-let holdShape=0, drag=null, cutting=null, hoverText=-1, hoverEl=false, sel=false, tsel=false;
+let drag=null, cutting=null, hoverText=-1, hoverEl=false, sel=false, tsel=false;
 const selectionDeleteEl=document.getElementById('selectionDelete');
 
 // ---------- 几何 ----------
@@ -710,7 +709,7 @@ function pathPoly(poly){if(!poly||poly.length<3)return false;ctx.beginPath();ctx
 const CE = ()=> (S.els && S.si>=0) ? (S.els[S.si]||null) : null;
 const CT = ()=> (S.texts && S.ti>=0) ? (S.texts[S.ti]||null) : null;
 const EX = e=>e.x*W, EY = e=>e.y*H, ES = e=>e.s*W;
-const aspOfE = e=> e.k===12 ? (e.cu?e.cu.asp:2) : e.k>=6 ? (ASPECT[SHAPES[e.k]]||2.3) : 2;
+const aspOfE = e=> e.k===12 ? (e.cu?e.cu.asp:2) : 2;
 // 切线角度只允许 0°、90°、±7–12°：中间那段斜度读作「手滑」，是最容易让生成画面显廉价的自由度。
 // 位置只允许小色域占 28–36%（或 64–72%）：对半切是最没有决策的决策。
 const TILTS=[0,7,9,12];
@@ -824,7 +823,6 @@ function profPts(prof,asp,r){
   const F=prof.map(q=>q[2]||0);
   return {Rt,Lf,F,Fr:F.slice().reverse()};
 }
-function vesselPts(name,r){ return profPts(PROF[name], ASPECT[name]||2.3, r); }
 function profInto(P,prof,asp,r){
   const V=profPts(prof,asp,r);
   P.moveTo(V.Rt[0][0],V.Rt[0][1]);
@@ -833,18 +831,9 @@ function profInto(P,prof,asp,r){
   profSegs(V.Lf,V.Fr).forEach(c=>P.bezierCurveTo(c[0],c[1],c[2],c[3],c[4],c[5]));
   P.closePath();
 }
-function vesselInto(P,name,r){
-  const V=vesselPts(name,r);
-  P.moveTo(V.Rt[0][0],V.Rt[0][1]);
-  profSegs(V.Rt,V.F).forEach(c=>P.bezierCurveTo(c[0],c[1],c[2],c[3],c[4],c[5]));
-  P.lineTo(V.Lf[0][0],V.Lf[0][1]);        // 足底平切：剪影的底就是一条水平线
-  profSegs(V.Lf,V.Fr).forEach(c=>P.bezierCurveTo(c[0],c[1],c[2],c[3],c[4],c[5]));
-  P.closePath();                           // 口沿平切：器物是开口的，侧影顶边就是口沿
-}
 function elInto(P,e,r){
   const k=(typeof e==='number')?e:e.k;
   if(k===12) customInto(P, r, (typeof e==='object'&&e.cu)?e.cu:S.cust);
-  else if(k>=6) vesselInto(P,SHAPES[k],r);
   else shapeInto(P,k,r);
 }
 // 抠出来的轮廓已经归一化：半宽 = 1，所以乘以 r 就和器物、几何形共用同一套尺寸逻辑
@@ -896,11 +885,22 @@ function profAt(P,t){
   }
   return P[m-1][1];
 }
-const VKEYS=['meiping','yuhuchun','suantou','hulu','gu','wan'];
-function curLathe(){
-  const A=PROF[VKEYS[S.lat.a]], B=PROF[VKEYS[S.lat.b]], k=S.lat.m;
-  const aspA=ASPECT[VKEYS[S.lat.a]], aspB=ASPECT[VKEYS[S.lat.b]];
+function safeLathe(lat){
+  const q=lat||LATHE_DRAFT;
+  return {a:Math.max(0,Math.min(5,q.a|0)), b:Math.max(0,Math.min(5,q.b|0)),
+          m:Math.max(0,Math.min(1,+q.m||0)), t:Math.max(0,Math.min(1.05,+q.t||0))};
+}
+function latheForEdit(){ const e=CE(); return e&&e.k===12&&e.lat ? e.lat : LATHE_DRAFT; }
+function curLathe(lat){
+  const q=safeLathe(lat), A=PROF[VKEYS[q.a]], B=PROF[VKEYS[q.b]], k=q.m;
+  const aspA=ASPECT[VKEYS[q.a]], aspB=ASPECT[VKEYS[q.b]];
   return { at:t=>profAt(A,t)*(1-k)+profAt(B,t)*k, asp:aspA*(1-k)+aspB*k };
+}
+function latheProfile(lat){
+  const q=safeLathe(lat), raw=lerpProf(PROF[VKEYS[q.a]],PROF[VKEYS[q.b]],q.m);
+  const mx=Math.max(1e-6,...raw.map(p=>p[1]));
+  const L=curLathe(q);
+  return {prof:raw.map(p=>[p[0],p[1]/mx,p[2]||0]), asp:L.asp/mx, mx};
 }
 // 把旋成体投影成一张二值蒙版。tilt=0 是正侧视（退回原来的剪影），
 // 越大越俯视，口沿会张开成一个椭圆——那个洞是真的，不是画上去的。
@@ -940,19 +940,18 @@ function latheMask(L,tilt,W,H){
   for(let i=0,p=0;i<m.length;i++,p+=4) m[i]=d[p]>127?1:0;
   return m;
 }
-function latheToShape(){
-  const L=curLathe();
+function latheToShape(lat){
+  const q=safeLathe(lat), L=curLathe(q);
   // 正侧视时投影就是剖面本身，没有任何理由去栅格化再描一遍 ——
   // 栅格化会因为亚像素等值线啃掉边缘，压平之后跟原器物差 5–9%。
-  if(S.lat.t<0.06){
-    const prof=lerpProf(PROF[VKEYS[S.lat.a]], PROF[VKEYS[S.lat.b]], S.lat.m);
+  if(q.t<0.06){
+    const smooth=latheProfile(q), prof=smooth.prof, mx=smooth.mx;
     const N=72, R=[], Lf=[];
     for(let i=0;i<=N;i++){ const t=i/N, w=L.at(t), y=(t-.5)*L.asp;
       R.push([w,y]); Lf.push([-w,y]); }
     const pts=R.concat(Lf.reverse());
-    let mx=0, y0=1e9, y1=-1e9;
-    for(const p of pts){ mx=Math.max(mx,Math.abs(p[0])); y0=Math.min(y0,p[1]); y1=Math.max(y1,p[1]); }
-    mx=Math.max(1e-3,mx);
+    let y0=1e9, y1=-1e9;
+    for(const p of pts){ y0=Math.min(y0,p[1]); y1=Math.max(y1,p[1]); }
     const cy=(y0+y1)/2;
     // 也过一遍同一道形状语法门：点数收到 26 上下，和栅格化那条路出来的东西同一个量级
     let poly=pts.map(p=>[p[0]/mx,(p[1]-cy)/mx]);
@@ -963,11 +962,11 @@ function latheToShape(){
     poly=out||poly;
     const arr=[]; for(const p of poly) arr.push(p[0],p[1]);
     // prof 是给绘制用的（光滑）；loops 是给量面积、画图标用的（多边形）。两者并存。
-    return {loops:[arr], prof:prof, asp:(y1-y0)/mx, pts:poly.length,
+    return {loops:[arr], prof:prof, asp:smooth.asp, pts:poly.length,
             thr:128, inv:false, detail:1, src:'lathe'};
   }
   const MW=300, MH=420;
-  let loops=traceSub(latheMask(L,S.lat.t,MW,MH),MW,MH);
+  let loops=traceSub(latheMask(L,q.t,MW,MH),MW,MH);
   if(!loops.length) return null;
   const areas=loops.map(l=>Math.abs(areaOf(l))), big=Math.max.apply(null,areas);
   loops=loops.filter((l,i)=>areas[i]>=big*0.015);
@@ -994,9 +993,10 @@ function latheToShape(){
 }
 // 带光影的预览。同一摞椭圆，加一道横向渐变就读作圆柱面——
 // 不需要网格、不需要法线、不需要任何 3D 库。
-function drawLathe(){
+function drawLathe(lat){
   const cv2=document.getElementById('lcv'), g=cv2.getContext('2d');
-  const W=cv2.width, H=cv2.height, L=curLathe(), tilt=S.lat.t;
+  const q=safeLathe(lat||latheForEdit());
+  const W=cv2.width, H=cv2.height, L=curLathe(q), tilt=q.t;
   const c=Math.cos(tilt), sn=Math.sin(tilt);
   g.clearRect(0,0,W,H);
   const halfH=(L.asp/2)*c+sn;
@@ -1027,8 +1027,8 @@ function drawLathe(){
     g.restore();
   }
   document.getElementById('lhud1').textContent=
-    VNAME[VKEYS[S.lat.a]]+' → '+VNAME[VKEYS[S.lat.b]]+'  '+Math.round(S.lat.m*100)+'%';
-  document.getElementById('lhud2').textContent='俯仰 '+Math.round(S.lat.t*180/Math.PI)+'°';
+    VNAME[VKEYS[q.a]]+' → '+VNAME[VKEYS[q.b]]+'  '+Math.round(q.m*100)+'%';
+  document.getElementById('lhud2').textContent='俯仰 '+Math.round(q.t*180/Math.PI)+'°';
 }
 
 // ===== 图片 → 剪影。整条链都在你自己的浏览器里跑，图片不上传、不外传。 =====
@@ -1419,7 +1419,7 @@ function clampEl(e){
   if(!e) return;
   e.s=Math.min(e.s, maxElS(e));      // 先卡尺寸再谈位置：放不下的东西挪到哪都放不下
   const M=MARGIN()*0.95;
-  if(e.k>=6||e.k===12){
+  if(e.k===12){
     // 一排器物在画幅里放不下时先缩小再定位。只移动不缩小的话，重复排列必然被画布切掉。
     for(let i=0;i<24 && e.s>0.03;i++){
       const q=elBBox(e);
@@ -1441,7 +1441,7 @@ function clampEl(e){
 // 而重复排（rep=5）的总宽是单件的 11.4 倍，s=0.2 就已经探出画面两倍宽了。
 // elBBox 的 ew/eh 都是 R0 的线性函数，所以最大值可以直接解出来，不用迭代试。
 function maxElS(e){
-  const M=MARGIN()*0.95, vessel=(e.k>=6||e.k===12);
+  const M=MARGIN()*0.95, vessel=e.k===12;
   const hf=vessel? aspOfE(e)/2 : 1;
   const c=Math.abs(Math.cos(e.r)), sn=Math.abs(Math.sin(e.r)), ra=rowAngle();
   const g=(((e.rep||1)-1)/2)*2.35;
@@ -1481,10 +1481,11 @@ function addEl(k, opt){
   if(!S.els) S.els=[];
   if(!thumb) pushHist();
   const o=opt||{};
-  const e={ k:k, x:o.x!=null?o.x:0.52, y:o.y!=null?o.y:(k>=6||k===12?0.46:0.40),
-            s:o.s!=null?o.s:elSize(k,0.21,o.cu), r:0,
-            fill:o.fill!=null?o.fill:0, rep:o.rep||1 };
+  const e={ k:k, x:o.x!=null?o.x:0.52, y:o.y!=null?o.y:(k===12?0.46:0.40),
+             s:o.s!=null?o.s:elSize(k,0.21,o.cu), r:0,
+             fill:o.fill!=null?o.fill:0, rep:o.rep||1 };
   if(k===12 && o.cu) e.cu=o.cu;
+  if(k===12 && o.lat) e.lat=safeLathe(o.lat);
   // 第二个之后的元素错开一点，免得完全叠在一起看不出多了一个
   const c=S.els.length;
   if(c>0 && o.x==null){ e.x=Math.max(.14,Math.min(.86, .52+((c%2)?-1:1)*(0.13+0.05*c)));
@@ -1636,7 +1637,7 @@ function screenFill(col, box, band, inv){
   ctx.restore();
 }
 // side: 0 = 切线的 A 侧那一遍，1 = B 侧那一遍。fill===3 时只有 B 侧上网点。
-const elHH = e=>{const R0=ES(e);return (e.k>=6||e.k===12)?R0*aspOfE(e)/2:R0;};
+const elHH = e=>{const R0=ES(e);return e.k===12?R0*aspOfE(e)/2:R0;};
 const handleR = e=>Math.max(ES(e),elHH(e))*1.10;
 // ===== 真三维：把 3D 渲染出来的明暗当作"墨的覆盖率地图"，再交给已有的半调网屏去印 =====
 // 关键不是"贴一张 3D 图上去"，而是**用两支墨把三维印出来**。
@@ -1646,6 +1647,7 @@ const toneCache=new Map();
 function toneKey(e){
   return [e.k,e.k===12?(e.cu?(e.cu.pts+'_'+e.cu.asp.toFixed(3)+'_'+
             (e.cu.prof?e.cu.prof.map(q=>q[1].toFixed(3)).join(''):'')):'0'):'',
+          e.lat?[e.lat.a,e.lat.b,(+e.lat.m||0).toFixed(3),(+e.lat.t||0).toFixed(3)].join('_'):'',
           (e.d3||0).toFixed(2),(e.lit||0.7).toFixed(2),Math.round(ES(e)),Math.round(elHH(e))].join('|');
 }
 // 光源：左上前方。rim 是边缘光，让形从底色里"浮"出来。
@@ -1670,11 +1672,12 @@ function toneBuffer(e){
   const k=e.k;
   // 带剖面的自定义形（正侧视的旋成体）就是器物，要走旋成体那一支的真圆柱面明暗，
   // 不能掉到最后那个柱面近似里去 —— 否则器物一变成旋成体元素，立体就退化了。
-  const prof0 = (k===12 && e.cu && e.cu.prof && e.cu.prof.length) ? e.cu.prof : null;
-  if(prof0 || (k>=6 && k!==12)){
+  const prof0 = e.lat ? latheProfile(e.lat).prof
+              : (k===12 && e.cu && e.cu.prof && e.cu.prof.length) ? e.cu.prof : null;
+  if(prof0){
     // 器物：绕中轴的旋成体。每一圈在正交投影下是一条水平线，
     // 线上每一点的法线由该点在圆周上的角度决定 —— 这就是真正的圆柱面明暗。
-    const P=prof0 || PROF[SHAPES[k]], asp=aspOfE(e);
+    const P=prof0;
     const N=bh*2;
     for(let i=0;i<=N;i++){
       const t=i/N, r=profAt(P,t);
@@ -1749,7 +1752,7 @@ function drawOne(e, col, side, inv, isLast){
   }
   const halfSelf = fl===3 && !three && !crosses;
   const dots = three || fl===1 || fl===2 || (fl===3 && !halfSelf && side===1);
-  const hh = (e.k>=6||e.k===12) ? R0*aspOfE(e)/2 : R0;
+  const hh = e.k===12 ? R0*aspOfE(e)/2 : R0;
   const Rm = Math.max(R0,hh)*1.06;
   ctx.save();
   // 落下动画只作用在最后加进来的那个，别的元素不该跟着抖
@@ -2615,7 +2618,7 @@ cv.addEventListener('pointermove',e=>{
       ce2.r=snapAngle(Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7);
       const d=Math.hypot(p.x-EX(ce2),p.y-EY(ce2))/1.10;
       const asp=aspOfE(ce2);
-      const R0=(ce2.k>=6||ce2.k===12)? d/(asp/2) : d;
+      const R0=ce2.k===12 ? d/(asp/2) : d;
       const hi=maxElS(ce2);
       ce2.s=Math.max(.06,Math.min(hi,R0/W));
       clampEl(ce2);                                  // 变大之后要把它挪回画面里
@@ -2854,27 +2857,35 @@ const shEl=document.getElementById('shapes'), veEl=document.getElementById('vess
 const allBtn=[];
 SHAPES.forEach((name,i)=>{
   const b=document.createElement('button');
-  b.innerHTML = i<6
-    ? '<svg viewBox="0 0 26 26" class="'+(i===4?'':'solid')+'">'+ICON[i]+'</svg>'
-    : '<svg viewBox="0 0 26 26" class="solid"><path d="'+vesselSVG(name)+'"/></svg>';
+  b.innerHTML='<svg viewBox="0 0 26 26" class="'+(i===4?'':'solid')+'">'+ICON[i]+'</svg>';
   b.setAttribute('aria-pressed','false');
-  b.title=['圆','半圆','条','三角','环','点阵','梅瓶','玉壶春瓶','蒜头瓶','葫芦瓶','觚','碗'][i];
-  b.onclick=()=>{holdShape=i;
-    allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));
-    if(i>=6){ S.lat.a=i-6; if(S.lat.b===S.lat.a) S.lat.b=(S.lat.a+1)%6;
-              S.lat.m=0; syncLathe(); }
+  b.title=['圆','半圆','条','三角','环','点阵'][i];
+  b._matches=e=>!!e&&e.k===i;
+  b.onclick=()=>{
     addEl(i); sel=true;tsel=false;
-    setStep(3); setHint('图案已加入；直接拖动换位置，用右下角把手缩放或旋转'); draw();};
-  allBtn.push(b);
-  (i<6?shEl:veEl).appendChild(b);
+    setStep(3); sync(); setHint('图案已加入；直接拖动换位置，用右下角把手缩放或旋转'); draw();};
+  allBtn.push(b); shEl.appendChild(b);
+});
+VKEYS.forEach((name,i)=>{
+  const b=document.createElement('button');
+  b.innerHTML='<svg viewBox="0 0 26 26" class="solid"><path d="'+vesselSVG(name)+'"/></svg>';
+  b.setAttribute('aria-pressed','false'); b.title=VNAME[name];
+  b._matches=e=>!!e&&e.k===12&&!!e.lat&&e.lat.a===i&&e.lat.m<0.002;
+  b.onclick=()=>{
+    const lat={a:i,b:(i+1)%VKEYS.length,m:0,t:0}, cu=latheToShape(lat);
+    LATHE_DRAFT=Object.assign({},lat);
+    addEl(12,{lat,cu,s:elSize(12,0.22,cu)}); sel=true;tsel=false;
+    setStep(3); sync(); setHint('器物已加入；在下方预览中横向变形、纵向俯仰'); draw();
+  };
+  allBtn.push(b); veEl.appendChild(b);
 });
 const custBtn=document.createElement('button');
 custBtn.hidden=true; custBtn.title='我的图'; custBtn.setAttribute('aria-pressed','false');
+custBtn._matches=e=>!!e&&e.k===12&&!e.lat;
 custBtn.onclick=()=>{
   if(!S.cust) return;
   addEl(12,{cu:S.cust, s:elSize(12,0.22,S.cust)}); sel=true;tsel=false;
-  allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(j===12)));
-  placeTitle(); draw();
+  placeTitle(); sync(); draw();
 };
 allBtn.push(custBtn); veEl.appendChild(custBtn);
 
@@ -2984,13 +2995,25 @@ function shuffleState(){
     applyInks();
   }
   if(Math.random()<.42){const i=S.inkA,c=S.covA;S.inkA=S.inkB;S.covA=S.covB;S.inkB=i;S.covB=c;applyInks();}
-  let k = B.ring ? pick([4,4,4,10,11])            // 环、觚、碗——剪影上有洞的那几个
-                 : (Math.random()*SHAPES.length)|0;
-  if(S.cust && Math.random()<.34) k=12;           // 你放进来的图也参与出方案
-  const vessel=k>=6;
+  let k=0, lat=null, cu=null;
+  const makeLathe=base=>{
+    const a=base==null?(Math.random()*VKEYS.length)|0:base;
+    let b=Math.random()<.52?a:(Math.random()*VKEYS.length)|0;
+    if(b===a&&Math.random()<.48) b=(a+1+((Math.random()*(VKEYS.length-1))|0))%VKEYS.length;
+    return {a,b,m:a===b?0:pick([0,.22,.42,.62,.80]),
+            t:Math.random()<.16?pick([.14,.22,.32,.44,.56]):0};
+  };
+  if(B.ring){
+    const q=pick([{k:4},{k:4},{k:4},{v:4},{v:5}]);
+    if(q.v!=null){k=12;lat=makeLathe(q.v);}else k=q.k;
+  }else if(Math.random()<.50){ k=(Math.random()*SHAPES.length)|0; }
+  else{ k=12;lat=makeLathe(); }
+  if(S.cust && S.cust.src!=='lathe' && Math.random()<.34){k=12;lat=null;cu=S.cust;}
+  if(lat) cu=latheToShape(lat);
+  const vessel=!!lat;
   const grow = B.big ? 1.45 : B.small ? .62 : B.quiet ? .8 : 1;
-  const sz = elSize(k, grow*(vessel ? .20+Math.random()*.10 : .18+Math.random()*.12));
-  const R0=sz*W, Rm=(vessel||k===12)? R0*aspOf(k)/2 : R0;
+  const sz = elSize(k, grow*(vessel ? .20+Math.random()*.10 : .18+Math.random()*.12),cu);
+  const R0=sz*W, Rm=k===12 ? R0*aspOf(k,cu)/2 : R0;
   const c=S.cut, x1=c.x1*W,y1=c.y1*H,x2=c.x2*W,y2=c.y2*H;
   let nx=-(y2-y1), ny=(x2-x1); const L=Math.hypot(nx,ny)||1;
   nx/=L; ny/=L; const cc=nx*x1+ny*y1;
@@ -3006,6 +3029,8 @@ function shuffleState(){
   const el0={k, x:ex, y:ey, s:sz,
         r: vessel ? (Math.random()<.7?0:(Math.random()-.5)*.14)
                   : pick([0,0,0,Math.PI/2,cutAng,cutAng,cutAng+Math.PI/2])};
+  if(cu) el0.cu=cu;
+  if(lat) el0.lat=lat;
   el0.rep = B.rep ? pick([3,3,5]) : vessel ? pick([1,1,1,3]) : pick([1,1,1,3,5]);
   const tt=titleText();
   if(tt){tt.font=(Math.random()*TEXT_FONTS.length)|0;tt.size=pick([0,1,1,2,2]);
@@ -3055,7 +3080,7 @@ function shuffleState(){
   if(B.dark && Lstar(S.a)>Lstar(S.b)){   // 深底：把深的那块做成大色域
     const i=S.inkA,c=S.covA;S.inkA=S.inkB;S.covA=S.covB;S.inkB=i;S.covB=c;applyInks();
   }
-  clampEl(); placeAllTexts();
+  clampAll(); placeAllTexts();
 }
 // 所有文字统一在元素定好之后再落位，标题先排（它最大，先占最好的位置），
 // 其余按顺序躲开已经排好的。原来只排标题，正文和信息行躲的是上一版的形 ——
@@ -3095,12 +3120,17 @@ function feat(st){
   const pos = st.cut ? (horiz ? (st.cut.y1+st.cut.y2)/2 : (st.cut.x1+st.cut.x2)/2) : .5;
   const es = st.els||[], e = es[0] || {k:0,x:.5,y:.5,s:.2,fill:0,rep:1};
   const e2 = es[1];
+  const lat=e.lat||null;
   const tx=(st.texts&&st.texts[0])||{font:0,size:1,dir:'v'};
   const nv=(st.texts||[]).filter(t=>t.dir==='v').length;
   return [pos*1.4, horiz?0:1.4,
           Lstar(st.a)/100, Lstar(st.b)/100,
           hex2lch(st.a)[1]*2.2, hex2lch(st.b)[1]*2.2,
-          e.k/9, e.x, e.y, e.s*2.4,
+          e.k/12, e.x, e.y, e.s*2.4,
+          lat ? ((lat.a+1)/6)*0.50 : 0,
+          lat ? ((lat.b+1)/6)*0.30 : 0,
+          lat ? (lat.m||0)*0.40 : 0,
+          lat ? ((lat.t||0)/1.05)*0.90 : 0,
           (e.fill||0)/3, ((e.rep||1)-1)/4, (tx.font||0)*.24, (tx.size||0)/3,
           tx.dir==='h' ? .35 : 0,
           es.length*0.7,                       // 元素个数本身就是一个可分辨的维度
@@ -3111,7 +3141,7 @@ function feat(st){
           (st.tex||0)/2*0.30,                  // 纸纹强度
           (st.mis||0)/3*0.34,                  // 套印错位
           (st.mark||0)/2*0.24,                 // 版记 / 套准
-          e2 ? (e2.k/9)*0.46 : 0,              // 第二个元素是什么
+          e2 ? (e2.k/12)*0.46 : 0,             // 第二个元素是什么
           e2 ? (e2.s*1.4) : 0,                 // 第二个元素多大
           ((st.texts||[]).length)*0.40,        // 画布上有几行字
           nv*0.30];                            // 其中几行是竖排
@@ -3133,7 +3163,7 @@ const LOCK_DIMS=[
 ];
 const LOCKS={cut:0,ink:0,shape:0,place:0,type:0,print:0};
 const INK_KEYS=['stock','paper','inkA','covA','inkB','covB','a','b'];
-const SHAPE_KEYS=['k','cu'], PLACE_KEYS=['x','y','s','r','rep'], PRINT_KEYS=['fill','d3'];
+const SHAPE_KEYS=['k','cu','lat'], PLACE_KEYS=['x','y','s','r','rep'], PRINT_KEYS=['fill','d3'];
 const cloneJ=v=>v==null?v:JSON.parse(JSON.stringify(v));
 // 把被锁住的部分从 base 抄回 got
 function applyLocks(got, base, L){
@@ -3175,18 +3205,17 @@ function applyLocks(got, base, L){
 //   2. 在同一个 base 上做单轴扰动，看每一个"决定"值多少距离
 //   3. 三条带按中位数的相对位置定，不写死绝对值
 //
-// 【本次标定（feat 25 维）】随机两两配对：p05 1.08 / p25 1.45 / **中位 1.75** / p75 2.03 / p95 2.30
-//   单轴：元素移10% 0.10 · 换字体 0.24 · 放大1.3倍 0.26 · 纸纹 0.30 · 套印 0.34
-//         少一行字 0.40 · 标题横竖互换 0.46 · 网目 0.50 · 换形 0.56 · 开立体 0.62
-//         换填充 0.67 · 加一个元素 0.70
-//   死区   < 0.29（≈0.17×中位）—— 元素挪 10%、换个字体，看不出发生了什么
-//   抖一下 0.40–1.02（0.23–0.58×中位）—— 恰好一个决定被换掉，人能指认出改了哪件事
-//   近亲   1.02–1.62（0.58–0.93×中位）—— 还是同一张海报的另一个版本
+// 【本次标定（feat 30 维）】220 个随机状态、24090 对：
+//   p05 1.16 / p25 1.52 / **中位 1.81** / p75 2.07 / p95 2.35
+//   六个锁维度的单轴中位：切 0.50 · 色 0.48 · 形 0.71 · 摆 0.54 · 字 0.65 · 印 0.61
+//   死区   < 0.31（≈0.17×中位）—— 元素挪一点、只换字形，看不出发生了什么
+//   抖一下 0.42–1.05（0.23–0.58×中位）—— 恰好一个决定被换掉，人能指认出改了哪件事
+//   近亲   1.05–1.69（0.58–0.93×中位）—— 还是同一张海报的另一个版本
 //
 // 上一版的常数（0.35–0.9 / 0.9–1.4）是在 16 维的 feat 上量的，中位数 1.53。
-// feat 补上纸/网目/立体/套印/版记/第二个元素之后所有距离整体涨了约 15%，
-// 常数跟着按同一比例挪。**这不是调参，是换了尺子之后重新读数。**
-const VARY_BAND={1:[1.02,1.62], 2:[0.40,1.02]};      // 1 = 近亲，2 = 抖一下
+// 这次再补上旋成体的 a/b/m/t 四维，随机状态中位距离从 1.75 增至 1.81，
+// 常数继续按同一相对区间重读。**这不是调参，是换了尺子之后重新读数。**
+const VARY_BAND={1:[1.05,1.69], 2:[0.42,1.05]};      // 1 = 近亲，2 = 抖一下
 function proposeVary(want, base, mode){
   const keys=LOCK_DIMS.map(d=>d.k), pool=[], f0=feat(base);
   const band=VARY_BAND[mode]||VARY_BAND[1], lo=band[0], hi=band[1];
@@ -3253,13 +3282,13 @@ function sync(){
   set('rep','r',ce?(ce.rep||1):1);set('stock','stock',S.stock||0);
   set('tex','t',S.tex); set('fill','l',ce?(ce.fill||0):0); set('dot','d',S.dot);
   set('mis','m',S.mis||0); set('mark','k',S.mark==null?1:S.mark);
-  allBtn.forEach((x,j)=>x.setAttribute('aria-pressed',String(!!ce&&j===ce.k)));
+  allBtn.forEach(x=>x.setAttribute('aria-pressed',String(x._matches?x._matches(ce):false)));
   const cnt=document.getElementById('elcount');
   if(cnt) cnt.textContent=(S.els?S.els.length:0)+' 个元素'+(ce?'　选中第 '+(S.si+1)+' 个':'');
   const sn=document.getElementById('stocknote'),ps=stockSpec();
   if(sn)sn.textContent=ps.note+' 建议覆盖率 '+Math.round(ps.min*100)+'–'+Math.round(ps.max*100)+'%。';
   syncColor();syncTextPanel();syncImg();syncRecipe();syncBrief();syncPoemMaterials();
-  if(typeof drawLathe==='function')drawLathe();
+  if(typeof syncLathe==='function')syncLathe();
 }
 // 用同一套绘制代码渲染任意状态到任意画布 —— 最终的作品散点图也靠它
 function renderTo(c2, st, w, h){
@@ -3503,7 +3532,7 @@ window.addEventListener('paste',e=>{
 function reExtract(inv){
   const c=extract(+iThr.value, inv===undefined?(S.cust&&S.cust.inv):inv, +iDet.value/100);
   if(!c){ setHint('这个阈值下抠不出形 —— 往回拉一点'); return; }
-  S.cust=c; const ce=CE(); if(ce&&ce.k===12){ ce.cu=c; clampEl(ce); } draw(); syncImg();
+  S.cust=c; const ce=CE(); if(ce&&ce.k===12&&!ce.lat){ ce.cu=c; clampEl(ce); } draw(); syncImg();
 }
 iThr.addEventListener('input',()=>reExtract());
 iDet.addEventListener('input',()=>reExtract());
@@ -3514,8 +3543,8 @@ document.getElementById('iInv').onclick=e=>{
 document.getElementById('idel').onclick=()=>{
   if(!SRC && !(S.cust && !S.cust.src)) return;
   pushHist();
-  if(S.els) S.els=S.els.filter(e=>!(e.k===12 && !(e.cu&&e.cu.src==='lathe')));
-  if(S.cust && S.cust.src!=='lathe') S.cust=null;
+  if(S.els) S.els=S.els.filter(e=>!(e.k===12 && !e.lat));
+  S.cust=null;
   SRC=null;
   S.si=S.els?Math.min(S.si,S.els.length-1):-1;
   sel=S.si>=0 && sel; if(!S.els||!S.els.length) sel=false;
@@ -3556,33 +3585,50 @@ VKEYS.forEach((k,i)=>{
     const o=document.createElement('option'); o.value=i; o.textContent=VNAME[k]; sel.appendChild(o);
   }
 });
-function syncLathe(){ vAEl.value=S.lat.a; vBEl.value=S.lat.b; drawLathe(); }
+function syncLathe(){
+  const lat=safeLathe(latheForEdit());
+  vAEl.value=lat.a; vBEl.value=lat.b; drawLathe(lat);
+}
 [vAEl,vBEl].forEach((sel,i)=>sel.onchange=()=>{
-  S.lat[i?'b':'a']=+sel.value; drawLathe(); applyLathe(); });
-function applyLathe(){
-  const c=latheToShape();
+  const ce=CE(), lat=latheForEdit();
+  if(ce&&ce.lat) pushHist();
+  lat[i?'b':'a']=+sel.value; drawLathe(lat); applyLathe(lat);
+});
+function applyLathe(lat){
+  const q=safeLathe(lat||latheForEdit()), c=latheToShape(q);
   if(!c) return;
-  S.cust=c;
   const ce=CE();
-  if(ce && ce.k===12){ ce.cu=c; ce.s=elSize(12,0.22,c); clampEl(ce); }
-  else addEl(12,{cu:c, s:elSize(12,0.22,c)});
+  if(ce && ce.k===12 && ce.lat){ ce.lat=Object.assign({},q); ce.cu=c; clampEl(ce); }
+  else{
+    LATHE_DRAFT=Object.assign({},q);
+    addEl(12,{lat:q,cu:c,s:elSize(12,0.22,c)});
+    sel=true; tsel=false;
+  }
   placeTitle(); sync(); draw();
 }
 let lDrag=null;
 latheEl.addEventListener('pointerdown',e=>{
   latheEl.setPointerCapture(e.pointerId);
-  lDrag={x:e.clientX,y:e.clientY,m:S.lat.m,t:S.lat.t};
+  const ce=CE(), lat=latheForEdit();
+  if(ce&&ce.lat) pushHist();
+  lDrag={x:e.clientX,y:e.clientY,m:lat.m,t:lat.t,lat,before:Object.assign({},lat)};
 });
 latheEl.addEventListener('pointermove',e=>{
   if(!lDrag) return;
   const r=latheEl.getBoundingClientRect();
-  S.lat.m=Math.max(0,Math.min(1, lDrag.m+(e.clientX-lDrag.x)/r.width*1.35));
-  S.lat.t=Math.max(0,Math.min(1.05, lDrag.t+(e.clientY-lDrag.y)/r.height*1.5));
-  drawLathe();
+  lDrag.lat.m=Math.max(0,Math.min(1, lDrag.m+(e.clientX-lDrag.x)/r.width*1.35));
+  lDrag.lat.t=Math.max(0,Math.min(1.05, lDrag.t+(e.clientY-lDrag.y)/r.height*1.5));
+  drawLathe(lDrag.lat);
 });
-latheEl.addEventListener('pointerup',()=>{ if(lDrag){ lDrag=null; applyLathe(); } });
-latheEl.addEventListener('pointercancel',()=>{ lDrag=null; });
-latheEl.addEventListener('dblclick',()=>{ S.lat.t=0; S.lat.m=0; drawLathe(); applyLathe(); });
+latheEl.addEventListener('pointerup',()=>{ if(lDrag){ const lat=lDrag.lat;lDrag=null;applyLathe(lat); } });
+latheEl.addEventListener('pointercancel',()=>{
+  if(lDrag) Object.assign(lDrag.lat,lDrag.before);
+  lDrag=null; syncLathe();
+});
+latheEl.addEventListener('dblclick',()=>{
+  const ce=CE(),lat=latheForEdit();if(ce&&ce.lat)pushHist();
+  lat.t=0;lat.m=0;drawLathe(lat);applyLathe(lat);
+});
 
 const HIST=[]; let histT=null;
 const stateKey=st=>JSON.stringify(st);
@@ -3632,10 +3678,10 @@ function syncRecipe(){
   L.push('墨B   '+inkName(S.inkB)+'  '+Math.round(S.covB*100)+'%');
   L.push('明度差 ΔL* '+Math.abs(Lstar(S.a)-Lstar(S.b)).toFixed(0));
   for(const el of (S.els||[])){ const S_el=el;
-    const nm = S_el.k===12 ? (S_el.cu&&S_el.cu.src==='lathe'
-                 ? '旋出来的('+VNAME[VKEYS[S.lat.a]]+'→'+VNAME[VKEYS[S.lat.b]]+' '+Math.round(S.lat.m*100)+'%，俯仰 '+Math.round(S.lat.t*180/Math.PI)+'°)'
-                 : '你的图('+(S.cust?S.cust.pts:0)+'点)')
-             : S_el.k>=6 ? VNAME[SHAPES[S_el.k]]
+    const lat=S_el.lat?safeLathe(S_el.lat):null;
+    const nm = S_el.k===12 ? (lat
+                 ? '旋出来的('+VNAME[VKEYS[lat.a]]+'→'+VNAME[VKEYS[lat.b]]+' '+Math.round(lat.m*100)+'%，俯仰 '+Math.round(lat.t*180/Math.PI)+'°)'
+                 : '你的图('+((S_el.cu&&S_el.cu.pts)||0)+'点)')
              : ['圆','半圆','条','三角','环','点阵'][S_el.k];
     const R0=ES(S_el), area=(R0*2)*(R0*aspOfE(S_el))/(W*H)*(S_el.rep||1);
     L.push('图形  '+nm+'  占幅 '+Math.round(area*100)+'%  ×'+(S_el.rep||1)+
@@ -3925,20 +3971,22 @@ function selfTest(){
     // 4. 旋成体：正侧视要退回原剖面
     (function(){
       let worst=0, bad='';
-      const VK=['meiping','yuhuchun','suantou','hulu','gu','wan'];
-      S.lat={a:0,b:1,m:0,t:0};
-      VK.forEach((k,i)=>{ S.lat.a=i; S.lat.b=(i+1)%6;
-        const c=latheToShape();
+      VKEYS.forEach((k,i)=>{
+        const c=latheToShape({a:i,b:(i+1)%6,m:0,t:0});
         const e=c?Math.abs(c.asp-ASPECT[k])/ASPECT[k]:1;
         if(e>worst){worst=e;bad=k;} });
       ok('旋成体：正侧视与剖面一致（<1%）', worst<0.01, '最差 '+bad+' '+(worst*100).toFixed(2)+'%');
-      S.lat={a:0,b:1,m:0,t:0}; let prev=1, mono=true, opened=false;
-      for(const deg of [0,10,20,26,34,44,54]){ S.lat.t=deg*Math.PI/180;
-        const c=latheToShape(); if(!c){mono=false;break;}
+      const lat={a:0,b:1,m:0,t:0}; let prev=1, mono=true, opened=false;
+      for(const deg of [0,10,20,26,34,44,54]){ lat.t=deg*Math.PI/180;
+        const c=latheToShape(lat); if(!c){mono=false;break;}
         if(c.loops.length<prev) mono=false;
         if(c.loops.length>1) opened=true;
         prev=c.loops.length; }
       ok('旋成体：俯仰后口沿张开且不反复', mono && opened);
+      const a={a:0,b:1,m:.2,t:0}, b={a:4,b:5,m:.7,t:.32};
+      const ea={k:12,lat:safeLathe(a),cu:latheToShape(a)}, eb={k:12,lat:safeLathe(b),cu:latheToShape(b)};
+      const before=JSON.stringify(eb); ea.lat.t=.55; ea.cu=latheToShape(ea.lat);
+      ok('多个器物各自保留旋成参数', JSON.stringify(eb)===before && ea.lat!==eb.lat);
     })();
 
     // 5. 四种画幅 × 全部命题：所有硬约束
@@ -3958,7 +4006,7 @@ function selfTest(){
             if(Math.abs(Lstar(S.a)-Lstar(S.b))<30) bad.dl++;
             for(const c of [S.covA,S.covB]) if(c>0.001&&(c<minCov()-.001||c>fullCov()+0.005)) bad.cov++;
             for(const e of S.els){ const bb=elBBox(e);
-              if((e.k>=6||e.k===12)&&(bb.x0<-1||bb.y0<-1||bb.x1>W+1||bb.y1>H+1)) bad.el++; }
+              if(e.k===12&&(bb.x0<-1||bb.y0<-1||bb.x1>W+1||bb.y1>H+1)) bad.el++; }
           }
           const p=propose(6); if(p.spread<minSp) minSp=p.spread;
         }
@@ -4075,11 +4123,13 @@ function selfTest(){
     // 6b. 放大有上限：把手拖到底也不能把形拖出画面
     (function(){
       let bad=0, tries=0;
-      for(const k of [0,1,2,3,4,5,6,7,8,9,10,11]) for(const rp of [1,3,5]) for(const a of [0,0.6,Math.PI/2]){
-        S.els=[{k, x:.5, y:.5, s:5, r:a, fill:0, rep:rp}]; S.si=0;
+      const cases=[0,1,2,3,4,5].map(k=>({k})).concat(VKEYS.map((_,i)=>{
+        const lat={a:i,b:(i+1)%6,m:0,t:0};return {k:12,lat,cu:latheToShape(lat)};}));
+      for(const base of cases) for(const rp of [1,3,5]) for(const a of [0,0.6,Math.PI/2]){
+        S.els=[Object.assign({},base,{x:.5,y:.5,s:5,r:a,fill:0,rep:rp})]; S.si=0;
         const e=S.els[0]; e.s=Math.min(e.s, maxElS(e)); clampEl(e);
         const b=elBBox(e), M=MARGIN()*0.95; tries++;
-        const okq = (k>=6)
+        const okq = e.k===12
           ? (b.x0>=M-1 && b.y0>=M-1 && b.x1<=W-M+1 && b.y1<=H-M+1)   // 器物必须整个在边距里
           : ((b.x1-b.x0)/2<=W*0.72+1 && (b.y1-b.y0)/2<=H*0.72+1);    // 几何形允许出血，但有限
         if(!okq) bad++;
@@ -4099,11 +4149,12 @@ function selfTest(){
       // elA 停在 0，drawOne 会把元素画成 alpha 0 —— 什么都看不见，四个填充当然一样。
       elA=1;
       S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
+      const lat={a:0,b:1,m:0,t:0}, cu=latheToShape(lat);
       let minD=1, worst='';
       for(const cut of [null,{x1:0,y1:.34,x2:1,y2:.34}]) for(const d3 of [0,1]){
         S.cut=cut; S.texts=[]; const im=[];
         for(const fl of [0,1,2,3]){
-          S.els=[{k:6,x:.5,y:.62,s:.20,r:0,fill:fl,rep:1,d3}]; S.si=0; sel=false; tsel=false;
+          S.els=[{k:12,lat,cu,x:.5,y:.62,s:.20,r:0,fill:fl,rep:1,d3}]; S.si=0; sel=false; tsel=false;
           draw(); im.push(g.getImageData(0,0,W,H).data);
         }
         for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
@@ -4121,7 +4172,7 @@ function selfTest(){
       const snap=st=>({
         cut:JSON.stringify(st.cut),
         ink:[st.stock,st.inkA,st.covA,st.inkB,st.covB].join('|'),
-        shape:(st.els||[]).map(e=>e.k).join(','),
+        shape:(st.els||[]).map(e=>e.k+(e.lat?'/'+[e.lat.a,e.lat.b,e.lat.m.toFixed(3),e.lat.t.toFixed(3)].join('/'):'')).join(','),
         place:(st.els||[]).map(e=>[e.x.toFixed(3),e.y.toFixed(3),e.s.toFixed(3),e.r.toFixed(3),e.rep].join('/')).join(','),
         type:(st.texts||[]).map(t=>[t.font,t.size,t.dir].join('/')).join(','),
         print:[st.dot,st.tex,st.mis,st.mark,(st.els&&st.els[0])?((st.els[0].fill||0)+':'+(st.els[0].d3||0)):''].join('|')
@@ -4151,10 +4202,11 @@ function selfTest(){
       const g=cv.getContext('2d');
       elA=1; S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
       S.cut={x1:0,y1:.42,x2:1,y2:.42}; S.texts=[];
+      const lat={a:0,b:1,m:0,t:0}, cu=latheToShape(lat);
       const im=[];
       for(const m of [0,1,2,3]){
         S.mis=m;
-        S.els=[{k:6,x:.44,y:.42,s:.21,r:0,fill:0,rep:1}];   // 明确跨切线，会反色
+        S.els=[{k:12,lat,cu,x:.44,y:.42,s:.21,r:0,fill:0,rep:1}];   // 明确跨切线，会反色
         S.si=0; sel=false; tsel=false; draw();
         im.push(g.getImageData(0,0,W,H).data);
       }
