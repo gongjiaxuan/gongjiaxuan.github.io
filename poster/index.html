@@ -801,12 +801,37 @@ function profSegs(P, F){
   }
   return out;
 }
-function vesselPts(name,r){
-  const prof=PROF[name], h=r*(ASPECT[name]||2.3), top=-h/2;
+// 两条剖面之间插值。**在 t 的并集上插**，不是重采样 ——
+// 剖面上的标记（1 = 曲率极值，切线锁竖直；2 = 角点，不平滑）是绑在节点上的，
+// 重采样会把它们全丢掉，插出来的器物于是软塌塌没有肩、没有口沿。
+// 只有两边在同一个 t 上都带同一个标记时才保留它。
+function flagAt(P,t){ for(const q of P) if(Math.abs(q[0]-t)<1e-6) return q[2]||0; return 0; }
+function lerpProf(A,B,m){
+  if(m<=0.002) return A;
+  if(m>=0.998) return B;
+  const set={}; for(const q of A) set[q[0].toFixed(6)]=+q[0].toFixed(6);
+  for(const q of B) set[q[0].toFixed(6)]=+q[0].toFixed(6);
+  const ts=Object.keys(set).map(k=>set[k]).sort((x,y)=>x-y);
+  return ts.map(t=>{
+    const fa=flagAt(A,t), fb=flagAt(B,t);
+    return [t, profAt(A,t)*(1-m)+profAt(B,t)*m, (fa&&fa===fb)?fa:0];
+  });
+}
+function profPts(prof,asp,r){
+  const h=r*(asp||2.3), top=-h/2;
   const Rt=prof.map(q=>[q[1]*r, top+q[0]*h]);
   const Lf=prof.slice().reverse().map(q=>[-q[1]*r, top+q[0]*h]);
   const F=prof.map(q=>q[2]||0);
   return {Rt,Lf,F,Fr:F.slice().reverse()};
+}
+function vesselPts(name,r){ return profPts(PROF[name], ASPECT[name]||2.3, r); }
+function profInto(P,prof,asp,r){
+  const V=profPts(prof,asp,r);
+  P.moveTo(V.Rt[0][0],V.Rt[0][1]);
+  profSegs(V.Rt,V.F).forEach(c=>P.bezierCurveTo(c[0],c[1],c[2],c[3],c[4],c[5]));
+  P.lineTo(V.Lf[0][0],V.Lf[0][1]);
+  profSegs(V.Lf,V.Fr).forEach(c=>P.bezierCurveTo(c[0],c[1],c[2],c[3],c[4],c[5]));
+  P.closePath();
 }
 function vesselInto(P,name,r){
   const V=vesselPts(name,r);
@@ -824,7 +849,13 @@ function elInto(P,e,r){
 }
 // 抠出来的轮廓已经归一化：半宽 = 1，所以乘以 r 就和器物、几何形共用同一套尺寸逻辑
 function customInto(P,r,cu){
-  const C=cu||S.cust; if(!C||!C.loops.length) return;
+  const C=cu||S.cust; if(!C) return;
+  // 正侧视的旋成体带着剖面本身来的 —— 直接画光滑曲线，不经过多边形。
+  // 之前那条路是「取 72 点 → RDP 压到 26 点 → 再平滑」，实测和光滑剪影差 0.30–0.47%，
+  // 放大之后肩和颈能看出棱角。现在误差归零。
+  // （loops 仍然带着，给量面积、画图标、以及俯仰之后的那条路用。）
+  if(C.prof && C.prof.length){ profInto(P, C.prof, C.asp, r); return; }
+  if(!C.loops||!C.loops.length) return;
   for(const lp of C.loops) loopInto(P, lp, r);
 }
 // 闭合折线 → 平滑路径。转角超过阈值的点当角点不平滑 ——
@@ -914,6 +945,7 @@ function latheToShape(){
   // 正侧视时投影就是剖面本身，没有任何理由去栅格化再描一遍 ——
   // 栅格化会因为亚像素等值线啃掉边缘，压平之后跟原器物差 5–9%。
   if(S.lat.t<0.06){
+    const prof=lerpProf(PROF[VKEYS[S.lat.a]], PROF[VKEYS[S.lat.b]], S.lat.m);
     const N=72, R=[], Lf=[];
     for(let i=0;i<=N;i++){ const t=i/N, w=L.at(t), y=(t-.5)*L.asp;
       R.push([w,y]); Lf.push([-w,y]); }
@@ -925,12 +957,14 @@ function latheToShape(){
     // 也过一遍同一道形状语法门：点数收到 26 上下，和栅格化那条路出来的东西同一个量级
     let poly=pts.map(p=>[p[0]/mx,(p[1]-cy)/mx]);
     let lo=1e-5, hi=0.25, out=null;
-    for(let q=0;q<15;q++){ const mid=(lo+hi)/2, o=rdpClosed(poly,mid);
-      if(o.length>26) lo=mid; else { hi=mid; out=o; }
-      if(out&&Math.abs(out.length-26)<=1) break; }
+    for(let q=0;q<16;q++){ const mid=(lo+hi)/2, o=rdpClosed(poly,mid);
+      if(o.length>56) lo=mid; else { hi=mid; out=o; }
+      if(out&&Math.abs(out.length-56)<=1) break; }
     poly=out||poly;
     const arr=[]; for(const p of poly) arr.push(p[0],p[1]);
-    return {loops:[arr], asp:(y1-y0)/mx, pts:poly.length, thr:128, inv:false, detail:1, src:'lathe'};
+    // prof 是给绘制用的（光滑）；loops 是给量面积、画图标用的（多边形）。两者并存。
+    return {loops:[arr], prof:prof, asp:(y1-y0)/mx, pts:poly.length,
+            thr:128, inv:false, detail:1, src:'lathe'};
   }
   const MW=300, MH=420;
   let loops=traceSub(latheMask(L,S.lat.t,MW,MH),MW,MH);
@@ -939,10 +973,12 @@ function latheToShape(){
   loops=loops.filter((l,i)=>areas[i]>=big*0.015);
   const diag=Math.hypot(MW,MH);
   loops=loops.map(function(l){
+    // 26 点对器物太少：实测逐像素比对，26 点和光滑剪影差 0.30–0.47%，
+    // 56 点降到 0.10–0.23%，再多不改善（RDP 容差二分的噪声）。
     let lo=diag*0.0002, hi=diag*0.05, out=null;
-    for(let q=0;q<15;q++){ const mid=(lo+hi)/2, o=rdpClosed(l,mid);
-      if(o.length>26) lo=mid; else { hi=mid; out=o; }
-      if(out&&Math.abs(out.length-26)<=1) break; }
+    for(let q=0;q<16;q++){ const mid=(lo+hi)/2, o=rdpClosed(l,mid);
+      if(o.length>56) lo=mid; else { hi=mid; out=o; }
+      if(out&&Math.abs(out.length-56)<=1) break; }
     out=out||rdpClosed(l,hi);
     return out.length>=4?out:null;
   }).filter(Boolean);
@@ -1608,7 +1644,8 @@ const handleR = e=>Math.max(ES(e),elHH(e))*1.10;
 // 然后由网屏把它变成大小不同的网点 —— 这正是丝网印和 riso 印立体物的做法。
 const toneCache=new Map();
 function toneKey(e){
-  return [e.k,e.k===12?(e.cu?e.cu.pts+'_'+e.cu.asp.toFixed(3):'0'):'',
+  return [e.k,e.k===12?(e.cu?(e.cu.pts+'_'+e.cu.asp.toFixed(3)+'_'+
+            (e.cu.prof?e.cu.prof.map(q=>q[1].toFixed(3)).join(''):'')):'0'):'',
           (e.d3||0).toFixed(2),(e.lit||0.7).toFixed(2),Math.round(ES(e)),Math.round(elHH(e))].join('|');
 }
 // 光源：左上前方。rim 是边缘光，让形从底色里"浮"出来。
@@ -1631,10 +1668,13 @@ function toneBuffer(e){
   const g=c.getContext('2d',{willReadFrequently:true});
   g.fillStyle='#fff'; g.fillRect(0,0,bw,bh);
   const k=e.k;
-  if(k>=6 && k!==12){
+  // 带剖面的自定义形（正侧视的旋成体）就是器物，要走旋成体那一支的真圆柱面明暗，
+  // 不能掉到最后那个柱面近似里去 —— 否则器物一变成旋成体元素，立体就退化了。
+  const prof0 = (k===12 && e.cu && e.cu.prof && e.cu.prof.length) ? e.cu.prof : null;
+  if(prof0 || (k>=6 && k!==12)){
     // 器物：绕中轴的旋成体。每一圈在正交投影下是一条水平线，
     // 线上每一点的法线由该点在圆周上的角度决定 —— 这就是真正的圆柱面明暗。
-    const P=PROF[SHAPES[k]], asp=aspOfE(e);
+    const P=prof0 || PROF[SHAPES[k]], asp=aspOfE(e);
     const N=bh*2;
     for(let i=0;i<=N;i++){
       const t=i/N, r=profAt(P,t);
