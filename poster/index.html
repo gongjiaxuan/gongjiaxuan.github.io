@@ -11,6 +11,24 @@
     --panel:#fcfbf9; --ink:#15161a; --ink2:#5a5b60; --ink3:#94959b;
     --line:#dedcd6; --hair:#eeece7;
     --ui:"Archivo","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+
+    /* ---- 动效 token ----
+       曲线承载感觉，时长只承载节奏。同样 200ms，ease-out 比 ease-in 感觉快得多。
+       UI 上**永远不用 ease-in**（读作延迟响应）—— 唯一的例外是「正在离开视野」的退场。
+       e-out 是 Penner easeOutQuint 的贝塞尔近似，收尾极缓，用于入场；
+       e-drawer 末段几乎完全停住，用于托盘/抽屉展开。 */
+    --e-out:cubic-bezier(.23,1,.32,1);
+    --e-std:cubic-bezier(.2,0,0,1);
+    --e-in:cubic-bezier(.3,0,.8,.15);
+    --e-drawer:cubic-bezier(.32,.72,0,1);
+    /* 时长分级。100ms 是唯一有一手心理物理学依据的硬线（Miller 1968 / Card 1991）：
+       低于它用户认为是自己的手直接造成了变化，高于它认为是电脑在回应。
+       所有「点了就该有反应」的反馈必须在 100ms 内**起动**。
+       进出不对称：退场 ≈ 进场的 50-75% —— 人需要时间注意到东西出现，不需要时间处理它离开。 */
+    --t-press:110ms;   /* 按下 */
+    --t-state:150ms;   /* 高频状态切换：只换颜色，不位移 */
+    --t-in:300ms;      /* 入场 */
+    --t-out:180ms;     /* 退场 */
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
@@ -384,6 +402,74 @@
     .press-status{min-width:126px}.press-status b{font-size:13px}
     .press-cap{font-size:9px;line-height:1.65;max-width:92vw}
     .press-act{gap:7px}.press-act button{padding:9px 12px;font-size:11px;min-height:40px}
+  }
+
+  /* ============================================================
+     动效补完。三条依据：
+     1) 频率决定动效：一天点 100+ 次的交互 → 零动画；几十次 → 只留颜色过渡；
+        偶尔 → 常规动画；罕见/首次 → 才配得上花活。
+     2) 100ms 内必须**起动**反馈（不是结束）。
+     3) 只动 transform 和 opacity —— 动 padding/margin/width 会触发布局，掉帧。
+     ============================================================ */
+
+  /* 按下：整份调研里性价比最高的一处。全站按钮此前没有任何按下反馈。
+     scale(.97) 是 Emil Kowalski 那套的标准值；不要更小，会读成"按坏了"。 */
+  button{transition:background var(--t-state) var(--e-std),
+                    color var(--t-state) var(--e-std),
+                    border-color var(--t-state) var(--e-std),
+                    transform var(--t-press) var(--e-out),
+                    box-shadow var(--t-state) var(--e-std),
+                    filter var(--t-state) var(--e-std)}
+  button:active{transform:scale(.97)}
+  /* 这几个自己带 transform，得单独给，否则 scale 会把定位打飞 */
+  .selection-delete:active{transform:translate(-50%,-50%) scale(.93)}
+  .lib button:active{transform:scale(1.06)}
+  .cand:active{transform:translateY(-4px) scale(.985)}
+  .tray-path button:active{transform:translateY(-1px) scale(.97)}
+
+  /* 上面那条裸 button 规则会被更早的高优先级规则（.top-actions button 等）整条盖掉，
+     连 transform 都被丢掉。所以这里用**长写属性**再覆一遍：长写只覆盖它列出的那几项，
+     不会像 shorthand 那样把别人写好的东西一起清零。 */
+  .top-actions button,.tray-ctl .lk,.tray-ctl .mode,.press-act button,
+  .tray-close,.press-close,.ghost,.primary,.brief-piece,.poem-piece,
+  .seed-compose button,.sw button,.lib button,.row button,.shapes button,
+  .selection-delete{
+    transition-property:background,color,border-color,box-shadow,filter,transform;
+    transition-duration:var(--t-state),var(--t-state),var(--t-state),var(--t-state),var(--t-state),var(--t-press);
+    transition-timing-function:var(--e-std),var(--e-std),var(--e-std),var(--e-std),var(--e-std),var(--e-out)}
+
+  /* hover 必须门控：触屏上 hover 会"粘住"，点完一直停在 hover 态 */
+  @media (hover:none),(pointer:coarse){
+    .cand:hover{transform:none;filter:drop-shadow(0 4px 9px #0000002f)}
+    .tray-path button:hover{transform:none}
+    .sw button:hover{transform:none}
+    .lib button:hover{transform:none;box-shadow:none}
+    .hist canvas:hover{transform:none}
+    .selection-delete:hover{transform:translate(-50%,-50%)}
+  }
+
+  /* 候选 hover：加一点 scale 才有"被拿起来"的感觉，单纯上移读作滑动。
+     位移量压到 4px —— 30dp 是传达方向的上限，6px 在 180px 的缩略图上已经偏大。 */
+  .cand{transition:transform var(--t-state) var(--e-out),filter var(--t-state) var(--e-out)}
+  .cand:hover{transform:translateY(-4px) scale(1.012)}
+
+  /* 高频交互只换颜色，不位移：换墨/换纸一次会话要点几十次 */
+  .sw button,.lib button,.row button,.shapes button{
+    transition:background var(--t-state) var(--e-std),
+               border-color var(--t-state) var(--e-std),
+               color var(--t-state) var(--e-std),
+               transform var(--t-press) var(--e-out)}
+
+  /* 减少动效：是「减少」不是「删除」。去掉位移/缩放/旋转（前庭系统的触发源），
+     保留 opacity 与 color 过渡 —— 状态变化仍然被传达，只是不再有东西在飞。
+     不用 *{animation:none !important} 那种一刀切：它会让东西凭空出现，更难理解。 */
+  @media (prefers-reduced-motion: reduce){
+    button:active,.selection-delete:active,.lib button:active,
+    .cand:active,.tray-path button:active{transform:none}
+    .cand:hover,.tray-path button:hover,.sw button:hover,
+    .lib button:hover,.hist canvas:hover{transform:none}
+    .selection-delete:hover{transform:translate(-50%,-50%)}
+    .cand-skel{animation:none;opacity:.7}
   }
 </style>
 
@@ -1800,15 +1886,20 @@ function drawOne(e, col, side, inv, isLast){
   const Rm = Math.max(R0,hh)*1.06;
   ctx.save();
   // 落下动画只作用在最后加进来的那个，别的元素不该跟着抖
-  if(elA<1 && isLast){
-    const u=1-elA;
-    const grow=1+0.46*u*u, dy=-58*SC()*Math.pow(u,2.2);
-    let sx=1, sy=1;
-    if(elA>0.74){ const q=Math.sin((elA-0.74)/0.26*Math.PI)*0.15; sy=1-q; sx=1+q*0.75; }
+  if((elA<1 || Math.abs(elS)>0.002) && isLast){
+    // 位移由弹簧给：1 → 0，欠阻尼会**越过零点**再回来，那一下就是着地的挤压 ——
+    // 挤压不用另外编排一段，它就是过冲本身。
+    const up=Math.max(0, elS), over=Math.max(0, -elS);
+    const dy=-DROP_PX*SC()*up;
+    // 入场略大而不是大很多：原来 1.46 倍进场太夸张，读作"砸下来"。
+    const grow=1+0.14*up;
+    // 挤压上限 0.09 —— 缩放过冲的量化上限是 0.04，这里是角色动画（有质量的东西落地），
+    // 可以比 UI 松一点，但 0.15 就进玩具感了。
+    const q=Math.min(0.09, over*1.6);
     ctx.translate(EX(e), EY(e)+dy);
-    ctx.scale(grow*sx, grow*sy);
+    ctx.scale(grow*(1+q*0.72), grow*(1-q));
     ctx.translate(-EX(e), -EY(e));
-    ctx.globalAlpha=Math.min(1, elA*3.2);
+    ctx.globalAlpha=Math.min(1, elA*4);
   }
   ctx.fillStyle=col;
   for(let i=0;i<m;i++){
@@ -1817,6 +1908,7 @@ function drawOne(e, col, side, inv, isLast){
     const P=new Path2D(), sub=new Path2D();
     elInto(sub,e,R0);
     P.addPath(sub,new DOMMatrix().translateSelf(cx,cy).rotateSelf(e.r*180/Math.PI));
+    const ANIM = drag || elRAF || cutRAF;
     if(halfSelf){
       // 上半网点、下半实心。分界就是元素自己的中线。
       ctx.save(); ctx.clip(P,'evenodd');
@@ -1826,10 +1918,13 @@ function drawOne(e, col, side, inv, isLast){
         screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm], null, inv); ctx.restore();
       ctx.restore();
     }
-    else if(!dots || (three&&drag)){ ctx.fill(P,'evenodd'); }
+    else if(!dots || (three&&ANIM)){ ctx.fill(P,'evenodd'); }
     else{ ctx.save(); ctx.clip(P,'evenodd');
       // 渐变沿主轴、跨度等于图形全高——短渐变和径向渐变一眼是滤镜
-      if(three && drag){ ctx.fill(P,'evenodd'); }   // 拖动中先给实色，松手再补网点
+      // 动画期间降质。RAIL 给 Animation 的每帧预算是 10ms（16.67 里浏览器自己要用掉约 6ms），
+      // 而带 tone 的网点循环每个点大小都不同，没法复用整张网屏缓存。
+      // 所以动画帧里三维元素先画实色，动画结束再补一帧全质量的。
+      if(three && ANIM){ ctx.fill(P,'evenodd'); }
       else if(three){
         const TB=toneBuffer(e);
         screenFill(col, [cx-Rm,cy-Rm,cx+Rm,cy+Rm],
@@ -2419,15 +2514,28 @@ function playCut(){
 }
 // 图形落进画面：从上方偏大地进来，着地时压扁再弹回 —— squash & stretch。
 // 这一下就把整件事演完了：三维的东西掉进画面，被压成一个剪影。
-let elA=1, elRAF=0;
+let elA=1, elS=0, elRAF=0;
+const DROP_PX=42;                       // 入场位移。30dp 就够传达方向，位移大 = 廉价
 function bounceEl(){
-  if(prefersStill()){ elA=1; return; }
   if(elRAF) cancelAnimationFrame(elRAF);
-  const T0=performance.now(), DUR=560;
+  const still=prefersStill();
+  // 时长要跟位移距离挂钩，不能所有画幅都用同一个数：
+  // 原来固定 560ms，但 SC() 缩放后实际位移在四种画幅间差 1.6 倍，大画幅上就显得慢。
+  // 经验式 duration ≈ 基础值 + 距离/速度，速度取 1000-1400 px/s。
+  const dist=DROP_PX*SC();
+  const DUR=still ? 0.22 : Math.max(0.26, Math.min(0.52, 0.26 + dist/1200));
+  const T0=performance.now();
   (function step(now){
-    const t=Math.min(1,(now-T0)/DUR);
-    elA=t; draw();
-    if(t<1) elRAF=requestAnimationFrame(step); else { elRAF=0; elA=1; draw(); }
+    const t=(now-T0)/1000;
+    elA=Math.min(1, t/DUR);
+    // reduce 下只留淡入：去掉位移和缩放（前庭系统的触发源），信息还在，东西不飞。
+    // bounce 决定过冲，而过冲就是着地的挤压。阶跃响应过冲 = exp(−πζ/√(1−ζ²))：
+    // bounce .18（ζ=.82）只有 0.011，挤压几乎看不见；bounce .30（ζ=.70）是 0.046。
+    // Apple 口径 0.3 = 「想被看见」，>0.4 对 UI 太夸张 —— 这里是角色动画，取 0.30 正好。
+    elS = still ? 0 : springAt(t, DUR, 0.30, 1, 0);
+    draw();
+    if(t < DUR*(still?1:1.5)) elRAF=requestAnimationFrame(step);
+    else { elRAF=0; elA=1; elS=0; draw(); }
   })(T0);
 }
 
@@ -2611,7 +2719,34 @@ function playDemo(){
     if(t<1) demoRAF=requestAnimationFrame(step); else { demoRAF=0; demoT=-1; draw(); }
   })(T0);
 }
-const prefersStill=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// 「减少动效」必须监听变化，不能只读一次 —— 用户在会话中途改系统设置要立刻生效。
+const STILL_MQ = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+let STILL = !!(STILL_MQ && STILL_MQ.matches);
+if(STILL_MQ && STILL_MQ.addEventListener) STILL_MQ.addEventListener('change', e=>{ STILL=e.matches; });
+const prefersStill=()=>STILL;
+
+// 可打断的弹簧：**解析解**，不是数值积分。x 是 t 的纯函数 ——
+// 任意时刻可跳、可倒、可停、可续，这是「动画能被打断」的技术前提；
+// 数值积分在掉帧（dt 变大）时会炸。
+// 参数只用两个人话数字：
+//   dur    感知时长（秒）。注意它不是沉降时长 —— 弹簧理论上永远停不下来。
+//   bounce Apple 口径：0 = 不弹（多数场合）、0.15 = 有一点活气、0.3 = 想被看见、
+//          >0.4 对 UI 元素太夸张（WWDC23 原话）。
+function springAt(t, dur, bounce, x0, v0){
+  if(t<=0) return x0;
+  const s0=Math.pow(2*Math.PI/Math.max(0.02,dur), 2);
+  const z=Math.max(0.05, 1-(bounce||0));            // 阻尼比 ζ = 1 − bounce
+  const d=2*z*Math.sqrt(s0), y=d/2, disc=s0-y*y;
+  v0=v0||0;
+  if(disc>1e-9){                                    // 欠阻尼：会越过零点，那一下就是"着地"
+    const w=Math.sqrt(disc);
+    return Math.exp(-y*t)*(x0*Math.cos(w*t)+((v0+y*x0)/w)*Math.sin(w*t));
+  }
+  if(disc>-1e-9) return Math.exp(-y*t)*(x0+(v0+x0*y)*t);   // 临界阻尼
+  const r=Math.sqrt(-disc), a0=y+r, a1=y-r;               // 过阻尼
+  const j1=(v0+a0*x0)/(a0-a1), j0=x0-j1;
+  return j0*Math.exp(-a0*t)+j1*Math.exp(-a1*t);
+}
 
 // ---------- 交互 ----------
 const pos=e=>{const r=cv.getBoundingClientRect();
