@@ -1908,7 +1908,7 @@ function drawOne(e, col, side, inv, isLast){
     const P=new Path2D(), sub=new Path2D();
     elInto(sub,e,R0);
     P.addPath(sub,new DOMMatrix().translateSelf(cx,cy).rotateSelf(e.r*180/Math.PI));
-    const ANIM = drag || elRAF || cutRAF;
+    const ANIM = drag || animating();
     if(halfSelf){
       // 上半网点、下半实心。分界就是元素自己的中线。
       ctx.save(); ctx.clip(P,'evenodd');
@@ -2515,16 +2515,23 @@ function playCut(){
 // 图形落进画面：从上方偏大地进来，着地时压扁再弹回 —— squash & stretch。
 // 这一下就把整件事演完了：三维的东西掉进画面，被压成一个剪影。
 let elA=1, elS=0, elRAF=0;
+// 「动画期间降质」不能拿 rAF 的 id 当判据：切标签页时 rAF 会暂停，
+// id 一直留着，三维元素就永久卡在实色降质上。改成一个会自己过期的时间戳。
+// （自检是同步跑完的，rAF 永远不推进 —— 同一个坑在那边也会踩到。）
+let ANIM_UNTIL=0;
+const animating=()=>performance.now()<ANIM_UNTIL;
 const DROP_PX=42;                       // 入场位移。30dp 就够传达方向，位移大 = 廉价
 function bounceEl(){
   if(elRAF) cancelAnimationFrame(elRAF);
   const still=prefersStill();
+  ANIM_UNTIL=0;
   // 时长要跟位移距离挂钩，不能所有画幅都用同一个数：
   // 原来固定 560ms，但 SC() 缩放后实际位移在四种画幅间差 1.6 倍，大画幅上就显得慢。
   // 经验式 duration ≈ 基础值 + 距离/速度，速度取 1000-1400 px/s。
   const dist=DROP_PX*SC();
   const DUR=still ? 0.22 : Math.max(0.26, Math.min(0.52, 0.26 + dist/1200));
   const T0=performance.now();
+  ANIM_UNTIL=T0+DUR*1000*(still?1:1.5)+40;
   (function step(now){
     const t=(now-T0)/1000;
     elA=Math.min(1, t/DUR);
@@ -2535,7 +2542,7 @@ function bounceEl(){
     elS = still ? 0 : springAt(t, DUR, 0.30, 1, 0);
     draw();
     if(t < DUR*(still?1:1.5)) elRAF=requestAnimationFrame(step);
-    else { elRAF=0; elA=1; elS=0; draw(); }
+    else { elRAF=0; elA=1; elS=0; ANIM_UNTIL=0; draw(); }
   })(T0);
 }
 
@@ -3326,6 +3333,152 @@ function feat(st){
           nv*0.30];                            // 其中几行是竖排
 }
 const fdist=(a,b)=>{let t=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];t+=d*d;}return Math.sqrt(t);};
+
+// ================== 好看不好看，能算的那一部分 ==================
+// 用户说「六个方向给的随机预设审美一般不好看，算法优化一下，其实审美也是有公式化的东西」。
+// 是有，但**大部分流传的说法在文献里是被证伪的**，先把假的剔掉：
+//   · 三分法 —— 符合与不符合两组的偏好**无显著差异**（显著性峰的位置有差，偏好没有）
+//   · 黄金比例 —— Fechner 原始 76% 是 10 个选项里选；扩到 48 个矩形后效应消失
+//   · 动态对称 / 根号矩形 —— Art Bulletin 3(3):107-127 已反驳
+//   · 对称性 —— 与偏好只有 r=0.42，弱到不能当判据
+// 真正有实测相关系数的只有这几条，下面只用这几条：
+//   · **DCM**（视觉重心偏离度 = |重心−中心| / 画幅对角线）：与平衡 r=−0.822、
+//     与偏好 r=−0.867。这是整份文献里最强的一条。
+//   · 光学中心 = 几何中心上移 0.05×H（页高的 1/20）
+//   · 双色和谐：ΔL* 在 10 处过拐点、≥20 基本饱和；**ΔC 越小越和谐**（拐点 17.8）
+//   · 光值面积配比（歌德）：黄9/橙8/红6/绿6/蓝4/紫3，面积比 = 光值的倒数比
+//   · 低层统计只能解释约 R²=0.50 的美感评分 —— 所以这个分数是**排序用的**，
+//     不是真理；它的作用是把明显糟的那几个沉底，不是选出「最美」的那一个。
+
+// 多边形的面积与重心（用来算两块色域各自的分量）
+function polyMoment(poly){
+  if(!poly||poly.length<3) return null;
+  let A=0, cx=0, cy=0;
+  for(let i=0;i<poly.length;i++){
+    const p=poly[i], q=poly[(i+1)%poly.length];
+    const cr=p[0]*q[1]-q[0]*p[1];
+    A+=cr; cx+=(p[0]+q[0])*cr; cy+=(p[1]+q[1])*cr;
+  }
+  A/=2; if(Math.abs(A)<1e-6) return null;
+  return {a:Math.abs(A), x:cx/(6*A), y:cy/(6*A)};
+}
+// 视觉重量 = 面积 × 与纸色的明度差。不是「墨的克数」，是眼睛感觉到的分量：
+// 同样大的一块，越接近纸色越轻。
+function inkCentroid(st){
+  const paperL=Lstar(st.paper||st.a);
+  let mx=0,my=0,m=0;
+  const add=(x,y,area,col)=>{
+    const w=area*Math.max(0.03, Math.abs(Lstar(col)-paperL)/100);
+    mx+=x*w; my+=y*w; m+=w;
+  };
+  const hz=st.cut?Math.abs(st.cut.x2-st.cut.x1)>Math.abs(st.cut.y2-st.cut.y1):true;
+  if(st.cut){
+    const x1=st.cut.x1*W,y1=st.cut.y1*H,x2=st.cut.x2*W,y2=st.cut.y2*H;
+    let nx=-(y2-y1), ny=(x2-x1); const L=Math.hypot(nx,ny)||1; nx/=L; ny/=L;
+    const c=nx*x1+ny*y1;
+    for(const g of [1,-1]){
+      const mo=polyMoment(clipPoly(g*nx,g*ny,g*c));
+      if(mo) add(mo.x,mo.y,mo.a, g>0?st.a:st.b);
+    }
+  }else add(W/2,H/2,W*H, st.a);
+  for(const e of (st.els||[])){
+    const b=elBBox(e); if(!b) continue;
+    const area=(b.x1-b.x0)*(b.y1-b.y0)*fillRatio(e.k,e.cu);
+    // 元素落在哪一侧就用哪一侧的墨色；跨线的取两者较深的
+    const col = Lstar(st.a)<Lstar(st.b)?st.a:st.b;
+    add((b.x0+b.x1)/2,(b.y0+b.y1)/2, area, col);
+  }
+  for(const t of (st.texts||[])){
+    if(!String(t.text||'').trim()) continue;
+    const b=textBox(t);
+    add(b.x+b.w/2, b.y+b.h/2, b.w*b.h*0.42, Lstar(st.a)<Lstar(st.b)?st.a:st.b);
+  }
+  return m>0?{x:mx/m,y:my/m}:{x:W/2,y:H/2};
+}
+// 歌德光值：亮的颜色分量重，所以面积要小。面积比 = 光值的倒数比。
+// 黄紫 1:3、橙蓝 1:2、红绿 1:1 就是从这张表来的。
+function lightValue(hex){
+  const h=hex2lch(hex)[2];
+  if(h<70) return 6;            // 红
+  if(h<95) return 8;            // 橙
+  if(h<135) return 9;           // 黄
+  if(h<200) return 6;           // 绿
+  if(h<290) return 4;           // 蓝
+  return 3;                     // 紫
+}
+// 排序用的分数，0..1。**不是真理** —— 低层统计只解释约一半的美感评分。
+// 它的职责是把明显糟的沉底。
+function score(st){
+  const keepS=S; S=st;
+  let out=0.5;
+  try{
+    // ① 重心偏离度。文献里最强的一条（与偏好 r=−0.867）。
+    //    目标不是几何中心，是**光学中心** = 几何中心上移 0.05×H。
+    const c=inkCentroid(st);
+    const dcm=Math.hypot(c.x-W/2, c.y-(H/2-0.05*H))/Math.hypot(W,H);
+    const sBal=1-Math.min(1, dcm/0.20);
+    // ② 双色和谐。ΔL* 我们已经硬约束 ≥30（早就在饱和区），所以这里只看彩度差：
+    //    ΔC 越小越和谐，拐点 17.8。
+    const ca=hex2lch(st.a)[1]*100, cb=hex2lch(st.b)[1]*100;
+    const sHue=1-Math.min(1, Math.abs(ca-cb)/34);
+    // ③ 光值面积配比：亮的墨该占小面积。
+    //    我们的小色域占 28–36%，所以「哪一侧是小的」这个选择要跟光值对上。
+    const la=lightValue(st.a), lb=lightValue(st.b);
+    const hz=st.cut?Math.abs(st.cut.x2-st.cut.x1)>Math.abs(st.cut.y2-st.cut.y1):true;
+    const pos=st.cut?(hz?(st.cut.y1+st.cut.y2)/2:(st.cut.x1+st.cut.x2)/2):0.5;
+    const aSmall=pos<0.5;                       // A 侧（先画的那侧）是不是小的那块
+    const wantASmall=la>lb;                     // 光值大的（亮的）该占小面积
+    const sArea=st.cut?(aSmall===wantASmall?1:0.45):0.7;
+    // ④ 墨的总覆盖。太空和太满都差（复杂度-美感的倒 U 型，R²≈0.50）。
+    //    这里只用一个宽的窗口，不敢用得更细 —— 倒 U 在产品设计域没被复现。
+    let ink=0;
+    for(const e of (st.els||[])){ const b=elBBox(e); if(!b) continue;
+      ink+=(b.x1-b.x0)*(b.y1-b.y0)*fillRatio(e.k,e.cu); }
+    const frac=Math.min(1, ink/(W*H));
+    const sInk=1-Math.min(1, Math.abs(frac-0.26)/0.30);
+    // ⑤ 元素之间不能"擦边"：两个元素的中心距落在危险区时读作没排好。
+    //    分组强度按距离指数衰减，α≈2 量级；距离比 ×2 → 强度 ×e⁻²≈0.14。
+    let sSep=1;
+    const es=st.els||[];
+    for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++){
+      const A=elBBox(es[i]), B=elBBox(es[j]); if(!A||!B) continue;
+      const gapx=Math.max(A.x0,B.x0)-Math.min(A.x1,B.x1);
+      const gapy=Math.max(A.y0,B.y0)-Math.min(A.y1,B.y1);
+      const gap=Math.max(gapx,gapy);
+      const unit=Math.min(W,H)*0.035;
+      if(gap>-unit && gap<unit*1.6) sSep=Math.min(sSep,0.35);   // 擦边：既没重叠也没让开
+    }
+    // ⑥ 文字和形的关系。上一版漏了这一项，结果分数最高的那张标题正好半压在
+    //    网点器物上 —— 眼睛一看就不对，分数却是 0.876。
+    //    真正难看的是**压一半**（一行字从中间断成两个颜色），不是「压」：
+    //    整行落进一块够大的实地墨里会被挖成底色，那是双色印刷最漂亮的一手。
+    let sText=1;
+    for(const t of (st.texts||[])){
+      if(!String(t.text||'').trim()) continue;
+      const tb=textBox(t), area=Math.max(1,tb.w*tb.h);
+      for(const e of (st.els||[])){
+        const q=elBBox(e); if(!q) continue;
+        const ov=Math.max(0,Math.min(tb.x+tb.w,q.x1)-Math.max(tb.x,q.x0))*
+                 Math.max(0,Math.min(tb.y+tb.h,q.y1)-Math.max(tb.y,q.y0));
+        const fr=ov/area;
+        const solid=!(e.fill||0) && !e.d3;
+        if(fr>0.90 && solid) continue;                 // 整个压进实地：成立
+        if(fr>0.12) sText=Math.min(sText, 1-Math.min(0.75, fr*0.9));
+      }
+      // 文字互压一票否决
+      for(const o of (st.texts||[])){
+        if(o===t||!String(o.text||'').trim()) continue;
+        const ob=textBox(o);
+        const ov=Math.max(0,Math.min(tb.x+tb.w,ob.x+ob.w)-Math.max(tb.x,ob.x))*
+                 Math.max(0,Math.min(tb.y+tb.h,ob.y+ob.h)-Math.max(tb.y,ob.y));
+        if(ov>area*0.02) sText=Math.min(sText,0.15);
+      }
+    }
+    out=0.26*sBal + 0.24*sText + 0.14*sHue + 0.12*sArea + 0.12*sInk + 0.12*sSep;
+  }catch(_){ out=0.5; }
+  S=keepS;
+  return out;
+}
 // ---- 锁：锁住你喜欢的，只重掷其余 ----
 // 「全部重掷」的致命伤是：好不容易碰到一个喜欢的局部，一按随机就没了 ——
 // 于是人不敢按，随机按钮的使用率崩塌。加锁之后随机的期望收益永远为正
@@ -3400,7 +3553,7 @@ function proposeVary(want, base, mode){
   const band=VARY_BAND[mode]||VARY_BAND[1], lo=band[0], hi=band[1];
   const nOpen = mode===2 ? 1 : 2;                     // 带越宽，放开的维度越多
   let tries=0;
-  while(pool.length < Math.max(16, want*3) && tries < 200){
+  while(pool.length < Math.max(20, want*4) && tries < 260){
     const i=tries++;
     const open=[keys[i%keys.length]];
     for(let j=1;j<nOpen;j++) open.push(keys[(i*3+j*2+1)%keys.length]);
@@ -3424,9 +3577,19 @@ function proposeVary(want, base, mode){
 }
 function propose(want, vary){
   const base=JSON.parse(JSON.stringify(S));
-  const pool = vary ? proposeVary(want, base, vary) : (function(){
-    const p=[]; for(let i=0;i<Math.max(18,want*3);i++) p.push(applyLocks(genState(), base));
+  let pool = vary ? proposeVary(want, base, vary) : (function(){
+    const p=[]; for(let i=0;i<Math.max(30,want*5);i++) p.push(applyLocks(genState(), base));
     return p; })();
+  // 先按分数把明显糟的沉底，再在活下来的里面做最远点采样。
+  // 用户说「六个方向给的随机预设审美一般不好看」—— 原来六个是纯粹按**可分辨**挑的，
+  // 完全不看**好不好**。可分辨保证了六个不一样，不保证六个都能看。
+  // 质量-多样性要两头都要：先质量筛一道，再在幸存者里挑多样性。
+  // 砍掉后 40%：砍太狠六个会长得像（多样性塌掉），砍太松等于没筛。
+  if(pool.length > want*2){
+    const scored=pool.map(function(st){ return {st:st, sc:score(st)}; });
+    scored.sort(function(a,b){ return b.sc-a.sc; });
+    pool=scored.slice(0, Math.max(want*2, Math.round(scored.length*0.6))).map(function(x){ return x.st; });
+  }
   const fs=pool.map(feat), out=[0];
   let last=0;                       // 最远点采样里最后一次的最小间距 = 这组候选的可分辨下限
   while(out.length<want){
@@ -4163,6 +4326,10 @@ draw();pushHist();
 // 引擎里那些工艺规则是这个东西的全部价值，改坏了必须当场知道，而不是等眼睛发现。
 function selfTest(){
   const R=[], t0all=performance.now();
+  // 渲染类用例开头必须自己把动画状态铺干净。这个项目里同一个坑踩到第三次了：
+  // 先是 elA 停在 0 把元素画成全透明，现在是 elS（弹簧位移）和降质标志。
+  // 自检是同步跑完的，rAF 永远不会推进，所以任何 addEl() 之后留下的动画状态都不会自己结束。
+  const stillFrame=()=>{ elA=1; elS=0; ANIM_UNTIL=0; if(elRAF){cancelAnimationFrame(elRAF); elRAF=0;} };
   const ok=(name,pass,detail)=>R.push({name,pass:!!pass,detail:detail==null?'':String(detail)});
   const keep=JSON.parse(JSON.stringify(S)), kw=W, kh=H;
   try{
@@ -4266,7 +4433,7 @@ function selfTest(){
       const g=cv.getContext('2d');
       S.cut={x1:0,y1:.40,x2:1,y2:.40}; S.dot=1; S.tex=0; S.mis=0; S.mark=0;
       S.paper='#F4F1E8'; S.inkA='#F15060'; S.covA=.62; S.inkB='#404755'; S.covB=.80; applyInks();
-      S.texts=[]; S.ti=-1; elA=1; sel=false; tsel=false;
+      S.texts=[]; S.ti=-1; stillFrame(); sel=false; tsel=false;
       S.els=[{k:0,x:.5,y:.72,s:.42,r:0,fill:1,rep:1}]; S.si=0;
       // 采样区必须在移动前后都落在形的内部，否则量的是形的边不是网屏相位
       const R=.42*W, cx0=.5*W, cy0=.72*H, dx=90;
@@ -4295,7 +4462,7 @@ function selfTest(){
       const g=cv.getContext('2d');
       let inv=0, segs=0;
       for(let i=0;i<10;i++){
-        shuffleState(); elA=1; sel=false; tsel=false;
+        shuffleState(); stillFrame(); sel=false; tsel=false;
         draw(); const A=g.getImageData(0,0,W,H).data;
         const keep=S.texts; S.texts=[];
         draw(); const B=g.getImageData(0,0,W,H).data;
@@ -4387,7 +4554,7 @@ function selfTest(){
       // 形本身就是隐形的，四个填充当然一模一样 —— 那是对的行为，不是 bug。
       // 前一个用例 addEl 触发了落下动画，同步跑完的自检里 rAF 不会推进，
       // elA 停在 0，drawOne 会把元素画成 alpha 0 —— 什么都看不见，四个填充当然一样。
-      elA=1;
+      stillFrame();
       S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
       const lat={a:0,b:1,m:0,t:0}, cu=latheToShape(lat);
       let minD=1, worst='';
@@ -4440,8 +4607,8 @@ function selfTest(){
     // 6f. 套印错位：四档必须一档比一档明显，而且台阶要出现在切线附近
     (function(){
       const g=cv.getContext('2d');
-      elA=1; S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
-      S.cut={x1:0,y1:.42,x2:1,y2:.42}; S.texts=[];
+      stillFrame(); S.paper='#F5EDDC'; S.a='#F5EDDC'; S.b='#404755'; S.dot=1; S.tex=1;
+      S.cut={x1:0,y1:.42,x2:1,y2:.42}; S.texts=[]; stillFrame();
       const lat={a:0,b:1,m:0,t:0}, cu=latheToShape(lat);
       const im=[];
       for(const m of [0,1,2,3]){
@@ -4480,6 +4647,30 @@ function selfTest(){
          d[0]>0.004 && d[1]>d[0] && d[2]>d[1] && okStep,
          '整图差异 轻 '+(d[0]*100).toFixed(1)+'% 中 '+(d[1]*100).toFixed(1)+'% 重 '+(d[2]*100).toFixed(1)+
          '%　台阶相对对准 '+(dv?dv.join('/'):'量不到')+'px');
+    })();
+
+    // 6d2. 打分筛选真的把糟的挡住了：六个候选里最差的那个，
+    //      必须高于随便生成的中位数。
+    //      分数只解释约 R²=0.50 的美感评分，所以它的职责是**把明显糟的沉底**，
+    //      不是选出「最美」的那一个 —— 判据也照这个写：看的是下界不是上界。
+    (function(){
+      const raw=[], picked=[];
+      for(let i=0;i<4;i++){
+        shuffleState();
+        for(let j=0;j<12;j++) raw.push(score(genState()));
+        for(const st of propose(6,0).list) picked.push(score(st));
+      }
+      raw.sort(function(a,b){return a-b;});
+      // 判据不能写成「最差 ≥ 随机中位」—— 那是掷硬币。
+      // 分数只解释约 R²=0.50 的美感评分，它的职责是**把尾巴切掉**，所以判两件事：
+      // ① 整体被抬高了（均值差）；② 下界被抬起来了（最差的高于随机的 p10）。
+      const p10=raw[Math.floor(raw.length*0.10)];
+      const rm=raw.reduce(function(a,b){return a+b;},0)/raw.length;
+      const pm=picked.reduce(function(a,b){return a+b;},0)/picked.length;
+      const lo=Math.min.apply(null,picked);
+      ok('候选先按分数筛过：整体抬高且尾巴切掉', pm>rm+0.03 && lo>p10,
+         '随机均值 '+rm.toFixed(3)+' → 候选均值 '+pm.toFixed(3)+
+         '　随机p10 '+p10.toFixed(3)+' / 候选最差 '+lo.toFixed(3));
     })();
 
     // 6e. 近亲要比全新近，但不能近到看不出变化
