@@ -338,9 +338,12 @@
     border:1px solid var(--line);touch-action:none;user-select:none}
   .photo-frame canvas{width:100%;height:100%;cursor:grab;touch-action:none}
   .photo-frame:active canvas{cursor:grabbing}
+  .photo-frame.is-cut canvas{cursor:crosshair}
+  .photo-frame.is-cut:active canvas{cursor:crosshair}
   .photo-frame::after{content:"";position:absolute;inset:0;pointer-events:none;
     background:linear-gradient(90deg,transparent 33.1%,#ffffff40 33.3%,#ffffff40 33.6%,transparent 33.8%,transparent 66.2%,#ffffff40 66.4%,#ffffff40 66.7%,transparent 66.9%),
                linear-gradient(0deg,transparent 33.1%,#ffffff40 33.3%,#ffffff40 33.6%,transparent 33.8%,transparent 66.2%,#ffffff40 66.4%,#ffffff40 66.7%,transparent 66.9%)}
+  .photo-frame.is-cut::after{background:none;box-shadow:inset 0 0 0 1px #ffffff38}
   .photo-frame span{position:absolute;left:8px;bottom:7px;z-index:2;padding:4px 6px;background:#111217b8;
     color:#fff;font:500 9px/1 var(--ui);letter-spacing:.09em;text-transform:uppercase;pointer-events:none}
   .photo-help{display:block;margin:8px 0 0;color:var(--ink3);font-size:11px;line-height:1.55}
@@ -349,6 +352,14 @@
   .photo-style button{min-height:40px;padding:7px 2px;border:1px solid var(--line);background:#fff;
     color:var(--ink2);font:500 11px/1.2 var(--ui);cursor:pointer}
   .photo-style button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .cut-mode button[data-cut="keep"]::before,.cut-mode button[data-cut="remove"]::before{
+    content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;vertical-align:1px}
+  .cut-mode button[data-cut="keep"]::before{background:#28a8c7}
+  .cut-mode button[data-cut="remove"]::before{background:#e0523d}
+  .cut-mode button[aria-pressed="true"]::before{box-shadow:0 0 0 2px #ffffff88}
+  .cut-mode button[data-cut="reset"]{flex:.78;color:var(--ink3)}
+  .cut-status{display:flex;align-items:flex-start;gap:7px}
+  .cut-status::before{content:"";flex:none;width:8px;height:8px;margin-top:4px;border-radius:50%;background:#28a8c7}
   .recipe{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
     font-size:10.5px;line-height:1.75;color:var(--ink2);background:#f6f4ef;
     border:1px solid var(--line);padding:11px 12px;white-space:pre;overflow-x:auto}
@@ -623,13 +634,17 @@
       <p class="photo-help">照片会被拆进当前两块色版；换墨、换纸和切线时，它会一起重新印。</p>
     </div>
     <div class="photo-sub" id="shapeControls" hidden>
-      <h4 class="mini">轮廓</h4>
-      <div class="sld"><label>阈值</label><input type="range" id="iThr" min="8" max="248" step="1"><b></b></div>
-      <div class="sld"><label>点数</label><input type="range" id="iDet" min="50" max="180" step="5"><b></b></div>
-      <div class="row" id="iInv" style="margin-top:4px">
-        <button data-v="0" aria-pressed="true">正</button><button data-v="1">反相</button>
+      <h4 class="mini">在照片上修边缘</h4>
+      <div class="row cut-mode" id="cutMode">
+        <button data-cut="keep" aria-pressed="true">保留</button><button data-cut="remove">去除</button
+        ><button data-cut="reset">重来</button>
       </div>
-      <p class="photo-help">轮廓 <b id="ipts">0</b> 个点。阈值决定留下明处还是暗处。</p>
+      <div class="sld"><label>画笔</label><input type="range" id="cutBrush" min="3" max="18" step="1"><b></b></div>
+      <div class="sld"><label>范围</label><input type="range" id="cutRange" min="0" max="100" step="1"><b></b></div>
+      <p class="photo-help cut-status" id="cutStatus">蓝色区域会留下。画几笔，算法会贴着相近的颜色扩展。</p>
+      <h4 class="mini">剪影边缘</h4>
+      <div class="sld"><label>精细</label><input type="range" id="iDet" min="50" max="180" step="5"><b></b></div>
+      <p class="photo-help">当前轮廓 <b id="ipts">0</b> 个点。</p>
     </div>
     <div class="row" style="margin-top:6px"><button id="idel">删掉这张图</button></div>
     <p class="photo-help">图片只在你自己的浏览器里处理，不会上传。</p>
@@ -1367,13 +1382,15 @@ function morph(src,w,h,op){
   }
   return d;
 }
-function extract(thr, inv, detail){
+function extract(thr, inv, detail, maskOverride, keepOverride){
   if(!SRC) return null;
   const w=SRC.w, h=SRC.h, lum=SRC.lum;
-  let m=new Uint8Array(w*h);
+  let m=maskOverride ? new Uint8Array(maskOverride) : new Uint8Array(w*h);
   const op=SRC.op;
-  if(SRC.hasAlpha){ for(let i=0;i<m.length;i++) m[i]=op[i]; }      // 有 alpha 就直接用它
-  else for(let i=0;i<m.length;i++) m[i] = (lum[i]<thr) !== !!inv ? 1 : 0;
+  if(!maskOverride){
+    if(SRC.hasAlpha){ for(let i=0;i<m.length;i++) m[i]=op[i]; }    // 有 alpha 就直接用它
+    else for(let i=0;i<m.length;i++) m[i] = (lum[i]<thr) !== !!inv ? 1 : 0;
+  }
   // 形态学开闭：先开（去掉孤立噪点），再闭（补上针孔）。
   // 杂乱背景下不做这一步，轮廓会挂满毛刺，简化完还剩一百多个点。
   // 顺序不能换：先闭（补针孔）再开（去噪点）。反过来先开，会把瓶颈、壶把、
@@ -1402,10 +1419,11 @@ function extract(thr, inv, detail){
     // 把成片的噪块留下。所以两个条件一起用：面积够大 **且** 落在主体附近。
     // 壶把就在壶旁边，背景噪块散得到处都是——这一条正好把它们分开。
     if(bestId>=0){
-      const cnt=new Int32Array(id);
+      const cnt=new Int32Array(id),manual=new Uint8Array(id);
       let bx0=1e9,by0=1e9,bx1=-1e9,by1=-1e9;
       for(let i=0;i<m.length;i++) if(m[i]){
         cnt[lab[i]]++;
+        if(keepOverride&&keepOverride[i]===1)manual[lab[i]]=1;
         if(lab[i]===bestId){const x=i%w,y=(i/w)|0;
           if(x<bx0)bx0=x; if(x>bx1)bx1=x; if(y<by0)by0=y; if(y>by1)by1=y;}
       }
@@ -1417,7 +1435,7 @@ function extract(thr, inv, detail){
         if(!m[i]||lab[i]===bestId) continue;
         const L=lab[i], gx=cx[L]/cnt[L], gy=cy[L]/cnt[L];
         const near = gx>bx0-mx && gx<bx1+mx && gy>by0-my && gy<by1+my;
-        if(cnt[L]<minA || !near) m[i]=0;
+        if(!manual[L]&&(cnt[L]<minA || !near)) m[i]=0;
       }
     }
   }
@@ -1455,7 +1473,12 @@ function extract(thr, inv, detail){
   // 丢掉碎屑：面积小于最大块 2% 的一律不要，否则背景噪点会变成一堆小黑点
   const areas=loops.map(l=>Math.abs(areaOf(l)));
   const big=Math.max.apply(null,areas);
-  loops=loops.filter((l,i)=>areas[i]>=big*0.02);
+  const keepPts=[];
+  if(keepOverride)for(let i=0;i<keepOverride.length&&keepPts.length<80;i++)if(keepOverride[i]===1)
+    keepPts.push([i%w,(i/w)|0]);
+  const inside=(p,l)=>{let on=false;for(let i=0,j=l.length-1;i<l.length;j=i++){
+    const a=l[i],b=l[j];if(((a[1]>p[1])!==(b[1]>p[1]))&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1]+1e-9)+a[0])on=!on;}return on;};
+  loops=loops.filter((l,i)=>areas[i]>=big*0.02||(keepPts.length&&keepPts.some(p=>inside(p,l))));
   // 用户脑子里的量是"点数"不是"像素容差"，所以按目标点数二分反解 ε。
   // 目标点数落在 12–40（甜区 18–28）：低于 12 认不出是什么，高于 40 就读作描图失败。
   // 上传的图必须过和内置器物同一道形状语法门 —— 不过门不报错，加大容差重试就是了。
@@ -1507,7 +1530,7 @@ async function loadImage(blob){
   octx.drawImage(bmp,0,0,w,h);
   if(bmp.close) bmp.close();
   const d=octx.getImageData(0,0,w,h).data;
-  const lum=new Uint8Array(w*h), op=new Uint8Array(w*h), hist=new Uint32Array(256);
+  const lum=new Uint8Array(w*h), op=new Uint8Array(w*h), rgb=new Uint8Array(w*h*3),hist=new Uint32Array(256);
   let opaque=0;
   for(let i=0,p=0;i<lum.length;i++,p+=4){
     // 透明 PNG 的透明区在 getImageData 里是 rgba(0,0,0,0)——不处理的话会被当成纯黑，
@@ -1516,6 +1539,7 @@ async function loadImage(blob){
     op[i] = d[p+3]>16 ? 1 : 0;
     if(op[i]) opaque++;
     const r=d[p]*a+255*(1-a), g=d[p+1]*a+255*(1-a), b=d[p+2]*a+255*(1-a);
+    const q=i*3;rgb[q]=r;rgb[q+1]=g;rgb[q+2]=b;
     // 按感知权重转灰度，不是三通道平均——平均会把红和蓝算得一样亮
     const v=(0.2126*r+0.7152*g+0.0722*b)|0;
     lum[i]=v; if(op[i]) hist[v]++;
@@ -1528,7 +1552,7 @@ async function loadImage(blob){
   for(let y=0;y<h;y++){ if(!op[y*w])bt++; if(!op[y*w+w-1])bt++; bn+=2; }
   const hasAlpha = opaque>0 && bt/Math.max(1,bn) > 0.6;
   const id='photo-'+(++PHOTO_SEQ);
-  SRC={id,w,h,lum,op,hasAlpha,hist,work:oc,canvas:photo,pw,ph,
+  SRC={id,w,h,lum,op,rgb,hasAlpha,hist,work:oc,canvas:photo,pw,ph,cutCache:new Map(),
        thr:hasAlpha?128:otsu(hist,Math.max(1,opaque))};
   PHOTO_ASSETS.set(id,SRC);
   clearPhotoCache();
@@ -1545,18 +1569,155 @@ function borderFg(thr,inv){
   for(let y=0;y<h;y++){ if(t(y*w))fg++; if(t(y*w+w-1))fg++; tot+=2; }
   return fg/Math.max(1,tot);
 }
+
+// ---------- 照片 → 可修正的主体蒙版 ----------
+// 自动结果只负责给出一份能继续改的初稿。用户画下「保留 / 去除」后，
+// 画笔不是生硬地擦像素：低分辨率的测地距离会沿相近颜色传播，并在强色差处停下。
+// 全程只依赖 Canvas 像素，单文件离线也能用。
+function ensureCutState(p){
+  if(!p.cut)p.cut={mode:'keep',brush:.07,range:.5,strokes:[]};
+  if(!Array.isArray(p.cut.strokes))p.cut.strokes=[];
+  if(p.cut.brush==null)p.cut.brush=.07;if(p.cut.range==null)p.cut.range=.5;
+  if(p.cut.mode!=='keep'&&p.cut.mode!=='remove')p.cut.mode='keep';
+  return p.cut;
+}
+function assetRGB(A){
+  if(A.rgb)return A.rgb;
+  if(!A.work)return new Uint8Array(Math.max(1,A.w*A.h*3));
+  const d=A.work.getContext('2d',{willReadFrequently:true}).getImageData(0,0,A.w,A.h).data;
+  const rgb=new Uint8Array(A.w*A.h*3);
+  for(let i=0,j=0;i<d.length;i+=4,j+=3){const a=d[i+3]/255;
+    rgb[j]=d[i]*a+255*(1-a);rgb[j+1]=d[i+1]*a+255*(1-a);rgb[j+2]=d[i+2]*a+255*(1-a);}
+  A.rgb=rgb;return rgb;
+}
+function autoCutData(A){
+  if(A.cutAuto)return A.cutAuto;
+  const w=A.w,h=A.h,n=w*h,score=new Float32Array(n);
+  if(A.hasAlpha){for(let i=0;i<n;i++)score[i]=A.op[i]?1:0;return A.cutAuto={score,thr:.5};}
+  const rgb=assetRGB(A),edge=[];
+  const step=Math.max(1,Math.floor((w+h)*2/1200));
+  for(let x=0;x<w;x+=step){edge.push(x,(h-1)*w+x);}
+  for(let y=step;y<h-1;y+=step){edge.push(y*w,y*w+w-1);}
+  const mean=[0,0,0];for(const i of edge){const q=i*3;mean[0]+=rgb[q];mean[1]+=rgb[q+1];mean[2]+=rgb[q+2];}
+  for(let k=0;k<3;k++)mean[k]/=Math.max(1,edge.length);
+  const d2=(i,c)=>{const q=i*3,dr=rgb[q]-c[0],dg=rgb[q+1]-c[1],db=rgb[q+2]-c[2];return dr*dr+dg*dg+db*db;};
+  const farthest=cs=>{let bi=edge[0]||0,bd=-1;for(const i of edge){let d=Infinity;for(const c of cs)d=Math.min(d,d2(i,c));if(d>bd){bd=d;bi=i;}}return bi;};
+  const color=i=>{const q=i*3;return [rgb[q],rgb[q+1],rgb[q+2]];};
+  const centers=[mean,color(farthest([mean]))];centers.push(color(farthest(centers)));
+  for(let it=0;it<5;it++){
+    const sum=Array.from({length:3},()=>[0,0,0,0]);
+    for(const i of edge){let k=0,b=d2(i,centers[0]);for(let j=1;j<3;j++){const d=d2(i,centers[j]);if(d<b){b=d;k=j;}}
+      const q=i*3,s=sum[k];s[0]+=rgb[q];s[1]+=rgb[q+1];s[2]+=rgb[q+2];s[3]++;}
+    for(let k=0;k<3;k++)if(sum[k][3])centers[k]=[sum[k][0]/sum[k][3],sum[k][1]/sum[k][3],sum[k][2]/sum[k][3]];
+  }
+  const hist=new Uint32Array(256);
+  for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i++){
+    let dd=d2(i,centers[0]);for(let k=1;k<3;k++)dd=Math.min(dd,d2(i,centers[k]));
+    const colorGap=Math.max(0,Math.min(1,(Math.sqrt(dd)-10)/112));
+    const dx=(x/(Math.max(1,w-1))-.5)/.72,dy=(y/(Math.max(1,h-1))-.5)/.72;
+    const centre=Math.max(0,1-Math.hypot(dx,dy));
+    score[i]=Math.max(0,Math.min(1,colorGap*.90+centre*.10));hist[Math.round(score[i]*255)]++;
+  }
+  const thr=Math.max(.18,Math.min(.68,otsu(hist,n)/255));
+  return A.cutAuto={score,thr};
+}
+function paintStrokeLabels(strokes,w,h){
+  const out=new Uint8Array(w*h),dot=(x,y,r,v)=>{
+    const x0=Math.max(0,Math.floor(x-r)),x1=Math.min(w-1,Math.ceil(x+r));
+    const y0=Math.max(0,Math.floor(y-r)),y1=Math.min(h-1,Math.ceil(y+r)),rr=r*r;
+    for(let yy=y0;yy<=y1;yy++)for(let xx=x0;xx<=x1;xx++)if((xx-x)*(xx-x)+(yy-y)*(yy-y)<=rr)out[yy*w+xx]=v;
+  };
+  for(const s of strokes||[]){const pts=s.pts||[],v=s.mode==='remove'?2:1,r=Math.max(1,(s.r||.07)*Math.min(w,h));
+    if(!pts.length)continue;
+    for(let i=0;i<pts.length;i++){
+      const a=pts[Math.max(0,i-1)],b=pts[i],ax=a.x*(w-1),ay=a.y*(h-1),bx=b.x*(w-1),by=b.y*(h-1);
+      const steps=Math.max(1,Math.ceil(Math.hypot(bx-ax,by-ay)/Math.max(1,r*.45)));
+      for(let k=0;k<=steps;k++){const t=k/steps;dot(ax+(bx-ax)*t,ay+(by-ay)*t,r,v);}
+    }
+  }
+  return out;
+}
+function cleanCutMask(src,w,h,hard){
+  let m=morph(src,w,h,1);m=morph(m,w,h,0);m=morph(m,w,h,0);m=morph(m,w,h,1);
+  const lab=new Int32Array(w*h).fill(-1),stats=[];let id=0;
+  for(let i0=0;i0<m.length;i0++){
+    if(!m[i0]||lab[i0]>=0)continue;const q=[i0],st={n:0,sx:0,sy:0,keep:0};lab[i0]=id;
+    while(q.length){const i=q.pop(),x=i%w,y=(i/w)|0;st.n++;st.sx+=x;st.sy+=y;if(hard&&hard[i]===1)st.keep++;
+      const add=(xx,yy)=>{if(xx<0||yy<0||xx>=w||yy>=h)return;const j=yy*w+xx;if(m[j]&&lab[j]<0){lab[j]=id;q.push(j);}};
+      add(x-1,y);add(x+1,y);add(x,y-1);add(x,y+1);}
+    stats.push(st);id++;
+  }
+  if(!stats.length)return m;
+  let best=0,bs=-1;for(let k=0;k<stats.length;k++){const st=stats[k],cx=st.sx/st.n/w,cy=st.sy/st.n/h;
+    const centre=1-Math.min(1,Math.hypot((cx-.5)*1.2,(cy-.5)*1.2)),sc=st.n*(.84+.16*centre)+(st.keep?1e9:0);
+    if(sc>bs){bs=sc;best=k;}}
+  const keep=new Uint8Array(stats.length),bn=stats[best].n;keep[best]=1;
+  for(let k=0;k<stats.length;k++)if(stats[k].keep||stats[k].n>bn*.055)keep[k]=1;
+  for(let i=0;i<m.length;i++)m[i]=m[i]&&keep[lab[i]]?1:0;
+  if(hard)for(let i=0;i<m.length;i++){if(hard[i]===1)m[i]=1;else if(hard[i]===2)m[i]=0;}
+  return m;
+}
+function geoDistance(rgb,w,h,seeds,autoSeed){
+  const n=w*h,dist=new Float32Array(n);dist.fill(Infinity);
+  const hi=[],hv=[];
+  const swap=(a,b)=>{let t=hi[a];hi[a]=hi[b];hi[b]=t;t=hv[a];hv[a]=hv[b];hv[b]=t;};
+  const push=(i,v)=>{if(v>=dist[i])return;dist[i]=v;let k=hi.length;hi.push(i);hv.push(v);
+    while(k){const p=(k-1)>>1;if(hv[p]<=v)break;swap(k,p);k=p;}};
+  const pop=()=>{const i=hi[0],v=hv[0],li=hi.pop(),lv=hv.pop();if(hi.length){hi[0]=li;hv[0]=lv;let k=0;
+    for(;;){let a=k*2+1;if(a>=hi.length)break;let b=a+1,j=b<hi.length&&hv[b]<hv[a]?b:a;if(hv[k]<=hv[j])break;swap(k,j);k=j;}}return [i,v];};
+  for(let i=0;i<n;i++){if(seeds[i])push(i,0);else if(autoSeed[i])push(i,28);}
+  const relax=(i,j,v)=>{const a=i*3,b=j*3,dr=rgb[a]-rgb[b],dg=rgb[a+1]-rgb[b+1],db=rgb[a+2]-rgb[b+2];
+    push(j,v+1+Math.sqrt(dr*dr+dg*dg+db*db)*.075);};
+  while(hi.length){const z=pop(),i=z[0],v=z[1];if(v!==dist[i])continue;const x=i%w,y=(i/w)|0;
+    if(x)relax(i,i-1,v);if(x<w-1)relax(i,i+1,v);if(y)relax(i,i-w,v);if(y<h-1)relax(i,i+w,v);}
+  return dist;
+}
+function buildCutMask(p,A){
+  const cut=ensureCutState(p),key=[Math.round(cut.range*1000),JSON.stringify(cut.strokes)].join('|');
+  A.cutCache=A.cutCache||new Map();const old=A.cutCache.get(key);if(old)return old;
+  const w=A.w,h=A.h,n=w*h,auto=autoCutData(A),thr=Math.max(.05,Math.min(.92,auto.thr+(.5-cut.range)*.38));
+  let base=new Uint8Array(n);for(let i=0;i<n;i++)base[i]=auto.score[i]>=thr?1:0;
+  const hard=paintStrokeLabels(cut.strokes,w,h);base=cleanCutMask(base,w,h,null);
+  if(cut.strokes.length){
+    const gm=150,gw=Math.min(gm,w),gh=Math.max(12,Math.round(h*gw/w)),gn=gw*gh;
+    const glab=paintStrokeLabels(cut.strokes,gw,gh),grgb=new Uint8Array(gn*3),gscore=new Float32Array(gn);
+    const ar=assetRGB(A);
+    for(let y=0,i=0;y<gh;y++)for(let x=0;x<gw;x++,i++){
+      const sx=Math.min(w-1,Math.round(x*(w-1)/Math.max(1,gw-1))),sy=Math.min(h-1,Math.round(y*(h-1)/Math.max(1,gh-1))),q=sy*w+sx;
+      grgb[i*3]=ar[q*3];grgb[i*3+1]=ar[q*3+1];grgb[i*3+2]=ar[q*3+2];gscore[i]=auto.score[q];
+    }
+    const fs=new Uint8Array(gn),bs=new Uint8Array(gn),fa=new Uint8Array(gn),ba=new Uint8Array(gn);
+    for(let y=0,i=0;y<gh;y++)for(let x=0;x<gw;x++,i++){
+      if(glab[i]===1)fs[i]=1;else if(glab[i]===2)bs[i]=1;
+      else if(!(x&1)&&!(y&1)){
+        if(gscore[i]>thr+.10&&x>1&&y>1&&x<gw-2&&y<gh-2)fa[i]=1;
+        if(gscore[i]<thr-.06||x===0||y===0||x===gw-1||y===gh-1)ba[i]=1;
+      }
+    }
+    if(!fs.some(v=>v)&&!fa.some(v=>v)){let bi=0;for(let i=1;i<gn;i++)if(gscore[i]>gscore[bi])bi=i;fa[bi]=1;}
+    const fd=geoDistance(grgb,gw,gh,fs,fa),bd=geoDistance(grgb,gw,gh,bs,ba);
+    for(let y=0,i=0;y<h;y++){const gy=Math.min(gh-1,Math.round(y*(gh-1)/Math.max(1,h-1)));
+      for(let x=0;x<w;x++,i++){const gx=Math.min(gw-1,Math.round(x*(gw-1)/Math.max(1,w-1))),j=gy*gw+gx;base[i]=fd[j]<=bd[j]?1:0;}}
+  }
+  base=cleanCutMask(base,w,h,hard);A.cutCache.set(key,base);if(A.cutCache.size>14)A.cutCache.delete(A.cutCache.keys().next().value);
+  return base;
+}
+function extractCutShape(detail){
+  const A=photoAsset();if(!S.photo||!A)return null;SRC=A;
+  const hard=paintStrokeLabels(ensureCutState(S.photo).strokes,A.w,A.h);
+  const c=extract(A.thr,false,detail==null?1:detail,buildCutMask(S.photo,A),hard);
+  if(c)c.assisted=true;return c;
+}
 async function useImage(blob){
   try{
     setHint('正在把照片拆进两块色版…');
     await loadImage(blob);
     pushHist();
-    // 同时备好一份自动轮廓。默认先让照片完整进版；用户切到「剪影」时不需要再等。
-    const inv0 = !SRC.hasAlpha && borderFg(SRC.thr,false) > 0.5;
-    let c=extract(SRC.thr,inv0,1);
-    if(!c) c=extract(SRC.thr,!inv0,1);
-    S.cust=c;
     if(S.els) S.els=S.els.filter(e=>!(e.k===12&&!e.lat));
-    S.photo={id:SRC.id,use:'photo',style:'grain',fx:.5,fy:.5,zoom:1,tone:.28,ink:.82};
+    S.photo={id:SRC.id,use:'photo',style:'grain',fx:.5,fy:.5,zoom:1,tone:.28,ink:.82,
+      cut:{mode:'keep',brush:.07,range:.5,strokes:[]}};
+    // 同时备好自动主体初稿。默认仍让完整照片进版；切到「剪影」时立即可改。
+    S.cust=extractCutShape(1);
     S.si=S.els&&S.els.length?Math.min(S.si,S.els.length-1):-1;
     sel=S.si>=0&&sel;
     placeTitle();selectTool('form');sync();draw();
@@ -2634,10 +2795,39 @@ function drawPhoto(ink,inv){
   const c=buildPhotoPlate(ink,inv);if(!c)return;
   ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(c,0,0,W,H);ctx.restore();
 }
+function cutOverlayCanvas(A,p){
+  // 落笔时只追手画笔迹，松手再跑颜色传播。否则 120Hz 指针事件会反复做两次 Dijkstra，
+  // 画笔会黏；用户需要的是线跟手、算法在松手的一瞬吸到边缘。
+  if(typeof photoDrag!=='undefined'&&photoDrag&&photoDrag.kind==='cut'&&A.cutOverlay)return A.cutOverlay;
+  const mask=buildCutMask(p,A);
+  if(A.cutOverlayMask===mask&&A.cutOverlay)return A.cutOverlay;
+  const c=document.createElement('canvas');c.width=A.w;c.height=A.h;const g=c.getContext('2d'),im=g.createImageData(A.w,A.h),d=im.data;
+  for(let y=0,i=0;y<A.h;y++)for(let x=0;x<A.w;x++,i++){
+    const q=i*4,bound=mask[i]&&(!x||!y||x===A.w-1||y===A.h-1||!mask[i-1]||!mask[i+1]||!mask[i-A.w]||!mask[i+A.w]);
+    if(mask[i]){d[q]=31;d[q+1]=166;d[q+2]=198;d[q+3]=bound?220:92;}
+    else{d[q]=10;d[q+1]=12;d[q+2]=17;d[q+3]=52;}
+  }
+  g.putImageData(im,0,0);A.cutOverlayMask=mask;A.cutOverlay=c;return c;
+}
 function drawPhotoCrop(){
   const c=document.getElementById('photoCrop'),p=S.photo,A=photoAsset();if(!c||!p||!A)return;
-  const g=c.getContext('2d'),r=photoCropRect(A,c.width,c.height,p);
+  const g=c.getContext('2d');
   g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  if(p.use==='shape'){
+    const k=Math.min(c.width/A.pw,c.height/A.ph),dw=A.pw*k,dh=A.ph*k,dx=(c.width-dw)/2,dy=(c.height-dh)/2;
+    g.fillStyle='#d2d0ca';g.fillRect(0,0,c.width,c.height);g.drawImage(A.canvas,dx,dy,dw,dh);
+    g.drawImage(cutOverlayCanvas(A,p),dx,dy,dw,dh);
+    const cut=ensureCutState(p);g.save();g.lineCap='round';g.lineJoin='round';g.shadowColor='rgba(255,255,255,.92)';g.shadowBlur=1.5;
+    for(const s of cut.strokes){const pts=s.pts||[];if(!pts.length)continue;
+      g.strokeStyle=s.mode==='remove'?'rgba(224,82,61,.95)':'rgba(40,168,199,.98)';
+      g.lineWidth=Math.max(2,(s.r||cut.brush)*Math.min(dw,dh));g.beginPath();
+      for(let i=0;i<pts.length;i++){const x=dx+pts[i].x*dw,y=dy+pts[i].y*dh;
+        if(i)g.lineTo(x,y);else g.moveTo(x,y);}
+      if(pts.length===1)g.lineTo(dx+pts[0].x*dw+.01,dy+pts[0].y*dh);
+      g.stroke();}
+    g.restore();return;
+  }
+  const r=photoCropRect(A,c.width,c.height,p);
   g.drawImage(A.canvas,r.sx,r.sy,r.sw,r.sh,0,0,c.width,c.height);
 }
 
@@ -4068,7 +4258,7 @@ document.getElementById('topPress').onclick=showPress;
 
 // ---- 图片进来的三条路：选文件、拖到画布、Ctrl+V ----
 const imgBlk=document.getElementById('imgblk');
-const iThr=document.getElementById('iThr'), iDet=document.getElementById('iDet');
+const iDet=document.getElementById('iDet'),cutBrush=document.getElementById('cutBrush'),cutRange=document.getElementById('cutRange');
 const photoControls=document.getElementById('photoControls'),shapeControls=document.getElementById('shapeControls');
 const pZoom=document.getElementById('pZoom'),pTone=document.getElementById('pTone'),pInk=document.getElementById('pInk');
 const photoFrame=document.getElementById('photoFrame');
@@ -4098,8 +4288,7 @@ function setImageUse(use){
   if(use!=='photo'&&use!=='shape')return;
   if(S.photo.use===use)return;
   if(use==='shape'&&!S.cust){
-    SRC=photoAsset();let c=extract(SRC.thr,false,1);
-    if(!c)c=extract(SRC.thr,true,1);
+    const c=extractCutShape(1);
     if(!c){setHint('这张照片暂时抠不出稳定轮廓，可以先作为照片使用');return;}
     S.cust=c;
   }
@@ -4132,31 +4321,54 @@ for(const [el,key,scale] of [[pZoom,'zoom',.01],[pTone,'tone',.01],[pInk,'ink',.
   el.addEventListener('input',()=>{if(!S.photo)return;S.photo[key]=+el.value*scale;
     clearPhotoCache();drawPhotoCrop();syncImg();draw();});
 }
+function refreshCutout(withHint){
+  const c=extractCutShape((+iDet.value||100)/100);
+  if(!c){syncImg();draw();syncUndoButton();if(withHint!==false)setHint('主体太小或没有闭合轮廓 —— 用「保留」在主体里面画一笔');return false;}
+  S.cust=c;for(const e of S.els||[])if(e.k===12&&!e.lat){e.cu=c;clampEl(e);}
+  syncImg();draw();syncUndoButton();if(withHint)setHint('剪影已更新 —— 可以继续修，或直接回到海报移动它');return true;
+}
+function photoSourcePoint(e){
+  const A=photoAsset(),c=document.getElementById('photoCrop');if(!A||!c)return null;
+  const r=photoFrame.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*c.width,py=(e.clientY-r.top)/r.height*c.height;
+  const k=Math.min(c.width/A.pw,c.height/A.ph),dw=A.pw*k,dh=A.ph*k,dx=(c.width-dw)/2,dy=(c.height-dh)/2;
+  if(px<dx||py<dy||px>dx+dw||py>dy+dh)return null;
+  return {x:Math.max(0,Math.min(1,(px-dx)/dw)),y:Math.max(0,Math.min(1,(py-dy)/dh))};
+}
 let photoDrag=null;
 photoFrame.addEventListener('pointerdown',e=>{
-  if(!S.photo)return;pushHist();photoFrame.setPointerCapture(e.pointerId);
-  photoDrag={id:e.pointerId,x:e.clientX,y:e.clientY,fx:S.photo.fx,fy:S.photo.fy};
+  if(!S.photo)return;
+  if(S.photo.use==='shape'){
+    const p=photoSourcePoint(e);if(!p)return;pushHist();photoFrame.setPointerCapture(e.pointerId);
+    const cut=ensureCutState(S.photo),stroke={mode:cut.mode,r:cut.brush,pts:[p]};cut.strokes.push(stroke);
+    photoDrag={kind:'cut',id:e.pointerId,stroke};drawPhotoCrop();
+    setHint(cut.mode==='remove'?'正在去掉这一块…':'正在把这一块留下…');return;
+  }
+  pushHist();photoFrame.setPointerCapture(e.pointerId);
+  photoDrag={kind:'crop',id:e.pointerId,x:e.clientX,y:e.clientY,fx:S.photo.fx,fy:S.photo.fy};
 });
 photoFrame.addEventListener('pointermove',e=>{
   if(!photoDrag||!S.photo||e.pointerId!==photoDrag.id)return;
+  if(photoDrag.kind==='cut'){
+    const p=photoSourcePoint(e);if(!p)return;const a=photoDrag.stroke.pts.at(-1);
+    if(Math.hypot(p.x-a.x,p.y-a.y)>.0025){photoDrag.stroke.pts.push(p);drawPhotoCrop();}return;
+  }
   const r=photoFrame.getBoundingClientRect(),z=Math.max(1,S.photo.zoom||1);
   S.photo.fx=Math.max(0,Math.min(1,photoDrag.fx-(e.clientX-photoDrag.x)/r.width*1.4/z));
   S.photo.fy=Math.max(0,Math.min(1,photoDrag.fy-(e.clientY-photoDrag.y)/r.height*1.4/z));
   clearPhotoCache();drawPhotoCrop();draw();
 });
 for(const ev of ['pointerup','pointercancel'])photoFrame.addEventListener(ev,e=>{
-  if(photoDrag&&e.pointerId===photoDrag.id)photoDrag=null;
+  if(!photoDrag||e.pointerId!==photoDrag.id)return;const wasCut=photoDrag.kind==='cut';photoDrag=null;
+  if(wasCut)refreshCutout(true);
 });
-function reExtract(inv){
-  SRC=photoAsset()||SRC;
-  const c=extract(+iThr.value, inv===undefined?(S.cust&&S.cust.inv):inv, +iDet.value/100);
-  if(!c){ setHint('这个阈值下抠不出形 —— 往回拉一点'); return; }
-  S.cust=c; const ce=CE(); if(ce&&ce.k===12&&!ce.lat){ ce.cu=c; clampEl(ce); } draw(); syncImg();
-}
-iThr.addEventListener('input',()=>reExtract());
-iDet.addEventListener('input',()=>reExtract());
-document.getElementById('iInv').onclick=e=>{
-  const b=e.target.closest('button'); if(!b) return; reExtract(+b.dataset.v===1);};
+document.getElementById('cutMode').onclick=e=>{
+  const b=e.target.closest('button');if(!b||!S.photo)return;const cut=ensureCutState(S.photo),mode=b.dataset.cut;
+  if(mode==='reset'){pushHist();cut.strokes=[];cut.range=.5;refreshCutout(false);setHint('已回到自动识别的初稿');}
+  else if(mode==='keep'||mode==='remove'){cut.mode=mode;syncImg();setHint(mode==='keep'?'在主体上画：这一块要留下':'在背景上画：这一块要去掉');}
+};
+cutBrush.addEventListener('input',()=>{if(!S.photo)return;ensureCutState(S.photo).brush=+cutBrush.value/100;syncImg();});
+cutRange.addEventListener('input',()=>{if(!S.photo)return;ensureCutState(S.photo).range=+cutRange.value/100;refreshCutout(false);});
+iDet.addEventListener('input',()=>refreshCutout(false));
 // 上传的图必须能整个撤走：抠出来的形、形状架上的那个按钮、源图，一起清掉。
 // 只删画面上的形而留着源图，等于留了一个改不了也说不清的东西在架子上。
 document.getElementById('idel').onclick=()=>{
@@ -4179,17 +4391,24 @@ function syncImg(){
   [...document.getElementById('iUse').children].forEach(x=>
     x.setAttribute('aria-pressed',String(x.dataset.use===use)));
   photoControls.hidden=use!=='photo';shapeControls.hidden=use!=='shape';
+  photoFrame.classList.toggle('is-cut',use==='shape');
+  photoFrame.querySelector('span').textContent=use==='shape'?'画在照片上':'拖动取景';
   [...document.getElementById('pStyle').children].forEach(x=>
     x.setAttribute('aria-pressed',String(x.dataset.style===(S.photo.style||'grain'))));
   pZoom.value=Math.round((S.photo.zoom||1)*100);pTone.value=Math.round((S.photo.tone||0)*100);
   pInk.value=Math.round((S.photo.ink==null ? .82 : S.photo.ink)*100);
   for(const x of [pZoom,pTone,pInk]){const b=x.parentNode.querySelector('b');if(b)b.textContent=x.value;}
+  const cut=ensureCutState(S.photo);cutBrush.value=Math.round(cut.brush*100);cutRange.value=Math.round(cut.range*100);
+  for(const x of [cutBrush,cutRange]){const b=x.parentNode.querySelector('b');if(b)b.textContent=x.value;}
+  [...document.getElementById('cutMode').children].forEach(x=>
+    x.setAttribute('aria-pressed',String(x.dataset.cut===cut.mode)));
+  document.getElementById('cutStatus').textContent=cut.strokes.length
+    ? '已用 '+cut.strokes.length+' 笔修正。蓝色区域会留下，可以继续补或擦。'
+    : '蓝色区域会留下。画几笔，算法会贴着相近的颜色扩展。';
   drawPhotoCrop();
   if(!S.cust)return;
-  iThr.value=S.cust.thr; iDet.value=Math.round(S.cust.detail*100);
-  [iThr,iDet].forEach(x=>{const b=x.parentNode.querySelector('b'); if(b) b.textContent=x.value;});
-  [...document.getElementById('iInv').children].forEach(x=>
-    x.setAttribute('aria-pressed',String(!!S.cust.inv===(+x.dataset.v===1))));
+  iDet.value=Math.round(S.cust.detail*100);
+  {const b=iDet.parentNode.querySelector('b');if(b)b.textContent=iDet.value;}
   document.getElementById('ipts').textContent=S.cust.pts;
   if(custBtn) custBtn.innerHTML='<svg viewBox="0 0 26 26" class="solid">'+custSVG()+'</svg>';
 }
@@ -4933,7 +5152,23 @@ function selfTest(){
          '　最近的：抖 '+kn.toFixed(2)+' 近 '+vn.toFixed(2));
     })();
 
-    // 6g. 照片必须真的经过四种不同的印版，而不是四个换了名字的按钮。
+    // 6g. 自动主体先给出初稿；去除笔要沿相近颜色扩展，而不是只擦掉笔刷圆点。
+    (function(){
+      const w=120,h=88,n=w*h,rgb=new Uint8Array(n*3),op=new Uint8Array(n);op.fill(1);
+      for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i++){
+        const left=(x-34)*(x-34)+(y-44)*(y-44)<17*17,right=(x-86)*(x-86)+(y-44)*(y-44)<17*17,q=i*3;
+        if(left||right){rgb[q]=42;rgb[q+1]=104;rgb[q+2]=154;}else{rgb[q]=232;rgb[q+1]=226;rgb[q+2]=214;}
+      }
+      const A={w,h,rgb,op,hasAlpha:false,cutCache:new Map()},p={cut:{mode:'remove',brush:.07,range:.5,strokes:[]}};
+      const before=buildCutMask(p,A),rate=(m,cx)=>{let on=0,tot=0;for(let y=27;y<=61;y++)for(let x=cx-17;x<=cx+17;x++)
+        if((x-cx)*(x-cx)+(y-44)*(y-44)<15*15){tot++;if(m[y*w+x])on++;}return on/tot;};
+      const b0=rate(before,34),b1=rate(before,86);p.cut.strokes.push({mode:'remove',r:.06,pts:[{x:86/(w-1),y:44/(h-1)}]});
+      const after=buildCutMask(p,A),a0=rate(after,34),a1=rate(after,86);
+      ok('辅助抠图：自动初稿可被颜色感知画笔修正',b0>.7&&b1>.7&&a0>.62&&a1<b1*.55,
+        '左主体 '+(b0*100).toFixed(0)+'→'+(a0*100).toFixed(0)+'%　右主体 '+(b1*100).toFixed(0)+'→'+(a1*100).toFixed(0)+'%');
+    })();
+
+    // 6h. 照片必须真的经过四种不同的印版，而不是四个换了名字的按钮。
     (function(){
       const id='__photo_selftest__',pc=document.createElement('canvas');pc.width=160;pc.height=120;
       const pg=pc.getContext('2d'),gr=pg.createLinearGradient(0,0,160,120);
