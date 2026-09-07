@@ -334,6 +334,21 @@
   .vpick{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
   .vpick select{font-family:var(--ui);font-size:11.5px;padding:5px 6px;border:1px solid var(--line);
     background:#fff;color:var(--ink2);width:100%}
+  .photo-frame{position:relative;aspect-ratio:8/5;overflow:hidden;background:#e8e5de;
+    border:1px solid var(--line);touch-action:none;user-select:none}
+  .photo-frame canvas{width:100%;height:100%;cursor:grab;touch-action:none}
+  .photo-frame:active canvas{cursor:grabbing}
+  .photo-frame::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent 33.1%,#ffffff40 33.3%,#ffffff40 33.6%,transparent 33.8%,transparent 66.2%,#ffffff40 66.4%,#ffffff40 66.7%,transparent 66.9%),
+               linear-gradient(0deg,transparent 33.1%,#ffffff40 33.3%,#ffffff40 33.6%,transparent 33.8%,transparent 66.2%,#ffffff40 66.4%,#ffffff40 66.7%,transparent 66.9%)}
+  .photo-frame span{position:absolute;left:8px;bottom:7px;z-index:2;padding:4px 6px;background:#111217b8;
+    color:#fff;font:500 9px/1 var(--ui);letter-spacing:.09em;text-transform:uppercase;pointer-events:none}
+  .photo-help{display:block;margin:8px 0 0;color:var(--ink3);font-size:11px;line-height:1.55}
+  .photo-sub[hidden]{display:none}
+  .photo-style{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .photo-style button{min-height:40px;padding:7px 2px;border:1px solid var(--line);background:#fff;
+    color:var(--ink2);font:500 11px/1.2 var(--ui);cursor:pointer}
+  .photo-style button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
   .recipe{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
     font-size:10.5px;line-height:1.75;color:var(--ink2);background:#f6f4ef;
     border:1px solid var(--line);padding:11px 12px;white-space:pre;overflow-x:auto}
@@ -564,11 +579,13 @@
       拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。</p>
   </div>
 
-  <div class="blk" data-tool="form"><h3>器物</h3><div class="shapes" id="vessels"></div>
-    <button class="ghost" id="pick" style="margin-top:8px">放一张图进来</button>
+  <div class="blk" data-tool="form"><h3>照片</h3>
+    <button class="ghost" id="pick" style="margin-top:8px">放一张照片进来</button>
     <input type="file" id="file" accept="image/*" hidden>
     <p class="note" style="margin-top:7px">也可以直接把图拖到画布上，或者 Ctrl&nbsp;+&nbsp;V 粘贴。</p>
   </div>
+
+  <div class="blk" data-tool="form"><h3>器物</h3><div class="shapes" id="vessels"></div></div>
 
   <div class="blk" data-tool="form"><h3>旋出来的形</h3>
     <div class="lathe" id="lathe">
@@ -583,15 +600,39 @@
   </div>
 
   <div class="blk" data-tool="form" id="imgblk" hidden>
-    <h3>你的图</h3>
-    <div class="sld"><label>阈值</label><input type="range" id="iThr" min="8" max="248" step="1"><b></b></div>
-    <div class="sld"><label>点数</label><input type="range" id="iDet" min="50" max="180" step="5"><b></b></div>
-    <div class="row" id="iInv" style="margin-top:4px">
-      <button data-v="0" aria-pressed="true">正</button><button data-v="1">反相</button>
+    <h3>你的照片</h3>
+    <div class="photo-frame" id="photoFrame">
+      <canvas id="photoCrop" width="320" height="200" aria-label="照片取景预览"></canvas>
+      <span>拖动取景</span>
+    </div>
+    <div class="row" id="iUse" style="margin-top:8px">
+      <button data-use="photo" aria-pressed="true">印成照片</button><button data-use="shape">抠成剪影</button>
+    </div>
+    <div class="photo-sub" id="photoControls">
+      <h4 class="mini">颗粒</h4>
+      <div class="photo-style" id="pStyle">
+        <button data-style="grain" aria-pressed="true" title="细密、均匀的随机颗粒">自然</button
+        ><button data-style="fs" title="误差扩散形成的有机纹理">漫散</button>
+        <button data-style="atkinson" title="高光更白、暗部更实">硬调</button
+        ><button data-style="bayer" title="规则的 8 × 8 方格网点">方格</button>
+      </div>
+      <h4 class="mini">取景与影调</h4>
+      <div class="sld"><label>放大</label><input type="range" id="pZoom" min="100" max="220" step="1"><b></b></div>
+      <div class="sld"><label>反差</label><input type="range" id="pTone" min="0" max="80" step="1"><b></b></div>
+      <div class="sld"><label>墨量</label><input type="range" id="pInk" min="35" max="100" step="1"><b></b></div>
+      <p class="photo-help">照片会被拆进当前两块色版；换墨、换纸和切线时，它会一起重新印。</p>
+    </div>
+    <div class="photo-sub" id="shapeControls" hidden>
+      <h4 class="mini">轮廓</h4>
+      <div class="sld"><label>阈值</label><input type="range" id="iThr" min="8" max="248" step="1"><b></b></div>
+      <div class="sld"><label>点数</label><input type="range" id="iDet" min="50" max="180" step="5"><b></b></div>
+      <div class="row" id="iInv" style="margin-top:4px">
+        <button data-v="0" aria-pressed="true">正</button><button data-v="1">反相</button>
+      </div>
+      <p class="photo-help">轮廓 <b id="ipts">0</b> 个点。阈值决定留下明处还是暗处。</p>
     </div>
     <div class="row" style="margin-top:6px"><button id="idel">删掉这张图</button></div>
-    <p class="note" style="margin-top:9px">轮廓 <b id="ipts">0</b> 个点。
-      图片只在<b>你自己的浏览器里</b>处理，不会上传到任何地方。</p>
+    <p class="photo-help">图片只在你自己的浏览器里处理，不会上传。</p>
   </div>
   <div class="blk" data-tool="print">
     <h3>纸张</h3>
@@ -1161,8 +1202,14 @@ function drawLathe(lat){
   document.getElementById('lhud2').textContent='俯仰 '+Math.round(q.t*180/Math.PI)+'°';
 }
 
-// ===== 图片 → 剪影。整条链都在你自己的浏览器里跑，图片不上传、不外传。 =====
-let SRC=null;   // 缩过的源图像素，留着让阈值滑块能重抠而不用重新读文件
+// ===== 图片 → 照片印版 / 剪影。整条链都在本机内存里跑。 =====
+// 状态里只存很短的 id；像素留在 Map 里。这样候选、撤销和高清导出都能复用同一张图，
+// 又不会把几十万像素塞进每一份 JSON 状态。
+const PHOTO_ASSETS=new Map();
+const photoCache=new Map();
+let PHOTO_SEQ=0, SRC=null;
+const photoAsset=(st=S)=> st&&st.photo ? (PHOTO_ASSETS.get(st.photo.id)||null) : null;
+function clearPhotoCache(){ photoCache.clear(); }
 function otsu(hist,total){
   // 大津法：穷举阈值，取类间方差最大的那个。比"固定 128"稳得多，
   // 也是唯一一个不需要用户先懂"阈值"是什么就能用的自动方案。
@@ -1446,6 +1493,12 @@ async function loadImage(blob){
   let bmp;
   try{ bmp=await createImageBitmap(blob,{imageOrientation:'from-image'}); }   // iPhone 竖拍不会横过来
   catch(_){ bmp=await createImageBitmap(blob); }
+  // 印照片保留一份较大的像素；抠轮廓仍在 420px 工作图上跑。
+  // 两者分开，避免为了一个流畅的阈值滑块把高清导出也压成 420px。
+  const PMAX=1400, pk=Math.min(1,PMAX/Math.max(bmp.width,bmp.height));
+  const pw=Math.max(8,Math.round(bmp.width*pk)), ph=Math.max(8,Math.round(bmp.height*pk));
+  const photo=document.createElement('canvas');photo.width=pw;photo.height=ph;
+  photo.getContext('2d').drawImage(bmp,0,0,pw,ph);
   const MAX=420;                                    // 处理用的工作尺寸，手机上也稳
   const k=Math.min(1,MAX/Math.max(bmp.width,bmp.height));
   const w=Math.max(8,Math.round(bmp.width*k)), h=Math.max(8,Math.round(bmp.height*k));
@@ -1474,7 +1527,11 @@ async function loadImage(blob){
   for(let x=0;x<w;x++){ if(!op[x])bt++; if(!op[(h-1)*w+x])bt++; bn+=2; }
   for(let y=0;y<h;y++){ if(!op[y*w])bt++; if(!op[y*w+w-1])bt++; bn+=2; }
   const hasAlpha = opaque>0 && bt/Math.max(1,bn) > 0.6;
-  SRC={w,h,lum,op,hasAlpha,hist,thr:hasAlpha?128:otsu(hist,Math.max(1,opaque))};
+  const id='photo-'+(++PHOTO_SEQ);
+  SRC={id,w,h,lum,op,hasAlpha,hist,work:oc,canvas:photo,pw,ph,
+       thr:hasAlpha?128:otsu(hist,Math.max(1,opaque))};
+  PHOTO_ASSETS.set(id,SRC);
+  clearPhotoCache();
   return SRC;
 }
 // 贴着画框四边的那一片，几乎一定是背景。据此判断明暗极性，
@@ -1490,16 +1547,21 @@ function borderFg(thr,inv){
 }
 async function useImage(blob){
   try{
-    setHint('正在把它压成剪影…');
+    setHint('正在把照片拆进两块色版…');
     await loadImage(blob);
-    // 先按自动阈值抠一次；如果抠出来的东西占了几乎整张图，多半是明暗反了，自动翻一次
+    pushHist();
+    // 同时备好一份自动轮廓。默认先让照片完整进版；用户切到「剪影」时不需要再等。
     const inv0 = !SRC.hasAlpha && borderFg(SRC.thr,false) > 0.5;
     let c=extract(SRC.thr,inv0,1);
     if(!c) c=extract(SRC.thr,!inv0,1);
-    if(!c){ setHint('这张图抠不出形 —— 换一张对比强一点的试试'); return false; }
-    S.cust=c; addEl(12,{cu:c, s:elSize(12,0.22,c)});
-    placeTitle(); sync(); draw();
-    setHint('抠出来了 —— 拖动它，或者在右边调阈值');
+    S.cust=c;
+    if(S.els) S.els=S.els.filter(e=>!(e.k===12&&!e.lat));
+    S.photo={id:SRC.id,use:'photo',style:'grain',fx:.5,fy:.5,zoom:1,tone:.28,ink:.82};
+    S.si=S.els&&S.els.length?Math.min(S.si,S.els.length-1):-1;
+    sel=S.si>=0&&sel;
+    placeTitle();selectTool('form');sync();draw();
+    requestAnimationFrame(()=>imgBlk.scrollIntoView({behavior:prefersStill()?'auto':'smooth',block:'start'}));
+    setHint('照片已经进版 —— 在右边拖动取景，或把它抠成剪影');
     return true;
   }catch(e){ setHint('这张图读不了（'+(e.message||e)+'）'); return false; }
 }
@@ -2097,6 +2159,23 @@ function drawText(t,col){
   ctx.restore();
 }
 function drawTitle(col){ensureTexts();S.texts.forEach(t=>{ if(!t.plate) drawText(t,col); });}
+// 照片上同色文字会掉进同一块墨版里。这里不铺矩形标签，只沿字形边缘挖开一圈底色，
+// 再把字本身印回去；结果仍是一块印版，却能在明暗照片上始终读出来。
+function drawPhotoTitle(field,ink){
+  ensureTexts();
+  for(const t of S.texts){
+    if(t.plate||!String(t.text||'').trim())continue;
+    const m=textMetrics(t),x=t.x*W,y=t.y*H,paint=(ch,px,py)=>{
+      ctx.strokeText(ch,px,py);ctx.fillText(ch,px,py);
+    };
+    ctx.save();ctx.textBaseline='top';ctx.font=m.spec.css;ctx.lineJoin='round';ctx.miterLimit=2;
+    ctx.strokeStyle=field;ctx.fillStyle=ink;
+    ctx.lineWidth=Math.min(4.2*SC(),Math.max(1.2*SC(),m.z*.08));
+    if(m.vert)m.chars.forEach((ch,i)=>paint(ch,x,y+i*m.adv));
+    else{let dx=x;m.chars.forEach((ch,i)=>{paint(ch,dx,y);dx+=m.widths[i]+m.z*m.spec.f.track;});}
+    ctx.restore();
+  }
+}
 // 兜底解：给排不下的那行文字铺一块自己的实地板，再把字挖在上面。
 // 44 张实测里这是「完全压入」最保险的形式 —— 不是把字硬压进复杂图形，
 // 而是先铺一块自己的实地（Cieslewicz 的板 35%W×16%H、Foroutan 的 82%W×22%H）。
@@ -2477,6 +2556,91 @@ function drawPaperSurface(cov){
   if(p.gloss){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=strength;ctx.drawImage(p.gloss,0,0);ctx.restore();}
 }
 
+// ---------- 照片印版 ----------
+// 照片不作为一张普通位图盖在海报上。它先被压成当前画幅的明暗，再成为当前这一侧
+// 的一块墨版：亮底上暗处落墨，暗底上亮处落墨。切线两侧因此自然交换色版。
+function photoCropRect(A,tw,th,p){
+  const z=Math.max(1,Math.min(2.2,+p.zoom||1)), ar=tw/Math.max(1,th), sar=A.pw/A.ph;
+  let sw,sh;
+  if(sar>ar){sh=A.ph;sw=sh*ar;}else{sw=A.pw;sh=sw/ar;}
+  sw/=z;sh/=z;
+  const fx=Math.max(0,Math.min(1,+p.fx||.5)),fy=Math.max(0,Math.min(1,+p.fy||.5));
+  return {sx:(A.pw-sw)*fx,sy:(A.ph-sh)*fy,sw,sh};
+}
+function photoNoise(x,y){
+  // Jimenez 的 interleaved-gradient noise：只做阈值纹理，不冒充随机摄影噪声。
+  const q=(.06711056*x+.00583715*y)%1;
+  return (52.9829189*(q<0?q+1:q))%1;
+}
+const PHOTO_BAYER=[0,32,8,40,2,34,10,42,48,16,56,24,50,18,58,26,
+  12,44,4,36,14,46,6,38,60,28,52,20,62,30,54,22,
+  3,35,11,43,1,33,9,41,51,19,59,27,49,17,57,25,
+  15,47,7,39,13,45,5,37,63,31,55,23,61,29,53,21];
+function diffusePhoto(cov,w,h,mode){
+  const a=new Float32Array(cov),out=new Uint8Array(a.length),atk=mode==='atkinson';
+  for(let y=0;y<h;y++){
+    const rev=!atk&&(y&1),x0=rev?w-1:0,x1=rev?-1:w,dx=rev?-1:1;
+    for(let x=x0;x!==x1;x+=dx){
+      const i=y*w+x,v=Math.max(0,Math.min(1,a[i])),on=v>=.5?1:0,e=v-on;out[i]=on;
+      const add=(xx,yy,k)=>{if(xx>=0&&yy>=0&&xx<w&&yy<h)a[yy*w+xx]+=e*k;};
+      if(atk){add(x+1,y,.125);add(x+2,y,.125);add(x-1,y+1,.125);add(x,y+1,.125);
+        add(x+1,y+1,.125);add(x,y+2,.125);}
+      else if(!rev){add(x+1,y,7/16);add(x-1,y+1,3/16);add(x,y+1,5/16);add(x+1,y+1,1/16);}
+      else{add(x-1,y,7/16);add(x+1,y+1,3/16);add(x,y+1,5/16);add(x-1,y+1,1/16);}
+    }
+  }
+  return out;
+}
+function buildPhotoPlate(ink,inv){
+  const p=S.photo,A=photoAsset();if(!p||p.use!=='photo'||!A)return null;
+  // 高清导出沿用屏幕上的颗粒尺度；候选缩略图则直接按自身尺寸算，避免先算大图再缩小。
+  const sc=Math.max(1,SC()),bw=Math.max(24,Math.round(W/sc)),bh=Math.max(24,Math.round(H/sc));
+  const key=[p.id,bw,bh,p.style,p.fx.toFixed(3),p.fy.toFixed(3),p.zoom.toFixed(3),
+    p.tone.toFixed(3),p.ink.toFixed(3),ink,inv?1:0].join('|');
+  const hit=photoCache.get(key);if(hit)return hit;
+  const src=document.createElement('canvas');src.width=bw;src.height=bh;
+  const g=src.getContext('2d',{willReadFrequently:true}),r=photoCropRect(A,bw,bh,p);
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  g.drawImage(A.canvas,r.sx,r.sy,r.sw,r.sh,0,0,bw,bh);
+  const im=g.getImageData(0,0,bw,bh),d=im.data,hist=new Uint32Array(256);
+  let n=0;
+  for(let i=0;i<d.length;i+=4)if(d[i+3]>16){
+    const v=Math.round(.2126*d[i]+.7152*d[i+1]+.0722*d[i+2]);hist[v]++;n++;}
+  const quant=q=>{let s=0;const want=n*q;for(let i=0;i<256;i++){s+=hist[i];if(s>=want)return i;}return q<.5?0:255;};
+  let lo=quant(.01),hi=quant(.99);if(hi-lo<60){lo=0;hi=255;}
+  const cov=new Float32Array(bw*bh),contrast=Math.max(0,Math.min(.8,+p.tone||0)),amount=Math.max(.35,Math.min(1,+p.ink||.82));
+  for(let i=0,j=0;i<d.length;i+=4,j++){
+    if(d[i+3]<17){cov[j]=0;continue;}
+    let v=(.2126*d[i]+.7152*d[i+1]+.0722*d[i+2]-lo)/Math.max(1,hi-lo);
+    v=Math.max(0,Math.min(1,v));const sm=v*v*(3-2*v);v=v*(1-contrast)+sm*contrast;
+    const tone=inv?v:1-v;cov[j]=Math.max(0,Math.min(.98,(.025+.95*tone)*amount*(d[i+3]/255)));
+  }
+  let bits=null;
+  if(p.style==='fs'||p.style==='atkinson')bits=diffusePhoto(cov,bw,bh,p.style);
+  const rgb=hex2rgb(ink),out=document.createElement('canvas');out.width=bw;out.height=bh;
+  const og=out.getContext('2d'),oi=og.createImageData(bw,bh),od=oi.data;
+  for(let y=0,j=0;y<bh;y++)for(let x=0;x<bw;x++,j++){
+    let on=false;
+    if(bits)on=!!bits[j];
+    else if(p.style==='bayer')on=cov[j]>(PHOTO_BAYER[(y&7)*8+(x&7)]+.5)/64;
+    else on=cov[j]>photoNoise(x,y);
+    if(!on)continue;const i=j*4;od[i]=rgb[0];od[i+1]=rgb[1];od[i+2]=rgb[2];od[i+3]=255;
+  }
+  og.putImageData(oi,0,0);photoCache.set(key,out);
+  if(photoCache.size>32)photoCache.delete(photoCache.keys().next().value);
+  return out;
+}
+function drawPhoto(ink,inv){
+  const c=buildPhotoPlate(ink,inv);if(!c)return;
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.drawImage(c,0,0,W,H);ctx.restore();
+}
+function drawPhotoCrop(){
+  const c=document.getElementById('photoCrop'),p=S.photo,A=photoAsset();if(!c||!p||!A)return;
+  const g=c.getContext('2d'),r=photoCropRect(A,c.width,c.height,p);
+  g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  g.drawImage(A.canvas,r.sx,r.sy,r.sw,r.sh,0,0,c.width,c.height);
+}
+
 function halftoneBleed_unused(){
   const l=cutLine(); if(!l) return;
   const darkIsA = lum(S.a) < lum(S.b);
@@ -2582,11 +2746,14 @@ function draw(){
   function side(field,ink,inv,idx){
     ctx.fillStyle=field; ctx.fillRect(-30,-30,W+60,H+60);
     drawPaperSurface(idx?S.covB:S.covA);
+    drawPhoto(ink,inv);
     // 落墨的东西跟着自己那块版走。网屏在 screenFill 里另外走 PLATE，
     // 因为它每次都会把变换重置掉 —— 两处加的是同一个量，形和它的网点不会脱节。
     const off=PLATE[0]||PLATE[1];
     if(off) ctx.save(), ctx.translate(PLATE[0],PLATE[1]);
-    drawEl(ink,idx,inv,overprint); drawTitle(ink); drawInfo(ink); drawMarks(ink);
+    drawEl(ink,idx,inv,overprint);
+    if(S.photo&&S.photo.use==='photo')drawPhotoTitle(field,ink);else drawTitle(ink);
+    drawInfo(ink); drawMarks(ink);
     if(EP){ ctx.save();ctx.clip(EP,'evenodd');
       drawTitle(field);drawInfo(field);drawMarks(field);ctx.restore(); }
     drawPlates(ink, field);
@@ -3194,7 +3361,7 @@ function shuffleState(){
     if(q.v!=null){k=12;lat=makeLathe(q.v);}else k=q.k;
   }else if(Math.random()<.50){ k=(Math.random()*SHAPES.length)|0; }
   else{ k=12;lat=makeLathe(); }
-  if(S.cust && S.cust.src!=='lathe' && Math.random()<.34){k=12;lat=null;cu=S.cust;}
+  if(S.photo&&S.photo.use==='shape'&&S.cust&&S.cust.src!=='lathe'&&Math.random()<.34){k=12;lat=null;cu=S.cust;}
   if(lat) cu=latheToShape(lat);
   const vessel=!!lat;
   const grow = B.big ? 1.45 : B.small ? .62 : B.quiet ? .8 : 1;
@@ -3902,6 +4069,9 @@ document.getElementById('topPress').onclick=showPress;
 // ---- 图片进来的三条路：选文件、拖到画布、Ctrl+V ----
 const imgBlk=document.getElementById('imgblk');
 const iThr=document.getElementById('iThr'), iDet=document.getElementById('iDet');
+const photoControls=document.getElementById('photoControls'),shapeControls=document.getElementById('shapeControls');
+const pZoom=document.getElementById('pZoom'),pTone=document.getElementById('pTone'),pInk=document.getElementById('pInk');
+const photoFrame=document.getElementById('photoFrame');
 const fileEl=document.getElementById('file');
 document.getElementById('pick').onclick=()=>fileEl.click();
 fileEl.onchange=e=>{const b=e.target.files&&e.target.files[0]; if(b) useImage(b); fileEl.value='';};
@@ -3918,7 +4088,67 @@ window.addEventListener('paste',e=>{
   for(let i=0;i<it.length;i++) if(it[i].type&&it[i].type.indexOf('image')===0){
     const b=it[i].getAsFile(); if(b){ e.preventDefault(); useImage(b); } return; }
 });
+function uploadShape(){return (S.els||[]).find(e=>e.k===12&&!e.lat)||null;}
+function rememberUploadShape(){
+  const e=uploadShape();if(!e||!S.photo)return;
+  S.photo.shape={x:e.x,y:e.y,s:e.s,r:e.r,fill:e.fill||0,rep:e.rep||1,d3:e.d3||0};
+}
+function setImageUse(use){
+  if(!S.photo||!photoAsset())return;
+  if(use!=='photo'&&use!=='shape')return;
+  if(S.photo.use===use)return;
+  if(use==='shape'&&!S.cust){
+    SRC=photoAsset();let c=extract(SRC.thr,false,1);
+    if(!c)c=extract(SRC.thr,true,1);
+    if(!c){setHint('这张照片暂时抠不出稳定轮廓，可以先作为照片使用');return;}
+    S.cust=c;
+  }
+  pushHist();
+  if(use==='photo'){
+    rememberUploadShape();
+    S.els=(S.els||[]).filter(e=>!(e.k===12&&!e.lat));
+    S.si=Math.min(S.si,S.els.length-1);sel=S.si>=0&&sel;
+    S.photo.use='photo';setHint('已回到照片印版 —— 它会随两支墨一起变化');
+  }else{
+    S.photo.use='shape';
+    if(!uploadShape()){
+      const q=S.photo.shape||{},e=Object.assign({k:12,cu:S.cust,x:.5,y:.52,
+        s:elSize(12,.22,S.cust),r:0,fill:0,rep:1,d3:0},q);
+      e.cu=S.cust;S.els=S.els||[];S.els.push(e);S.si=S.els.length-1;sel=true;tsel=false;
+      clampEl(e);bounceEl();
+    }
+    placeTitle();setHint('已抠成剪影 —— 在画布上直接移动、缩放或旋转');
+  }
+  sync();draw();
+}
+document.getElementById('iUse').onclick=e=>{
+  const b=e.target.closest('button');if(b)setImageUse(b.dataset.use);
+};
+document.getElementById('pStyle').onclick=e=>{
+  const b=e.target.closest('button');if(!b||!S.photo)return;
+  S.photo.style=b.dataset.style;clearPhotoCache();syncImg();draw();
+};
+for(const [el,key,scale] of [[pZoom,'zoom',.01],[pTone,'tone',.01],[pInk,'ink',.01]]){
+  el.addEventListener('input',()=>{if(!S.photo)return;S.photo[key]=+el.value*scale;
+    clearPhotoCache();drawPhotoCrop();syncImg();draw();});
+}
+let photoDrag=null;
+photoFrame.addEventListener('pointerdown',e=>{
+  if(!S.photo)return;pushHist();photoFrame.setPointerCapture(e.pointerId);
+  photoDrag={id:e.pointerId,x:e.clientX,y:e.clientY,fx:S.photo.fx,fy:S.photo.fy};
+});
+photoFrame.addEventListener('pointermove',e=>{
+  if(!photoDrag||!S.photo||e.pointerId!==photoDrag.id)return;
+  const r=photoFrame.getBoundingClientRect(),z=Math.max(1,S.photo.zoom||1);
+  S.photo.fx=Math.max(0,Math.min(1,photoDrag.fx-(e.clientX-photoDrag.x)/r.width*1.4/z));
+  S.photo.fy=Math.max(0,Math.min(1,photoDrag.fy-(e.clientY-photoDrag.y)/r.height*1.4/z));
+  clearPhotoCache();drawPhotoCrop();draw();
+});
+for(const ev of ['pointerup','pointercancel'])photoFrame.addEventListener(ev,e=>{
+  if(photoDrag&&e.pointerId===photoDrag.id)photoDrag=null;
+});
 function reExtract(inv){
+  SRC=photoAsset()||SRC;
   const c=extract(+iThr.value, inv===undefined?(S.cust&&S.cust.inv):inv, +iDet.value/100);
   if(!c){ setHint('这个阈值下抠不出形 —— 往回拉一点'); return; }
   S.cust=c; const ce=CE(); if(ce&&ce.k===12&&!ce.lat){ ce.cu=c; clampEl(ce); } draw(); syncImg();
@@ -3930,21 +4160,32 @@ document.getElementById('iInv').onclick=e=>{
 // 上传的图必须能整个撤走：抠出来的形、形状架上的那个按钮、源图，一起清掉。
 // 只删画面上的形而留着源图，等于留了一个改不了也说不清的东西在架子上。
 document.getElementById('idel').onclick=()=>{
-  if(!SRC && !(S.cust && !S.cust.src)) return;
+  if(!S.photo&&!SRC&&!(S.cust&&!S.cust.src))return;
   pushHist();
   if(S.els) S.els=S.els.filter(e=>!(e.k===12 && !e.lat));
-  S.cust=null;
-  SRC=null;
+  S.cust=null;S.photo=null;SRC=null;clearPhotoCache();
   S.si=S.els?Math.min(S.si,S.els.length-1):-1;
   sel=S.si>=0 && sel; if(!S.els||!S.els.length) sel=false;
   syncImg(); sync(); draw();
   setHint('图和它抠出来的形都删掉了 —— 顶部的撤销能拿回来');
 };
 function syncImg(){
-  const on=!!(S.cust&&SRC);
+  const A=photoAsset();if(A)SRC=A;
+  const on=!!(S.photo&&A);
   imgBlk.hidden=!on;
-  if(custBtn) custBtn.hidden=!S.cust;
+  const use=on?(S.photo.use||'photo'):'photo';
+  if(custBtn) custBtn.hidden=!(S.cust&&use==='shape');
   if(!on) return;
+  [...document.getElementById('iUse').children].forEach(x=>
+    x.setAttribute('aria-pressed',String(x.dataset.use===use)));
+  photoControls.hidden=use!=='photo';shapeControls.hidden=use!=='shape';
+  [...document.getElementById('pStyle').children].forEach(x=>
+    x.setAttribute('aria-pressed',String(x.dataset.style===(S.photo.style||'grain'))));
+  pZoom.value=Math.round((S.photo.zoom||1)*100);pTone.value=Math.round((S.photo.tone||0)*100);
+  pInk.value=Math.round((S.photo.ink==null ? .82 : S.photo.ink)*100);
+  for(const x of [pZoom,pTone,pInk]){const b=x.parentNode.querySelector('b');if(b)b.textContent=x.value;}
+  drawPhotoCrop();
+  if(!S.cust)return;
   iThr.value=S.cust.thr; iDet.value=Math.round(S.cust.detail*100);
   [iThr,iDet].forEach(x=>{const b=x.parentNode.querySelector('b'); if(b) b.textContent=x.value;});
   [...document.getElementById('iInv').children].forEach(x=>
@@ -4066,6 +4307,8 @@ function syncRecipe(){
   L.push('墨A   '+inkName(S.inkA)+'  '+Math.round(S.covA*100)+'%');
   L.push('墨B   '+inkName(S.inkB)+'  '+Math.round(S.covB*100)+'%');
   L.push('明度差 ΔL* '+Math.abs(Lstar(S.a)-Lstar(S.b)).toFixed(0));
+  if(S.photo) L.push('照片  '+(S.photo.use==='shape'?'剪影':'双色·'+
+    ({grain:'自然颗粒',fs:'漫散',atkinson:'硬调',bayer:'方格'}[S.photo.style]||'自然颗粒')));
   for(const el of (S.els||[])){ const S_el=el;
     const lat=S_el.lat?safeLathe(S_el.lat):null;
     const nm = S_el.k===12 ? (lat
@@ -4258,9 +4501,10 @@ document.getElementById('download').onclick=()=>{
   },'image/png');
 };
 document.getElementById('shuffle').onclick=()=>showTray();
-document.getElementById('reset').onclick=()=>{const keep=S.ex, kc=S.cust, lang=S.lang||'zh';
+document.getElementById('reset').onclick=()=>{const keep=S.ex,kc=S.cust,kp=cloneJ(S.photo),lang=S.lang||'zh';
   pushHist();
-  S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;S.cust=kc;sel=false;tsel=false;
+  S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;S.cust=kc;S.photo=kp;
+  if(S.photo)S.photo.use='photo';sel=false;tsel=false;
   [...shEl.children].forEach(x=>x.setAttribute('aria-pressed','false'));setStep(1);sync();draw();};
 
 const TOOL_META={
@@ -4687,6 +4931,32 @@ function selfTest(){
          km<vm && vm<fm && kn>0.38 && vn>0.95,
          '抖一下 '+km.toFixed(2)+' / 近亲 '+vm.toFixed(2)+' / 全新 '+fm.toFixed(2)+
          '　最近的：抖 '+kn.toFixed(2)+' 近 '+vn.toFixed(2));
+    })();
+
+    // 6g. 照片必须真的经过四种不同的印版，而不是四个换了名字的按钮。
+    (function(){
+      const id='__photo_selftest__',pc=document.createElement('canvas');pc.width=160;pc.height=120;
+      const pg=pc.getContext('2d'),gr=pg.createLinearGradient(0,0,160,120);
+      gr.addColorStop(0,'#f2e8d8');gr.addColorStop(.45,'#b96f5e');gr.addColorStop(1,'#17283c');
+      pg.fillStyle=gr;pg.fillRect(0,0,160,120);pg.fillStyle='#f8f5ec';pg.beginPath();pg.arc(108,43,23,0,Math.PI*2);pg.fill();
+      PHOTO_ASSETS.set(id,{id,canvas:pc,pw:160,ph:120});clearPhotoCache();
+      cv.width=W=188;cv.height=H=251;stillFrame();
+      S=JSON.parse(JSON.stringify(blank));S.ex=cloneJ(keep.ex);S.paper='#F5EDDC';S.a='#F5EDDC';S.b='#404755';
+      S.inkA='#404755';S.inkB='#404755';S.covA=0;S.covB=.86;S.tex=0;S.mark=0;S.texts=[];S.els=[];
+      S.photo={id,use:'photo',style:'grain',fx:.5,fy:.5,zoom:1,tone:.28,ink:.82};
+      const ims=[];
+      for(const style of ['grain','fs','atkinson','bayer']){
+        S.photo.style=style;draw();ims.push(ctx.getImageData(0,0,W,H).data.slice());
+      }
+      const diff=(a,b)=>{let n=0;for(let i=0;i<a.length;i+=4)
+        if(Math.abs(a[i]-b[i])>8||Math.abs(a[i+1]-b[i+1])>8||Math.abs(a[i+2]-b[i+2])>8)n++;
+        return n/(a.length/4);};
+      const ds=[];for(let i=1;i<ims.length;i++)ds.push(diff(ims[0],ims[i]));
+      S.photo.style='grain';S.cut=mkCut('h',.32,-9);draw();
+      const cutInk=ctx.getImageData(0,0,W,H).data,hasCut=diff(ims[0],cutInk)>.05;
+      PHOTO_ASSETS.delete(id);clearPhotoCache();
+      ok('照片：四种颗粒不同，切线两侧会交换色版',Math.min.apply(null,ds)>.025&&hasCut,
+        '最小风格差 '+(Math.min.apply(null,ds)*100).toFixed(1)+'%');
     })();
 
     // 7. 性能
