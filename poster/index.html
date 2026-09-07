@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cut / Print · 海报生成器</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,29 +64,66 @@
   .tray{position:fixed;inset:70px 0 0;z-index:40;background:#d9d7d1f5;padding:34px 42px 40px;
     display:flex;flex-direction:column;align-items:center;overflow:auto}
   .tray[hidden]{display:none}
-  /* 成品态：把版面从「正在改」切到「印出来了」。
-     Kern Type 的乐趣其实不在做，在按下 Done 之后揭晓的那 0.5 秒。
-     我们没有标准答案可以对，但可以给一次零风险、必然好看的揭晓 —— 它不评判用户，只奖励用户。 */
+  /* 成品态不是三张完整截图互相盖住，而是三次真实的累加：色域、图形、文字。
+     每一层只含相对上一遍新增的像素，所以轻微偏版会留下来，不会在末尾自动归正。 */
   .press{position:fixed;inset:0;z-index:60;background:#c9c6bf;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:22px;padding:32px}
+    align-items:center;justify-content:center;gap:15px;padding:28px 32px;overflow:hidden}
   .press[hidden]{display:none}
-  .press-sheet{position:relative;filter:drop-shadow(0 24px 40px #00000055) drop-shadow(0 3px 6px #00000033)}
-  .press-sheet img{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .press-sheet img:first-child{position:relative}
-  .press-sheet .pl{opacity:0;animation:plate .62s cubic-bezier(.2,.9,.25,1) forwards}
-  @keyframes plate{
-    0%{opacity:0;transform:translate(var(--px),var(--py)) scale(1.004)}
-    55%{opacity:1}
-    100%{opacity:1;transform:none}
+  .press-close{position:absolute;right:24px;top:22px;width:42px;height:42px;border:1px solid #96938d;
+    background:transparent;color:#3a3b36;font-size:22px;line-height:1;cursor:pointer;z-index:3}
+  .press-close:hover{background:#dedbd4;border-color:#3a3b36}
+  .press-headline{display:flex;align-items:baseline;justify-content:space-between;width:min(620px,calc(100vw - 80px));
+    color:#555650;font-family:var(--ui);text-transform:uppercase}
+  .press-kicker{font-size:10px;letter-spacing:.16em}
+  .press-status{display:flex;align-items:baseline;gap:10px;font-size:10px;letter-spacing:.13em;min-width:150px;
+    justify-content:flex-end}
+  .press-status b{font-size:15px;letter-spacing:.04em;color:#242520;font-weight:600}
+  .press-stage{position:relative;display:flex;align-items:center;justify-content:center}
+  .press-sheet{position:relative;overflow:hidden;isolation:isolate;background:var(--paper,#f5eddd);
+    transform-origin:center;filter:drop-shadow(0 24px 40px #00000055) drop-shadow(0 3px 6px #00000033)}
+  .press-paper,.press-sheet canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .press-paper{background:var(--paper,#f5eddd)}
+  .press-layer{opacity:0;transform:translate(var(--ox,0),var(--oy,0));will-change:transform,opacity}
+  .press.running .press-layer{animation:plate-print .38s cubic-bezier(.05,.7,.1,1) var(--delay) forwards}
+  @keyframes plate-print{
+    0%{opacity:0;transform:translate(var(--ox),calc(var(--oy) - 6px)) scale(1.003)}
+    24%{opacity:.16}
+    72%{opacity:1;transform:translate(var(--ox),calc(var(--oy) + 1px)) scaleX(1.003) scaleY(.995)}
+    100%{opacity:1;transform:translate(var(--ox),var(--oy)) scale(1)}
   }
-  .press-cap{font-family:var(--ui);font-size:11px;letter-spacing:.13em;color:#5a5b55;
-    text-transform:uppercase;text-align:center;line-height:1.9}
-  .press-act{display:flex;gap:10px}
+  .press-pass{position:absolute;left:-12px;right:-12px;top:0;height:18px;z-index:5;opacity:0;
+    pointer-events:none;border-top:2px solid var(--head,#353630);background:linear-gradient(#ffffff55,#00000016);
+    box-shadow:0 8px 12px #0000001f;transform:translateY(-28px)}
+  .press-pass span{position:absolute;right:2px;top:-16px;font:600 9px/1 var(--ui);letter-spacing:.12em;
+    color:var(--head,#353630)}
+  .press.running .press-pass{animation:press-pass .42s cubic-bezier(.2,0,0,1) var(--delay) both}
+  @keyframes press-pass{
+    0%{opacity:0;transform:translateY(-28px)}
+    10%,82%{opacity:.92}
+    100%{opacity:0;transform:translateY(calc(var(--travel) + 28px))}
+  }
+  .press.running .press-sheet{animation:
+    paper-pulse .30s cubic-bezier(.2,0,0,1) .18s,
+    paper-pulse .30s cubic-bezier(.2,0,0,1) .72s,
+    paper-pulse .30s cubic-bezier(.2,0,0,1) 1.26s}
+  @keyframes paper-pulse{0%,100%{transform:scale(1)}65%{transform:scaleX(1.003) scaleY(.996)}}
+  .press-preparing{position:absolute;inset:0;display:grid;place-items:center;font:500 9px/1 var(--ui);
+    letter-spacing:.16em;text-transform:uppercase;color:#777871;background:var(--paper,#f5eddd)}
+  .press.running .press-preparing{opacity:0;transition:opacity .12s;pointer-events:none}
+  .press-cap{margin:0;font-family:var(--ui);font-size:10.5px;letter-spacing:.12em;color:#5a5b55;
+    text-transform:uppercase;text-align:center;line-height:1.8;opacity:0;transform:translateY(5px)}
+  .press-act{display:flex;gap:10px;opacity:0;transform:translateY(6px);pointer-events:none}
+  .press.ready .press-cap,.press.ready .press-act{opacity:1;transform:none;
+    transition:opacity .24s cubic-bezier(.2,0,0,1),transform .24s cubic-bezier(.2,0,0,1)}
+  .press.ready .press-act{pointer-events:auto}
   .press-act button{font-family:var(--ui);font-size:12.5px;letter-spacing:.04em;padding:10px 18px;
     border:1px solid #8e8c86;background:transparent;color:#3a3b36;cursor:pointer;min-height:42px}
-  .press-act button:hover{border-color:#3a3b36}
+  .press-act button:hover{border-color:#3a3b36;background:#d7d4cd}
   .press-act .go{background:var(--ink);border-color:var(--ink);color:#fff}
-  @media (prefers-reduced-motion: reduce){ .press-sheet .pl{animation-duration:.01ms} }
+  @media (prefers-reduced-motion: reduce){
+    .press.running .press-layer{animation:none;opacity:1;transform:translate(var(--ox),var(--oy))}
+    .press.running .press-sheet{animation:none}.press-pass{display:none}.press-preparing{display:none}
+  }
   .tray-head{width:min(100%,970px);display:flex;justify-content:space-between;align-items:end;
     padding-bottom:18px;border-bottom:1px solid #aaa8a2;margin-bottom:22px}
   .tray-head p{margin:0}
@@ -340,6 +378,12 @@
     .tray-head{align-items:center;margin-bottom:16px}.tray-title{font-size:21px}
     .cand-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px}
     .cand span{font-size:9px}
+    .press{padding:24px 18px 20px;gap:12px}
+    .press-close{right:14px;top:12px;width:38px;height:38px}
+    .press-headline{width:min(100%,520px);padding-right:44px}
+    .press-status{min-width:126px}.press-status b{font-size:13px}
+    .press-cap{font-size:9px;line-height:1.65;max-width:92vw}
+    .press-act{gap:7px}.press-act button{padding:9px 12px;font-size:11px;min-height:40px}
   }
 </style>
 
@@ -3455,58 +3499,105 @@ function buildCands(grid, r){
     grid.appendChild(b);
   });
 }
-// ---- 成品态：一版一版压上去 ----
-// 丝网印和 riso 是分版印的：先底色，再图形，最后文字。
-// 每一版落下来的时候都会先偏一点点再对准 —— 这里把那个过程放出来给人看。
-// 三张图都是完整画面（后一张比前一张多一层），叠着放，靠淡入把新增的那层显出来。
+// ---- 成品态：一版一版印上去 ----
+// riso 的纸会为每种颜色重新过机。这里把最终画面拆成三个增量层：色域、图形、文字与版记。
+// 后两层不是完整截图，因此偏版时露出来的真是下面已经印过的纸，而不是另一张海报。
 const pressEl=document.getElementById('press');
-function showPress(){
-  const st=JSON.parse(JSON.stringify(S));
-  const sc=Math.min(2, Math.max(1, 1400/Math.max(W,H)));
-  const shot=mut=>{
-    const c=document.createElement('canvas'); c.width=Math.round(W*sc); c.height=Math.round(H*sc);
-    const s2=JSON.parse(JSON.stringify(st)); mut(s2);
-    renderTo(c.getContext('2d'), s2, c.width, c.height);
-    return c.toDataURL('image/png');
-  };
-  const plates=[
-    shot(s=>{ s.els=[]; s.texts=[]; s.mark=0; }),   // 一版：底色与纸
-    shot(s=>{ s.texts=[]; s.mark=0; }),             // 二版：形
-    shot(s=>{})                                     // 三版：文字与版记
-  ];
-  // 画面里的高度按视口给，宽度按画幅比例
-  const maxH=Math.min(window.innerHeight-230, 720), maxW=Math.min(window.innerWidth-80, 620);
-  let ph=maxH, pw=ph*W/H;
-  if(pw>maxW){ pw=maxW; ph=pw*H/W; }
-  const off=[[0,0],[7,-5],[-6,6]];                  // 每一版落下来时的偏移，然后归零
-  pressEl.innerHTML='';
-  const sheet=document.createElement('div'); sheet.className='press-sheet';
-  sheet.style.width=Math.round(pw)+'px'; sheet.style.height=Math.round(ph)+'px';
-  plates.forEach((u,i)=>{
-    const im=document.createElement('img'); im.src=u; im.alt='';
-    if(i>0){ im.className='pl';
-      im.style.setProperty('--px', off[i][0]+'px');
-      im.style.setProperty('--py', off[i][1]+'px');
-      im.style.animationDelay=(0.34+i*0.42)+'s'; }
-    sheet.appendChild(im);
+let PRESS_TOKEN=0, PRESS_TIMERS=[];
+function clearPressTimers(){ PRESS_TIMERS.forEach(clearTimeout); PRESS_TIMERS=[]; }
+function pressLater(fn,ms,token){ const id=setTimeout(()=>{if(token===PRESS_TOKEN)fn();},ms);PRESS_TIMERS.push(id); }
+function closePress(focus){
+  PRESS_TOKEN++; clearPressTimers(); pressEl.hidden=true;
+  pressEl.classList.remove('running','ready');
+  if(focus!==false){ const b=document.getElementById('topPress');if(b)b.focus(); }
+}
+function pressCanvas(st,mut,w,h){
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const s2=JSON.parse(JSON.stringify(st));mut(s2);
+  renderTo(c.getContext('2d'),s2,w,h);return c;
+}
+// 下一遍只保留相对上一遍改变的像素。像素本身取最终颜色且保持不透明，
+// 所以零偏移时三层叠回去与完整渲染逐像素一致；有偏移时才显出真实套准差。
+function pressDelta(prev,next){
+  const w=next.width,h=next.height, a=prev.getContext('2d').getImageData(0,0,w,h).data;
+  const b=next.getContext('2d').getImageData(0,0,w,h).data;
+  const out=document.createElement('canvas');out.width=w;out.height=h;
+  const g=out.getContext('2d'),im=g.createImageData(w,h),d=im.data;
+  for(let i=0;i<b.length;i+=4){
+    if(Math.max(Math.abs(a[i]-b[i]),Math.abs(a[i+1]-b[i+1]),Math.abs(a[i+2]-b[i+2]))>1){
+      d[i]=b[i];d[i+1]=b[i+1];d[i+2]=b[i+2];d[i+3]=b[i+3];
+    }
+  }
+  g.putImageData(im,0,0);return out;
+}
+function buildPress(token,st,sheet,status){
+  if(token!==PRESS_TOKEN)return;
+  const rw=Math.min(1100,Math.max(W,Math.round(W*Math.min(1.75,1100/Math.max(W,H)))));
+  const rh=Math.round(rw*H/W);
+  const field=pressCanvas(st,s=>{s.els=[];s.texts=[];s.mark=0;},rw,rh);
+  const forms=pressCanvas(st,s=>{s.texts=[];s.mark=0;},rw,rh);
+  const full=pressCanvas(st,s=>{},rw,rh);
+  if(token!==PRESS_TOKEN)return;
+  const layers=[field,pressDelta(field,forms),pressDelta(forms,full)];
+  const j=Math.max(.7,Math.min(2.4,.7+(st.mis||0)*.55));
+  const offs=[[0,0],[j,-j*.62],[-j*.72,j*.78]];
+  const heads=['FIELD','FORM','TYPE'];
+  const headCols=['#565750',st.inkB||'#353630',st.inkA||'#353630'];
+  layers.forEach((c,i)=>{
+    c.className='press-layer';c.setAttribute('aria-hidden','true');
+    c.style.setProperty('--delay',(.18+i*.54)+'s');
+    c.style.setProperty('--ox',offs[i][0].toFixed(2)+'px');
+    c.style.setProperty('--oy',offs[i][1].toFixed(2)+'px');
+    sheet.appendChild(c);
+    const h=document.createElement('div');h.className='press-pass';h.setAttribute('aria-hidden','true');
+    h.style.setProperty('--delay',(.18+i*.54)+'s');h.style.setProperty('--head',headCols[i]);
+    h.innerHTML='<span>'+String(i+1).padStart(2,'0')+' / '+heads[i]+'</span>';sheet.appendChild(h);
   });
-  const cap=document.createElement('p'); cap.className='press-cap';
-  const c=colophonCols();
-  const tt=titleText();
-  const shown=String((tt&&tt.text)||TITLE()||'').trim()||'UNTITLED';
-  cap.innerHTML = shown+'　·　'+INFO()+'<br>'+
-    c[0][1]+'　+　'+c[0][2]+'　·　'+c[1][1]+'　·　'+c[2][2];
-  const act=document.createElement('div'); act.className='press-act';
-  const back=document.createElement('button'); back.type='button'; back.textContent='回去改';
-  back.onclick=()=>{ pressEl.hidden=true; };
-  const dl=document.createElement('button'); dl.type='button'; dl.className='go'; dl.textContent='导出 PNG ↓';
-  dl.onclick=()=>document.getElementById('download').click();
-  const again=document.createElement('button'); again.type='button'; again.textContent='再印一次';
-  again.onclick=()=>showPress();
-  act.append(back,again,dl);
-  pressEl.append(sheet,cap,act);
-  pressEl.hidden=false;
-  setHint('印好了 —— 回去改，或者导出');
+  pressEl.classList.remove('preparing');
+  void sheet.offsetWidth;
+  pressEl.classList.add('running');
+  const setStatus=(n,t)=>{status.querySelector('b').textContent=n;status.querySelector('span').textContent=t;};
+  if(prefersStill()){
+    setStatus('OK','PRINT COMPLETE');pressEl.classList.add('ready');setHint('印好了 —— 回去改，或者导出');return;
+  }
+  setStatus('01','PAPER & FIELD');
+  pressLater(()=>setStatus('02','FORM PLATE'),540,token);
+  pressLater(()=>setStatus('03','TYPE & MARKS'),1080,token);
+  pressLater(()=>{setStatus('OK','PRINT COMPLETE');pressEl.classList.add('ready');
+    setHint('印好了 —— 回去改，或者导出');},1740,token);
+}
+function showPress(){
+  const token=++PRESS_TOKEN;clearPressTimers();
+  const st=JSON.parse(JSON.stringify(S));
+  const maxH=Math.min(window.innerHeight-220,720),maxW=Math.min(window.innerWidth-76,620);
+  let ph=Math.max(220,maxH),pw=ph*W/H;if(pw>maxW){pw=maxW;ph=pw*H/W;}
+  pressEl.innerHTML='';pressEl.className='press preparing';
+  pressEl.setAttribute('role','dialog');pressEl.setAttribute('aria-modal','true');
+  pressEl.setAttribute('aria-label','印刷成品预览');
+  const close=document.createElement('button');close.type='button';close.className='press-close';
+  close.setAttribute('aria-label','关闭成品预览');close.title='关闭';close.textContent='×';close.onclick=()=>closePress();
+  const headline=document.createElement('div');headline.className='press-headline';
+  const kicker=document.createElement('span');kicker.className='press-kicker';kicker.textContent='PRINT RUN / THREE PASSES';
+  const status=document.createElement('span');status.className='press-status';status.setAttribute('aria-live','polite');
+  status.innerHTML='<b>··</b><span>PREPARING PLATES</span>';headline.append(kicker,status);
+  const stage=document.createElement('div');stage.className='press-stage';
+  const sheet=document.createElement('div');sheet.className='press-sheet';
+  sheet.style.width=Math.round(pw)+'px';sheet.style.height=Math.round(ph)+'px';
+  sheet.style.setProperty('--travel',Math.round(ph)+'px');sheet.style.setProperty('--paper',st.paper||'#f5eddd');
+  const paper=document.createElement('div');paper.className='press-paper';
+  const preparing=document.createElement('div');preparing.className='press-preparing';preparing.textContent='MAKING PLATES';
+  sheet.append(paper,preparing);stage.appendChild(sheet);
+  const cap=document.createElement('p');cap.className='press-cap';
+  const c=colophonCols(),tt=titleText(),shown=String((tt&&tt.text)||TITLE()||'').trim()||'UNTITLED';
+  cap.innerHTML=shown+'　·　'+INFO()+'<br>'+c[0][1]+'　+　'+c[0][2]+'　·　'+c[1][1]+'　·　'+c[2][2];
+  const act=document.createElement('div');act.className='press-act';
+  const back=document.createElement('button');back.type='button';back.textContent='回去改';back.onclick=()=>closePress();
+  const again=document.createElement('button');again.type='button';again.textContent='再印一次';again.onclick=showPress;
+  const dl=document.createElement('button');dl.type='button';dl.className='go';dl.textContent='导出 PNG ↓';
+  dl.onclick=()=>document.getElementById('download').click();act.append(back,again,dl);
+  pressEl.append(close,headline,stage,cap,act);pressEl.hidden=false;
+  let built=false;const run=()=>{if(built||token!==PRESS_TOKEN)return;built=true;buildPress(token,st,sheet,status);};
+  requestAnimationFrame(()=>requestAnimationFrame(run));setTimeout(run,90);
 }
 document.getElementById('topPress').onclick=showPress;
 
@@ -3903,7 +3994,7 @@ document.getElementById('topDownload').onclick=()=>document.getElementById('down
 document.getElementById('topUndo').onclick=undo;
 document.getElementById('topReset').onclick=()=>document.getElementById('reset').click();
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&!pressEl.hidden){pressEl.hidden=true;e.preventDefault();return;}
+  if(e.key==='Escape'&&!pressEl.hidden){closePress();e.preventDefault();return;}
   if(e.key==='Escape'&&!trayEl.hidden){trayEl.hidden=true;e.preventDefault();}
 });
 
@@ -4118,6 +4209,20 @@ function selfTest(){
       trayEl.hidden=true; TRAY_PATH=[];
       ok('顶部按钮点下去真的出六个候选', cands===6 && closed && errs.length===0,
          '候选 '+cands+' 个'+(errs.length?'　报错：'+errs[0].slice(0,60):''));
+    })();
+
+    // 6a3. 成品态也必须从真实按钮进入；第一帧先出现纸和退出入口，重渲染放到下一帧。
+    (function(){
+      const errs=[];const onerr=e=>errs.push(String(e.message||e));window.addEventListener('error',onerr);
+      let shell=false;
+      try{
+        document.getElementById('topPress').dispatchEvent(new MouseEvent('click',{bubbles:true}));
+        shell=!pressEl.hidden && !!pressEl.querySelector('.press-sheet') &&
+          !!pressEl.querySelector('.press-preparing') && !!pressEl.querySelector('.press-close');
+      }catch(e){errs.push(String(e.message||e));}
+      closePress(false);window.removeEventListener('error',onerr);
+      ok('印出来：点击后立即出现纸面与退出入口',shell&&errs.length===0,
+        errs.length?'报错：'+errs[0].slice(0,60):'');
     })();
 
     // 6b. 放大有上限：把手拖到底也不能把形拖出画面
