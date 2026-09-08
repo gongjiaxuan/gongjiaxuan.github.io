@@ -722,14 +722,42 @@
       ],
       "description": "CUT / PRINT is a browser-based poster maker built around a simple rule: two inks, one sheet. Add a line of text, cut the sheet into colour fields, then work with geometry, vessel silhouettes or a photograph. Every object stays editable on the canvas. Ink, paper, halftone and registration choices remain part of the exported image.",
       "tools": "HTML Canvas · JavaScript · Interaction Design · Generative Layout · Client-Side Image Processing",
-      "hero": "images/poster-lab/editor-overview.png",
-      "cardImage": "images/poster-lab/editor-overview.png",
+      "hero": "images/poster-lab/finished-vessel-remembers-sea.webp",
+      "cardImage": "images/poster-lab/finished-vessel-remembers-sea-card.webp",
       "demoUrl": "poster/",
       "featured": true,
       "theme": "print",
       "layout": "case-study",
       "category": "Interactive",
       "sections": [
+        {
+          "type": "gallery",
+          "eyebrow": "Selected prints",
+          "title": "Made in CUT / PRINT",
+          "body": "Each poster below was composed and exported in the live editor, using different formats, vessel profiles, paper stocks and type arrangements.",
+          "images": [
+            {
+              "src": "images/poster-lab/finished-vessel-remembers-sea.webp",
+              "alt": "Yellow and terracotta poster with a halftone vessel and the title Vessel Remembers the Sea",
+              "caption": "器物记得海 / Vessel Remembers the Sea"
+            },
+            {
+              "src": "images/poster-lab/finished-wind-empty-vessel.webp",
+              "alt": "Blue risograph-style vessel poster titled Wind Lives in an Empty Vessel",
+              "caption": "风住在空器里 / Wind Lives in an Empty Vessel"
+            },
+            {
+              "src": "images/poster-lab/finished-looking-into-space.webp",
+              "alt": "Minimal blue and grey geometric poster titled Looking into the Empty Space",
+              "caption": "向空处观看 / Looking into the Empty Space"
+            },
+            {
+              "src": "images/poster-lab/finished-bowl-winter.webp",
+              "alt": "Black and white halftone bowl poster titled A Bowl's Winter",
+              "caption": "一只碗的冬天 / A Bowl's Winter"
+            }
+          ]
+        },
         {
           "type": "imageText",
           "eyebrow": "Starting point",
@@ -748,9 +776,9 @@
           "body": "Colour fields, overprint, halftone, paper stock and registration are part of the rendering model. The colophon at the foot of each poster records the settings used for that print. Changing an ink or paper redraws the same composition; it does not replace the layout.",
           "imagePosition": "left",
           "image": {
-            "src": "images/poster-lab/poster-output.png",
-            "alt": "Two-colour poster produced in CUT / PRINT",
-            "caption": "A clean canvas output using one paper colour and one vermilion ink."
+            "src": "images/poster-lab/finished-bowl-winter.webp",
+            "alt": "Black and white halftone bowl poster produced in CUT / PRINT",
+            "caption": "The same rendering rules hold across format, ink and paper choices."
           }
         },
         {
