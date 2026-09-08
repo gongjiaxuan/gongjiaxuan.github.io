@@ -797,9 +797,9 @@
         var imgSrc=p.cardImage||p.hero||'';
         var tagHtml=(p.tags||[]).slice(0,3).map(function(t){return '<span class="pc-tag">'+t+'</span>'}).join('');
         var imgHtml=imgSrc?'<img src="'+imgSrc+'" alt="'+p.title+'" loading="lazy" onerror="this.remove()">':'';
-        var href=p.demoUrl||('project.html?id='+prIndex);
+        var href='project.html?id='+prIndex;
         var live=p.demoUrl?'<span class="pc-live">Interactive prototype</span>':'';
-        var label=p.demoUrl?' aria-label="Open interactive prototype: '+p.title+'"':'';
+        var label=p.demoUrl?' aria-label="View interactive prototype project: '+p.title+'"':'';
         prh+='<a class="proj-card'+(p.demoUrl?' is-demo':'')+'" href="'+href+'" data-cat="'+cat+'"'+label+'><div class="pc-preview">'+imgHtml+live+'<span class="pc-name">'+p.title+'</span></div><div class="pc-tags">'+tagHtml+'</div></a>';
       });
       document.getElementById('projRow').innerHTML=prh;

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
   <title>Project — Jiaxuan Gong</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,6 +56,9 @@
     .tags span{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;padding:0.2rem 0.5rem;border-radius:4px;background:var(--as);color:#4338ca}
     .desc{font-size:0.98rem;line-height:1.72;color:var(--tm);margin-bottom:1rem}
     .tools{font-size:0.84rem;color:#9ca3af;padding-bottom:1.2rem;border-bottom:1px solid var(--bdr)}
+    .demo-link{display:inline-flex;align-items:center;gap:0.7rem;margin:0 0 1.25rem;padding:0.72rem 1rem;border:1px solid var(--th);background:var(--th);color:var(--bg);font-size:0.82rem;font-weight:600}
+    .demo-link:hover{opacity:1;background:transparent;color:var(--th)}
+    .demo-link[hidden]{display:none}
 
     /* ── Optional project-specific case study sections ── */
     .case-sections{margin:0.5rem 0 2rem}
@@ -86,6 +90,29 @@
     .videos-grid .video-item .v-label{font-size:0.78rem;font-weight:500;color:var(--tm);margin-bottom:0.4rem}
     .videos-grid video{width:100%;border-radius:8px;background:#000}
 
+    /* CUT / PRINT case study */
+    body.print{--t:#4e4b44;--th:#171714;--tm:#666159;--acc:#df4b32;--as:#ebe6dc;--bdr:#d1ccc1;--bg:#f5f2ea;--mw:980px}
+    body.print .back-nav{background:rgba(245,242,234,0.94);border-bottom-color:#c9c3b8}
+    body.print .carousel{background:#cfcdc6;padding:2.5rem 0;border-bottom:1px solid #bbb8b0}
+    body.print .carousel-slide img{width:min(100%,1440px);max-height:78vh;object-fit:contain}
+    body.print .carousel-dots{display:none}
+    body.print .proj-info{padding:3.5rem 0 2rem}
+    body.print .proj-info h1{font-size:clamp(2.4rem,6vw,4.8rem);line-height:0.95;letter-spacing:0;font-weight:700}
+    body.print .proj-info .sub{margin:1rem 0 1.1rem;color:#7a756b;font-size:1rem;font-weight:500}
+    body.print .tags span{border:1px solid #c9c3b8;border-radius:0;background:transparent;color:#5f5b53}
+    body.print .demo-link{background:#df4b32;border-color:#df4b32;color:#fff}
+    body.print .demo-link:hover{background:#171714;border-color:#171714;color:#fff}
+    body.print .case-sections{margin-top:0}
+    body.print .case-section{padding:3.25rem 0;border-bottom-color:#d1ccc1}
+    body.print .case-eyebrow{color:#df4b32;font-size:0.61rem;letter-spacing:0.14em}
+    body.print .case-section h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(1.55rem,3vw,2.35rem);font-weight:600;letter-spacing:0;line-height:1.16}
+    body.print .case-section p{font-size:0.98rem;line-height:1.75;color:#625e56}
+    body.print .case-image-text{grid-template-columns:minmax(0,0.78fr) minmax(0,1.22fr);gap:2.5rem}
+    body.print .case-image-text.media-left{grid-template-columns:minmax(0,1.22fr) minmax(0,0.78fr)}
+    body.print .case-media img,body.print .case-gallery img{border-radius:0;background:#cfcdc6;border:1px solid #c3beb3}
+    body.print .case-caption{color:#8a857c;margin-top:0.55rem}
+    body.print .tools{color:#8a857c;border-bottom-color:#d1ccc1}
+
     /* ── Bottom nav ── */
     .bottom-nav{display:flex;justify-content:space-between;padding:2rem 0 3rem;border-top:1px solid var(--bdr);margin-top:1rem;flex-wrap:wrap;gap:0.5rem}
     .bottom-nav a{font-size:14px}
@@ -100,6 +127,7 @@
 
     @media(max-width:640px){
       .proj-info h1{font-size:1.5rem}.carousel-slide img{max-height:50vh}.wrap{padding:0 1.15rem}.case-image-text{grid-template-columns:1fr}.case-image-text.media-left .case-copy,.case-image-text.media-left .case-media{order:initial}.case-gallery{grid-template-columns:1fr}
+      body.print .carousel{padding:1rem 0}body.print .proj-info{padding:2.3rem 0 1.2rem}body.print .proj-info h1{font-size:2.7rem}body.print .case-section{padding:2.25rem 0}body.print .case-image-text,body.print .case-image-text.media-left{grid-template-columns:1fr;gap:1.1rem}
     }
   </style>
 </head>
@@ -124,6 +152,7 @@
       <h1 id="title"></h1>
       <div class="sub" id="subtitle"></div>
       <div class="tags" id="tags"></div>
+      <a class="demo-link" id="demoLink" href="#" target="_blank" rel="noopener" hidden>Open the poster lab <span aria-hidden="true">↗</span></a>
       <div class="desc" id="desc"></div>
       <div class="tools" id="tools"></div>
     </div>
@@ -162,10 +191,12 @@
 
       document.title=p.title+' — Jiaxuan Gong';
       if(p.theme==='dark')document.body.classList.add('dark');
+      if(p.theme==='print')document.body.classList.add('print');
       document.getElementById('counter').textContent=(id+1)+' / '+projects.length;
       document.getElementById('title').textContent=p.title;
       document.getElementById('subtitle').textContent=p.subtitle;
       document.getElementById('tags').innerHTML=(p.tags||[]).map(function(t){return'<span>'+t+'</span>'}).join('');
+      if(p.demoUrl){var demo=document.getElementById('demoLink');demo.href=p.demoUrl;demo.hidden=false}
       document.getElementById('desc').textContent=p.description;
       document.getElementById('tools').innerHTML='<strong>Tools:</strong> '+p.tools;
 
