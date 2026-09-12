@@ -38,10 +38,10 @@
   button,input,select{font:inherit}
   button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-  .appbar{height:70px;padding:0 30px;border-bottom:1px solid #b9b7b1;background:#eeece6;
+  .appbar{height:74px;padding:0 30px;border-bottom:1px solid #b9b7b1;background:#eeece6;
     display:grid;grid-template-columns:1fr auto 1fr;align-items:center;position:relative;z-index:30}
   .brand{display:flex;align-items:baseline;gap:13px;min-width:0}
-  .brand strong{font-size:18px;line-height:1;letter-spacing:.08em;font-weight:600}
+  .brand strong{font-size:21px;line-height:1;letter-spacing:.1em;font-weight:600}
   .brand span{font-size:10px;line-height:1;letter-spacing:.15em;color:var(--ink3);white-space:nowrap}
   .edition{font:500 10px/1 var(--ui);letter-spacing:.13em;color:var(--ink3);text-transform:uppercase}
   .top-actions{display:flex;justify-content:flex-end;gap:8px}
@@ -654,16 +654,16 @@
   .tool-title{display:block}
   .tool-title small{display:block;margin:0 0 7px;color:var(--accent);font-size:9px;letter-spacing:.17em}
   .tool-title h2{
-    margin:0;font-family:"Noto Serif SC","Songti SC",serif;font-size:25px;line-height:1.16;
+    margin:0;font-family:"Noto Serif SC","Songti SC",serif;font-size:28px;line-height:1.14;
     font-weight:900;letter-spacing:.035em;white-space:normal;
   }
   .tool-title p{display:none}
 
   .blk{margin-bottom:28px}
   .blk h3{
-    margin:0 0 11px;font-size:10px;font-weight:600;letter-spacing:.13em;color:#77746c;text-transform:uppercase;
+    margin:0 0 12px;font-size:11px;font-weight:650;letter-spacing:.15em;color:#77746c;text-transform:uppercase;
   }
-  h4.mini{margin:17px 0 7px;font-size:10px;font-weight:500;letter-spacing:.06em;color:#8d897f}
+  h4.mini{margin:18px 0 8px;font-size:10.5px;font-weight:600;letter-spacing:.09em;color:#8d897f;text-transform:uppercase}
   .section-intro{padding-bottom:1px}
   .quiet-action{font-size:10px;color:#77746c;border-bottom:1px solid #aaa69d;padding:0 0 3px}
   .quiet-action:hover{color:var(--accent);border-color:var(--accent)}
@@ -673,7 +673,7 @@
   }
   .empty-state::before{content:"";width:22px;height:2px;background:var(--accent);margin-bottom:5px}
   .empty-state small{display:block;font-size:8px;letter-spacing:.2em;color:#8b5b50;margin-bottom:9px}
-  .empty-state strong{display:block;font-family:"Noto Serif SC","Songti SC",serif;font-size:28px;font-weight:900;line-height:1.3;letter-spacing:.045em;margin-bottom:12px}
+  .empty-state strong{display:block;font-family:"Noto Serif SC","Songti SC",serif;font-size:34px;font-weight:900;line-height:1.22;letter-spacing:.05em;margin-bottom:13px}
   .empty-state span{display:block;font-size:11px;line-height:1.5;color:#706e67;max-width:34em}
   .empty-state #emptyStart{
     display:block;margin-top:6px;padding:8px 15px;border:1px solid #6f6c64;background:transparent;color:var(--ink);
@@ -683,7 +683,7 @@
 
   .row{gap:6px}
   .row button,.ghost,.font-grid button,.photo-style button,.stock-grid button{
-    min-height:40px;background:#faf8f2;border:1px solid #cbc7bd;color:var(--ink2);font-size:11.5px;letter-spacing:0;
+    min-height:42px;background:#faf8f2;border:1px solid #cbc7bd;color:var(--ink2);font-size:12px;letter-spacing:.01em;
   }
   .row button:hover,.ghost:hover,.font-grid button:hover,.photo-style button:hover,.stock-grid button:hover{
     background:#ece8df;border-color:#8f8b82;color:var(--ink);
@@ -787,6 +787,7 @@
     <button id="topReset" title="清空画布" aria-label="清空画布">清空</button>
     <button id="topVariants">六个方向</button>
     <button id="topPress">印出来</button>
+    <button id="uiLang" type="button" aria-label="切换界面语言 / Switch language">EN</button>
     <button class="export" id="topDownload" hidden>导出 PNG ↓</button>
   </div>
 </header>
@@ -2233,8 +2234,8 @@ function toneLut(){
   const hit=toneLutCache.get(key); if(hit) return hit;
   const lut=new Float32Array(257);
   for(let i=0;i<=256;i++){
-    let ca=Math.min(.85,Math.max(.10,i/256));
-    ca=Math.min(1,ca+0.24*Math.sin(Math.PI*ca));       // 与正侧完全相同的增益链
+    // 与正侧 tone 路径完全相同的链：范围 0.08–0.58、无扩张 —— 两侧目标一致
+    let ca=0.08+0.50*(i/256);
     const target=Lstar(mixInk(S.b,S.a,ca));            // 正侧这个覆盖率的视觉明度
     let lo=0,hi=1;                                     // 反白侧：浅墨浮在深底，c 越大越亮
     for(let q=0;q<14;q++){ const mid=(lo+hi)/2;
@@ -2329,11 +2330,16 @@ function screenFill(col, box, band, inv){
         if(a<0.42) continue;
         a = (a-0.42)/0.58*0.78+0.16;
       }
+      // 立体的墨量范围收窄到 0.08–0.58，且不过网点扩张链。
+      // 用户：「浅一点的阴影太深了不自然」—— 上一版明度对齐把浅阴影也对齐到
+      // 深目标（正侧增益链把中等 tone 推到 60%+ 覆盖）。立体是「风格的 3D」，
+      // 不是照片：浅阴影要浅，最暗处也不该满墨 —— riso 印插画本来就不打满。
+      if(md!==0){ a=Math.max(0,Math.min(1,a)); a=0.08+0.50*a; }
       const h1=hash2(i,j), h2=hash2(j+7,i-3);
       // 反白侧：不看墨量看明度 —— 与正侧同一暗度印出同一视觉明度，切线两边才接得上
       const r=(INV_SIDE
         ? p*Math.sqrt(toneLut()[Math.round(Math.max(0,Math.min(1,a))*256)]/Math.PI)
-        : inkR(a,p,false))*(1+(h2-.5)*.06);
+        : p*Math.sqrt(a/Math.PI))*(1+(h2-.5)*.06);
       if(r<.28) continue;
       ctx.beginPath();
       ctx.arc(x+(h1-.5)*p*.06, y+(h2-.5)*p*.06, r, 0, Math.PI*2);
@@ -2733,9 +2739,14 @@ function normaliseTextSize(t){
 }
 function clampText(t){
   if(!t)return;
+  // 底部边界从 2.4 倍边距收到 1.35 倍：用户「文字移动到画面下方很高的地方就被
+  // 空气墙挡住」。2.4 倍给底部留了 79px —— 那是给信息行预留的，但信息行只在
+  // 有切线时出现且只有 ~13px 高。1.35 倍（45px）仍然让开信息行，文字可以
+  // 真正压到下三分之一。自动落位（placeText）仍用保守版心 —— 手动自由、
+  // 不动也好看，两回事。
   const m=textMetrics(t), M=MARGIN();
   t.x=Math.max(M/W,Math.min(Math.max(M,W-M-m.w)/W,t.x));
-  t.y=Math.max(M/H,Math.min(Math.max(M,H-M*2.4-m.h)/H,t.y));
+  t.y=Math.max(M/H,Math.min(Math.max(M,H-M*1.35-m.h)/H,t.y));
 }
 function clampTitle(){ensureTexts();S.texts.forEach(clampText);}
 function drawText(t,col){
@@ -2932,7 +2943,7 @@ function delText(){
 // 两条页边距永远保留；图形的左右边、上下边最多再补进来一条 —— 线一多就等于没有线。
 function layoutLines(){
   const M=MARGIN(), U=Math.max(4,Math.round(Math.min(W,H)/64));
-  const botY=H-M*2.4;                    // 底部信息行占住的地方，文字不越过它
+  const botY=H-M*1.6;                    // 自动落位仍保守地让开信息行（手动拖动可以更低，见 clampText）
   const eb=allBBox();
   const pick=(must,extra)=>{
     const o=must.slice();
@@ -5329,7 +5340,124 @@ const HINT={1:'文字已选中；直接拖动，或在当前面板继续编辑',
   2:'图形已选中；直接在画布上移动、缩放或旋转，填充和网目就在「图形变化」里',
   3:'墨、纸、纸纹都在这一页。切线随时可以在画布上重新划',
   4:'满意了就印出来。也可以先看看「六个方向」'};
-function setHint(t){document.getElementById('hint').textContent=t;}
+// ================== 界面语言：纯中文 / 纯英文一键切换 ==================
+// 用户：「不同语言习惯的人可以一键切换」。机制：切换时实时遍历所有文本节点，
+// 中文短语查字典换成英文；原文存在节点上（_zh），切回来就恢复 —— 不需要
+// 两套 DOM，也不怕以后加新控件漏翻（没命中就保持原文）。
+// 品牌名（CUT / PRINT）和 riso 墨名（Yellow/Blue…）本来就是英文，不动。
+let UI=localStorage.getItem('uiLang')||'zh';
+const EN={
+  // 顶栏
+  '撤销':'Undo','清空':'Clear','六个方向':'Six Directions','印出来':'Print It','导出 PNG ↓':'Export PNG ↓',
+  // 工具页签与步骤
+  '文字':'Type','图形':'Forms','墨纸':'Ink & Paper',
+  '写一句话':'Write a line','加个图形，随手调它':'Add a form, adjust it here',
+  '墨与纸随时换':'Swap inks & paper anytime','印出来':'Print it',
+  '四个动作':'Four moves',
+  // 空状态
+  '从一句话开始':'Start with one line','在右侧输入，或者从句子库选择。':'Type on the right, or pick from the library.',
+  '去写一句':'Write a line','从一句话开始。可以自己写，也可以从句子库里选一句':'Start with one line. Write your own, or pick from the library.',
+  '先写下一个念头，再让它成为一张海报。':'Write down a thought, let it become a poster.',
+  // 文字页
+  '写一句':'Write','发散四句':'Four lines','句子库':'Library','中文':'中文','换一句 ↻':'Another ↻',
+  'English':'English','加入画面：':'Add to canvas: ',
+  // 墨纸页
+  '印刷配色':'Print Colours','双色组合':'Ink Pairs','纸张':'Paper',
+  '道林':'Woodfree','新闻':'Newsprint','牛皮':'Kraft','和纸':'Washi','再生':'Recycled','光面':'Glossy',
+  '纸面质感':'Paper Texture','净':'Clean','原纸':'Plain','粗':'Rough',
+  '套印性格':'Registration','规整':'Tight','松动':'Loose','错版':'Off-register',
+  '精细调整':'Fine Tuning','色域 A':'Field A','色域 B':'Field B',
+  '浓淡':'Coverage','明度':'Lightness','彩度':'Chroma','色相':'Hue',
+  '自动拉开层次':'Auto contrast','交换两个色域 ⇄':'Swap fields ⇄','纸色':'Paper','墨色':'Inks',
+  '版面信息':'Colophon','无':'None','版记':'Colophon','版记＋套准':'Colophon + marks',
+  // 图形页
+  '画幅':'Format','方':'Square','竖屏':'Tall','切一刀':'Make the Cut','在画布上划一刀':'Cut on the canvas',
+  '素材':'Materials','几何':'Geometry','笔触':'Gestures','器物':'Vessels','照片':'Photo',
+  '艺术笔触':'Gestures','选中的图形':'Selected Form','删掉选中的（Delete）':'Delete selection (Del)',
+  '放一张照片进来':'Bring in a photo','你的照片':'Your Photo','照片':'Photo',
+  '改变器物形态':'Reshape the Vessel','图形变化':'Transform',
+  '平面':'Flat','立体':'3D','图形填充':'Fill','实心':'Solid','网点':'Halftone','渐变':'Gradient','半网':'Half-tone',
+  '网目细':'Fine screen','网目粗':'Coarse screen',
+  '颗粒':'Grain','自然':'Natural','漫散':'Diffuse','硬调':'Hard','方格':'Grid',
+  '取景与影调':'Crop & Tone','放大':'Zoom','反差':'Contrast','墨量':'Ink',
+  '在照片上修边缘':'Refine the Edge','保留':'Keep','去除':'Remove','重来':'Reset',
+  '画笔':'Brush','范围':'Range','剪影边缘':'Silhouette Edge','精细':'Detail',
+  '删掉这张图':'Remove photo','双色印版':'Duotone Plate','抠成剪影':'Cut to Silhouette',
+  // 选中态块
+  '选中的文字':'Selected Text',
+  // 常用 hint（31 条全收）
+  '正在把照片拆进两块色版…':'Separating the photo into two plates…',
+  '照片已经进版 —— 在右边拖动取景，或把它抠成剪影':'Photo is on press. Drag to reframe, or cut it to a silhouette.',
+  '一张海报最多放八行文字':'A poster holds up to eight lines.',
+  '文字已删除；可用顶部的撤销恢复':'Line deleted. Undo from the top bar.',
+  '图案已删除；可用顶部的撤销恢复':'Form deleted. Undo from the top bar.',
+  '已加入图案。拖动调整位置；使用右下角把手缩放或旋转':'Form added. Drag to move; use the handle to scale and rotate.',
+  '已加入器物。拖动调整位置，右下角控制大小和角度':'Vessel added. Drag to move; the handle controls size and angle.',
+  '文字已加入；可直接在画布上拖动，当前面板保持不变':'Line added. Drag it on the canvas.',
+  '挑一个方向继续；不选择不会改变现在这版':'Pick a direction; not choosing keeps this one.',
+  '已应用此方向。可继续调整或重新生成六个方向':'Applied. Keep adjusting, or roll six more.',
+  '印好了 —— 回去改，或者导出':'Printed. Go back and refine, or export.',
+  '这张照片暂时抠不出稳定轮廓，可以先作为照片使用':'No stable silhouette found yet. Keep it as a duotone photo.',
+  '已回到照片印版 —— 它会随两支墨一起变化':'Back to the duotone plate. It re-prints with your inks.',
+  '已抠成剪影 —— 在画布上直接移动、缩放或旋转':'Cut to silhouette. Move, scale and rotate it on the canvas.',
+  '主体太小或没有闭合轮廓 —— 用「保留」在主体里面画一笔':'Subject too small or open. Paint inside it with Keep.',
+  '剪影已更新 —— 可以继续修，或直接回到海报移动它':'Silhouette updated. Keep refining, or move it on the poster.',
+  '已回到自动识别的初稿':'Back to the auto draft.',
+  '图和它抠出来的形都删掉了 —— 顶部的撤销能拿回来':'Photo and its silhouette removed. Undo brings them back.',
+  '已经回到最初状态':'Back to the start.','已撤销上一步':'Undone.',
+  '两句已排好。想加图形就点上面的「图形」；墨和纸随时可换':'Two lines placed. Add a form under Forms; inks anytime.',
+  '这段文字已经在画面中，已为你选中':'Already on the canvas. Selected for you.',
+  '两句一起排好了。不想要哪句，选中后点 × 删除':'Both lines placed. Select one and × to remove it.',
+  '这句已经在画面中，已为你选中':'Already on the canvas. Selected for you.',
+  '诗句已加入；拖动安排它在画面中的位置':'Line added. Drag it into place.',
+  '先写下一个意象、片段或一句话':'Start with an image, a fragment, or a line.',
+  '四句文字材料已生成；点击 ＋ 加入画面':'Four lines drafted. Click ＋ to place them.',
+  '高清 PNG 已生成':'Hi-res PNG ready.',
+  '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
+  '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
+  // 长注释类 note（高频几条）
+  '点画面上的元素选中它，Tab 轮选，拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Click a form to select. Tab cycles. Drag the handle to scale and rotate; it snaps near 0/90°.',
+  '图片只在你自己的浏览器里处理，不会上传。':'Photos stay in your browser. Nothing is uploaded.',
+  '也可以直接把图拖到画布上，或者 Ctrl + V 粘贴。':'Drop an image on the canvas, or paste with Ctrl + V.',
+};
+const tt=t=>UI==='en'&&t?(EN[t.trim()]||t):t;
+let _lastHint='';
+function setHint(t){_lastHint=t;document.getElementById('hint').textContent=tt(t);}
+function applyLang(){
+  localStorage.setItem('uiLang',UI);
+  const btn=document.getElementById('uiLang');
+  if(btn) btn.textContent=UI==='en'?'中':'EN';
+  const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  const jobs=[];
+  while(walk.nextNode()){ const node=walk.currentNode, v=node.nodeValue;
+    if(!v||!v.trim()) continue;
+    if(node._zh===undefined) node._zh=v;
+    jobs.push(node);
+  }
+  for(const node of jobs){
+    const key=(UI==='en'?node._zh:node._zh).trim();
+    if(UI==='en') node.nodeValue=EN[key]?EN[key]:node._zh;
+    else node.nodeValue=node._zh;
+  }
+  // placeholder / aria-label / title
+  document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>{
+    for(const at of ['placeholder','aria-label','title']){
+      const v=el.getAttribute(at); if(!v)continue;
+      if(el['_zh_'+at]===undefined) el['_zh_'+at]=v;
+      el.setAttribute(at, UI==='en'?(EN[el['_zh_'+at]]||el['_zh_'+at]):el['_zh_'+at]);
+    }
+  });
+  if(_lastHint) document.getElementById('hint').textContent=tt(_lastHint);
+}
+document.getElementById('uiLang').onclick=()=>{ UI=UI==='en'?'zh':'en'; applyLang();
+  // 界面语言联动内容语言：句子库直接给出对应语言的素材。
+  // 画面上已经放好的文字是个体对象，不被牵连。
+  if(S.lang!==UI){ S.lang=UI; newBrief(); }
+  // 动态生成的控件（句子库、墨色、器物等）重新渲染一遍再翻
+  try{ sync(); syncBrief(); syncLathe && syncLathe(); syncImg && syncImg(); syncTextPanel && syncTextPanel(); }catch(_){}
+  applyLang(); draw();
+};
+applyLang();
 function setStep(n){[...document.getElementById('steps').children].forEach((li,i)=>{
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});
   setHint(HINT[n]);}
