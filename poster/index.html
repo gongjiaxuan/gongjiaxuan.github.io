@@ -57,11 +57,11 @@
   /* 一张真的印刷品躺在那儿：接触阴影 + 扩散阴影 + 纸边的厚度 + 一道很淡的光 */
   .sheet{position:relative;line-height:0;
     box-shadow:
-      0 1px 1px  #00000026,          /* 纸和桌面的接触边 */
-      0 2px 3px  #0000001f,
-      0 10px 18px -8px #00000030,
-      0 34px 60px -26px #0000005c,   /* 扩散的那层 */
-      0 0 0 1px #00000014;}
+      0 1px 1px  #2a241b26,          /* 纸和桌面的接触边 —— 暖调，纸上的光影不冷 */
+      0 2px 3px  #2a241b1f,
+      0 10px 18px -8px #2a241b30,
+      0 34px 60px -26px #2a241b59,   /* 扩散的那层 */
+      0 0 0 1px #2a241b14;}
   .sheet::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
     box-shadow:inset 0 1px 0 #ffffff5c, inset 0 -1px 0 #00000012,
                inset 1px 0 0 #ffffff33, inset -1px 0 0 #0000000f}
@@ -228,6 +228,7 @@
   .steps li::before{content:attr(data-n);position:absolute;left:0;top:7px;width:17px;height:17px;
     border:1px solid var(--line);border-radius:50%;font-size:9.5px;display:grid;place-items:center;
     color:var(--ink3);font-variant-numeric:tabular-nums;transition:.15s}
+  .steps button{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;width:100%}
   .steps li.on{color:var(--ink);font-weight:500}
   .steps li.on::before{background:var(--ink);border-color:var(--ink);color:#fff}
   .steps li.done::before{content:"✓";border-color:var(--ink2);color:var(--ink2)}
@@ -606,11 +607,11 @@
   .workspace{height:calc(100vh - 64px);grid-template-columns:minmax(0,1fr) 378px}
   .stage{
     padding:25px 52px 20px;gap:11px;background-color:var(--bg);
-    background-image:linear-gradient(#17171408 1px,transparent 1px),linear-gradient(90deg,#17171408 1px,transparent 1px);
-    background-size:24px 24px;background-position:center;
+    background-image:radial-gradient(#1717140f 1.05px,transparent 1.25px);
+    background-size:21px 21px;background-position:center;
   }
   .sheet{
-    box-shadow:0 1px 1px #00000025,0 5px 12px -7px #00000048,0 30px 58px -30px #0000007a,0 0 0 1px #00000019;
+    box-shadow:0 1px 1px #2a241b25,0 5px 12px -7px #2a241b48,0 30px 58px -30px #2a241b78,0 0 0 1px #2a241b19;
   }
   .crop{color:#65635c}
   .hint{font-size:11px;color:#65625b;letter-spacing:.01em;max-width:min(560px,90%);text-align:center}
@@ -658,12 +659,12 @@
   .quiet-action:hover{color:var(--accent);border-color:var(--accent)}
 
   .empty-state{
-    justify-content:center;gap:8px;padding:20px;background:transparent;color:var(--ink);pointer-events:auto;
+    justify-content:center;gap:0;padding:20px;background:transparent;color:var(--ink);pointer-events:auto;
   }
   .empty-state::before{content:"";width:22px;height:2px;background:var(--accent);margin-bottom:5px}
-  .empty-state small{display:block;font-size:8px;letter-spacing:.2em;color:#8b5b50}
-  .empty-state strong{font-family:"Noto Serif SC","Songti SC",serif;font-size:28px;font-weight:900;line-height:1.3;letter-spacing:.045em}
-  .empty-state span{font-size:11px;line-height:1.5;color:#706e67}
+  .empty-state small{display:block;font-size:8px;letter-spacing:.2em;color:#8b5b50;margin-bottom:9px}
+  .empty-state strong{display:block;font-family:"Noto Serif SC","Songti SC",serif;font-size:28px;font-weight:900;line-height:1.3;letter-spacing:.045em;margin-bottom:12px}
+  .empty-state span{display:block;font-size:11px;line-height:1.5;color:#706e67;max-width:34em}
   .empty-state #emptyStart{
     display:block;margin-top:6px;padding:8px 15px;border:1px solid #6f6c64;background:transparent;color:var(--ink);
     font-size:10.5px;letter-spacing:.04em;
@@ -815,11 +816,14 @@
 
   <div class="blk sr-only" aria-hidden="true">
     <h3>四个动作</h3>
+    <!-- 旧步骤是印刷工序流水线（切→墨→形→字），但工具其实是自由编辑器，
+         线性步骤反而暗示「必须按顺序」。改成内容中心的四步，且每步可点：
+         点击直接跳到对应的工具页签。切线不占步骤 —— 任何时候在画布上划就行。 -->
     <ol class="steps" id="steps">
-      <li data-n="1" class="on">按住拖动，把画面切开</li>
-      <li data-n="2">选两支墨</li>
-      <li data-n="3">放一个器物，拖动它</li>
-      <li data-n="4">编辑文字</li>
+      <li data-n="1" data-tool-jump="type" class="on"><button type="button">写一句话</button></li>
+      <li data-n="2" data-tool-jump="form"><button type="button">加个图形，随手调它</button></li>
+      <li data-n="3" data-tool-jump="print"><button type="button">墨与纸随时换</button></li>
+      <li data-n="4" data-press-jump="1"><button type="button">印出来</button></li>
     </ol>
   </div>
 
@@ -882,13 +886,6 @@
     <h4 class="mini">纸色</h4><div class="lib" id="paperlib"></div>
     <h4 class="mini">墨色</h4><div class="lib" id="lib"></div>
 
-    <h4 class="mini">图形填充</h4>
-    <div class="row" id="fill">
-      <button data-l="0" aria-pressed="true">实心</button><button data-l="1">网点</button><button data-l="2">渐变</button><button data-l="3">半网</button>
-    </div>
-    <div class="row" id="dot" style="margin-top:7px">
-      <button data-d="0">网目细</button><button data-d="1" aria-pressed="true">网目粗</button>
-    </div>
     <h4 class="mini">版面信息</h4>
     <div class="row" id="mark">
       <button data-k="0">无</button><button data-k="1" aria-pressed="true">版记</button><button data-k="2">版记＋套准</button>
@@ -975,6 +972,9 @@
     <div class="row" style="margin-top:6px"><button id="idel">删掉这张图</button></div>
     <p class="photo-help">图片只在你自己的浏览器里处理，不会上传。</p>
   </div>
+  <!-- 用户：「图形的调整要在同一步」「网纹粗细要放在图形那块」。
+       填充和网目原来在「墨纸」页签的折叠区里 —— 插入在一步、调整在另一步。
+       选中图形时，它的全部属性现在都在这一块里。 -->
   <div class="blk context-block" data-tool="form" id="objectControls" hidden>
     <h3>图形变化</h3>
     <div class="row" id="dep" style="margin-bottom:7px">
@@ -982,6 +982,13 @@
     </div>
     <div class="row" id="rep">
       <button data-r="1" aria-pressed="true">1</button><button data-r="3">3</button><button data-r="5">5</button>
+    </div>
+    <h4 class="mini" style="margin-top:10px">图形填充</h4>
+    <div class="row" id="fill">
+      <button data-l="0" aria-pressed="true">实心</button><button data-l="1">网点</button><button data-l="2">渐变</button><button data-l="3">半网</button>
+    </div>
+    <div class="row" id="dot" style="margin-top:7px">
+      <button data-d="0">网目细</button><button data-d="1" aria-pressed="true">网目粗</button>
     </div>
   </div>
 
@@ -3582,10 +3589,10 @@ cv.addEventListener('pointerdown',e=>{
   // 文字和图形始终可以直接操作；不强迫用户先完成「切」这一步。
   const ht=hitText(p);
   if(ht>=0){S.ti=ht;tsel=true;sel=false;const t=CT();
-    drag={m:'text',dx:p.x-t.x*W,dy:p.y-t.y*H};setStep(4);sync();draw();return;}
+    drag={m:'text',dx:p.x-t.x*W,dy:p.y-t.y*H};setStep(1);sync();draw();return;}
   const hi=hitEl(p);
   if(hi>=0){ S.si=hi; sel=true;tsel=false; const e=CE();
-    drag={m:'el',dx:p.x-EX(e),dy:p.y-EY(e)}; setStep(3); sync(); draw(); return; }
+    drag={m:'el',dx:p.x-EX(e),dy:p.y-EY(e)}; setStep(2); sync(); draw(); return; }
   if(S.cut){sel=false;tsel=false;sync();draw();return;}
   cutting={x1:p.x,y1:p.y,x2:p.x,y2:p.y};
 });
@@ -3634,7 +3641,7 @@ cv.addEventListener('pointermove',e=>{
 window.addEventListener('pointerup',()=>{
   if(cutting){
     const ok=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30;
-    if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;setStep(2);syncEmptyState(); }
+    if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;setStep(3);syncEmptyState(); }
     cutting=null;
     if(ok) playCut(); else draw();
   }
@@ -3865,7 +3872,7 @@ SHAPES.forEach((name,i)=>{
   b._matches=e=>!!e&&e.k===i;
   b.onclick=()=>{
     addEl(i); sel=true;tsel=false;
-    setStep(3); sync(); setHint('已加入图案。拖动调整位置；使用右下角把手缩放或旋转'); draw();};
+    setStep(2); sync(); setHint('已加入图案。拖动调整位置；使用右下角把手缩放或旋转'); draw();};
   allBtn.push(b); (i<GEOMETRY_SHAPES.length?shEl:geEl).appendChild(b);
 });
 VKEYS.forEach((name,i)=>{
@@ -3877,7 +3884,7 @@ VKEYS.forEach((name,i)=>{
     const lat={a:i,b:(i+1)%VKEYS.length,m:0,t:0}, cu=latheToShape(lat);
     LATHE_DRAFT=Object.assign({},lat);
     addEl(12,{lat,cu,s:elSize(12,0.22,cu)}); sel=true;tsel=false;
-    setStep(3); sync(); setHint('已加入器物。拖动调整位置，右下角控制大小和角度'); draw();
+    setStep(2); sync(); setHint('已加入器物。拖动调整位置，右下角控制大小和角度'); draw();
   };
   allBtn.push(b); veEl.appendChild(b);
 });
@@ -3919,7 +3926,7 @@ function syncTextPanel(){
 textInput.addEventListener('input',()=>{const t=CT();if(!t)return;t.text=textInput.value;t.role='custom';t.source=null;t.autoStyle=false;
   normaliseTextSize(t);clampText(t);syncTextSizeControl(t);const row=textList.children[S.ti];if(row)row.querySelector('.copy').textContent=t.text||'（空文字）';draw();});
 document.getElementById('addtext').onclick=()=>{const t=addText();if(t){
-  setStep(4);setHint('文字已加入；可直接在画布上拖动，当前面板保持不变');
+  setStep(1);setHint('文字已加入；可直接在画布上拖动，当前面板保持不变');
   syncTextPanel();textInput.focus();textInput.select();}};
 document.getElementById('deltext').onclick=delText;
 document.getElementById('tdir').onclick=e=>{const b=e.target.closest('button'),t=CT();if(!b||!t)return;
@@ -4997,28 +5004,43 @@ const librarySource=key=>'library:'+((S.ex&&S.ex.idx)||0)+':'+(S.lang||'zh')+':'
 function briefTextIndex(key){
   ensureTexts();return S.texts.findIndex(t=>t.source===librarySource(key));
 }
+// 用户：「点了一个文字，自动生成了一版海报」—— 那一版是 shuffleState() 干的，
+// 随机墨、随机器物全塞进去，读作失控。现在点一句话只做一件事：
+// 把这句话和配套的那句一起插进来，各自落到对齐线上。图形、墨色由用户自己决定。
 function startCompositionWithText(text,source){
   pushHist();
-  const ex=cloneJ(S.ex),lang=S.lang||'zh';
-  S=cloneJ(blank);S.ex=ex;S.lang=lang;
-  S.texts=[{text:text,x:.10,y:.62,size:2,font:lang==='en'?2:0,dir:'h',role:'title',
-    source:source||null,autoStyle:true}];
-  S.ti=0;shuffleState();S.ti=0;sel=false;tsel=true;
-  sync();draw();selectTool('type');
-  setHint('已生成版面。拖动文字或图形继续调整，也可查看「六个方向」');
+  const en=S.lang==='en';
+  ensureTexts();
+  S.texts=[];
+  // 主句：大字号，中文竖排 / 英文横排（这是读的方向，不是审美偏好）
+  S.texts.push({text:briefValue('title'),x:.5,y:.3,size:2,font:en?2:0,dir:en?'h':'v',
+    role:'title',source:librarySource('title')||null,autoStyle:true});
+  // 配套句：小两档、横排，placeText 会把它跟排在主句旁边
+  S.texts.push({text:briefValue('body'),x:.5,y:.3,size:0,font:en?2:0,dir:'h',
+    role:'poem',source:librarySource('body')||null,autoStyle:true});
+  S.ti=0; sel=false; tsel=true;
+  placeText(S.texts[0]); placeText(S.texts[1]);
+  clampTitle(); sync(); draw(); selectTool('type');
+  setHint('两句已排好。想加图形就点上面的「图形」；墨和纸随时可换');
 }
 function addBriefText(key){
   if(isBlankComposition()){
     startCompositionWithText(briefValue(key),librarySource(key));
     return;
   }
-  const old=briefTextIndex(key);
-  if(old>=0){S.ti=old;tsel=true;sel=false;sync();draw();setHint('这段文字已经在画面中，已为你选中');return;}
-  const en=S.lang==='en',opt=key==='title'
-    ? {source:librarySource(key),role:'title',size:2,font:en?2:0,dir:en?'h':'v',autoStyle:true}
-    : {source:librarySource(key),role:'poem',size:0,font:en?2:0,dir:'h',autoStyle:true};
-  const t=addText(briefValue(key),opt);
-  if(t){syncBrief();setHint('文字已加入；在画布上拖动，或点击 × 删除');}
+  // 点任意一句 = 插入它 + 它的配套句（缺哪个补哪个），各自落位成组
+  const mate=key==='title'?'body':'title';
+  const old=briefTextIndex(key), mateOld=briefTextIndex(mate);
+  if(old>=0&&mateOld>=0){S.ti=old;tsel=true;sel=false;sync();draw();
+    setHint('这段文字已经在画面中，已为你选中');return;}
+  const en=S.lang==='en';
+  const spec=k=>k==='title'
+    ? {source:librarySource(k),role:'title',size:2,font:en?2:0,dir:en?'h':'v',autoStyle:true}
+    : {source:librarySource(k),role:'poem',size:0,font:en?2:0,dir:'h',autoStyle:true};
+  let added=null;
+  if(old<0) added=addText(briefValue(key),spec(key));
+  if(mateOld<0){ const m=addText(briefValue(mate),spec(mate)); if(!added) added=m; }
+  if(added){syncBrief();setHint('两句一起排好了。不想要哪句，选中后点 × 删除');}
 }
 function syncBrief(){
   const x=S.ex,lang=S.lang||'zh',box=document.getElementById('brief');
@@ -5036,6 +5058,14 @@ function syncBrief(){
   document.querySelectorAll('#briefLang [data-lang]').forEach(b=>
     b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
 }
+// 步骤条可点击：前三个跳工具页签，最后一个直接印
+document.getElementById('steps').addEventListener('click',e=>{
+  const li=e.target.closest('li[data-n]'); if(!li) return;
+  const jump=li.dataset.toolJump, press=li.dataset.pressJump;
+  if(jump) selectTool(jump);
+  else if(press && !document.getElementById('topPress').disabled)
+    document.getElementById('topPress').click();
+});
 document.getElementById('brief').onclick=e=>{
   const b=e.target.closest('.brief-piece');if(b)addBriefText(b.dataset.piece);
 };
@@ -5233,8 +5263,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!trayEl.hidden){trayEl.hidden=true;e.preventDefault();}
 });
 
-const HINT={1:'在画布上按住并拖动，划出第一刀',2:'切线已就位。你可以继续修改画面，工具不会自动跳转',
-  3:'图案已选中；直接在画布上移动、缩放或旋转',4:'文字已选中；直接拖动，或在当前面板继续编辑'};
+const HINT={1:'文字已选中；直接拖动，或在当前面板继续编辑',
+  2:'图形已选中；直接在画布上移动、缩放或旋转，填充和网目就在「图形变化」里',
+  3:'墨、纸、纸纹都在这一页。切线随时可以在画布上重新划',
+  4:'满意了就印出来。也可以先看看「六个方向」'};
 function setHint(t){document.getElementById('hint').textContent=t;}
 function setStep(n){[...document.getElementById('steps').children].forEach((li,i)=>{
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});
