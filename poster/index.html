@@ -777,6 +777,87 @@
     .empty-state #emptyStart{margin-top:3px;padding:7px 12px}
     .tray{inset:54px 0 0}
   }
+
+  /* ============ 样张台主题（级联覆盖，整块可回退） ============ */
+  :root{
+    --bg:#33302a; --bg2:#2a2722;                 /* 校样台深暖炭 */
+    --panel:#f4f2ec;                              /* 面板纸，比控件深半档 */
+    --hair:#e6e2d8; --edge:#c9c4b8;               /* 边框只两档 */
+    --chrome:#15161a; --chrome-ink:#c9c5ba;       /* 机器铬 */
+  }
+
+  /* ---- 顶栏：机器铬 ---- */
+  .appbar{background:var(--chrome);border-bottom:2px solid var(--accent);height:76px;padding:0 28px}
+  .appbar::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:0} /* 套准线由 border 呈现 */
+  .brand strong{color:#f5f2ea;font-size:20px;letter-spacing:.12em;font-weight:600}
+  .brand span{color:#8a867c;letter-spacing:.18em}
+  .edition{color:#8a867c}
+  .top-actions button{border-color:#3d3a33;background:transparent;color:var(--chrome-ink);min-height:40px}
+  .top-actions button:hover{background:#23242a;border-color:#6a675e;color:#f5f2ea}
+  .top-actions button:disabled{background:transparent;border-color:#2c2a25;color:#5c5a52}
+  .top-actions .export{background:#f5f2ea;border-color:#f5f2ea;color:var(--chrome)}
+  .top-actions .export:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  /* ---- 台面：深炭 + 网点纸（浅点） ---- */
+  .stage{background-color:var(--bg);
+    background-image:radial-gradient(#f5f2ea0d 1.05px,transparent 1.25px);
+    background-size:21px 21px;background-position:center}
+  .sheet{box-shadow:0 1px 1px #00000059,0 5px 12px -7px #00000073,
+    0 30px 58px -30px #000000a8,0 0 0 1px #00000030}   /* 深底上阴影加深一档 */
+  .crop{color:#8d897d}
+
+  /* ---- 面板：纸的叠层 ---- */
+  .panel{background:var(--panel);border-left:1px solid #dcd8cd;
+    box-shadow:inset 1px 0 0 #ffffffcc}                 /* 纸的上缘高光 */
+  .row button,.ghost,.font-grid button,.photo-style button,.stock-grid button{
+    background:#fdfcfa;border-color:var(--edge)}
+  .row button:hover,.ghost:hover,.font-grid button:hover,.photo-style button:hover,.stock-grid button:hover{
+    background:#eeebe1;border-color:#a8a396}
+  .toolnav{border-color:var(--edge)}
+  .toolnav button{border-right-color:var(--edge)}
+  .asset-nav{border-bottom-color:var(--edge)}
+  .advanced-tools{border-top-color:var(--hair);border-bottom-color:var(--hair)}
+  .brief,.poem-materials{border-color:var(--edge)}
+  .quiet-action{border-bottom-color:var(--edge)}
+  .cut-action{background:#fdfcfa}
+
+  /* ---- 微标签收紧：更小、更疏、更轻 —— 高级工具的标签做法 ---- */
+  .blk h3{font-size:10px;letter-spacing:.18em;color:#6f6c62;font-weight:600}
+  h4.mini{font-size:10px;letter-spacing:.14em;color:#6f6c62}
+  .note,.photo-help{font-variant-numeric:tabular-nums}  /* 数字对齐，工单感 */
+  .tool-title small{letter-spacing:.2em}
+
+  /* ---- 空状态：纸上的邀请卡，衬线大字保持 ---- */
+  .empty-state span{color:#7d7a70}
+
+  /* ---- 印出来覆盖层：同一台机器 ---- */
+  .press{background:#2a2722}
+  .press-close{border-color:#55524a;color:#c9c5ba}
+  .press-close:hover{background:#3a372f;border-color:#c9c5ba;color:#f5f2ea}
+  .press-headline{color:#8a867c}
+  .press-status b{color:#f5f2ea}
+  .press-act button{border-color:#55524a;color:#c9c5ba;background:transparent}
+  .press-act button:hover{border-color:#c9c5ba;color:#f5f2ea;background:#3a372f}
+  .press-act .go{background:#f5f2ea;border-color:#f5f2ea;color:var(--chrome)}
+  .press-act .go:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+  .press-cap{color:#8a867c}
+
+  /* ---- 托盘：纸的联系表，深底浮起 ---- */
+  .tray{background:#2a2722f2}
+  .tray-head h3,.tray-ctl .lk{color:#c9c5ba}
+  .tray-ctl .lk{border-color:#55524a}
+  .tray-ctl .mode{border-color:#55524a;color:#c9c5ba}
+  .tray-ctl .mode:hover{border-color:#c9c5ba;color:#f5f2ea}
+  .tray-ctl .mode[aria-pressed="true"]{background:#f5f2ea;border-color:#f5f2ea;color:var(--chrome)}
+  .tray-close{border-color:#55524a;color:#c9c5ba}
+  .tray-path button{border-color:#55524a;color:#c9c5ba}
+  .tray-path button:hover{border-color:#c9c5ba;color:#f5f2ea}
+  .tray-now .cur{color:#8a867c}
+
+  @media (max-width:900px){
+    .appbar{height:56px;padding:0 12px}
+    .brand strong{font-size:15px}
+  }
 </style>
 
 <header class="appbar">
