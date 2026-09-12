@@ -205,7 +205,18 @@
   .tool-title p{max-width:145px;margin:0;color:var(--ink3);font-size:11px;line-height:1.55;text-align:right}
   .blk{margin-bottom:25px}
   .blk[data-tool]{display:none}
-  .blk[data-tool].is-active{display:block}
+  /* 页签切换是几十次/天的高频操作 —— 只配最小剂量：0.18s 纯 opacity，不位移。 */
+  .blk[data-tool].is-active{display:block;animation:blk-in .18s var(--e-out)}
+  @keyframes blk-in{from{opacity:0}}
+  /* 删除按钮：从选中物附近长出来，不从虚空里出现 */
+  .selection-delete:not([hidden]){animation:del-in .14s var(--e-out)}
+  @keyframes del-in{from{opacity:0;transform:translate(-50%,-50%) scale(.88)}}
+  /* 候选：骨架换成真图时逐个进场，间隔由 JS 按索引设 */
+  .cand{animation:cand-in .22s var(--e-out) both}
+  @keyframes cand-in{from{opacity:0;transform:translateY(6px)}}
+  @media (prefers-reduced-motion: reduce){
+    .blk[data-tool].is-active,.selection-delete:not([hidden]),.cand{animation:none}
+  }
   .blk.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
     overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
   .blk.legacy-actions,.blk.recipe-block{display:none!important}
@@ -2416,6 +2427,14 @@ function drawEl(col, side, inv, skip){
 }
 function drawOne(e, col, side, inv, isLast){
   const R0=ES(e), m=e.rep||1, gap=R0*2.35, ra=rowAngle();
+  // 拿起：拖动中的那个元素轻微放大。被拿起的和没被拿起的在眼睛里要分得开 ——
+  // 1.02 够了，再多就是跳。命中检测是数学不是像素，视觉放大不影响它。
+  const lift=(drag&&drag.m==='el'&&e===CE())?UIA.lift:0;
+  if(lift>0.002){
+    ctx.translate(EX(e),EY(e));
+    ctx.scale(1+0.02*lift,1+0.02*lift);
+    ctx.translate(-EX(e),-EY(e));
+  }
   const fl=e.fill||0;
   const three = !!e.d3;
   // 「半网」原本只在元素跨切线时才成立：一侧实心、另一侧网点。
@@ -3268,6 +3287,12 @@ function bounceEl(){
 // ---------- 绘制 ----------
 function draw(){
   if(!thumb){ clampAll(); clampTitle(); cv.classList.toggle('cut', !!S.cut); }
+  // 微反馈的目标直接从状态推导，draw 每次跑都校正 —— 不用在十几个事件处理里各自埋
+  if(!thumb){
+    const selT=(sel||tsel)?1:0, liftT=(drag&&drag.m==='el')?1:0;
+    if(selT!==UIA_T.sel||liftT!==UIA_T.lift){ UIA_T.sel=selT; UIA_T.lift=liftT; uiPulse(); }
+    else if(SNAP&&performance.now()<SNAP.until&&!uiRAF) uiPulse();   // 松手后让吸附线淡完
+  }
   ctx.clearRect(0,0,W,H);
   const l=cutLine();
   // 纸色显式建模，不用纯白也不用纯黑。切开的瞬间，缝里露出的就是它。
@@ -3363,6 +3388,23 @@ function draw(){
   }
 
   drawColourBar();
+  // 旋转吸附对齐线：随剩余时间淡出。accent 色，虚线，中心一个小圈标记轴心
+  if(SNAP){
+    const left=SNAP.until-performance.now();
+    if(left>0 && !thumb){
+      // 0.85 起、随剩余时间线性衰减到 0。上一版上限 0.5 叠上衰减均值只有 ~0.2，
+      // 肉眼几乎看不见（实测整条线只剩 4 个可测像素）—— 提示线要的就是「一眼看见」。
+      const al=Math.min(1,left/380)*0.85, L2=Math.hypot(W,H);
+      ctx.save();ctx.globalAlpha=al;ctx.strokeStyle='#c94836';ctx.lineWidth=1;
+      ctx.setLineDash([7,5]);
+      ctx.beginPath();
+      ctx.moveTo(SNAP.x-Math.cos(SNAP.ang)*L2,SNAP.y-Math.sin(SNAP.ang)*L2);
+      ctx.lineTo(SNAP.x+Math.cos(SNAP.ang)*L2,SNAP.y+Math.sin(SNAP.ang)*L2);
+      ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.arc(SNAP.x,SNAP.y,3,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    } else if(left<=0) SNAP=null;
+  }
   if(!thumb){ noteChange(); recipeSoon(); }
   if(thumb) return;
   if(cutting){
@@ -3406,13 +3448,17 @@ function draw(){
   const ce=CE();
   if(ce&&(sel||hoverEl)){
     const R0=ES(ce), hh=elHH(ce), hr=handleR(ce);
+    // 出现动画：虚线框淡入，把手从 0.88 长进来（不从 0 —— 没有东西从无到有）
+    const a=sel?UIA.sel:1, hs=0.88+0.12*a;
     ctx.save();ctx.translate(EX(ce),EY(ce));ctx.rotate(ce.r);
+    ctx.globalAlpha=Math.max(0.35,a);
     ctx.strokeStyle='#00000055';ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.strokeRect(-R0*1.08,-hh*1.06,R0*2.16,hh*2.12);ctx.restore();
     const hp=handlePos(ce), hx=hp.x, hy=hp.y;
     ctx.save();
+    ctx.globalAlpha=a;
     ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1.3;
-    ctx.beginPath();ctx.arc(hx,hy,COARSE?12:8,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(hx,hy,(COARSE?12:8)*hs,0,Math.PI*2);ctx.fill();ctx.stroke();
     ctx.strokeStyle='#15161a';ctx.lineWidth=1.4;ctx.lineCap='round';   // 斜箭头 = 可拖
     ctx.beginPath();ctx.moveTo(hx-3.1,hy-3.1);ctx.lineTo(hx+3.1,hy+3.1);
     ctx.moveTo(hx+3.1,hy+0.4);ctx.lineTo(hx+3.1,hy+3.1);ctx.lineTo(hx+0.4,hy+3.1);
@@ -3422,7 +3468,8 @@ function draw(){
   if((tsel||hoverText>=0)&&!sel){
     const ti=tsel?S.ti:hoverText, tt=S.texts&&S.texts[ti], t=tt?textBox(tt):null;
     if(t){
-    ctx.save();ctx.strokeStyle='#00000044';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    const ta=tsel?UIA.sel:1;
+    ctx.save();ctx.globalAlpha=Math.max(0.4,ta);ctx.strokeStyle='#00000044';ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.strokeRect(t.x-9,t.y-9,t.w+18,t.h+18);ctx.restore();
     if(tsel){                                   // 右下角的把手：拖它自由缩放字号
       const h=textHandlePos(tt);
@@ -3460,6 +3507,29 @@ const STILL_MQ = window.matchMedia ? window.matchMedia('(prefers-reduced-motion:
 let STILL = !!(STILL_MQ && STILL_MQ.matches);
 if(STILL_MQ && STILL_MQ.addEventListener) STILL_MQ.addEventListener('change', e=>{ STILL=e.matches; });
 const prefersStill=()=>STILL;
+
+// ---- 画布内微反馈的公共插值器 ----
+// 选中框出现、拿起元素，共用这一个 rAF 驱动；旋转吸附的对齐线是时间衰减，单独放 SNAP。
+// 用指数逼近（临界阻尼、无过冲）：选中/拿起不该弹 —— 要弹的只有落下，那在 bounceEl 里。
+const UIA={sel:0,lift:0};
+const UIA_T={sel:0,lift:0};
+let SNAP=null;                      // {x,y,ang,until} —— 旋转吸附命中时亮起的对齐线
+let uiRAF=0, uiLast=0;
+function uiTick(now){
+  const dt=Math.min(0.05,(now-uiLast)/1000)||0.016; uiLast=now;
+  const k=prefersStill()?1:1-Math.exp(-dt*16);       // ~120ms 走到 85%
+  let live=false;
+  for(const key of ['sel','lift']){
+    const d=UIA_T[key]-UIA[key];
+    if(Math.abs(d)>0.004){ UIA[key]+=d*k; live=true; } else UIA[key]=UIA_T[key];
+  }
+  const snapAlive=SNAP && performance.now()<SNAP.until;
+  draw();
+  if(live||snapAlive) uiRAF=requestAnimationFrame(uiTick); else uiRAF=0;
+}
+function uiPulse(){ if(!uiRAF){ uiLast=performance.now(); uiRAF=requestAnimationFrame(uiTick); } }
+// 同步推到终值 —— 自检里用（rAF 在同步代码里不会推进，这是本项目踩过三次的坑）
+function uiSettle(){ for(const k of ['sel','lift']) UIA[k]=UIA_T[k]; }
 
 // 可打断的弹簧：**解析解**，不是数值积分。x 是 t 的纯函数 ——
 // 任意时刻可跳、可倒、可停、可续，这是「动画能被打断」的技术前提；
@@ -3529,7 +3599,12 @@ cv.addEventListener('pointermove',e=>{
     else if(drag.m==='handle'){
       if(!ce2) return;
       // 角度要先定 —— 能放多大取决于它转成什么角度（竖着的瓶子和横着的瓶子上限差很多）
-      ce2.r=snapAngle(Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7);
+      // 吸附硬跳本身是对的（1:1 跟手优先），但用户需要知道自己「吸上了」——
+      // Figma 的做法：命中时亮一条对齐线。穿过元素中心、沿吸附角。
+      const rawR=Math.atan2(p.y-EY(ce2),p.x-EX(ce2))-0.7, snR=snapAngle(rawR);
+      if(Math.abs(snR-rawR)>1e-4 && Math.abs(snR-rawR)<0.1)
+        SNAP={x:EX(ce2),y:EY(ce2),ang:snR,until:performance.now()+380};
+      ce2.r=snR;
       const d=Math.hypot(p.x-EX(ce2),p.y-EY(ce2))/1.10;
       const asp=aspOfE(ce2);
       const R0=ce2.k===12 ? d/(asp/2) : d;
@@ -3563,8 +3638,12 @@ window.addEventListener('pointerup',()=>{
     cutting=null;
     if(ok) playCut(); else draw();
   }
+  const hadDrag=!!drag;
   const resizedText=drag&&drag.m==='thandle';drag=null;
   if(resizedText)syncTextPanel();
+  // 松手必须触发一次重画：UIA 的目标值（选中/拿起）只在 draw() 里推导，
+  // 这里不画的话「拿起」的 1.02 放大会一直挂在元素上下不去 —— 实测踩过。
+  if(hadDrag){ UIA_T.lift=0; uiPulse(); }
 });
 selectionDeleteEl.addEventListener('pointerdown',e=>e.stopPropagation());
 selectionDeleteEl.addEventListener('click',e=>{
@@ -4493,6 +4572,7 @@ function buildCands(grid, r){
   TRAY=TRAYL;
   TRAYL.forEach((st,i)=>{
     const b=document.createElement('button'); b.className='cand';
+    b.style.animationDelay=(r.far6===i?150:40+i*35)+'ms';   // 远亲压后出场，节奏上一次小重音
     b.setAttribute('aria-pressed','false');
     b.title='使用这个方向';
     const tw=180,th=Math.round(tw*H/W);
@@ -5173,7 +5253,8 @@ function selfTest(){
   // 渲染类用例开头必须自己把动画状态铺干净。这个项目里同一个坑踩到第三次了：
   // 先是 elA 停在 0 把元素画成全透明，现在是 elS（弹簧位移）和降质标志。
   // 自检是同步跑完的，rAF 永远不会推进，所以任何 addEl() 之后留下的动画状态都不会自己结束。
-  const stillFrame=()=>{ elA=1; elS=0; ANIM_UNTIL=0; if(elRAF){cancelAnimationFrame(elRAF); elRAF=0;} };
+  const stillFrame=()=>{ elA=1; elS=0; ANIM_UNTIL=0; if(elRAF){cancelAnimationFrame(elRAF); elRAF=0;}
+                         uiSettle(); SNAP=null; };
   const ok=(name,pass,detail)=>R.push({name,pass:!!pass,detail:detail==null?'':String(detail)});
   const keep=JSON.parse(JSON.stringify(S)), kw=W, kh=H;
   try{
@@ -5580,6 +5661,24 @@ function selfTest(){
       ok('候选先按分数筛过：整体抬高且尾巴切掉', pm>rm+0.03 && lo>p10,
          '随机均值 '+rm.toFixed(3)+' → 候选均值 '+pm.toFixed(3)+
          '　随机p10 '+p10.toFixed(3)+' / 候选最差 '+lo.toFixed(3));
+    })();
+
+    // 6f. 微反馈：选中/拿起的插值收敛，吸附线会过期。
+    //     上一轮松手不重画导致 lift 卡在 1（元素一直放大挂着）—— 就是这条要拦的事。
+    (function(){
+      // 目标由 draw() 从全局状态推导（单一真源），所以测试必须把状态摆成
+      // 「已选中且正在拖」，否则 draw 一跑就把目标改回 0 —— 第一次就栽在这。
+      const kSel=sel, kDrag=drag, kTsel=tsel;
+      sel=true; tsel=false; drag={m:'el'};
+      UIA.sel=0; UIA.lift=0; UIA_T.sel=1; UIA_T.lift=1;
+      for(let i=0;i<60;i++) uiTick(performance.now()+i*16);
+      const conv=UIA.sel>0.99 && UIA.lift>0.99;
+      sel=kSel; tsel=kTsel; drag=kDrag;                 // 状态还原
+      UIA_T.sel=0; UIA_T.lift=0; uiSettle();
+      SNAP={x:W/2,y:H/2,ang:0,until:performance.now()-1};
+      draw();                                   // 过期线应当被清掉
+      ok('选中与拿起的插值收敛，过期吸附线被清', conv && !SNAP,
+         'sel '+UIA.sel.toFixed(2)+' lift '+UIA.lift.toFixed(2));
     })();
 
     // 6e. 近亲要比全新近，但不能近到看不出变化
