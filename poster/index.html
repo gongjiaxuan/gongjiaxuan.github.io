@@ -1053,6 +1053,229 @@ const cv=document.getElementById('cv');
 let ctx=cv.getContext('2d');
 let W=cv.width, H=cv.height, thumb=false;
 const SC=()=>W/470;   // 缩略图时所有绝对像素都按此缩放
+// ================== 界面语言：纯中文 / 纯英文一键切换 ==================
+// 用户：「不同语言习惯的人可以一键切换」。机制：切换时实时遍历所有文本节点，
+// 中文短语查字典换成英文；原文存在节点上（_zh），切回来就恢复 —— 不需要
+// 两套 DOM，也不怕以后加新控件漏翻（没命中就保持原文）。
+// 品牌名（CUT / PRINT）和 riso 墨名（Yellow/Blue…）本来就是英文，不动。
+let UI=localStorage.getItem('uiLang')||'zh';
+const EN={
+  // 顶栏
+  '撤销':'Undo','清空':'Clear','六个方向':'Six Directions','印出来':'Print It','导出 PNG ↓':'Export PNG ↓',
+  // 工具页签与步骤
+  '文字':'Type','图形':'Forms','墨纸':'Ink & Paper',
+  '写一句话':'Write a line','加个图形，随手调它':'Add a form, adjust it here',
+  '墨与纸随时换':'Swap inks & paper anytime','印出来':'Print it',
+  '四个动作':'Four moves',
+  // 空状态
+  '从一句话开始':'Start with one line','在右侧输入，或者从句子库选择。':'Type on the right, or pick from the library.',
+  '去写一句':'Write a line','从一句话开始。可以自己写，也可以从句子库里选一句':'Start with one line. Write your own, or pick from the library.',
+  '先写下一个念头，再让它成为一张海报。':'Write down a thought, let it become a poster.',
+  // 文字页
+  '写一句':'Write','发散四句':'Four lines','句子库':'Library','中文':'中文','换一句 ↻':'Another ↻',
+  'English':'English','加入画面：':'Add to canvas: ',
+  // 墨纸页
+  '印刷配色':'Print Colours','双色组合':'Ink Pairs','纸张':'Paper',
+  '道林':'Woodfree','新闻':'Newsprint','牛皮':'Kraft','和纸':'Washi','再生':'Recycled','光面':'Glossy',
+  '纸面质感':'Paper Texture','净':'Clean','原纸':'Plain','粗':'Rough',
+  '套印性格':'Registration','规整':'Tight','松动':'Loose','错版':'Off-register',
+  '精细调整':'Fine Tuning','色域 A':'Field A','色域 B':'Field B',
+  '浓淡':'Coverage','明度':'Lightness','彩度':'Chroma','色相':'Hue',
+  '自动拉开层次':'Auto contrast','交换两个色域 ⇄':'Swap fields ⇄','纸色':'Paper','墨色':'Inks',
+  '版面信息':'Colophon','无':'None','版记':'Colophon','版记＋套准':'Colophon + marks',
+  // 图形页
+  '画幅':'Format','方':'Square','竖屏':'Tall','切一刀':'Make the Cut','在画布上划一刀':'Cut on the canvas',
+  '素材':'Materials','几何':'Geometry','笔触':'Gestures','器物':'Vessels','照片':'Photo',
+  '艺术笔触':'Gestures','选中的图形':'Selected Form','删掉选中的（Delete）':'Delete selection (Del)',
+  '放一张照片进来':'Bring in a photo','你的照片':'Your Photo','照片':'Photo',
+  '改变器物形态':'Reshape the Vessel','图形变化':'Transform',
+  '平面':'Flat','立体':'3D','图形填充':'Fill','实心':'Solid','网点':'Halftone','渐变':'Gradient','半网':'Half-tone',
+  '网目细':'Fine screen','网目粗':'Coarse screen',
+  '颗粒':'Grain','自然':'Natural','漫散':'Diffuse','硬调':'Hard','方格':'Grid',
+  '取景与影调':'Crop & Tone','放大':'Zoom','反差':'Contrast','墨量':'Ink',
+  '在照片上修边缘':'Refine the Edge','保留':'Keep','去除':'Remove','重来':'Reset',
+  '画笔':'Brush','范围':'Range','剪影边缘':'Silhouette Edge','精细':'Detail',
+  '删掉这张图':'Remove photo','双色印版':'Duotone Plate','抠成剪影':'Cut to Silhouette',
+  // 选中态块
+  '选中的文字':'Selected Text',
+  // 常用 hint（31 条全收）
+  '正在把照片拆进两块色版…':'Separating the photo into two plates…',
+  '照片已经进版 —— 在右边拖动取景，或把它抠成剪影':'Photo is on press. Drag to reframe, or cut it to a silhouette.',
+  '一张海报最多放八行文字':'A poster holds up to eight lines.',
+  '文字已删除；可用顶部的撤销恢复':'Line deleted. Undo from the top bar.',
+  '图案已删除；可用顶部的撤销恢复':'Form deleted. Undo from the top bar.',
+  '已加入图案。拖动调整位置；使用右下角把手缩放或旋转':'Form added. Drag to move; use the handle to scale and rotate.',
+  '已加入器物。拖动调整位置，右下角控制大小和角度':'Vessel added. Drag to move; the handle controls size and angle.',
+  '文字已加入；可直接在画布上拖动，当前面板保持不变':'Line added. Drag it on the canvas.',
+  '挑一个方向继续；不选择不会改变现在这版':'Pick a direction; not choosing keeps this one.',
+  '已应用此方向。可继续调整或重新生成六个方向':'Applied. Keep adjusting, or roll six more.',
+  '印好了 —— 回去改，或者导出':'Printed. Go back and refine, or export.',
+  '这张照片暂时抠不出稳定轮廓，可以先作为照片使用':'No stable silhouette found yet. Keep it as a duotone photo.',
+  '已回到照片印版 —— 它会随两支墨一起变化':'Back to the duotone plate. It re-prints with your inks.',
+  '已抠成剪影 —— 在画布上直接移动、缩放或旋转':'Cut to silhouette. Move, scale and rotate it on the canvas.',
+  '主体太小或没有闭合轮廓 —— 用「保留」在主体里面画一笔':'Subject too small or open. Paint inside it with Keep.',
+  '剪影已更新 —— 可以继续修，或直接回到海报移动它':'Silhouette updated. Keep refining, or move it on the poster.',
+  '已回到自动识别的初稿':'Back to the auto draft.',
+  '图和它抠出来的形都删掉了 —— 顶部的撤销能拿回来':'Photo and its silhouette removed. Undo brings them back.',
+  '已经回到最初状态':'Back to the start.','已撤销上一步':'Undone.',
+  '两句已排好。想加图形就点上面的「图形」；墨和纸随时可换':'Two lines placed. Add a form under Forms; inks anytime.',
+  '这段文字已经在画面中，已为你选中':'Already on the canvas. Selected for you.',
+  '两句一起排好了。不想要哪句，选中后点 × 删除':'Both lines placed. Select one and × to remove it.',
+  '这句已经在画面中，已为你选中':'Already on the canvas. Selected for you.',
+  '诗句已加入；拖动安排它在画面中的位置':'Line added. Drag it into place.',
+  '先写下一个意象、片段或一句话':'Start with an image, a fragment, or a line.',
+  '四句文字材料已生成；点击 ＋ 加入画面':'Four lines drafted. Click ＋ to place them.',
+  '高清 PNG 已生成':'Hi-res PNG ready.',
+  '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
+  '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
+  '字':'Type','墨与纸':'Ink & Paper',
+  '轮选， 拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Tab cycles. Drag the corner handle to scale and rotate; it snaps near 0/90°.',
+  '在里面转它， 海报上的剪影就是它的正交投影':'Drag inside to turn it; the poster silhouette is its orthographic projection',
+  '这是画面真正的参数，不是解释。 每一个数都能在上面调出来。':'These are the real parameters, not an explanation. Every number can be reproduced above.',
+  '到 0°/90° 或 ±7–12° 的微斜， 位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。 图形跨线':'to 0°/90° or a slight tilt; position snaps to 28–36%. Forms crossing the line ',
+  'riso 阳光黄':'Riso Sun Yellow','riso 橙':'Riso Orange','riso 亮红':'Riso Bright Red',
+  'riso 荧光粉':'Riso Fluor Pink','riso 绿':'Riso Green','riso 蓝':'Riso Blue',
+  '朱 Vermillion':'Vermilion','riso 勃艮第':'Riso Burgundy','波尔多 Claret':'Claret',
+  'riso 紫':'Riso Violet','riso 中蓝':'Riso Medium Blue','riso 青':'Riso Teal',
+  '帝国蓝 Imperial':'Imperial','赛车绿 Racing':'Racing Green','蓝宝石 Sapphire':'Sapphire',
+  'riso 联邦蓝':'Riso Federal Blue','深紫 Purple':'Purple','墨黑':'Ink Black',
+  '轮选， 拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Tab cycles. Drag the corner handle to scale and rotate; it snaps near 0/90°.',
+  '也可以直接把图拖到画布上，或者 Ctrl + V 粘贴。':'Drop an image on the canvas, or paste with Ctrl + V.',
+  '在里面转它， 海报上的剪影就是它的正交投影 ——两件之间的形不在任何馆藏里，是你转出来的。':'Drag inside to turn it; the poster silhouette is its orthographic projection. Forms between two vessels exist in no museum. You made them.',
+  '这是画面真正的参数，不是解释。 每一个数都能在上面调出来。':'These are the real parameters, not an explanation. Every number can be reproduced above.',
+  '到 0°/90° 或 ±7–12° 的微斜， 位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。':'to 0°/90° or a slight ±7–12° tilt. Position snaps to 28–36% for the smaller field; in-between slopes read as accidents, so they are not offered.',
+  // 锁维度单字、托盘、press 按钮、HTML 换行断片
+  '切':'Cut','色':'Ink','形':'Form','摆':'Place','印':'Print',
+  '切线的角度和位置':'angle and position of the cut','纸、两支墨、浓淡':'paper, two inks, coverage',
+  '有哪几个形、各是什么':'which forms, what they are','在哪、多大、转多少、重复几次':'where, how big, rotated, repeated',
+  '网目、纸纹、填充方式':'screen, texture, fill',
+  '变化幅度':'Amount of change','轻微变化':'Nudge','保留这张海报的基本关系':'keep this poster’s basic relations',
+  '大胆变化':'Bold','尝试明显不同的构图':'try clearly different compositions',
+  '已保留部分设置':'Some settings kept','保留喜欢的部分':'Keep what you like',
+  '裸纸':'Bare paper','回去改':'Back to edit','再印一次':'Print again',
+  '大小':'Size','两块色各司其职':'Two fields, two jobs','甜区：对比够且仍有层次':'Sweet spot: contrast with steps left',
+  // HTML 里被 <b> 拆开的断片（整句查不到，按断片收）
+  '点画面上的元素选中它，':'Click a form to select it. ','轮选，':'Tab cycles. ',
+  '拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Drag the corner handle to scale and rotate; it snaps near 0/90°.',
+  '在里面转它，':'Drag inside to turn it; ','海报上的剪影就是它的正交投影':'the poster silhouette is its orthographic projection',
+  '——两件之间的形不在任何馆藏里，是你转出来的。':'Forms between two vessels exist in no museum. You made them.',
+  '这是画面真正的参数，不是解释。':'These are the real parameters, not an explanation. ','每一个数都能在上面调出来。':'Every number can be reproduced above.',
+  '到 0°/90° 或 ±7–12° 的微斜，':'to 0°/90° or a slight ±7–12° tilt. ',
+  '位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。':'Position snaps to 28–36% for the smaller field; in-between slopes read as accidents, so they are not offered.',
+  // HINT 四条 + 纸注 + 色对名
+  '文字已选中；直接拖动，或在当前面板继续编辑':'Line selected. Drag it, or edit in this panel.',
+  '图形已选中；直接在画布上移动、缩放或旋转，填充和网目就在「图形变化」里':'Form selected. Move, scale or rotate on the canvas; fill and screen live under Transform.',
+  '墨、纸、纸纹都在这一页。切线随时可以在画布上重新划':'Ink, paper and texture live here. Re-cut anytime on the canvas.',
+  '满意了就印出来。也可以先看看「六个方向」':'Happy? Print it. Or peek at Six Directions first.',
+  '建议覆盖率':'Suggested coverage',
+  '平整、克制，适合让版式本身说话。':'Flat and restrained; lets the layout speak.',
+  '吸墨快，边缘发毛，第二天会变软。':'Drinks ink, fuzzy edges, softens overnight.',
+  '深色纤维透过墨层，画面整体偏暖。':'Dark fibres show through; warms the whole sheet.',
+  '半透明长纤维，墨点会轻微洇开。':'Long translucent fibres; dots bleed slightly.',
+  '未涂布的斑点感，套准更难拿。':'Uncoated speckle; registration is harder.',
+  '涂层最光滑的一档，网点边缘最锐。':'Smoothest coat; sharpest dot edges.',
+  '雾灰 · 帝国蓝':'Mist · Imperial Blue','羊皮 · 赛车绿':'Parchment · Racing Green',
+  '冰沙黄 · 赛车绿':'Smoothie Yellow · Racing Green','石色 · 波尔多':'Stone · Bordeaux',
+  '本白 · 朱':'Off-white · Vermilion','阳光黄 · 紫':'Sun Yellow · Violet',
+  '阳光黄 · 勃艮第':'Sun Yellow · Burgundy','浅灰 · 蓝宝石':'Light Grey · Sapphire',
+  // 配方与 meter（生成点走 tt，这里收词）
+  '切线':'Cut','水平':'horizontal','垂直':'vertical','小色域':'small field ','纸':'Paper',
+  '净面':'smooth','原纸':'plain','粗纹':'rough','墨':'Ink','明度差':'Gap',
+  '道林纸':'Woodfree','新闻纸':'Newsprint','牛皮纸':'Kraft','和纸':'Washi','再生纸':'Recycled','光面纸':'Glossy',
+  '对比不够，画面发闷':'Not enough contrast','甜区：对比够且仍有层次':'Sweet spot: contrast with steps left',
+  '很硬':'Very hard','对比够，但少了层次':'Enough contrast, few steps',
+  '当前纸张建议':'This paper suggests','覆盖率':'coverage','这支墨几乎只改彩度，压不出暗场':'This ink barely darkens; it only adds chroma',
+  // ---- EN 模式实测残留补录 ----
+  '✂ 在画布上划一刀':'✂ Cut on the canvas',
+  '两支墨的明度差':'Ink lightness gap','· 甜区':'· sweet spot','两块色各司其职':'Two fields, two jobs',
+  '左右 = 形':'drag ↔ shape','上下 = 俯仰':'drag ↕ tilt',
+  '梅瓶':'Meiping','玉壶春瓶':'Yuhuchun','蒜头瓶':'Suantou','葫芦瓶':'Gourd','觚':'Gu','碗':'Bowl',
+  '剖面来自馆藏实测，旋成体。':'Profiles measured from museum pieces, revolved.',
+  '海报上的剪影就是它的正交投影——两件之间的形不在任何馆藏里，是你转出来的。':'The silhouette on your poster is its orthographic projection. Forms between two vessels exist in no museum. You made them.',
+  '拖动取景':'Drag to reframe',
+  '照片会被拆进当前两块色版；换墨、换纸和切线时，它会一起重新印。':'The photo is separated into your two plates. It re-prints when you change inks, paper or the cut.',
+  '蓝色区域会留下。画几笔，算法会贴着相近的颜色扩展。':'Blue stays. Paint a few strokes; the mask grows along similar colours.',
+  '当前轮廓':'Current contour','个点。':' points.',
+  '方向':'Direction','横排':'Horizontal','竖排':'Vertical','字体':'Typeface','字号':'Size',
+  '宋':'Serif','黑':'Sans','衬':'Book','窄':'Condensed',
+  '＋ 添加一行文字':'＋ Add a line',
+  '拖动文字移动；拖右下角把手或上方滑杆，可连续改变字号。':'Drag to move; the handle or the slider scales the type continuously.',
+  '这一版的配方':'This Poster’s Recipe','下载高清 PNG':'Download hi-res PNG',
+  '给我六个方案（空格）':'Give me six directions (Space)',
+  '这是画面真正的参数，不是解释。每一个数都能在上面调出来。':'These are the real parameters. Every number can be reproduced above.',
+  '切线会':'The cut','自动吸附':'snaps','到 0°/90° 或 ±7–12° 的微斜，':' to 0°/90° or a slight ±7–12° tilt;','位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。':'position snaps to 28–36% for the smaller field. Slopes in between read as accidents, so they are simply not offered.',
+  '图形跨线':'Forms crossing the line','自动反色':'invert automatically','；网点锚在纸上，跨线只换墨色不换网屏。点画面可左右互换两支墨。':'. The screen is anchored to the paper; crossing the cut changes ink, not screen. Click the poster to swap the two inks.',
+  '远亲':'Distant','再来六个':'Six more','用这一版，收工':'Keep this one, done','抖一下':'Nudge','近亲':'Close','全新':'Fresh',
+  '现在这张':'Current','走过的路':'Your path','回到上一步':'Back one step',
+  '写下一句（聚合四个方向）':'Write a line (four directions)',
+  '自检':'Self-test','自检 15 / 15 全部通过':'Self-test 15 / 15 passed',
+  '正在准备纸面…':'Preparing the sheet…','印好了':'Printed',
+  '平整、克制，适合让版式本身说话。 建议覆盖率 5–86%。':'Flat and restrained. Suggested coverage 5–86%.',
+  // 长注释类 note（高频几条）
+  '点画面上的元素选中它，Tab 轮选，拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Click a form to select. Tab cycles. Drag the handle to scale and rotate; it snaps near 0/90°.',
+  '图片只在你自己的浏览器里处理，不会上传。':'Photos stay in your browser. Nothing is uploaded.',
+  '也可以直接把图拖到画布上，或者 Ctrl + V 粘贴。':'Drop an image on the canvas, or paste with Ctrl + V.',
+};
+const tt=t=>UI==='en'&&t?(EN[t.trim()]||t):t;
+let _lastHint='';
+function setHint(t){_lastHint=t;document.getElementById('hint').textContent=tt(t);}
+// HINT 表的四条在 setStep 里过 tt（字典已收）
+// 动态重算的文本（配方、纸注、计数）不走节点缓存，改动后调这个再翻一遍
+function reLang(){ try{ applyLang(); }catch(_){} }
+// 托盘、印出来、句子库这些控件在语言切换【之后】才创建 —— 它们出生就是中文。
+// 监听 childList（不监听 characterData，applyLang 自己改文本不会回流触发），
+// 新节点出现后 120ms 防抖补翻一遍。这是「动态 UI 永远不漏翻」的兜底。
+let _moT=0;
+if(window.MutationObserver) new MutationObserver(()=>{
+  clearTimeout(_moT); _moT=setTimeout(()=>{ if(UI==='en') reLang(); },120);
+}).observe(document.body,{childList:true,subtree:true});
+function applyLang(){
+  localStorage.setItem('uiLang',UI);
+  const btn=document.getElementById('uiLang');
+  if(btn) btn.textContent=UI==='en'?'中':'EN';
+  // ⚠️ 必须跳过 SCRIPT/STYLE 内的文本：TreeWalker 不跳的话，代码里的中文
+  // 字符串字面量一旦撞上字典 key 会被当成 UI 文案替换 —— 源码当场被改写。
+  const skip=(nd)=>{ let p=nd.parentNode;
+    while(p&&p!==document.body){ const t=p.tagName;
+      if(t==='SCRIPT'||t==='STYLE'||t==='TEMPLATE') return true; p=p.parentNode; }
+    return false; };
+  const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode(nd){
+    return skip(nd)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT; }});
+  const jobs=[];
+  while(walk.nextNode()){ const node=walk.currentNode, v=node.nodeValue;
+    if(!v||!v.trim()) continue;
+    if(node._zh===undefined) node._zh=v;
+    jobs.push(node);
+  }
+  // HTML 源里的换行与缩进会让整句查不中 —— key 与字典都归一化成单空格
+  const norm=v=>v.replace(new RegExp('[\\s ]+','g'),' ').trim();  // \\s 折叠空白与换行
+  const EN_N={}; for(const k in EN) EN_N[norm(k)]=EN[k];
+  for(const node of jobs){
+    const key=norm(node._zh);
+    if(UI==='en') node.nodeValue=EN_N[key]||node._zh;
+    else node.nodeValue=node._zh;
+  }
+  // placeholder / aria-label / title
+  document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>{
+    for(const at of ['placeholder','aria-label','title']){
+      const v=el.getAttribute(at); if(!v)continue;
+      if(el['_zh_'+at]===undefined) el['_zh_'+at]=v;
+      el.setAttribute(at, UI==='en'?(EN[el['_zh_'+at]]||el['_zh_'+at]):el['_zh_'+at]);
+    }
+  });
+  if(_lastHint) document.getElementById('hint').textContent=tt(_lastHint);
+}
+document.getElementById('uiLang').onclick=()=>{ UI=UI==='en'?'zh':'en'; applyLang();
+  // 界面语言联动内容语言：句子库直接给出对应语言的素材。
+  // 画面上已经放好的文字是个体对象，不被牵连。
+  if(S.lang!==UI){ S.lang=UI; newBrief(); }
+  // 动态生成的控件（句子库、墨色、器物等）重新渲染一遍再翻
+  try{ sync(); syncBrief(); syncLathe && syncLathe(); syncImg && syncImg(); syncTextPanel && syncTextPanel(); }catch(_){}
+  applyLang(); draw();
+  setTimeout(reLang, 60);          // recipe/meter 是防抖后写的，晚一拍再翻一次
+};
+applyLang();
+
 // 双色对，不是八个独立颜色：两支墨必须一起选，ΔL* 才守得住（实算 WCAG 对比度 + CIELAB D65）
 const PAIRS=[
   ['#F5EDDC','#404755','雾灰 · 帝国蓝'],
@@ -2813,14 +3036,14 @@ function drawInfo(col){                     // 信息行永远贴住下边距，
 // 之所以有效，是因为它小到读作肌理而不是内容：眼睛不去读它，
 // 只登记「这里有印刷该有的东西」。TypeGeist 那批海报靠的就是这一手。
 function colophonCols(){
-  const nm=h=>{const c=LIB.find(x=>x[0].toUpperCase()===String(h).toUpperCase());return c?c[1]:h;};
+  const nm=h=>{const c=LIB.find(x=>x[0].toUpperCase()===String(h).toUpperCase());return tt(c?c[1]:h);};
   const pct=v=>Math.round((v||0)*100)+'%';
   // 覆盖率 0 = 这一侧根本没落墨，是裸纸。报「某某墨 0%」是错的。
-  const ink=(h,c)=>(c||0)<0.005 ? '裸纸 NO INK' : nm(h)+'  '+pct(c);
+  const ink=(h,c)=>(c||0)<0.005 ? tt('裸纸')+' NO INK' : nm(h)+'  '+pct(c);
   const ps=stockSpec();
   return [
     ['INKS', ink(S.inkA,S.covA), ink(S.inkB,S.covB)],
-    ['STOCK', ps.name, 'SCREEN 45°  '+PITCH[S.dot]+'PX'],
+    ['STOCK', tt(ps.name), 'SCREEN 45°  '+PITCH[S.dot]+'PX'],
     ['PRESS', 'REG '+['ALIGNED','+0.9','+2.2','+4.2'][S.mis||0], 'EDITION 01 · TWO INKS']
   ];
 }
@@ -2897,6 +3120,19 @@ function drawColourBar(){
   ctx.restore();
 }
 function textBox(t){const m=textMetrics(t);return {x:t.x*W,y:t.y*H,w:m.w,h:m.h,s:m.z};}
+// 用户走查发现的结构问题：选中元素后，「图形变化」「选中的图形」这些上下文块
+// 在 DOM 里排在素材库和各素材面板之后 —— 用户加完形想调填充，得在面板里
+// 往下滚着找。现在每次 sync 把**可见的**上下文块搬到画幅块之后、素材块之前：
+// 选中什么，它的属性就出现在面板最上面。幂等，未选中的块不动。
+function floatContext(){
+  const first=document.querySelector('.blk[data-tool="form"]');     // 画幅与切线块
+  if(!first||!first.parentNode) return;
+  for(const id of ['objectControls','elementContext','latheBlock','imgblk']){
+    const el=document.getElementById(id);
+    if(el && !el.hidden && el.parentNode===first.parentNode && el!==first.nextSibling)
+      first.parentNode.insertBefore(el, first.nextSibling);
+  }
+}
 function syncSelectionDelete(){
   if(thumb||(!sel&&!tsel)){selectionDeleteEl.hidden=true;return;}
   let b=null;
@@ -3878,6 +4114,7 @@ function syncColor(){
            : d<40 ? ['偏弱','读得出来，但结构不够硬']
            : d<=72 ? ['甜区','两块色各司其职']
            :         ['很硬','对比够，但少了层次'];
+  // meter 状态词在生成点翻（两分支数组都翻）
   let extra='';
   const cv=curCov();
   if(cv>0.001 && (cv<minCov()-.001||cv>fullCov()+.005))
@@ -3886,7 +4123,7 @@ function syncColor(){
   // 蓝墨是 58（主要在压暗）。所以永远不能把它叫"深浅"，也必须一直画着真实梯尺。
   const span=Math.abs(Lstar(mixInk(curInk(),S.paper,1))-Lstar(S.paper));
   if(span<12) extra+='<br><span style="color:#7c7d82">这支墨几乎只改彩度，压不出暗场</span>';
-  meterEl.innerHTML='两支墨的明度差 <em>&Delta;L* '+d.toFixed(0)+'</em> · '+st[0]+
+  meterEl.innerHTML=tt('两支墨的明度差')+' <em>&Delta;L* '+d.toFixed(0)+'</em> · '+tt(st[0])+
     '<div class="bar"><span class="safe"></span><span class="pin" style="left:'+
     Math.min(99,d).toFixed(1)+'%"></span></div>'+st[1]+extra;
 }
@@ -4521,7 +4758,9 @@ function sync(){
   set('mis','m',S.mis||0); set('mark','k',S.mark==null?1:S.mark);
   allBtn.forEach(x=>x.setAttribute('aria-pressed',String(x._matches?x._matches(ce):false)));
   const cnt=document.getElementById('elcount');
-  if(cnt) cnt.textContent=(S.els?S.els.length:0)+' 个元素'+(ce?'　选中第 '+(S.si+1)+' 个':'');
+  if(cnt) cnt.textContent=UI==='en'
+    ? (S.els?S.els.length:0)+' form(s)'+(ce?' · #'+(S.si+1)+' selected':'')
+    : (S.els?S.els.length:0)+' 个元素'+(ce?'　选中第 '+(S.si+1)+' 个':'');
   const elementContext=document.getElementById('elementContext');
   const objectControls=document.getElementById('objectControls');
   const textBlock=document.getElementById('textblk');
@@ -4529,10 +4768,11 @@ function sync(){
   if(objectControls)objectControls.hidden=!ce;
   if(textBlock)textBlock.hidden=!(tsel&&CT());
   const sn=document.getElementById('stocknote'),ps=stockSpec();
-  if(sn)sn.textContent=ps.note+' 建议覆盖率 '+Math.round(ps.min*100)+'–'+Math.round(ps.max*100)+'%。';
+  if(sn)sn.textContent=tt(ps.note)+' '+tt('建议覆盖率')+Math.round(ps.min*100)+'–'+Math.round(ps.max*100)+'%。';
   syncColor();syncTextPanel();syncImg();syncRecipe();syncBrief();syncPoemMaterials();
   if(typeof syncLathe==='function')syncLathe();
   syncEmptyState();
+  floatContext();
 }
 // 用同一套绘制代码渲染任意状态到任意画布 —— 最终的作品散点图也靠它
 function renderTo(c2, st, w, h){
@@ -4569,8 +4809,8 @@ function showTray(reuse){
 
   const ctl=document.createElement('div'); ctl.className='tray-ctl';
   const lab=document.createElement('span');
-  lab.className='tray-mode-label';lab.textContent='变化幅度';ctl.appendChild(lab);
-  [[1,'轻微变化','保留这张海报的基本关系'],[0,'大胆变化','尝试明显不同的构图']].forEach(function(m){
+  lab.className='tray-mode-label';lab.textContent=tt('变化幅度');ctl.appendChild(lab);
+  [[1,tt('轻微变化'),tt('保留这张海报的基本关系')],[0,tt('大胆变化'),tt('尝试明显不同的构图')]].forEach(function(m){
     const mb=document.createElement('button'); mb.type='button'; mb.className='mode';
     mb.textContent=m[1]; mb.title=m[2];
     mb.setAttribute('aria-pressed', String(TRAY_VARY===m[0]));
@@ -4582,10 +4822,10 @@ function showTray(reuse){
   ctl.appendChild(again);
 
   const more=document.createElement('details');more.className='tray-more';
-  const summary=document.createElement('summary');summary.textContent=anyLock?'已保留部分设置':'保留喜欢的部分';
+  const summary=document.createElement('summary');summary.textContent=anyLock?tt('已保留部分设置'):tt('保留喜欢的部分');
   const locks=document.createElement('div');locks.className='tray-locks';
   LOCK_DIMS.forEach(function(d){
-    const b=document.createElement('button');b.type='button';b.className='lk';b.textContent=d.t;b.title=d.d;
+    const b=document.createElement('button');b.type='button';b.className='lk';b.textContent=tt(d.t);b.title=tt(d.d);
     b.setAttribute('aria-pressed',String(!!LOCKS[d.k]));
     b.onclick=function(){LOCKS[d.k]=LOCKS[d.k]?0:1;showTray();};locks.appendChild(b);
   });
@@ -4759,11 +4999,12 @@ function showPress(){
   const preparing=document.createElement('div');preparing.className='press-preparing';preparing.textContent='MAKING PLATES';
   sheet.append(paper,preparing);stage.appendChild(sheet);
   const cap=document.createElement('p');cap.className='press-cap';
-  const c=colophonCols(),tt=titleText(),shown=String((tt&&tt.text)||TITLE()||'').trim()||'UNTITLED';
+  // ⚠️ 局部 tt（titleText）曾遮蔽全局翻译函数 tt() —— 报过 'tt is not a function'。改名 titleT。
+  const c=colophonCols(),titleT=titleText(),shown=String((titleT&&titleT.text)||TITLE()||'').trim()||'UNTITLED';
   cap.append(document.createTextNode(shown),document.createElement('br'),
     document.createTextNode(c[0][1]+'　+　'+c[0][2]+'　·　'+c[1][1]+'　·　'+c[2][2]));
   const act=document.createElement('div');act.className='press-act';
-  const back=document.createElement('button');back.type='button';back.textContent='回去改';back.onclick=()=>closePress();
+  const back=document.createElement('button');back.type='button';back.textContent=tt('回去改');back.onclick=()=>closePress();
   const again=document.createElement('button');again.type='button';again.textContent='再印一次';again.onclick=showPress;
   const dl=document.createElement('button');dl.type='button';dl.className='go';dl.textContent='导出 PNG ↓';
   dl.onclick=()=>document.getElementById('download').click();act.append(back,again,dl);
@@ -5026,7 +5267,7 @@ function undo(){
   S=JSON.parse(JSON.stringify(prev));sel=false;tsel=false;hoverText=-1;hoverEl=false;
   sync();draw();syncUndoButton();setHint('已撤销上一步');
 }
-const inkName=hex=>{ for(const c of LIB) if(c[0]===hex) return c[1];
+const inkName=hex=>{ for(const c of LIB) if(c[0]===hex) return tt(c[1]);
   for(const c of PAPERS) if(c[0]===hex) return c[1]; return hex; };
 // 打印画面真正的参数，不让模型写一段"我为什么这样生成"。
 // 配方本来就在内存里，成本为零；而且它同时就是生成式内容的透明度标注。
@@ -5043,13 +5284,14 @@ function syncRecipe(){
     const deg=horiz? Math.atan2(dy,Math.abs(dx))*180/Math.PI
                    : Math.atan2(dx,Math.abs(dy))*180/Math.PI;
     const pos=horiz? (S.cut.y1+S.cut.y2)/2 : (S.cut.x1+S.cut.x2)/2;
-    L.push('切线  '+(horiz?'水平':'垂直')+'  '+(deg>=0?'+':'')+deg.toFixed(0)+'°'+
-           '   小色域 '+Math.round(Math.min(pos,1-pos)*100)+'%');
-  } else L.push('切线  ——');
-  L.push('纸    '+stockSpec().name+' · '+['净面','原纸','粗纹'][S.tex]+'  '+S.paper);
-  L.push('墨A   '+inkName(S.inkA)+'  '+Math.round(S.covA*100)+'%');
-  L.push('墨B   '+inkName(S.inkB)+'  '+Math.round(S.covB*100)+'%');
-  L.push('明度差 ΔL* '+Math.abs(Lstar(S.a)-Lstar(S.b)).toFixed(0));
+    // 配方是每帧重算的 —— 直接在生成点走 tt，而不是等 applyLang（防抖会弹回中文）
+    L.push(tt('切线')+'  '+tt(horiz?'水平':'垂直')+'  '+(deg>=0?'+':'')+deg.toFixed(0)+'°'+
+           '   '+tt('小色域')+Math.round(Math.min(pos,1-pos)*100)+'%');
+  } else L.push(tt('切线')+'  ——');
+  L.push(tt('纸')+'    '+tt(stockSpec().name)+' · '+tt(['净面','原纸','粗纹'][S.tex])+'  '+S.paper);
+  L.push(tt('墨')+'A   '+inkName(S.inkA)+'  '+Math.round(S.covA*100)+'%');
+  L.push(tt('墨')+'B   '+inkName(S.inkB)+'  '+Math.round(S.covB*100)+'%');
+  L.push(tt('明度差')+' ΔL* '+Math.abs(Lstar(S.a)-Lstar(S.b)).toFixed(0));
   if(S.photo) L.push('照片  '+(S.photo.use==='shape'?'剪影':'双色·'+
     ({grain:'自然颗粒',fs:'漫散',atkinson:'硬调',bayer:'方格'}[S.photo.style]||'自然颗粒')));
   for(const el of (S.els||[])){ const S_el=el;
@@ -5304,7 +5546,7 @@ function selectTool(tool){
     b.classList.toggle('is-active',b.dataset.tool===tool));
   const m=TOOL_META[tool];
   document.getElementById('toolKicker').textContent=m[0];
-  document.getElementById('toolTitle').textContent=m[1];
+  document.getElementById('toolTitle').textContent=tt(m[1]);
   document.getElementById('toolSubtitle').textContent=m[2];
   const panel=document.querySelector('.panel');
   if(panel)panel.scrollTo({top:0,behavior:'smooth'});
@@ -5340,127 +5582,9 @@ const HINT={1:'文字已选中；直接拖动，或在当前面板继续编辑',
   2:'图形已选中；直接在画布上移动、缩放或旋转，填充和网目就在「图形变化」里',
   3:'墨、纸、纸纹都在这一页。切线随时可以在画布上重新划',
   4:'满意了就印出来。也可以先看看「六个方向」'};
-// ================== 界面语言：纯中文 / 纯英文一键切换 ==================
-// 用户：「不同语言习惯的人可以一键切换」。机制：切换时实时遍历所有文本节点，
-// 中文短语查字典换成英文；原文存在节点上（_zh），切回来就恢复 —— 不需要
-// 两套 DOM，也不怕以后加新控件漏翻（没命中就保持原文）。
-// 品牌名（CUT / PRINT）和 riso 墨名（Yellow/Blue…）本来就是英文，不动。
-let UI=localStorage.getItem('uiLang')||'zh';
-const EN={
-  // 顶栏
-  '撤销':'Undo','清空':'Clear','六个方向':'Six Directions','印出来':'Print It','导出 PNG ↓':'Export PNG ↓',
-  // 工具页签与步骤
-  '文字':'Type','图形':'Forms','墨纸':'Ink & Paper',
-  '写一句话':'Write a line','加个图形，随手调它':'Add a form, adjust it here',
-  '墨与纸随时换':'Swap inks & paper anytime','印出来':'Print it',
-  '四个动作':'Four moves',
-  // 空状态
-  '从一句话开始':'Start with one line','在右侧输入，或者从句子库选择。':'Type on the right, or pick from the library.',
-  '去写一句':'Write a line','从一句话开始。可以自己写，也可以从句子库里选一句':'Start with one line. Write your own, or pick from the library.',
-  '先写下一个念头，再让它成为一张海报。':'Write down a thought, let it become a poster.',
-  // 文字页
-  '写一句':'Write','发散四句':'Four lines','句子库':'Library','中文':'中文','换一句 ↻':'Another ↻',
-  'English':'English','加入画面：':'Add to canvas: ',
-  // 墨纸页
-  '印刷配色':'Print Colours','双色组合':'Ink Pairs','纸张':'Paper',
-  '道林':'Woodfree','新闻':'Newsprint','牛皮':'Kraft','和纸':'Washi','再生':'Recycled','光面':'Glossy',
-  '纸面质感':'Paper Texture','净':'Clean','原纸':'Plain','粗':'Rough',
-  '套印性格':'Registration','规整':'Tight','松动':'Loose','错版':'Off-register',
-  '精细调整':'Fine Tuning','色域 A':'Field A','色域 B':'Field B',
-  '浓淡':'Coverage','明度':'Lightness','彩度':'Chroma','色相':'Hue',
-  '自动拉开层次':'Auto contrast','交换两个色域 ⇄':'Swap fields ⇄','纸色':'Paper','墨色':'Inks',
-  '版面信息':'Colophon','无':'None','版记':'Colophon','版记＋套准':'Colophon + marks',
-  // 图形页
-  '画幅':'Format','方':'Square','竖屏':'Tall','切一刀':'Make the Cut','在画布上划一刀':'Cut on the canvas',
-  '素材':'Materials','几何':'Geometry','笔触':'Gestures','器物':'Vessels','照片':'Photo',
-  '艺术笔触':'Gestures','选中的图形':'Selected Form','删掉选中的（Delete）':'Delete selection (Del)',
-  '放一张照片进来':'Bring in a photo','你的照片':'Your Photo','照片':'Photo',
-  '改变器物形态':'Reshape the Vessel','图形变化':'Transform',
-  '平面':'Flat','立体':'3D','图形填充':'Fill','实心':'Solid','网点':'Halftone','渐变':'Gradient','半网':'Half-tone',
-  '网目细':'Fine screen','网目粗':'Coarse screen',
-  '颗粒':'Grain','自然':'Natural','漫散':'Diffuse','硬调':'Hard','方格':'Grid',
-  '取景与影调':'Crop & Tone','放大':'Zoom','反差':'Contrast','墨量':'Ink',
-  '在照片上修边缘':'Refine the Edge','保留':'Keep','去除':'Remove','重来':'Reset',
-  '画笔':'Brush','范围':'Range','剪影边缘':'Silhouette Edge','精细':'Detail',
-  '删掉这张图':'Remove photo','双色印版':'Duotone Plate','抠成剪影':'Cut to Silhouette',
-  // 选中态块
-  '选中的文字':'Selected Text',
-  // 常用 hint（31 条全收）
-  '正在把照片拆进两块色版…':'Separating the photo into two plates…',
-  '照片已经进版 —— 在右边拖动取景，或把它抠成剪影':'Photo is on press. Drag to reframe, or cut it to a silhouette.',
-  '一张海报最多放八行文字':'A poster holds up to eight lines.',
-  '文字已删除；可用顶部的撤销恢复':'Line deleted. Undo from the top bar.',
-  '图案已删除；可用顶部的撤销恢复':'Form deleted. Undo from the top bar.',
-  '已加入图案。拖动调整位置；使用右下角把手缩放或旋转':'Form added. Drag to move; use the handle to scale and rotate.',
-  '已加入器物。拖动调整位置，右下角控制大小和角度':'Vessel added. Drag to move; the handle controls size and angle.',
-  '文字已加入；可直接在画布上拖动，当前面板保持不变':'Line added. Drag it on the canvas.',
-  '挑一个方向继续；不选择不会改变现在这版':'Pick a direction; not choosing keeps this one.',
-  '已应用此方向。可继续调整或重新生成六个方向':'Applied. Keep adjusting, or roll six more.',
-  '印好了 —— 回去改，或者导出':'Printed. Go back and refine, or export.',
-  '这张照片暂时抠不出稳定轮廓，可以先作为照片使用':'No stable silhouette found yet. Keep it as a duotone photo.',
-  '已回到照片印版 —— 它会随两支墨一起变化':'Back to the duotone plate. It re-prints with your inks.',
-  '已抠成剪影 —— 在画布上直接移动、缩放或旋转':'Cut to silhouette. Move, scale and rotate it on the canvas.',
-  '主体太小或没有闭合轮廓 —— 用「保留」在主体里面画一笔':'Subject too small or open. Paint inside it with Keep.',
-  '剪影已更新 —— 可以继续修，或直接回到海报移动它':'Silhouette updated. Keep refining, or move it on the poster.',
-  '已回到自动识别的初稿':'Back to the auto draft.',
-  '图和它抠出来的形都删掉了 —— 顶部的撤销能拿回来':'Photo and its silhouette removed. Undo brings them back.',
-  '已经回到最初状态':'Back to the start.','已撤销上一步':'Undone.',
-  '两句已排好。想加图形就点上面的「图形」；墨和纸随时可换':'Two lines placed. Add a form under Forms; inks anytime.',
-  '这段文字已经在画面中，已为你选中':'Already on the canvas. Selected for you.',
-  '两句一起排好了。不想要哪句，选中后点 × 删除':'Both lines placed. Select one and × to remove it.',
-  '这句已经在画面中，已为你选中':'Already on the canvas. Selected for you.',
-  '诗句已加入；拖动安排它在画面中的位置':'Line added. Drag it into place.',
-  '先写下一个意象、片段或一句话':'Start with an image, a fragment, or a line.',
-  '四句文字材料已生成；点击 ＋ 加入画面':'Four lines drafted. Click ＋ to place them.',
-  '高清 PNG 已生成':'Hi-res PNG ready.',
-  '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
-  '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
-  // 长注释类 note（高频几条）
-  '点画面上的元素选中它，Tab 轮选，拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Click a form to select. Tab cycles. Drag the handle to scale and rotate; it snaps near 0/90°.',
-  '图片只在你自己的浏览器里处理，不会上传。':'Photos stay in your browser. Nothing is uploaded.',
-  '也可以直接把图拖到画布上，或者 Ctrl + V 粘贴。':'Drop an image on the canvas, or paste with Ctrl + V.',
-};
-const tt=t=>UI==='en'&&t?(EN[t.trim()]||t):t;
-let _lastHint='';
-function setHint(t){_lastHint=t;document.getElementById('hint').textContent=tt(t);}
-function applyLang(){
-  localStorage.setItem('uiLang',UI);
-  const btn=document.getElementById('uiLang');
-  if(btn) btn.textContent=UI==='en'?'中':'EN';
-  const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-  const jobs=[];
-  while(walk.nextNode()){ const node=walk.currentNode, v=node.nodeValue;
-    if(!v||!v.trim()) continue;
-    if(node._zh===undefined) node._zh=v;
-    jobs.push(node);
-  }
-  for(const node of jobs){
-    const key=(UI==='en'?node._zh:node._zh).trim();
-    if(UI==='en') node.nodeValue=EN[key]?EN[key]:node._zh;
-    else node.nodeValue=node._zh;
-  }
-  // placeholder / aria-label / title
-  document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>{
-    for(const at of ['placeholder','aria-label','title']){
-      const v=el.getAttribute(at); if(!v)continue;
-      if(el['_zh_'+at]===undefined) el['_zh_'+at]=v;
-      el.setAttribute(at, UI==='en'?(EN[el['_zh_'+at]]||el['_zh_'+at]):el['_zh_'+at]);
-    }
-  });
-  if(_lastHint) document.getElementById('hint').textContent=tt(_lastHint);
-}
-document.getElementById('uiLang').onclick=()=>{ UI=UI==='en'?'zh':'en'; applyLang();
-  // 界面语言联动内容语言：句子库直接给出对应语言的素材。
-  // 画面上已经放好的文字是个体对象，不被牵连。
-  if(S.lang!==UI){ S.lang=UI; newBrief(); }
-  // 动态生成的控件（句子库、墨色、器物等）重新渲染一遍再翻
-  try{ sync(); syncBrief(); syncLathe && syncLathe(); syncImg && syncImg(); syncTextPanel && syncTextPanel(); }catch(_){}
-  applyLang(); draw();
-};
-applyLang();
 function setStep(n){[...document.getElementById('steps').children].forEach((li,i)=>{
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});
-  setHint(HINT[n]);}
+  setHint(tt(HINT[n]));}
 document.fonts&&document.fonts.ready.then(draw);
 newBrief();syncBrief();sync();selectTool('type');
 setStep(1);
