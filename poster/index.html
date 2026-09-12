@@ -2537,10 +2537,10 @@ function toneLut(){
   const key=[S.b,S.a].join('|');
   const hit=toneLutCache.get(key); if(hit) return hit;
   const lut=new Float32Array(257);
+  // 普适表：输入就是正侧**最终**覆盖率（含各模式的分级/压缩），输出反白侧
+  // 等明度覆盖率 —— 不再假设某一条压缩链，四种模式全走同一张表。
   for(let i=0;i<=256;i++){
-    // 与正侧 tone 路径完全相同的链：范围 0.08–0.58、无扩张 —— 两侧目标一致
-    let ca=0.08+0.50*(i/256);
-    const target=Lstar(mixInk(S.b,S.a,ca));            // 正侧这个覆盖率的视觉明度
+    const target=Lstar(mixInk(S.b,S.a,i/256));
     let lo=0,hi=1;                                     // 反白侧：浅墨浮在深底，c 越大越亮
     for(let q=0;q<14;q++){ const mid=(lo+hi)/2;
       if(Lstar(mixInk(S.a,S.b,mid))<target) lo=mid; else hi=mid; }
@@ -2625,14 +2625,16 @@ function screenFill(col, box, band, inv){
       const INV_SIDE=inv;                             // 反白侧稍后走明度对齐的 LUT
       // 立体开着时，四个「填充」是四种把三维明暗印出来的方式，不是四个摆设
       const md=band.mode|0;
-      if(md===0){                     // 实心 → 色调分离：明暗压成三级，像丝网印的分色版
-        a = a<0.30 ? 0.10 : a<0.58 ? 0.46 : 0.88;
+      if(md===0){                     // 实心 → 色调分离：四级分色版，末级不满墨，形体不塌
+        a = a<0.24 ? 0.08 : a<0.44 ? 0.28 : a<0.64 ? 0.48 : 0.74;
       }else if(md===2){               // 渐变 → 明暗再乘一层上浓下淡，形往下化开
         const gq=Math.min(1,Math.max(0,normY==null?(y-band.y0)/Math.max(1,band.y1-band.y0):normY));
         a = a*(1.15-0.95*gq);
-      }else if(md===3){               // 半网 → 只有暗面落墨，亮面留成白纸
-        if(a<0.42) continue;
-        a = (a-0.42)/0.58*0.78+0.16;
+      }else if(md===3){               // 半网 → 浮雕：亮面留 0.10 薄墨保住轮廓，
+        // 半网的工艺语义：亮区均匀网点、暗区近实地 —— 两种质地的对比读出体积，
+        // 比连续浮雕强得多（连续方案的行平均差只有 3-20，看不出形状）
+        const w3=Math.min(1,Math.max(0,(a-0.28)/0.26));
+        a = 0.30 + w3*w3*(3-2*w3)*0.50;   // smoothstep：网点 30% → 实地 80%
       }
       // 立体的墨量范围收窄到 0.08–0.58，且不过网点扩张链。
       // 浅阴影太深了不自然 —— 明度对齐把浅阴影也对齐到
@@ -3735,7 +3737,7 @@ function draw(){
       // 叠在同一行），切线处挤出一条过暗的线 —— 编辑画布上 1 行宽（实测 124，
       // 邻近行 135/164），「印出来」放大 1.72 倍后变 4 行所以扎眼。
       // 单侧内缩后边界行只属于一遍，无双重绘制，也不留缝。
-      if(pathPoly(clipPoly(g*l.nx,g*l.ny,g*l.c+(g<0?1.5:0)))) ctx.clip();
+      if(pathPoly(clipPoly(g*l.nx,g*l.ny,g*l.c+(g<0?0.5:0)))) ctx.clip();
       // 两块版各偏半格，方向相反且固定 —— 网屏是版的一部分，跟着一起偏
       // 两块版相向偏：主要沿切线法线（跨线的形两半才会错开台阶），加一点切向
       PLATE = mis ? [(-l.nx*0.86 - l.ny*0.50)*g*mis, (-l.ny*0.86 + l.nx*0.50)*g*mis] : [0,0];
