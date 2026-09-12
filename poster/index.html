@@ -4,13 +4,15 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
+<!-- UI 字体从 Archivo 换 Space Grotesk：几何骨架 + 单层 a/g + 数字等宽感，
+     更「印务工单」的气质，也远离 Inter/Archivo 的通用味 -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#d9d7d1; --bg2:#cbc9c3; --accent:#c94836;
     --panel:#fcfbf9; --ink:#15161a; --ink2:#5a5b60; --ink3:#94959b;
     --line:#dedcd6; --hair:#eeece7;
-    --ui:"Archivo","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --ui:"Space Grotesk","Archivo","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 
     /* ---- 动效 token ----
        曲线承载感觉，时长只承载节奏。同样 200ms，ease-out 比 ease-in 感觉快得多。
@@ -534,6 +536,14 @@
   .empty-state button{margin-top:6px;padding:10px 18px;border:1px solid #7d7b74;background:transparent;
     color:#353630;font:500 12px/1 var(--ui);cursor:pointer}
   .empty-state button:hover{background:#353630;color:#fff;border-color:#353630}
+  /* 切一刀是主动作：比普通行按钮高、accent 描边、宽度拉满。
+     静止时朱红描边 + 朱红字；hover 反白成实心。 */
+  .cut-action{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+    min-height:46px;border:1.5px solid var(--accent);background:#faf8f2;color:var(--accent);
+    font:600 12.5px/1 var(--ui);letter-spacing:.06em;cursor:pointer;
+    transition:background var(--t-state) var(--e-std),color var(--t-state) var(--e-std),
+               transform var(--t-press) var(--e-out)}
+  .cut-action:hover{background:var(--accent);color:#fff}
   .compact-tools{display:grid;grid-template-columns:1fr auto;gap:7px}
   .compact-tools .ghost{margin:0}
   .advanced-tools{margin:18px 0 24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -827,11 +837,16 @@
     </ol>
   </div>
 
+  <!-- 用户：「切一刀这一步不够显眼，和画幅选择无法区分开很容易忽略」。
+       原来切线和画幅挤在同一行 —— 混在一起读作画幅的附属选项。
+       拆开：画幅归画幅；切一刀是主动作，accent 描边 + 更高 + 刀形符号。 -->
   <div class="blk" data-tool="form">
-    <div class="section-intro"><h3>画幅与切线</h3><button class="quiet-action" id="redrawCut" type="button">重新划一刀</button></div>
+    <div class="section-intro"><h3>画幅</h3></div>
     <div class="row" id="fmt">
       <button data-w="470" data-h="627" aria-pressed="true">3:4</button><button data-w="470" data-h="665">A/B</button><button data-w="540" data-h="540">方</button><button data-w="420" data-h="746">竖屏</button>
     </div>
+    <div class="section-intro" style="margin-top:14px"><h3>切一刀</h3></div>
+    <button class="cut-action" id="redrawCut" type="button">✂ 在画布上划一刀</button>
   </div>
 
   <div class="blk is-active" data-tool="type">
@@ -2206,6 +2221,30 @@ function plateAngle(ink){
   return Lstar(ink) <= Lstar(other) ? SANG_DARK : SANG;
 }
 function hash2(i,j){const v=Math.sin(i*127.1+j*311.7)*43758.5453;return v-Math.floor(v);}
+// 反白侧的立体明暗按**视觉明度**对齐，而不是按墨量对齐。
+// 用户报：「浅色的阴影部分很深，与之相接的深色那一边的阴影的网点则很浅」。
+// 数学确认：同一个暗部 tone=0.2，浅底侧算出 94% 深墨覆盖、反白侧只有 34% 浅墨覆盖 ——
+// 传递函数不对称（inv 的翻转+钳位+网点扩张对 a 和 1-a 不对称），明度当然接不上。
+// 修法：正侧保持现状，算出它每个覆盖率下的 L*；反白侧用 Yule-Nielsen 混色
+// 反解出「同样 L*」需要的覆盖率。256 档 LUT，按当前两色缓存。
+const toneLutCache=new Map();
+function toneLut(){
+  const key=[S.b,S.a].join('|');
+  const hit=toneLutCache.get(key); if(hit) return hit;
+  const lut=new Float32Array(257);
+  for(let i=0;i<=256;i++){
+    let ca=Math.min(.85,Math.max(.10,i/256));
+    ca=Math.min(1,ca+0.24*Math.sin(Math.PI*ca));       // 与正侧完全相同的增益链
+    const target=Lstar(mixInk(S.b,S.a,ca));            // 正侧这个覆盖率的视觉明度
+    let lo=0,hi=1;                                     // 反白侧：浅墨浮在深底，c 越大越亮
+    for(let q=0;q<14;q++){ const mid=(lo+hi)/2;
+      if(Lstar(mixInk(S.a,S.b,mid))<target) lo=mid; else hi=mid; }
+    lut[i]=Math.max(.06,Math.min(.94,(lo+hi)/2));
+  }
+  toneLutCache.set(key,lut);
+  if(toneLutCache.size>8) toneLutCache.delete(toneLutCache.keys().next().value);
+  return lut;
+}
 function inkR(a,p,inv){
   if(inv) a=1-a;                                            // 反白侧翻转色阶
   a=Math.min(inv?.80:.85, Math.max(inv?.15:.10, a));        // 印得出来的安全区
@@ -2278,6 +2317,7 @@ function screenFill(col, box, band, inv){
       if(tx<0||ty<0||tx>=TB.w||ty>=TB.h) continue;
       const lum=TB.buf[ty*TB.w+tx]/255;
       let a=1-lum;                                    // 越暗墨越多
+      const INV_SIDE=inv;                             // 反白侧稍后走明度对齐的 LUT
       // 立体开着时，四个「填充」是四种把三维明暗印出来的方式，不是四个摆设
       const md=band.mode|0;
       if(md===0){                     // 实心 → 色调分离：明暗压成三级，像丝网印的分色版
@@ -2290,7 +2330,10 @@ function screenFill(col, box, band, inv){
         a = (a-0.42)/0.58*0.78+0.16;
       }
       const h1=hash2(i,j), h2=hash2(j+7,i-3);
-      const r=inkR(a,p,inv)*(1+(h2-.5)*.06);
+      // 反白侧：不看墨量看明度 —— 与正侧同一暗度印出同一视觉明度，切线两边才接得上
+      const r=(INV_SIDE
+        ? p*Math.sqrt(toneLut()[Math.round(Math.max(0,Math.min(1,a))*256)]/Math.PI)
+        : inkR(a,p,false))*(1+(h2-.5)*.06);
       if(r<.28) continue;
       ctx.beginPath();
       ctx.arc(x+(h1-.5)*p*.06, y+(h2-.5)*p*.06, r, 0, Math.PI*2);
@@ -3359,7 +3402,12 @@ function draw(){
       const g=k?-1:1;
       ctx.save();
       if(sep) ctx.translate(l.nx*g*sep, l.ny*g*sep);
-      if(pathPoly(clipPoly(g*l.nx,g*l.ny,g*l.c))) ctx.clip();
+      // 边界行只让第一遍（k=0）画：第二遍的 clip 沿法线内缩 1.5px。
+      // 原来 clip 抗锯齿的边界行会被两侧各画一次（上半反白网点 + 下半深墨网点
+      // 叠在同一行），切线处挤出一条过暗的线 —— 编辑画布上 1 行宽（实测 124，
+      // 邻近行 135/164），「印出来」放大 1.72 倍后变 4 行所以扎眼。
+      // 单侧内缩后边界行只属于一遍，无双重绘制，也不留缝。
+      if(pathPoly(clipPoly(g*l.nx,g*l.ny,g*l.c+(g<0?1.5:0)))) ctx.clip();
       // 两块版各偏半格，方向相反且固定 —— 网屏是版的一部分，跟着一起偏
       // 两块版相向偏：主要沿切线法线（跨线的形两半才会错开台阶），加一点切向
       PLATE = mis ? [(-l.nx*0.86 - l.ny*0.50)*g*mis, (-l.ny*0.86 + l.nx*0.50)*g*mis] : [0,0];
@@ -4621,8 +4669,20 @@ function pressDelta(prev,next){
   const b=next.getContext('2d').getImageData(0,0,w,h).data;
   const out=document.createElement('canvas');out.width=w;out.height=h;
   const g=out.getContext('2d'),im=g.createImageData(w,h),d=im.data;
+  // 修「印出来切线处一道暗线」：在**预乘 alpha 域**里比较，而不是裸 RGB。
+  // 两遍都渲染在透明画布上：反白侧的 tone 网点之间 alpha=0，裸 RGB 比较会把
+  // 「透明 vs 底色」当成巨大差异、把半透明的抗锯齿过渡行当成「图形新增」复制，
+  // 叠回色域版时再合成一遍，双重叠加偏浓，切线下挤出 76->223 的暗带（实测）。
+  // 预乘域里透明像素的贡献是 0，差异度量的就是「这一遍真正新画上去的东西」；
+  // 元素贡献小于阈值（抗锯齿边缘）的行不算新增，整行留给上一版。
+  // 输出保留 next 的原始 rgba（透明就透明），「零偏移叠回 == 完整渲染」保持。
   for(let i=0;i<b.length;i+=4){
-    if(Math.max(Math.abs(a[i]-b[i]),Math.abs(a[i+1]-b[i+1]),Math.abs(a[i+2]-b[i+2]))>1){
+    const ba=b[i+3]/255, aa=a[i+3]/255;
+    const dB=Math.max(
+      Math.abs(b[i]*ba-a[i]*aa),
+      Math.abs(b[i+1]*ba-a[i+1]*aa),
+      Math.abs(b[i+2]*ba-a[i+2]*aa));
+    if(dB>8){
       d[i]=b[i];d[i+1]=b[i+1];d[i+2]=b[i+2];d[i+3]=b[i+3];
     }
   }
@@ -4630,8 +4690,10 @@ function pressDelta(prev,next){
 }
 function buildPress(token,st,sheet,status){
   if(token!==PRESS_TOKEN)return;
-  const rw=Math.min(1100,Math.max(W,Math.round(W*Math.min(1.75,1100/Math.max(W,H)))));
-  const rh=Math.round(rw*H/W);
+  // 用编辑画布的原尺寸渲染，再由 CSS 放大显示 —— 不做 1.72x 重渲染。
+  // 重渲染会对 tone 明暗重新采样：切线过渡从 1.5 行锐化成 4 行、明度从 150
+  // 压到 76，用户看到一条编辑画布上不存在的暗线。所见即所得优先于分辨率。
+  const rw=W, rh=H;
   const field=pressCanvas(st,s=>{s.els=[];s.texts=[];s.mark=0;},rw,rh);
   const forms=pressCanvas(st,s=>{s.texts=[];s.mark=0;},rw,rh);
   const full=pressCanvas(st,s=>{},rw,rh);
