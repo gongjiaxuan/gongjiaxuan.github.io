@@ -2625,8 +2625,8 @@ function screenFill(col, box, band, inv){
       const INV_SIDE=inv;                             // 反白侧稍后走明度对齐的 LUT
       // 立体开着时，四个「填充」是四种把三维明暗印出来的方式，不是四个摆设
       const md=band.mode|0;
-      if(md===0){                     // 实心 → 色调分离：四级分色版，末级不满墨，形体不塌
-        a = a<0.24 ? 0.08 : a<0.44 ? 0.28 : a<0.64 ? 0.48 : 0.74;
+      if(md===0){                     // 实心 → 三级分色版（恢复原版数值）
+        a = a<0.30 ? 0.10 : a<0.58 ? 0.46 : 0.88;
       }else if(md===2){               // 渐变 → 明暗再乘一层上浓下淡，形往下化开
         const gq=Math.min(1,Math.max(0,normY==null?(y-band.y0)/Math.max(1,band.y1-band.y0):normY));
         a = a*(1.15-0.95*gq);
@@ -2642,10 +2642,14 @@ function screenFill(col, box, band, inv){
       // 不是照片：浅阴影要浅，最暗处也不该满墨 —— riso 印插画本来就不打满。
       if(md!==0){ a=Math.max(0,Math.min(1,a)); a=0.08+0.50*a; }
       const h1=hash2(i,j), h2=hash2(j+7,i-3);
-      // 反白侧：不看墨量看明度 —— 与正侧同一暗度印出同一视觉明度，切线两边才接得上
-      const r=(INV_SIDE
-        ? p*Math.sqrt(toneLut()[Math.round(Math.max(0,Math.min(1,a))*256)]/Math.PI)
-        : p*Math.sqrt(a/Math.PI))*(1+(h2-.5)*.06);
+      // 实心走原 inkR 链：墨量在两侧互补翻转（0.10↔0.90），分色版的对称语言，
+      // 跨线读作「同一块版各印各的墨」—— 用户指定的观感。
+      // 其余三种模式（连续调/渐变/半网）保持等明度方案，两侧连续。
+      const r=(md===0
+        ? inkR(a,p,INV_SIDE)
+        : (INV_SIDE
+            ? p*Math.sqrt(toneLut()[Math.round(Math.max(0,Math.min(1,a))*256)]/Math.PI)
+            : p*Math.sqrt(a/Math.PI)))*(1+(h2-.5)*.06);
       if(r<.28) continue;
       ctx.beginPath();
       ctx.arc(x+(h1-.5)*p*.06, y+(h2-.5)*p*.06, r, 0, Math.PI*2);
