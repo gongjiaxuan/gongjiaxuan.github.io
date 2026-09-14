@@ -1,0 +1,3 @@
+const routes={"0":"zisha","1":"remembery","2":"dunhuang","3":"woodblock","4":"museum","5":"textile","6":"yunjin","7":"piao","8":"huansheng","9":"matrix","10":"cut-print","zisha":"zisha","remembery":"remembery","dunhuang":"dunhuang","woodblock":"woodblock","museum":"museum","textile":"textile","yunjin":"yunjin","piao":"piao","huansheng":"huansheng","matrix":"matrix","cut-print":"cut-print","genai-accessibility":"genai-accessibility","vr-acceptance":"vr-acceptance"};
+const id=new URLSearchParams(location.search).get('id');
+if(id!==null && Object.hasOwn(routes,id)) location.replace('projects/'+routes[id]+'.html');
