@@ -5,7 +5,7 @@
  *   1. https://dash.cloudflare.com → Workers & Pages → Create → Start with Hello World
  *   2. 把这整个文件的内容粘贴进编辑器，覆盖原来的
  *   3. Settings → Bindings → Add → Workers AI，Variable name 填 AI
- *   4. Deploy，记下 https://xxx.workers.dev
+ *   4. Deploy 之后记下 https://xxx.workers.dev，填进 index.html 的 AI_ENDPOINT
  *
  * 不需要任何 API key，不需要绑卡。Workers AI 每天 10,000 Neurons 免费，
  * 本工具一次调用约 10 Neurons，够点一千次。超了会报错，不会扣钱。
