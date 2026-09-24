@@ -673,7 +673,12 @@
     /* 它铺满整张纸。吃掉指针事件的话，空白态下切线和拖拽全部失效 —— 只有按钮该接事件 */
     pointer-events:none;
   }
-  .empty-state #emptyStart{pointer-events:auto}
+  .empty-state #emptyStart,.empty-state #emptyShuffle{pointer-events:auto}
+  .empty-state #emptyShuffle{
+    display:block;margin-top:7px;padding:8px 15px;border:0;background:transparent;
+    color:var(--ink2);font-size:10.5px;letter-spacing:.04em;text-decoration:underline;
+    text-underline-offset:3px;cursor:pointer}
+  .empty-state #emptyShuffle:hover{color:var(--ink)}
   .empty-state small{display:block;font-size:8px;letter-spacing:.2em;color:#8b5b50;margin-bottom:9px}
   .empty-state strong{display:block;font-family:"Noto Serif SC","Songti SC",serif;font-size:34px;font-weight:900;line-height:1.22;letter-spacing:.05em;margin-bottom:13px}
   .empty-state span{display:block;font-size:11px;line-height:1.5;color:#706e67;max-width:34em}
@@ -1110,6 +1115,7 @@
       <strong>从一句话开始</strong>
       <span>在右侧输入，或者从句子库选择。</span>
       <button type="button" id="emptyStart">去写一句</button>
+      <button type="button" id="emptyShuffle">或者，随便来一张</button>
     </div>
     <button class="selection-delete" id="selectionDelete" title="删除选中内容" aria-label="删除选中内容" hidden>×</button>
   </div>
@@ -1482,7 +1488,7 @@ const EN={
   '高清 PNG 已生成':'Hi-res PNG ready.',
   '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
   '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
-  '字':'Type','墨与纸':'Ink & Paper',
+  '字':'Type','墨与纸':'Ink & Paper','或者，随便来一张':'or just give me one',
   '这句已排好。想加图形就点上面的「图形」；墨和纸随时可换':'Placed. Add a form under Forms; inks and paper can change anytime.',
   // 照片网点风格的说明
   '细密、均匀的随机颗粒':'Fine, even random grain',
@@ -1816,7 +1822,7 @@ function syncEmptyState(){
   const blankNow=isBlankComposition();
   if(emptyStateEl)emptyStateEl.hidden=!blankNow;
   const variants=document.getElementById('topVariants'),press=document.getElementById('topPress');
-  if(variants)variants.disabled=blankNow;
+  if(variants)variants.disabled=false;   // 随机生成不需要先有内容，见下方注释
   if(press)press.disabled=blankNow;
 }
 
@@ -3306,7 +3312,8 @@ function fontSpec(t,z){
 const tmCache=new Map();
 function textMetrics(t){
   t=t||titleSeed();
-  const ck=[t.text,t.size,t.font,t.dir,t.zs,t.fs,W,H].join('\u0001');
+  // 版记开关会改变可用高度，缓存键必须带上它，否则切了版记量到的还是旧值
+  const ck=[t.text,t.size,t.font,t.dir,t.zs,t.fs,W,H,(S.mark==null?1:S.mark)].join('\u0001');
   const hit=tmCache.get(ck); if(hit) return hit;
   const out=textMetricsRaw(t);
   tmCache.set(ck,out);
@@ -3319,7 +3326,11 @@ function textMetricsRaw(t){
   const base=t.fs==null ? [34,50,68][t.size==null?1:t.size]*(t.zs||1) : t.fs;
   let z=base*SC();
   const f=TEXT_FONTS[t.font||0]||TEXT_FONTS[0];
-  const maxW=W-M*2, maxH=H-M*2.6;
+  const maxW=W-M*2;
+  // 竖排"装不下就缩"要按**版记上方的真实可用高度**来缩，不是 H-M*2.6。
+  // 两者正好差一条版记带（实测 19px），于是竖排缩完仍然压在版记上 ——
+  // 60 次随机里剩下的 4 条越界全是竖排，一条不差。
+  const maxH=Math.max(M*2, (H-Math.max(M*1.6, M+bottomReserve()))-M);
   // 竖排的字距见下面 adv 那一行：汉字 1.10、拉丁 1.30（44 张实测的中位值）。
   // 「装不下就缩」这一步必须用**同一个**字距，否则算出来的高度和实际画出来的对不上，
   // 缩完照样出边距 —— 自检抓到 24/168 行越界，就是这两处用了不同的字距。
@@ -3624,9 +3635,23 @@ function delText(){
 // 「看起来是设计过的」这件事，来源就是同一条线被反复用到；
 // 每行字各找各的空地，哪怕互不重叠，看起来也是散的。
 // 两条页边距永远保留；图形的左右边、上下边最多再补进来一条 —— 线一多就等于没有线。
+// 底边被版记与展期信息行占掉多高。只服务自动落位，不限制手动拖动。
+function bottomReserve(){
+  const mk=(S.mark==null?1:S.mark); if(!mk) return 0;
+  const u=SC(), z=Math.max(5.2, 7*u);
+  let h=z*4.2;                                   // 三行：一行标签 + 两行值
+  const primary=titleText();
+  if(S.cut && primary && String(primary.source||'').indexOf('brief:')===0)
+    h=Math.max(h, 12.5*u*1.6);                   // 展期信息行也贴着下边距
+  return h;
+}
 function layoutLines(){
   const M=MARGIN(), U=Math.max(4,Math.round(Math.min(W,H)/64));
-  const botY=H-M*1.6;                    // 自动落位仍保守地让开信息行（手动拖动可以更低，见 clampText）
+  // 版记（INKS / STOCK / PRESS 那三栏）和展期信息行实打实地占着底边一条带。
+  // 原来这里只写死 M*1.6，恰好比版记顶边还低约 19px —— 于是自动排出来的正文
+  // 常常压在版记上。现在按版记真实高度让开；关掉版记就退回原来的保守值。
+  // 手动拖动不受此限（见 clampText）：那是用户自己的决定。
+  const botY=H-Math.max(M*1.6, M+bottomReserve());
   const eb=allBBox();
   const pick=(must,extra)=>{
     const o=must.slice();
@@ -5161,6 +5186,13 @@ function score(st){
         // 4% 以内算包围盒的行距余量蹭到了线，不是真切到字
         if(minor>0.04) sText=Math.min(sText, 1-Math.min(0.82,(minor-0.04)*1.9));
       }
+      // ⑥c 压在版记上。落位已经让开那条带了，但"装不下"时还是会退到兜底位置 ——
+      // 56 个候选里把这些筛掉，比在落位里硬挤更干净。
+      if((st.mark==null?1:st.mark)){
+        const u=SC(), zc=Math.max(5.2,7*u), bandTop=H-MARGIN()-zc*4.2;
+        const into=(tb.y+tb.h)-bandTop;
+        if(into>1) sText=Math.min(sText, 1-Math.min(0.55, into/(zc*4.2)*0.55));
+      }
       // 文字互压一票否决
       for(const o of (st.texts||[])){
         if(o===t||!String(o.text||'').trim()) continue;
@@ -6125,6 +6157,9 @@ document.getElementById('emptyStart').onclick=()=>{
   selectTool('type');const input=document.getElementById('seedInput');input.focus();
   input.scrollIntoView({behavior:prefersStill()?'auto':'smooth',block:'center'});
 };
+// 空画布上的第二条路：不想先想句子的人，直接给一张
+{ const b=document.getElementById('emptyShuffle');
+  if(b) b.onclick=()=>shuffleOne(); }
 window.addEventListener('keydown',e=>{
   // 画布现在是可聚焦部件（tabindex=0）。方向键/Delete/Tab 只在焦点落在 body
   // 或画布上时归它管，落在别的控件上时一律放行。
