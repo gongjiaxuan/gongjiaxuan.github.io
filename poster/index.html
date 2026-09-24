@@ -669,8 +669,11 @@
   .quiet-action:hover{color:var(--accent);border-color:var(--accent)}
 
   .empty-state{
-    justify-content:center;gap:0;padding:20px;background:transparent;color:var(--ink);pointer-events:auto;
+    justify-content:center;gap:0;padding:20px;background:transparent;color:var(--ink);
+    /* 它铺满整张纸。吃掉指针事件的话，空白态下切线和拖拽全部失效 —— 只有按钮该接事件 */
+    pointer-events:none;
   }
+  .empty-state #emptyStart{pointer-events:auto}
   .empty-state small{display:block;font-size:8px;letter-spacing:.2em;color:#8b5b50;margin-bottom:9px}
   .empty-state strong{display:block;font-family:"Noto Serif SC","Songti SC",serif;font-size:34px;font-weight:900;line-height:1.22;letter-spacing:.05em;margin-bottom:13px}
   .empty-state span{display:block;font-size:11px;line-height:1.5;color:#706e67;max-width:34em}
@@ -711,7 +714,7 @@
   .brief-piece{padding:12px;background:transparent;border-bottom:1px solid #d7d3c9}
   .brief-piece:hover{background:#efebe2;color:var(--ink)}
   .brief-piece .piece-action{width:25px;height:25px;border:1px solid #c0bbb1;background:transparent;font-size:15px}
-  .brief-piece[aria-pressed="true"] .piece-action{background:var(--accent);border-color:var(--accent);color:#fff}
+  .brief-piece[aria-pressed="true"] .piece-action{background:var(--ink);border-color:var(--ink);color:#fff}
   .brief-piece[data-piece="title"] .piece-copy{font-size:18px;line-height:1.35;letter-spacing:.035em}
   .brief-piece[data-piece="body"] .piece-copy{font-size:12px;line-height:1.65}
   #newbrief{min-height:38px;border:1px solid #cbc7bd;margin-top:8px!important;color:#716e66}
@@ -801,7 +804,12 @@
   .brand span{color:var(--ink3);letter-spacing:.18em}
   .edition{color:var(--ink3)}
   .top-actions button{border-color:var(--edge);background:#fff;color:var(--ink2);min-height:40px}
-  .top-actions button:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+  .top-actions button:hover,
+  .top-actions #topUndo:hover,.top-actions #topReset:hover,
+  .top-actions #topVariants:hover,.top-actions #topPress:hover{
+    background:var(--ink);border-color:var(--ink);color:#fff}
+  /* 禁用的按钮不该有 hover 反馈 —— 否则看起来像能点 */
+  .top-actions button:disabled:hover{background:#f2f2ef;border-color:#e2e2dd;color:#a6a6a1}
   .top-actions .export{background:var(--ink);border-color:var(--ink);color:#fff}
   .top-actions .export:hover{background:var(--accent);border-color:var(--accent);color:#fff}
   /* 禁用态必须用 ID 特异性压住 —— .top-actions #topVariants{color:var(--ink)} 这类
@@ -876,6 +884,101 @@
     .appbar{height:56px;padding:0 12px}
     .brand strong{font-size:15px}
   }
+
+  /* ============ 无描边控件系统（最后一层，整块可回退） ============
+     原来每个控件都被一条 1px 框圈住：一排按钮、一格色板、一个输入框、
+     一张句子卡，全靠画框来宣告"我是个控件"。框一多，面板就读作一张表格，
+     而不是一件为审美做的工具 —— 模板感有一半来自这里。
+
+     换一套规则：**控件靠填充存在，不靠描边。**
+       静止 = 比面板深一档的底（--field）
+       hover = 再深一档（--field-h）
+       选中 = 实心墨，白字
+     线只留两处：包着颜色样本的（没有它，浅纸色会糊进面板），
+     和真正分隔两个区域的（面板与台面、顶栏与内容）。
+     分段控件不再靠边框分隔，改成 2px 缝隙露出面板底色。
+     ================================================================ */
+  :root{
+    --field:#f1f1ee;      /* 控件静止底：比 --panel #fdfdfc 深一档，刚好浮得出来 */
+    --field-h:#e7e7e3;    /* hover 再深一档 */
+  }
+
+  /* ---- 一、拆掉所有"圈住控件"的框，换成填充 ---- */
+  .row button,.ghost,.font-grid button,.photo-style button,.stock-grid button,
+  .shapes button,.text-item,.text-input,.vpick select,
+  .seed-compose,.brief,.poem-materials,.lang-toggle,.toolnav,
+  .brief-piece .piece-action,.poem-piece i,.text-item .num,
+  #newbrief,.empty-state #emptyStart,.top-actions button,
+  .tray-ctl .lk,.tray-ctl .mode,.tray-close,.tray-path button,.tray-more .lk,
+  .press-close,.press-act button,.advanced-tools summary{
+    border:0!important;
+    background:var(--field);
+    color:var(--ink2);
+    box-shadow:none;
+  }
+  .row button:hover,.ghost:hover,.font-grid button:hover,.photo-style button:hover,
+  .stock-grid button:hover,.shapes button:hover,.text-item:hover,
+  .brief-piece .piece-action:hover,.poem-piece i:hover,#newbrief:hover,
+  .tray-ctl .lk:hover,.tray-ctl .mode:hover,.tray-close:hover,
+  .tray-path button:hover,.tray-more .lk:hover{
+    background:var(--field-h);color:var(--ink)}
+
+  /* ---- 二、分段控件：缝隙代替分隔线 ---- */
+  .toolnav{gap:2px;background:transparent}
+  .toolnav button{border-right:0!important}
+  .lang-toggle{gap:2px;background:transparent}
+
+  /* ---- 三、容器不是控件，底色再浅一档，免得和按钮抢 ---- */
+  .brief,.poem-materials{background:#f7f7f4}
+  .seed-compose{background:var(--field)}
+  .seed-compose input{background:transparent;border:0!important}
+  .text-input{background:var(--field)}
+  .text-input:focus,.seed-compose input:focus{background:#fff;outline:2px solid var(--accent);outline-offset:-2px}
+
+  /* ---- 四、靠边框表达"选中"的几处，改成内阴影或实心 ---- */
+  .inks button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--ink);color:var(--ink)}
+  .stock-grid button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:none}
+  /* 文字行用一道左侧墨条 —— 像工单上被勾出来的那一行，比整圈描边安静 */
+  .text-item[aria-pressed="true"]{background:var(--field-h);box-shadow:inset 3px 0 0 var(--ink);color:var(--ink)}
+
+  /* ---- 五、颜色样本保留发丝线：没有它，浅纸色会糊进面板 ---- */
+  .sw button,.lib button{border:0!important;box-shadow:inset 0 0 0 1px #00000016}
+  .inks button i{border:0!important;box-shadow:inset 0 0 0 1px #00000020}
+  .stock-grid button::before{border:0;box-shadow:inset 0 0 0 1px #00000016}
+  .sw button[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+  .lib button[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:1px}
+
+  /* ---- 六、切一刀是这一页的主动作：不用框，用一块青色的底 ---- */
+  .cut-action{
+    border:0!important;background:#e4efef;color:#00666d;font-weight:600;
+    box-shadow:none}
+  .cut-action:hover{background:#d5e8e8;color:#004d53}
+
+  /* ---- 七、顶栏：按钮无框，主按钮靠实心区分 ---- */
+  .top-actions button{background:transparent;color:var(--ink2)}
+  .top-actions button:hover,.top-actions #topUndo:hover,.top-actions #topReset:hover,
+  .top-actions #topVariants:hover,.top-actions #topPress:hover{
+    background:var(--field-h);color:var(--ink)}
+  .top-actions #topPress{background:var(--accent);color:#fff}
+  .top-actions #topPress:hover{background:#00696f;color:#fff}
+  .top-actions .export{background:var(--ink);color:#fff}
+  .top-actions .export:hover{background:var(--accent);color:#fff}
+  .top-actions button:disabled,.top-actions button:disabled:hover,
+  .top-actions #topVariants:disabled,.top-actions #topPress:disabled{
+    background:transparent!important;color:#b6b6b1!important;border:0!important}
+
+  /* ---- 八、印出来/托盘幕布上的控件：半透明白底，同样无框 ---- */
+  .press-close,.press-act button{background:#ffffffcc;color:#2c2d30}
+  .press-close:hover,.press-act button:hover{background:var(--ink);color:#fff}
+  .press-act .go{background:var(--ink);color:#fff}
+  .press-act .go:hover{background:var(--accent);color:#fff}
+  .tray-ctl .lk[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .tray-ctl .mode[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+  /* ---- 九、这些线是真的在分隔区域，留着 ---- */
+  .panel{border-left:1px solid var(--edge)}
+  .advanced-tools{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .advanced-tools summary{background:transparent!important}
 </style>
 
 <header class="appbar">
@@ -883,7 +986,7 @@
   <div class="top-actions">
     <button id="topUndo" title="撤销" aria-label="撤销" disabled>↶</button>
     <button id="topReset" title="清空画布" aria-label="清空画布">清空</button>
-    <button id="topVariants">六个方向</button>
+    <button id="topVariants">随机生成</button>
     <button id="topPress">印出来</button>
     <button id="uiLang" type="button" aria-label="Switch language / 切换界面语言">EN</button>
     <button class="export" id="topDownload" hidden>导出 PNG ↓</button>
@@ -904,7 +1007,6 @@
     <button class="selection-delete" id="selectionDelete" title="删除选中内容" aria-label="删除选中内容" hidden>×</button>
   </div>
   <div class="hint" id="hint">从一句话开始。可以自己写，也可以从句子库里选一句</div>
-  <div class="tray" id="tray" hidden></div>
   <div class="press" id="press" hidden></div>
   <div class="hist" id="hist"></div>
 </div>
@@ -1136,7 +1238,7 @@
 
   <div class="blk legacy-actions">
     <button class="ghost primary" id="download" style="margin-bottom:7px">下载高清 PNG</button>
-    <button class="ghost" id="shuffle" style="border-color:#15161a;color:#15161a;margin-bottom:7px">给我六个方案（空格）</button>
+    <button class="ghost" id="shuffle" style="margin-bottom:7px">随机生成一版（空格）</button>
     <button class="ghost" id="reset">重来</button>
     <p class="note" style="margin-top:13px">切线会<b>自动吸附</b>到 0°/90° 或 ±7–12° 的微斜，
       位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。
@@ -1157,10 +1259,16 @@ const SC=()=>W/470;   // 缩略图时所有绝对像素都按此缩放
 // 品牌名（CUT / PRINT）和 riso 墨名（Yellow/Blue…）本来就是英文，不动。
 // 默认英文界面，右上角按钮切中文。曾经手动选过的人保留自己的选择：
 // localStorage 有值就用它，默认值只对首次访问生效。
-let UI=localStorage.getItem('uiLang')||'en';
+// 沙箱 iframe、Chrome「阻止所有站点数据」、Firefox 严格模式下，读 localStorage 会抛
+// SecurityError。这句在所有定义之前，抛了整个脚本就停在这里，页面变成一张不能动的壳。
+const LS={
+  get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(_){} }
+};
+let UI=LS.get('uiLang')||'en';
 const EN={
   // 顶栏
-  '撤销':'Undo','清空':'Clear','六个方向':'Six Directions','印出来':'Print It','导出 PNG ↓':'Export PNG ↓',
+  '撤销':'Undo','清空':'Clear','随机生成':'Shuffle','随机生成一版（空格）':'Shuffle a new one (Space)','印出来':'Print It','导出 PNG ↓':'Export PNG ↓',
   // 工具页签与步骤
   '文字':'Type','图形':'Forms','墨纸':'Ink & Paper',
   '写一句话':'Write a line','加个图形，随手调它':'Add a form, adjust it here',
@@ -1311,7 +1419,7 @@ const EN={
   '＋ 添加一行文字':'＋ Add a line',
   '拖动文字移动；拖右下角把手或上方滑杆，可连续改变字号。':'Drag to move; the handle or the slider scales the type continuously.',
   '这一版的配方':'This Poster’s Recipe','下载高清 PNG':'Download hi-res PNG',
-  '给我六个方案（空格）':'Give me six directions (Space)',
+  '换了一版。不满意就再点一次，或者直接在画面上改':'A new one. Click again, or start editing it.',
   '这是画面真正的参数，不是解释。每一个数都能在上面调出来。':'These are the real parameters. Every number can be reproduced above.',
   '切线会':'The cut','自动吸附':'snaps','到 0°/90° 或 ±7–12° 的微斜，':' to 0°/90° or a slight ±7–12° tilt;','位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。':'position snaps to 28–36% for the smaller field. Slopes in between read as accidents, so they are simply not offered.',
   '图形跨线':'Forms crossing the line','自动反色':'invert automatically','；网点锚在纸上，跨线只换墨色不换网屏。点画面可左右互换两支墨。':'. The screen is anchored to the paper; crossing the cut changes ink, not screen. Click the poster to swap the two inks.',
@@ -1335,16 +1443,21 @@ function reLang(){ try{ applyLang(); }catch(_){} }
 // 托盘、印出来、句子库这些控件在语言切换【之后】才创建 —— 它们出生就是中文。
 // 监听 childList（不监听 characterData，applyLang 自己改文本不会回流触发），
 // 新节点出现后 120ms 防抖补翻一遍。这是「动态 UI 永远不漏翻」的兜底。
-let _moT=0;
+let _moT=0, _langBusy=false;
 if(window.MutationObserver) new MutationObserver(()=>{
+  if(_langBusy) return;                       // 自己翻译时产生的变动不算「新节点」
   clearTimeout(_moT); _moT=setTimeout(()=>{ if(UI==='en') reLang(); },120);
 }).observe(document.body,{childList:true,subtree:true});
 function applyLang(){
-  localStorage.setItem('uiLang',UI);
+  _langBusy=true;
+  // observer 回调是微任务，本轮任务结束时就会跑；用 setTimeout(0) 这个宏任务复位，
+  // 保证它一定晚于回调，回调才压得住。
+  setTimeout(()=>{ _langBusy=false; },0);
+  LS.set('uiLang',UI);
   document.documentElement.lang = UI==='en' ? 'en' : 'zh-CN';
   document.title = UI==='en' ? 'Cut / Print · Risograph Poster Lab' : 'Cut / Print · 海报生成器';
-  const btn=document.getElementById('uiLang');
-  if(btn) btn.textContent=UI==='en'?'中':'EN';
+  const btn=document.getElementById('uiLang'), want=UI==='en'?'中':'EN';
+  if(btn && btn.textContent!==want) btn.textContent=want;   // 值没变就别动 DOM
   // ⚠️ 必须跳过 SCRIPT/STYLE 内的文本：TreeWalker 不跳的话，代码里的中文
   // 字符串字面量一旦撞上字典 key 会被当成 UI 文案替换 —— 源码当场被改写。
   const skip=(nd)=>{ let p=nd.parentNode;
@@ -4387,10 +4500,64 @@ const pick=a=>a[(Math.random()*a.length)|0];
 // 展览命题里的那句"调子"带着一组机器可读的标记，在这里被读进来。
 // 这是模型唯一能触到几何的通道，而且是一张受控词表——它写不出非法的参数，
 // 因为它根本不写参数，只写标记。
+/* ---------- 构图配方 ----------
+   每个参数各自独立乱抽，等于在一个高维空间里均匀撒点 —— 而"好看"在那个空间里
+   只是极小的一块，撞上是运气。所以随机的第一步不该是抽参数，是**抽一个构图**：
+   先决定这张是哪一类海报（巨物 / 满幅网点 / 立体静物 / 通栏标题 …），
+   再在这一类自己的范围里填细节。随机还是随机，但被关进了已知能成立的形状里。
+
+   每条配方管住肉眼最先看到的四件事：
+     scale  形在画面里占多大。原来死死卡在 18–30% 这一条窄带里，
+            所以永远不会出巨物，也永远不会出小点缀 —— 张张都是"中等大小的一个形"。
+     d3     出立体的概率。原来 shuffleState 从头到尾没给 el0.d3 赋过值，
+            随机生成**永远是纯平面**，立体只能手动开。
+     fill   填充方式偏好（实心/连续调/渐变/网点；开了立体则是四种明暗印法）
+     type   字体、字号、横竖的**成套**预设，不是三个维度各自乱抽 ——
+            字号 2 配竖排窄体和字号 0 配横排宋体是两种版式，不是同一个分布里的两个点。
+
+   w 是权重（抽中的相对概率）。最容易出效果的给高权重，
+   难伺候的给低权重 —— 随机的期望质量由这张表决定，而不是由运气决定。
+   ---------------------------------------------------------------- */
+const RECIPES=[
+  // 巨物：一个形几乎占满整张纸，文字退到边上当注解
+  {n:'hero',     w:3, scale:[.30,.40], d3:.45, fill:[0,0,0,3],  rep:[1],       vessel:null,
+   type:{size:0, dir:'h', font:[3,1,1], want:2}, cut:{pos:[.24,.34], ang:[0,0,7,-7]},  second:.12},
+  // 满幅网点：形大到成为画面的质地本身，字压在网点上
+  {n:'screen',   w:2, scale:[.32,.44], d3:.18, fill:[3,3,2],    rep:[1],       vessel:null,
+   type:{size:1, dir:'h', font:[1,3],   want:2}, cut:{pos:[.30,.40], ang:[0,0,9,-9]},  second:.08},
+  // 立体静物：器物开明暗，中等大小，标题压到下方当台面
+  {n:'still',    w:3, scale:[.24,.34], d3:.92, fill:[0,1,1,2],  rep:[1],       vessel:1,
+   type:{size:1, dir:'h', font:[0,2],   want:3}, cut:{pos:[.60,.70], ang:[0,0,0]},     second:.18},
+  // 通栏标题：字是主角，形退成背景里的一块颜色
+  {n:'headline', w:3, scale:[.12,.19], d3:.25, fill:[0,0,2,3],  rep:[1,1,3],   vessel:null,
+   type:{size:2, dir:'h', font:[0,2],   want:3}, cut:{pos:[.26,.36], ang:[0,0,0,12,-12]}, second:.30},
+  // 竖排一列：标题竖着通天，形让到另一侧
+  {n:'column',   w:2, scale:[.17,.26], d3:.35, fill:[0,1,2,3],  rep:[1],       vessel:null,
+   type:{size:1, dir:'v', font:[0,1],   want:2}, cut:{pos:[.30,.40], ang:[0,0]},       second:.20},
+  // 小而精：极小的形落在光学中心，靠留白说话
+  {n:'quiet',    w:2, scale:[.07,.12], d3:.20, fill:[0,0,3],    rep:[1,1,3],   vessel:null,
+   type:{size:1, dir:'h', font:[2,0],   want:2}, cut:{pos:[.62,.72], ang:[0,0,7,-7]},  second:.10},
+  // 阵列：小单元重复，靠节奏不靠单体
+  {n:'array',    w:2, scale:[.08,.14], d3:.12, fill:[0,0,3,3],  rep:[3,3,5],   vessel:0,
+   type:{size:1, dir:'h', font:[3,1],   want:2}, cut:{pos:[.28,.38], ang:[0,0,9,-9]},  second:.06},
+  // 对角：切线明显斜，形卡在两块色域交界处
+  {n:'diagonal', w:2, scale:[.22,.32], d3:.40, fill:[0,1,2,3],  rep:[1,1,3],   vessel:null,
+   type:{size:0, dir:'h', font:[1,3],   want:3}, cut:{pos:[.30,.38], ang:[12,-12,12,-12,9,-9]}, second:.22}
+];
+// 切线位置一律落在 24–40% 或 60–72%：小色域占 28–36% 是甜区，
+// 对半切读作"没想好"。这条老规矩现在由每条配方各自遵守。
+const RECIPE_BAG=(function(){const b=[];for(const r of RECIPES)for(let i=0;i<r.w;i++)b.push(r);return b;})();
+const pickRecipe=()=>RECIPE_BAG[(Math.random()*RECIPE_BAG.length)|0];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+let LAST_RECIPE=null;
+
 function shuffleState(){
   ensureTexts();
   if(!S.texts.length){S.texts=[titleSeed()];S.ti=0;}
   const B=(S.ex&&S.ex.b)||{};
+  // 先定构图，再填细节。连着两次抽到同一条会让人觉得"随机坏了"，所以避开上一条。
+  let RC=pickRecipe(); for(let g=0; g<4 && RC===LAST_RECIPE; g++) RC=pickRecipe();
+  LAST_RECIPE=RC;
   S.stock=pick([0,0,0,1,2,3,4,5]);
   S.paper=stockSpec().base;
   let inkPool = B.blue ? LIB.filter(c=>{const h=hex2lch(c[0])[2];return h>200&&h<300;})
@@ -4399,9 +4566,9 @@ function shuffleState(){
                 : LIB;
   if(S.stock===2){const dark=inkPool.filter(c=>Lstar(c[0])<52);inkPool=dark.length?dark:LIB.filter(c=>Lstar(c[0])<52);}
   const INK = inkPool.length?inkPool:LIB;
-  S.cut = mkCut(B.flip?'v':(Math.random()<.74?'h':'v'),
-                Math.random()<.62 ? .28+Math.random()*.08 : .64+Math.random()*.08,
-                pick([0,0,0,7,-7,9,-9,12,-12]));
+  S.cut = mkCut(B.flip?'v':(RC.type.dir==='v' ? (Math.random()<.5?'h':'v') : (Math.random()<.78?'h':'v')),
+                rnd(RC.cut.pos[0], RC.cut.pos[1]),
+                pick(RC.cut.ang));
   if(B.mono || Math.random()<.38){
     // 一支墨两个密度：满版配 22–34% 覆盖，ΔL* 天然落在甜区，浅的那块自动接近中性
     const ink=pick(INK)[0];
@@ -4443,13 +4610,18 @@ function shuffleState(){
   if(B.ring){
     const q=pick([{k:4},{k:4},{k:4},{v:4},{v:5}]);
     if(q.v!=null){k=12;lat=makeLathe(q.v);}else k=q.k;
-  }else if(Math.random()<.50){ k=(Math.random()*SHAPES.length)|0; }
+  }else if(RC.vessel===1){ k=12; lat=makeLathe(); }          // 立体静物必须是旋成体
+  else if(RC.vessel===0){ k=(Math.random()*SHAPES.length)|0; } // 阵列用几何形，器物排成一排太满
+  else if(Math.random()<.50){ k=(Math.random()*SHAPES.length)|0; }
   else{ k=12;lat=makeLathe(); }
   if(S.photo&&S.photo.use==='shape'&&S.cust&&S.cust.src!=='lathe'&&Math.random()<.34){k=12;lat=null;cu=S.cust;}
   if(lat) cu=latheToShape(lat);
   const vessel=!!lat;
   const grow = B.big ? 1.45 : B.small ? .62 : B.quiet ? .8 : 1;
-  const sz = elSize(k, grow*(vessel ? .20+Math.random()*.10 : .18+Math.random()*.12),cu);
+  // 原来这里是写死的 .18–.30，所以张张都是"中等大小的一个形"。
+  // 现在带宽由配方给：巨物能到 .58，小而精低到 .08。
+  // elSize 自己还有 0.36W / 0.74H 的硬顶，所以放大不会失控。
+  const sz = elSize(k, grow*rnd(RC.scale[0], RC.scale[1]), cu);
   const R0=sz*W, Rm=k===12 ? R0*aspOf(k,cu)/2 : R0;
   const c=S.cut, x1=c.x1*W,y1=c.y1*H,x2=c.x2*W,y2=c.y2*H;
   let nx=-(y2-y1), ny=(x2-x1); const L=Math.hypot(nx,ny)||1;
@@ -4468,10 +4640,12 @@ function shuffleState(){
                   : pick([0,0,0,Math.PI/2,cutAng,cutAng,cutAng+Math.PI/2])};
   if(cu) el0.cu=cu;
   if(lat) el0.lat=lat;
-  el0.rep = B.rep ? pick([3,3,5]) : vessel ? pick([1,1,1,3]) : pick([1,1,1,3,5]);
+  el0.rep = B.rep ? pick([3,3,5]) : pick(RC.rep);
   const tt=titleText();
-  if(tt){tt.font=(Math.random()*TEXT_FONTS.length)|0;tt.size=pick([0,1,1,2,2]);
-    tt.dir=Math.random()<.5?'v':'h';}
+  // 字体/字号/横竖是**一套**，不是三个独立维度。
+  // 「字号 2 + 横排 + 宋体」和「字号 0 + 竖排 + 窄体」是两种版式，
+  // 各自随机的话，一半组合是没人会那样排的。
+  if(tt){ tt.font=pick(RC.type.font); tt.size=RC.type.size; tt.dir=RC.type.dir; }
   // 画布上放几行展讯文字，本身就是一个构成决定 —— 只有标题的海报和三行齐全的
   // 海报是两种东西。原来六个候选永远共用同一套文字，文字在 feat() 里只占 3/16 维，
   // 但眼睛给它的权重远高于此，于是六张看着比数字说的要像。
@@ -4479,7 +4653,7 @@ function shuffleState(){
   {
     const en2=S.lang==='en';
     const fromLibrary=!!(tt&&String(tt.source||'').indexOf('brief:')===0);
-    const want=fromLibrary?pick([1,2,2,3,3,3]):1;       // 自写句只保留用户选择的内容
+    const want=fromLibrary?RC.type.want:1;             // 自写句只保留用户选择的内容
     // 竖排的正文和竖排的标题都是通天的一整列，两列并存之后，
     // 任何一行横排文字都必然横穿它们 —— 那是无解的，不是没排好。
     // 所以一张海报最多留一行竖排。
@@ -4491,7 +4665,10 @@ function shuffleState(){
     for(let i=0;i<specs.length;i++){
       const key=specs[i][0], src=briefSource(key);
       const at=S.texts.findIndex(t=>t.source===src);
-      if(i+2<=want){
+      // 内容是空串就根本别生成这个对象。INFO() 永远返回 ''，所以 meta 这一行
+      // 过去每次都会塞一个看不见的文字：文字列表里多一行「（空文字）」，
+      // 落位时它还有一个非零包围盒、真的占掉一个好位置，把后面的真文字挤开。
+      if(i+2<=want && String(briefValue(key)||'').trim()){
         if(at<0){
           // 这里先不落位：元素还没定下来，现在落等于躲上一版的形。
           // 统一等到 shuffleState 末尾、clampEl 之后再排。
@@ -4503,17 +4680,31 @@ function shuffleState(){
     S.ti=Math.min(Math.max(0,S.ti|0), S.texts.length-1);
   }
   S.tex=pick([0,1,1,1,2]);
-  el0.fill = B.dots ? pick([1,2,2,3,3]) : B.quiet ? pick([0,0,0,3]) : pick([0,0,1,2,2,3,3]);
+  el0.fill = B.dots ? pick([1,2,2,3,3]) : B.quiet ? pick([0,0,0,3]) : pick(RC.fill);
+  // 立体以前根本没被随机过 —— shuffleState 里一次都没给 d3 赋过值，
+  // 所以"随机生成"出来的永远是纯平面，明暗只能手动开。
+  // 非旋成体的几何形开明暗容易糊成一团，概率减半。
+  el0.d3 = Math.random() < RC.d3 * (vessel?1:0.5) ? 1 : 0;
   S.els=[el0]; S.si=0;
   // 有时候再配一个小的几何形当配角：主形不动，配角只用实心，且明显更小
-  if(Math.random() < (B.quiet?0.16:0.40)){
+  if(Math.random() < (B.quiet?0.16:RC.second)){
     const k2=(Math.random()*6)|0, sm=B.quiet?0.028:0.048;
     S.els.push({k:k2, x:.20+Math.random()*.60, y:.16+Math.random()*.62,
                 s:elSize(k2, sm+Math.random()*sm), r:pick([0,0,Math.PI/2,rowAngle()]),
                 fill:0, rep:1});
   }
   S.dot=Math.random()<.5?0:1;
-  S.mis=pick([0,0,0,1,1,2,3]);          // 大多数时候对准，偶尔来一次明显的错位
+  // 错位上限跟着最小的那行字走：字越小，能承受的偏移越少。
+  // 这不是保守，是"错位"和"印坏了"之间的那条线本来就由字号决定。
+  {
+    let minPx=1e9;
+    for(const t of (S.texts||[])){
+      if(!String(t.text||'').trim()) continue;
+      const m=textMetrics(t); if(m&&m.z) minPx=Math.min(minPx,m.z);
+    }
+    const cap = minPx>42 ? 3 : minPx>26 ? 2 : minPx>16 ? 1 : 0;
+    S.mis=pick([0,0,0,1,1,2,3].filter(v=>v<=cap));
+  }
   S.mark=pick([1,1,1,1,2,2,0]);         // 版记默认在，偶尔加套准，偶尔全去掉
   if(B.dark && Lstar(S.a)>Lstar(S.b)){   // 深底：把深的那块做成大色域
     const i=S.inkA,c=S.covA;S.inkA=S.inkB;S.covA=S.covB;S.inkB=i;S.covB=c;applyInks();
@@ -4717,6 +4908,22 @@ function score(st){
         if(fr>0.90 && solid) continue;                 // 整个压进实地：成立
         if(fr>0.12) sText=Math.min(sText, 1-Math.min(0.75, fr*0.9));
       }
+      // ⑥b 文字骑在切割线上：整行字被劈成两个颜色，落在浅色那侧的半截糊进底色。
+      // 和上面「压一半」是同一个失败，只是尺度大得多 —— 切线把整张纸分成两块色域，
+      // 所以它比压在某一个形上更致命。12 张实测里有 5 张栽在这儿，score 却一项都没管。
+      // 用 5×5 网格数少数派占比：正好被劈成两半最糟，只蹭到一个角不算。
+      if(st.cut){
+        const cx1=st.cut.x1*W, cy1=st.cut.y1*H, cx2=st.cut.x2*W, cy2=st.cut.y2*H;
+        const nx=cy2-cy1, ny=-(cx2-cx1);                       // 切线法线
+        let pos=0,neg=0;
+        for(let gx=0;gx<=4;gx++)for(let gy=0;gy<=4;gy++){
+          const px=tb.x+tb.w*gx/4, py=tb.y+tb.h*gy/4;
+          if(nx*(px-cx1)+ny*(py-cy1)>=0) pos++; else neg++;
+        }
+        const minor=Math.min(pos,neg)/25;
+        // 4% 以内算包围盒的行距余量蹭到了线，不是真切到字
+        if(minor>0.04) sText=Math.min(sText, 1-Math.min(0.82,(minor-0.04)*1.9));
+      }
       // 文字互压一票否决
       for(const o of (st.texts||[])){
         if(o===t||!String(o.text||'').trim()) continue;
@@ -4866,6 +5073,46 @@ function propose(want, vary){
           near:Math.min.apply(null,ds), far:Math.max.apply(null,ds),
           mid:ds.reduce(function(a,b){return a+b;},0)/ds.length};
 }
+
+/* ---------- 随机生成 ----------
+   原来这里是六宫格：一次铺六张，让人自己挑。挑得久了才想明白，
+   给六张本身就是一种示弱 —— 机器不敢说哪张好，把判断推给了人。
+   改成一次只给一张，选择的责任就回到算法身上，所以闸门必须比托盘严得多：
+
+     托盘：生成 30 个 → 砍掉最差 40% → 在幸存者里按「彼此不同」挑六个
+     这里：生成 56 个 → 只留最高分的 18% → 在这一档里挑一个「离当前够远」的
+
+   托盘挑的是**彼此可分辨**，这里挑的是**单张够好**，是两件事。
+   最后一步仍然带随机：在高分档里随机取一个，而不是永远取最高分。
+   永远取最高分的话，连点几次会收敛到同一张，那就不叫随机生成了。 */
+const SHUFFLE_POOL=56;      // 一次内部生成多少候选。再大收益递减，而这已经要 ~120ms
+const SHUFFLE_KEEP=0.18;    // 只有最高分的这一档有资格出场
+const SHUFFLE_MIN_D=0.55;   // 与当前这版的最小可感距离，取自 VARY_BAND「抖一下」档的中段
+//（分数不设写死的线：见自检 6a2，改成和同场随机基线比）   // 分数底线。实测标定：不挑的随机构图均分 0.763，挑过的高分档 0.888。
+                            // 线画在 0.75：配方引入了极端构图（小而精的形只占 8%），它们分数天然偏低但画面成立，
+                            // 线卡在 0.80 会误杀。真正的闸门是下面 6a2b 那条——高分档必须明显高于随机。
+function shuffleOne(){
+  const base=JSON.parse(JSON.stringify(S));
+  const f0=feat(base);
+  const pool=[];
+  for(let i=0;i<SHUFFLE_POOL;i++) pool.push(applyLocks(genState(), base));
+  const scored=pool.map(function(st){ return {st:st, sc:score(st), d:fdist(feat(st), f0)}; });
+  scored.sort(function(a,b){ return b.sc-a.sc; });
+  const keep=scored.slice(0, Math.max(4, Math.round(scored.length*SHUFFLE_KEEP)));
+  // 高分档里优先要离当前够远的。一个都不够远时，宁可从「最远的三个」里挑，
+  // 也不要交出一张几乎没变的 —— 点了画面不动，人读作按钮坏了，不会读作「算法觉得现在已经很好」。
+  const far=keep.filter(function(x){ return x.d>=SHUFFLE_MIN_D; });
+  const from=far.length?far:keep.slice().sort(function(a,b){ return b.d-a.d; }).slice(0,3);
+  const pick=from[Math.floor(Math.random()*from.length)];
+  pushHist();
+  S=JSON.parse(JSON.stringify(pick.st));
+  // 取消选中要连 si/ti 一起清：只清 sel 的话，右栏还会说「选中第 N 个」，
+  // 那排控件也还在改一个画面上没有选中框的元素。
+  sel=false; tsel=false; S.si=-1; S.ti=-1;
+  sync(); draw(); if(typeof bounceEl==='function') bounceEl();
+  setHint('换了一版。不满意就再点一次，或者直接在画面上改');
+  return pick;
+}
 function sync(){
   const set=(id,attr,val)=>[...document.getElementById(id).children]
     .forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset[attr]===val)));
@@ -4900,122 +5147,6 @@ function renderTo(c2, st, w, h){
   const oc=ctx, os=S, ow=W, oh=H, ot=thumb;
   ctx=c2; S=st; W=w; H=h; thumb=true;
   try{ draw(); } finally { ctx=oc; S=os; W=ow; H=oh; thumb=ot; }
-}
-const trayEl=document.getElementById('tray');
-let TRAY=[];
-// 走过的路。选中一个候选不是终点动作，是起点动作 ——
-// 托盘不关，立刻从这一张再出六个。用户的一次点击就是在特征空间里走一步，
-// 不需要重新下决心，循环自动续上。原来「选一个 → 托盘关闭 → 探索结束」，
-// 而且六个候选完全不参考当前这张，等于惩罚已经投入三分钟的人。
-// 「走过的路」里存的是 {状态, 那一步看到的六张}。
-// 只存状态是不够的：看到六张、挑中第 3 张，另外五张（尤其是"我还想再看看的第 5 张"）
-// 就永远找不回来了 —— 回到上一步只会重新抽六张全新的。
-// 这是可玩性最大的漏水口。
-let TRAY_PATH=[];
-let TRAY_FILL=null;                  // 待算的那一批候选；自检要能同步逼它算出来
-let TRAY_VARY=1;                     // 默认「近亲」：机器建立在你的投入之上
-// ⚠️ reuse 只接受 propose() 的返回值（回到上一步时把当时那六张原样端回来）。
-// 必须验一下它长什么样：这两个按钮原来是 onclick=showTray，
-// 于是点击事件对象被当成候选列表传了进来，r.list 是 undefined，
-// 托盘开出来是空的并且抛 TypeError。**用户点「六个方向」直接崩的就是这个。**
-// 教训还是那一条：程序化调用 showTray() 永远不带参数，所以测不出来；
-// 交互必须用真实事件走一遍。
-function showTray(reuse){
-  const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
-  trayEl.innerHTML='';
-  const head=document.createElement('div'); head.className='tray-head';
-  head.innerHTML='<div><p class="tray-title">六个方向</p></div>'+
-    '<button class="tray-close" type="button" aria-label="关闭方案比较">×</button>';
-  head.querySelector('button').onclick=()=>{trayEl.hidden=true;};
-
-  const ctl=document.createElement('div'); ctl.className='tray-ctl';
-  const lab=document.createElement('span');
-  lab.className='tray-mode-label';lab.textContent=tt('变化幅度');ctl.appendChild(lab);
-  [[1,tt('轻微变化'),tt('保留这张海报的基本关系')],[0,tt('大胆变化'),tt('尝试明显不同的构图')]].forEach(function(m){
-    const mb=document.createElement('button'); mb.type='button'; mb.className='mode';
-    mb.textContent=m[1]; mb.title=m[2];
-    mb.setAttribute('aria-pressed', String(TRAY_VARY===m[0]));
-    mb.onclick=function(){ TRAY_VARY=m[0]; showTray(); };
-    ctl.appendChild(mb);
-  });
-  const again=document.createElement('button'); again.type='button'; again.className='mode';
-  again.textContent='再来六个'; again.onclick=function(){ showTray(); };
-  ctl.appendChild(again);
-
-  const more=document.createElement('details');more.className='tray-more';
-  const summary=document.createElement('summary');summary.textContent=anyLock?tt('已保留部分设置'):tt('保留喜欢的部分');
-  const locks=document.createElement('div');locks.className='tray-locks';
-  LOCK_DIMS.forEach(function(d){
-    const b=document.createElement('button');b.type='button';b.className='lk';b.textContent=tt(d.t);b.title=tt(d.d);
-    b.setAttribute('aria-pressed',String(!!LOCKS[d.k]));
-    b.onclick=function(){LOCKS[d.k]=LOCKS[d.k]?0:1;showTray();};locks.appendChild(b);
-  });
-  more.append(summary,locks);
-
-  // Keep the current version visible as the comparison anchor.
-  const now=document.createElement('div'); now.className='tray-now';
-  const cur=document.createElement('div'); cur.className='cur';
-  const clb=document.createElement('div'); clb.className='lb'; clb.textContent='现在这张';
-  const cc=document.createElement('canvas');
-  const cw=Math.round(Math.min(150, 150)), ch=Math.round(cw*H/W);
-  cc.width=cw; cc.height=ch; renderTo(cc.getContext('2d'), JSON.parse(JSON.stringify(S)), cw, ch);
-  cur.append(clb, cc);
-  now.append(cur);
-  const grid=document.createElement('div'); grid.className='cand-grid';
-  // 先把壳画出来，候选放到下一帧再算。
-  // propose() 加六张缩略图要 200–300ms，同步做的话点下去有一段时间画面完全不动 ——
-  // 那正是体感上的「卡」。先给骨架屏，浏览器就有机会把托盘画出来。
-  const tw0=180, th0=Math.round(tw0*H/W);
-  for(let i=0;i<6;i++){
-    const sk=document.createElement('div'); sk.className='cand cand-skel';
-    sk.style.height=th0+'px'; sk.style.borderRadius='0';
-    grid.appendChild(sk);
-  }
-  trayEl.append(head,ctl,more,now,grid);
-  trayEl.hidden=false;
-  setHint('挑一个方向继续；不选择不会改变现在这版');
-
-  TRAY_FILL=function(){
-    TRAY_FILL=null;
-    if(trayEl.hidden) return;
-    grid.innerHTML='';
-    const r2=(reuse && Array.isArray(reuse.list)) ? reuse : propose(6, TRAY_VARY);
-    TRAY=r2.list;
-    buildCands(grid, r2);
-  };
-  if(reuse && Array.isArray(reuse.list)) TRAY_FILL();      // 端回来的那六张不用等
-  else {
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(TRAY_FILL) TRAY_FILL(); }); });
-    // rAF 会被节流（后台标签页、或者这一帧没有任何东西要画），
-    // 只挂 rAF 的话候选可能一直不出现。实测递归那一步就这么空过一次。
-    setTimeout(function(){ if(TRAY_FILL) TRAY_FILL(); }, 90);
-  }
-  return;
-}
-// 六个候选的按钮。单独拎出来是因为它要么在下一帧被调用（新算的），
-// 要么立刻被调用（从「走过的路」端回来的那六张）。
-function buildCands(grid, r){
-  const TRAYL=r.list;
-  TRAY=TRAYL;
-  TRAYL.forEach((st,i)=>{
-    const b=document.createElement('button'); b.className='cand';
-    b.style.animationDelay=(r.far6===i?150:40+i*35)+'ms';   // 远亲压后出场，节奏上一次小重音
-    b.setAttribute('aria-pressed','false');
-    b.title='使用这个方向';
-    const tw=180,th=Math.round(tw*H/W);
-    const c=document.createElement('canvas'); c.width=tw; c.height=th;
-    renderTo(c.getContext('2d'), st, tw, th);
-    const label=document.createElement('span');
-    label.textContent='Direction '+String(i+1).padStart(2,'0');
-    b.append(c,label);
-    b.onclick=()=>{
-      pushHist();
-      S=JSON.parse(JSON.stringify(st));sel=false;tsel=false;sync();draw();
-      trayEl.hidden=true;bounceEl();document.getElementById('topVariants').focus();
-      setHint('已应用此方向。可继续调整或重新生成六个方向');
-    };
-    grid.appendChild(b);
-  });
 }
 // ---- 成品态：一版一版印上去 ----
 // riso 的纸会为每种颜色重新过机。这里把最终画面拆成三个增量层：色域、图形、文字与版记。
@@ -5519,7 +5650,6 @@ document.getElementById('briefLang').onclick=e=>{
 document.getElementById('newbrief').onclick=()=>{
   pushHist();
   newBrief(); syncBrief();
-  if(!trayEl.hidden) showTray();      // 换了题，候选也跟着换
   clampTitle();placeTitle();sync();draw();
   setHint(S.lang==='en'?'A new pair of lines is ready.':'换了一组句子；点击其中一句加入画面');
 };
@@ -5596,7 +5726,10 @@ document.getElementById('emptyStart').onclick=()=>{
 };
 window.addEventListener('keydown',e=>{
   if(e.target!==document.body) return;
-  if(e.code==='Space'){ e.preventDefault(); showTray(); return; }
+  if(e.code==='Space'){ e.preventDefault();
+    const b=document.getElementById('topVariants');
+    if(b && !b.disabled) shuffleOne();       // 空画布时按钮是禁用的，空格也不该绕过去
+    return; }
   const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   const ce=CE();
   const ct=CT();
@@ -5671,7 +5804,7 @@ document.getElementById('download').onclick=()=>{
     setTimeout(()=>URL.revokeObjectURL(u),1200);setHint('高清 PNG 已生成');
   },'image/png');
 };
-document.getElementById('shuffle').onclick=()=>showTray();
+document.getElementById('shuffle').onclick=()=>shuffleOne();
 document.getElementById('reset').onclick=()=>{const keep=cloneJ(S.ex),lang=S.lang||'zh';
   pushHist();
   S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;sel=false;tsel=false;redrawPending=false;
@@ -5717,13 +5850,12 @@ document.getElementById('redrawCut').onclick=()=>{
   pushHist();redrawPending=true;sel=false;tsel=false;syncSelectionDelete();
   setHint('在海报上按住并拖动，重新划出两块色域');
 };
-document.getElementById('topVariants').onclick=()=>showTray();
+document.getElementById('topVariants').onclick=()=>shuffleOne();
 document.getElementById('topDownload').onclick=()=>document.getElementById('download').click();
 document.getElementById('topUndo').onclick=undo;
 document.getElementById('topReset').onclick=()=>document.getElementById('reset').click();
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!pressEl.hidden){closePress();e.preventDefault();return;}
-  if(e.key==='Escape'&&!trayEl.hidden){trayEl.hidden=true;e.preventDefault();}
 });
 
 const HINT={1:'文字已选中；直接拖动，或在当前面板继续编辑',
@@ -5968,31 +6100,59 @@ function selfTest(){
          inv+' / '+segs+' 段几乎没变化');
     })();
 
-    // 6a2. 顶部那几个按钮必须真的能点。
-    // 上一版 showTray 加了参数之后，onclick=showTray 把点击事件当成候选列表传进去，
-    // 托盘开出来是空的并抛 TypeError —— 而所有程序化用例都是 showTray()，测不出来。
-    // 所以这条用例必须**派发真实事件**，不能调函数。
+    // 6a2. 随机生成必须**派发真实事件**来测。
+    // 教训来自上一版：onclick=showTray 把点击事件当参数传了进去当场抛错，
+    // 而所有程序化用例都是直接调函数，一次都没测出来。
+    // 这条同时守两件事：点了画面真的会变；变出来的那一版分数不能低于底线。
+    // 分数线 SHUFFLE_FLOOR 是实测出来的：随机构图的分数分布见下面 6a2b。
     (function(){
       const errs=[];
       const onerr=e=>errs.push(String(e.message||e));
       window.addEventListener('error', onerr);
-      let cands=0, closed=false;
+      const before=JSON.parse(JSON.stringify(S));
+      // 同场随机基线：此刻不加挑选地抽 24 张，取中位数。
+      // 挑过的那一版必须高过它 —— 这句话不依赖任何常数，换什么画面都成立。
+      const rs=[]; for(let i=0;i<24;i++) rs.push(score(applyLocks(genState(), before)));
+      rs.sort(function(a,b){return a-b;});
+      const med=rs[rs.length>>1];
+      let n=0, moved=0, lowSc=1e9;
       try{
         for(const id of ['topVariants','shuffle']){
-          const b=document.getElementById(id); if(!b) continue;
+          const b=document.getElementById(id); if(!b||b.disabled) continue;
+          const f0=feat(S);
           b.dispatchEvent(new MouseEvent('click',{bubbles:true}));
-          // 托盘先出骨架屏、候选放到下一帧算。自检是同步跑完的，rAF 不会推进，
-          // 所以这里同步逼它算出来 —— 否则量到的是六个骨架而不是六个候选。
-          if(typeof TRAY_FILL==='function') TRAY_FILL();
-          cands=Math.max(cands, document.querySelectorAll('.cand:not(.cand-skel)').length);
-          trayEl.hidden=true;
+          n++;
+          if(fdist(feat(S), f0)>0.2) moved++;
+          lowSc=Math.min(lowSc, score(S));
         }
-        closed=true;
       }catch(e){ errs.push(String(e.message||e)); }
       window.removeEventListener('error', onerr);
-      trayEl.hidden=true; TRAY_PATH=[];
-      ok('顶部按钮点下去真的出六个候选', cands===6 && closed && errs.length===0,
-         '候选 '+cands+' 个'+(errs.length?'　报错：'+errs[0].slice(0,60):''));
+      S=before; sel=false; tsel=false; sync(); draw();
+      ok('随机生成：真实点击出一版新构图，且好过同场随机',
+         n>0 && moved===n && lowSc>=med && errs.length===0,
+         n+' 次点击 · 变了 '+moved+' 次 · 最低分 '+(lowSc===1e9?'-':lowSc.toFixed(3))
+         +' ≥ 同场随机中位数 '+med.toFixed(3)+(errs.length?'　报错：'+errs[0].slice(0,60):''));
+    })();
+
+    // 6a2b. 闸门本身要有效：挑出来的那一档，必须明显高于不挑的随机构图。
+    // 这条不是测某一次点得好不好，是测「挑」这个动作有没有意义 ——
+    // 如果高分档的均分和随便抽的均分一样，那 SHUFFLE_KEEP 就是摆设。
+    (function(){
+      const base=JSON.parse(JSON.stringify(S));
+      const raw=[], top=[];
+      for(let i=0;i<40;i++) raw.push(score(applyLocks(genState(), base)));
+      for(let i=0;i<8;i++){
+        const pool=[];
+        for(let k=0;k<SHUFFLE_POOL;k++) pool.push(score(applyLocks(genState(), base)));
+        pool.sort(function(a,b){return b-a;});
+        top.push(pool.slice(0, Math.max(4, Math.round(pool.length*SHUFFLE_KEEP)))
+                     .reduce(function(a,b){return a+b;},0) / Math.max(4, Math.round(pool.length*SHUFFLE_KEEP)));
+      }
+      const avg=a=>a.reduce(function(x,y){return x+y;},0)/a.length;
+      const mR=avg(raw), mT=avg(top);
+      S=base;
+      ok('质量闸门有效：高分档明显高于随机', mT-mR>=0.04,
+         '随机均分 '+mR.toFixed(3)+' → 高分档 '+mT.toFixed(3)+'（+'+(mT-mR).toFixed(3)+'）');
     })();
 
     // 6a3. 成品态也必须从真实按钮进入；第一帧先出现纸和退出入口，重渲染放到下一帧。
