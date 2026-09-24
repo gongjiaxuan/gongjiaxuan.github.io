@@ -110,7 +110,12 @@
     0%{opacity:0;transform:translate(var(--ox),calc(var(--oy) - 6px)) scale(1.003)}
     24%{opacity:.16}
     72%{opacity:1;transform:translate(var(--ox),calc(var(--oy) + 1px)) scaleX(1.003) scaleY(.995)}
-    100%{opacity:1;transform:translate(var(--ox),var(--oy)) scale(1)}
+    /* 必须停在 0：错位本来就已经画进像素里了（misAmt 在 drawPlate 里），
+       层再带一个 CSS 位移就是把它算了两遍 —— 而且 j 有 0.7px 的下限，
+       于是选了「对准」预览照样错位，和导出的 PNG 对不上。
+       实测这一条让 3.88% 的像素不一致，最集中的就是底部版记那一带。
+       飞进来的过程仍然带位移（上面两帧），那是"落版"的观感，停下时归零。 */
+    100%{opacity:1;transform:translate(0,0) scale(1)}
   }
   .press-pass{position:absolute;left:-12px;right:-12px;top:0;height:18px;z-index:5;opacity:0;
     pointer-events:none;border-top:2px solid var(--head,#353630);background:linear-gradient(#ffffff55,#00000016);
@@ -142,7 +147,7 @@
   .press-act button:hover{border-color:#3a3b36;background:#d7d4cd}
   .press-act .go{background:var(--ink);border-color:var(--ink);color:#fff}
   @media (prefers-reduced-motion: reduce){
-    .press.running .press-layer{animation:none;opacity:1;transform:translate(var(--ox),var(--oy))}
+    .press.running .press-layer{animation:none;opacity:1;transform:none}
     .press.running .press-sheet{animation:none}.press-pass{display:none}.press-preparing{display:none}
   }
   .tray-head{width:min(100%,970px);display:flex;justify-content:space-between;align-items:end;
