@@ -2831,13 +2831,20 @@ function toneLut(){
   const key=[S.b,S.a].join('|');
   const hit=toneLutCache.get(key); if(hit) return hit;
   const lut=new Float32Array(257);
+  // 反白侧的明度随覆盖率是升还是降，由这两支墨谁深谁浅决定，每次现算
+  const RISING = Lstar(mixInk(S.a,S.b,1)) > Lstar(mixInk(S.a,S.b,0));
   // 普适表：输入就是正侧**最终**覆盖率（含各模式的分级/压缩），输出反白侧
   // 等明度覆盖率 —— 不再假设某一条压缩链，四种模式全走同一张表。
   for(let i=0;i<=256;i++){
     const target=Lstar(mixInk(S.b,S.a,i/256));
-    let lo=0,hi=1;                                     // 反白侧：浅墨浮在深底，c 越大越亮
+    let lo=0,hi=1;
     for(let q=0;q<14;q++){ const mid=(lo+hi)/2;
-      if(Lstar(mixInk(S.a,S.b,mid))<target) lo=mid; else hi=mid; }
+      const L=Lstar(mixInk(S.a,S.b,mid));
+      // 方向不能写死。原来假设"c 越大越亮"（浅墨浮在深底），
+      // 但点一下画面就能互换两支墨、或者把 A 的覆盖率拉满 —— 深浅一反，
+      // 比较方向就错了，二分每次都收敛到同一端。实测互换后整张表从 213 个档位
+      // 塌成 **2 个**（129 触底 + 128 触顶），反白侧的立体明暗变成黑白两块。
+      if(RISING ? (L<target) : (L>target)) lo=mid; else hi=mid; }
     lut[i]=Math.max(.06,Math.min(.94,(lo+hi)/2));
   }
   toneLutCache.set(key,lut);
