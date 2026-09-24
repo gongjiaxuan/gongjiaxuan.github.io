@@ -979,6 +979,110 @@
   .panel{border-left:1px solid var(--edge)}
   .advanced-tools{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
   .advanced-tools summary{background:transparent!important}
+  /* ============ 工单条（docket）：面板底边那张随工单 ============
+     面板本来就是 flex column + overflow-y:auto，所以钉底不需要再包一层：
+     order 排到最后 + margin-top:auto（内容短时压到底边）
+     + position:sticky;bottom:0（内容长时贴住滚动视口底）。两种状态都对，
+     而且滚到底时它回到流内，上面的内容一行都不会被压住。
+     ⚠️ .panel>.blk 是 order:10、#textblk 等浮动块是 order:0，本条不是 .blk，
+     不写 order 就会掉到 0 那一档、插到页签内容中间去。
+
+     线：全条只有顶上那一道 —— 它分隔的是「滚动的工具区」和「常驻的工单」，
+     属于无描边层里明确留下的"真正在分隔两个区域"的那一类。格子之间不画线，
+     用 2px 缝隙露出面板底色，这正是那一层给分段控件定的做法（.toolnav{gap:2px}）。
+     格子本身靠 --field 填充存在 —— 它们本来就是控件（每一格都是一扇门），
+     所以用面板已有的控件语言，而不是画一张表格。
+
+     唯一的颜色是两块墨样，画的是 S.a / S.b（墨压在这张纸上、按当前覆盖率
+     混出来的真实色），那是活件本身，不是界面色 —— 不新增 accent 面。
+     ================================================================ */
+  /* 日光主题把 .appbar 改成了 74px（手机 56px），.workspace 却还在按旧的
+     64px / 54px 减 —— 工作区一直比视口高 10px / 2px，被 body{overflow:hidden}
+     吃掉。以前那几像素是面板空着的下内边距，谁都看不出来；现在底边钉了东西，
+     被剪掉的就是工单条的下沿。这是本条暴露出来的旧账，不是它引入的。 */
+  .workspace{height:calc(100vh - 74px);height:calc(100dvh - 74px)}
+  @media (max-width:900px){
+    .workspace{height:calc(100vh - 56px);height:calc(100dvh - 56px)}
+  }
+  /* sticky 被钉在包含块的**内容盒**里：面板还留着 38px 下内边距的话，
+     工单条会浮在那截 padding 上方，底下露出一条缝。把下内边距交给工单条自己带。 */
+  .panel{padding-bottom:0}
+
+  .docket{
+    order:99;flex:0 0 auto;margin-top:auto;
+    position:sticky;bottom:0;z-index:12;
+    padding:8px 0 11px;background:var(--panel);border-top:1px solid var(--edge);
+    font-variant-numeric:tabular-nums;
+  }
+  .dk-band{display:grid;gap:2px;background:transparent}
+  .dk-band+.dk-band{margin-top:2px}
+  /* 中间那格要同时容下「明度差 / Gap」和 ΔL* 读数两段不换行的字，
+     固定 94px 比 1fr 稳 —— 两侧墨名再长也只会省略号，不会把它挤破。 */
+  .dk-plates{grid-template-columns:minmax(0,1fr) 94px minmax(0,1fr)}
+  .dk-spec{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+  /* 字段格：名在左上、数在右上、值在下。六个字段一个模子 */
+  .dk-cell{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;
+    gap:3px 6px;min-height:38px;margin:0;padding:6px 9px 7px;
+    border:0;background:var(--field);color:var(--ink);text-align:left;cursor:pointer;
+    font-family:var(--ui);
+  }
+  .dk-cell:hover{background:var(--field-h)}
+  /* 触屏上「悬停」是点下去才有的假态，收掉。
+     ⚠️ 这条必须排在 :active 前面：手机上按住的那一刻元素同时命中 :hover 和 :active，
+     两条特异性相同，谁在后面谁赢 —— 排在后面就会把按下的反馈也一起抹掉，
+     而 transform 又被下面关了，按下去将毫无反应。 */
+  @media (hover:none),(pointer:coarse){.dk-cell:hover{background:var(--field)}}
+  /* 全局的 button:active{scale(.97)} 在 2px 缝的网格里会把面板底色从四边挤出来，
+     六个格子一起读作「按坏了」。这里只换底色。特异性 (0,2,0) 压得住 (0,1,1)。 */
+  .dk-cell:active{transform:none;background:var(--field-h)}
+  /* 全局焦点环是 outline-offset:2px —— 在 2px 缝里会压到邻格上，改成画在格子内侧 */
+  .dk-cell:focus-visible{outline-offset:-2px}
+
+  /* 标签沿用 .blk h3 重写后的那一档灰（#6d6e72），不用 --ink3 #8c8e92：
+     后者在 --field 上只有 3.2:1，而这条是三个页签下都常驻的字。 */
+  .dk-k{font:600 9.5px/1 var(--ui);letter-spacing:.04em;color:#6d6e72;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dk-aux{justify-self:end;font:500 10px/1 var(--ui);color:var(--ink2);white-space:nowrap}
+  .dk-v{grid-column:1/-1;display:flex;align-items:center;min-width:0;
+    font:500 11.5px/1.2 var(--ui);letter-spacing:.01em;color:var(--ink)}
+  .dk-v>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dk-cell.is-empty .dk-v{color:var(--ink3)}
+
+  /* 墨样：和墨库按钮上那块样片同一套做法（方块 + 1px 内描边），不是圆点图例。
+     画的是混色后的真实色，所以覆盖率 0 时它自然就是纸色。 */
+  .dk-chip{flex:none;width:9px;height:9px;margin-right:6px;background:var(--panel);
+    box-shadow:inset 0 0 0 1px #00000020}
+
+  /* 到站提示：跳过去之后目标控件亮一下。用面板已有的「选中」语言（墨色实线），
+     不动 accent 的额度。 */
+  .dk-lit{animation:dk-lit .95s var(--e-out)}
+  @keyframes dk-lit{from{box-shadow:0 0 0 3px var(--ink)}to{box-shadow:0 0 0 3px #17181a00}}
+  @media (prefers-reduced-motion:reduce){.dk-lit{animation:none}}
+
+  /* 矮窗口（笔记本半屏）：格子压到 34px。这里是 pointer:fine，34px 不是触控下限问题。 */
+  @media (min-width:901px) and (max-height:780px){
+    .docket{padding:7px 0 9px}
+    .dk-cell{min-height:34px;padding:5px 9px 6px}
+  }
+
+  /* 手机：面板是 51dvh 的底部抽屉，工单条只许占两条带、34px（触控下限）。
+     面板横向反而更宽（358 vs 326），所以列宽不用动，只收高度。 */
+  @media (max-width:900px){
+    .docket{padding:6px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+    .dk-cell{min-height:34px;padding:5px 8px 6px;gap:2px 5px}
+    .dk-plates{grid-template-columns:minmax(0,1fr) 86px minmax(0,1fr)}
+    .dk-k,.dk-aux{font-size:9px}
+    .dk-v{font-size:11px}
+  }
+  /* 横屏手机：面板是竖着的侧栏，宽度不缺、高度最缺，所以沿用上面那套 34px 的紧排，
+     这里只修一处 —— 横屏那条规则本来写的是 .panel{height:100%}，
+     后来日光主题那条不分横竖的 .panel{height:51vh} 盖掉了它，侧栏只剩半截高，
+     底下空着一大片。把原本的意图重新说一遍；否则常驻的工单条会占掉侧栏近一半。 */
+  @media (max-width:900px) and (orientation:landscape) and (max-height:500px){
+    .panel{height:100%}
+  }
 </style>
 
 <header class="appbar">
@@ -1244,6 +1348,46 @@
       位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。
       图形跨线<b>自动反色</b>；网点锚在纸上，跨线只换墨色不换网屏。点画面可左右互换两支墨。</p>
   </div>
+
+  <!-- ============ 工单条：钉在面板底边，三个页签都看得见 ============
+       它不是仪表盘，是跟着活件走的那张随工单 —— 和印在纸角上的版记
+       （colophonCols）同一份数据，只是排到了读得见的字号。
+       只记画布说不出来的事：墨的名字与覆盖率、两支墨的明度差、纸的品名与纸纹、
+       切线的角度与位置、套印那一档。画幅本身就是纸的形状、网目粗细就在纸上看得见，
+       所以不占格子 —— 这条规矩同时也解释了为什么留下的是这六个。
+       每一格都是门：点哪一格，面板就跳到能改它的那个控件。没有例外格。
+       i18n：字段名写死在 HTML 里，applyLang 的 TreeWalker 自己缓存 _zh 并翻译，
+       JS 永不碰这些节点；值由 syncDocket() 写进各自的叶子 span，在生成点过 tt()。 -->
+  <section class="docket" id="docket" aria-label="这一版的配方">
+    <div class="dk-band dk-plates">
+      <button class="dk-cell" type="button" data-dk="inkA" title="换 A 版这支墨">
+        <span class="dk-k">墨 A</span><b class="dk-aux" id="dkCovA">—</b>
+        <span class="dk-v"><i class="dk-chip" id="dkChipA" aria-hidden="true"></i><span id="dkInkA">—</span></span>
+      </button>
+      <button class="dk-cell" type="button" data-dk="gap" title="换一对配好的墨">
+        <span class="dk-k">明度差</span><b class="dk-aux" id="dkGapN">—</b>
+        <span class="dk-v"><span id="dkGapW">—</span></span>
+      </button>
+      <button class="dk-cell" type="button" data-dk="inkB" title="换 B 版这支墨">
+        <span class="dk-k">墨 B</span><b class="dk-aux" id="dkCovB">—</b>
+        <span class="dk-v"><i class="dk-chip" id="dkChipB" aria-hidden="true"></i><span id="dkInkB">—</span></span>
+      </button>
+    </div>
+    <div class="dk-band dk-spec">
+      <button class="dk-cell" type="button" data-dk="paper" title="换纸">
+        <span class="dk-k">纸</span><b class="dk-aux" id="dkTex">—</b>
+        <span class="dk-v"><span id="dkPaper">—</span></span>
+      </button>
+      <button class="dk-cell" id="dkCutCell" type="button" data-dk="cut" title="在画布上重新划一刀">
+        <span class="dk-k">切线</span><b class="dk-aux" id="dkCutPos"></b>
+        <span class="dk-v"><span id="dkCut">—</span></span>
+      </button>
+      <button class="dk-cell" type="button" data-dk="reg" title="换套印">
+        <span class="dk-k">套印</span><b class="dk-aux" id="dkRegOff"></b>
+        <span class="dk-v"><span id="dkReg">—</span></span>
+      </button>
+    </div>
+  </section>
 </div>
 </main>
 
@@ -1336,6 +1480,10 @@ const EN={
   '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
   '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
   '字':'Type','墨与纸':'Ink & Paper',
+  // 工单条用到的词
+  '未切':'Uncut','套印':'Reg.','中等错位':'Off by a little',
+  '太近':'too close','偏弱':'weak','甜区':'sweet spot',
+  '墨 A':'Ink A','墨 B':'Ink B','这一版的配方':'This sheet',
   // 属性文案（placeholder / aria-label / title）
   '写下一个意象、片段或一句话':'An image, a fragment, or a line',
   '编辑选中的文字':'Edit the selected line',
@@ -3276,7 +3424,9 @@ function colophonCols(){
   const ps=stockSpec();
   return [
     ['INKS', ink(S.inkA,S.covA), ink(S.inkB,S.covB)],
-    ['STOCK', tt(ps.name), 'SCREEN 45°  '+PITCH[S.dot]+'PX'],
+    // 两块版两个网屏角度是 riso 的硬规矩（浅墨 45°、深墨 75°，错开 30° 才不撞莫尔纹）。
+    // 版记只印 45° 是把其中一版说漏了 —— 印在纸上的规格写错比不写更糟。
+    ['STOCK', tt(ps.name), 'SCREEN 45°/75°  '+PITCH[S.dot]+'PX'],
     ['PRESS', 'REG '+['ALIGNED','+0.9','+2.2','+4.2'][S.mis||0], 'EDITION 01 · TWO INKS']
   ];
 }
@@ -5527,6 +5677,7 @@ const inkName=hex=>{ for(const c of LIB) if(c[0]===hex) return tt(c[1]);
 let recT=0;
 function recipeSoon(){ clearTimeout(recT); recT=setTimeout(syncRecipe,80); }
 function syncRecipe(){
+  syncDocket();                       // 工单条与旧配方块同一份数据、同一趟刷新
   const el=document.getElementById('recipe'); if(!el) return;
   const L=[];
   if(S.cut){
@@ -5564,6 +5715,135 @@ function syncRecipe(){
     L.push('文字'+(i+1)+'  '+f.name+(t.dir==='v'?'竖排':'横排')+'  '+Math.round(m.z)+'px  「'+(t.text||'')+'」');});
   el.textContent=L.join('\n');
 }
+
+/* ================== 工单条 ==================
+   数据全部来自 S，不读画布、也不触发重绘：draw() 尾巴上的 recipeSoon() 和
+   sync() 各自会叫一次 syncRecipe()，syncDocket 搭它的车，所以状态一改就更新，
+   不需要先画一遍。
+   i18n：字段名是 HTML 里的静态文本节点，交给 applyLang 的 TreeWalker（它缓存
+   node._zh，JS 一旦用 textContent 顶掉整个节点，缓存就失效）—— 所以这里
+   **只写值、不写名**，每个值写进自己的叶子 span，并在生成点过 tt()，
+   和 syncRecipe 同一条规矩。UI 进了指纹，切语言那一下 uiLang 的 handler 会调
+   sync()，整条跟着用新语言重写一遍，不依赖任何节点缓存。
+   ============================================ */
+const DK_TEX=['净面','原纸','粗纹'];
+// 套印四档。0/1/3 是 #mis 上的三个按钮；2 面板上没有按钮，只有 shuffleState 的
+// pick([0,0,0,1,1,2,3]) 抽得到 —— 版记在这一档也只印 +2.2、没有名字，
+// 所以借 #mis 自己那条提示里的说法「中等错位」，不另造词。
+const DK_REG=['规整','松动','中等错位','错版'];
+const dkEl=id=>document.getElementById(id);
+// 真减号：等宽数字里连字符太短，−9° 和 +9° 对不齐
+const dkMinus=s=>String(s).replace('-','−');
+// 工单上不写厂牌：十八支墨全是 riso，这个前缀每一格都一样，等于没有信息
+// （和把常数 45° 摆进读数位同一个道理）。四根滑杆调出来的自定色不在墨库里，
+// inkName 会把 hex 原样退回来 —— 那就照 hex 记，工单上本来就这么写一支特调。
+// 墨库里有六支是「帝国蓝 Imperial」这种中英并写的名字：中文态下那截拉丁是重复的，
+// 81px 的格子放不下（实测 83–88px），剪掉。英文态 tt 给的本来就是纯英文，
+// 尾巴绝不能动 —— 'Sun Yellow' 会被同一条正则剪成 'Sun'，所以只在还带汉字时才剪。
+function dkInkWord(hex){
+  const n=inkName(hex);
+  if(n===hex) return String(hex).toUpperCase();
+  return /[一-鿿]/.test(n)
+    ? n.replace(/\s*[A-Za-z][A-Za-z ]*$/,'').replace(/^riso\s*/i,'')
+    : n.replace(/^riso\s+/i,'');
+}
+// 和 syncRecipe 里那段同一套算法，同一份数据不可能对不上
+function dkCut(){
+  if(!S.cut) return null;
+  const dx=(S.cut.x2-S.cut.x1)*W, dy=(S.cut.y2-S.cut.y1)*H;
+  const horiz=Math.abs(dx)>Math.abs(dy);
+  const deg=horiz? Math.atan2(dy,Math.abs(dx))*180/Math.PI
+                 : Math.atan2(dx,Math.abs(dy))*180/Math.PI;
+  const pos=horiz? (S.cut.y1+S.cut.y2)/2 : (S.cut.x1+S.cut.x2)/2;
+  return {horiz:horiz,deg:deg,small:Math.round(Math.min(pos,1-pos)*100)};
+}
+let _dkKey='';
+function syncDocket(){
+  if(!dkEl('docket')) return;
+  const ps=stockSpec(), c=dkCut(), gap=Math.abs(Lstar(S.a)-Lstar(S.b));
+  const key=[S.inkA,S.covA.toFixed(3),S.inkB,S.covB.toFixed(3),S.paper,S.stock,S.tex,
+             S.mis||0,c?(c.horiz?'h':'v')+c.deg.toFixed(0)+'/'+c.small:'-',
+             gap.toFixed(0),UI].join('|');
+  // 值没变就一个 DOM 节点都不碰。这不是省几微秒：body 上挂着一个
+  // childList+subtree 的 MutationObserver，UI==='en' 时任何新文本节点都会在
+  // 120ms 后触发一次整篇 applyLang 的 TreeWalker。而 recipeSoon 在拖动时每
+  // 80ms 就来一次 —— 拖图形并不会改墨、纸、切线，指纹一样就该一动不动。
+  if(key===_dkKey) return;
+  _dkKey=key;
+  const put=(id,v)=>{const e=dkEl(id); if(e&&e.textContent!==v) e.textContent=v;};
+
+  // 覆盖率 0 不是「某某墨 0%」，是裸纸 —— 规矩抄自 colophonCols，
+  // 两处说法永远不可能打架。墨样此时画的正好就是纸色，不用特判。
+  const plate=(hex,cov,mixed,ids)=>{
+    const bare=(cov||0)<0.005;
+    dkEl(ids[0]).style.background=mixed;
+    put(ids[1], bare?tt('裸纸'):dkInkWord(hex));
+    put(ids[2], bare?'—':Math.round(cov*100)+'%');
+  };
+  plate(S.inkA,S.covA,S.a,['dkChipA','dkInkA','dkCovA']);
+  plate(S.inkB,S.covB,S.b,['dkChipB','dkInkB','dkCovB']);
+
+  // 明度差用 syncColor 自己那张判词表，不另立标准 —— 它决定两块色分不分得开
+  const gw = gap<30?'太近' : gap<40?'偏弱' : gap<=72?'甜区' : '很硬';
+  put('dkGapN','ΔL* '+gap.toFixed(0));
+  put('dkGapW',tt(gw));
+
+  put('dkPaper',tt(ps.name));
+  put('dkTex',tt(DK_TEX[S.tex]||DK_TEX[1]));
+  put('dkCut', c ? tt(c.horiz?'水平':'垂直')+' '+(c.deg>=0?'+':'')+dkMinus(c.deg.toFixed(0))+'°'
+                 : tt('未切'));
+  put('dkCutPos', c ? c.small+'%' : '');
+  dkEl('dkCutCell').classList.toggle('is-empty',!c);
+  const m=S.mis||0;
+  put('dkReg',tt(DK_REG[m]||DK_REG[0]));
+  // 规整那一档版记印的是 ALIGNED、没有数字，这里也就不摆数字
+  put('dkRegOff', m ? '+'+(MIS_PX[m]||0).toFixed(1) : '');
+}
+
+/* 点哪一格，面板就跳到能改它的那个控件。
+   只跳、不就地改：stockEl.onclick 会按新纸的可印区间重新吸附两支墨的浓淡
+   （snapCov），工单里做个就地切换的话，会静悄悄改掉用户调好的覆盖率。 */
+function dkGo(tab,targetId){
+  const panel=document.querySelector('.panel'); if(!panel) return;
+  // selectTool 末尾有一句 panel.scrollTo({top:0,behavior:'smooth'})。
+  // 换页签时它和这里的滚动是同一个 scroller 上的两个动画 —— 谁压得住谁要看引擎，
+  // 实测（平滑滚动被关掉的环境里）后发的那次会整个落空，面板停在原地不动。
+  // 所以分两种情况，谁也不跟谁抢：
+  //   换了页签 → 整块内容刚被换掉、还带着 blk-in 的淡入，直接赋 scrollTop 瞬移；
+  //              赋值会同步中止那次 pending 的平滑滚动，结果是确定的。
+  //   没换页签 → 场上没有第二个滚动，正常平滑滚过去。
+  const jumped = !!(tab && activeTool!==tab);
+  if(jumped) selectTool(tab);
+  const t=targetId&&dkEl(targetId); if(!t) return;
+  const head=document.querySelector('.panel-top');
+  // 不用 scrollIntoView：它会连祖先一起滚，也没法把常驻的 .panel-top 算进去。
+  // 停在贴着抬头的位置而不是居中 —— 居中会把矮控件推到工单条底下。
+  const top=panel.scrollTop+(t.getBoundingClientRect().top-panel.getBoundingClientRect().top)
+            -((head?head.offsetHeight:0)+14);
+  const want=Math.max(0,Math.min(top,panel.scrollHeight-panel.clientHeight));
+  const calm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(jumped||calm) panel.scrollTop=want;
+  else panel.scrollTo({top:want,behavior:'smooth'});
+  // 到站提示画在目标控件上，不画在按下的格子上
+  t.classList.remove('dk-lit'); void t.offsetWidth; t.classList.add('dk-lit');
+}
+dkEl('docket').addEventListener('click',e=>{
+  const b=e.target.closest('[data-dk]'); if(!b) return;
+  switch(b.dataset.dk){
+    case 'inkA': case 'inkB':{
+      editing = b.dataset.dk==='inkB' ? 1 : 0;
+      // 墨库和四根滑杆都关在「精细调整」里，不先展开就会跳进一个折叠的空档
+      const det=document.querySelector('.advanced-tools'); if(det) det.open=true;
+      syncColor();                       // 先把 #inks 的按下态对上，再滚过去
+      dkGo('print','inks'); break; }
+    // 明度差是这一对墨的性质，它的控件就是那八对配好的组合
+    case 'gap':   dkGo('print','sw');    break;
+    case 'paper': dkGo('print','stock'); break;
+    case 'reg':   dkGo('print','mis');   break;
+    // 切线的动作发生在画布上，不切页签；#redrawCut 自己会 pushHist 并给提示
+    case 'cut':   dkEl('redrawCut').click(); break;
+  }
+});
 const briefValue=key=>key==='title'?S.ex.t:key==='body'?S.ex.d:INFO();
 const briefSource=key=>'brief:'+key;
 const librarySource=key=>'library:'+((S.ex&&S.ex.idx)||0)+':'+(S.lang||'zh')+':'+key;
