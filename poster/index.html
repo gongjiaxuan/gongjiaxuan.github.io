@@ -1814,7 +1814,7 @@ const demo={ex:null,cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
   els:[{k:0,x:.60,y:.46,s:.193,r:0.03,fill:3,rep:1}], si:0,
   texts:[],ti:-1,stock:0,tex:1,dot:1};
 let S=JSON.parse(JSON.stringify(blank));
-let drag=null, cutting=null, hoverText=-1, hoverEl=false, sel=false, tsel=false, redrawPending=false;
+let drag=null, cutting=null, dragPid=null, hoverText=-1, hoverEl=false, sel=false, tsel=false, redrawPending=false;
 const selectionDeleteEl=document.getElementById('selectionDelete');
 const emptyStateEl=document.getElementById('emptyState');
 const isBlankComposition=()=>!S.cut&&!(S.els&&S.els.length)&&!(S.texts&&S.texts.length)&&!S.photo;
@@ -4346,8 +4346,11 @@ const onTextHandle=p=>{ const t=CT(); if(!t||!tsel)return false; const h=textHan
   return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT; };
 
 cv.addEventListener('pointerdown',e=>{
+  // 已经有一根手指在拖了，后面落下的指针一概不接管
+  if((drag||cutting) && dragPid!=null && e.pointerId!==dragPid) return;
   if(demoRAF) stopDemo();
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  dragPid=e.pointerId;
   const p=pos(e);
   if(redrawPending){cutting={x1:p.x,y1:p.y,x2:p.x,y2:p.y};return;}
   if(onHandle(p)){drag={m:'handle'};return;}
@@ -4367,6 +4370,8 @@ cv.addEventListener('pointerdown',e=>{
   cutting={x1:p.x,y1:p.y,x2:p.x,y2:p.y};
 });
 cv.addEventListener('pointermove',e=>{
+  // 非主人的移动既不推切线、也不推拖拽，连 hover 光标都不改
+  if((drag||cutting) && dragPid!=null && e.pointerId!==dragPid) return;
   if(demoRAF) stopDemo();
   const p=pos(e);
   if(cutting){cutting.x2=p.x;cutting.y2=p.y;draw();return;}
@@ -4412,7 +4417,10 @@ cv.addEventListener('pointermove',e=>{
 // 浏览器接管、笔离开数位板）只发 cancel 不发 up —— 照片框和器物预览都处理了，
 // 主画布漏了：drag/cutting 会永久卡住，元素跟着一个并没有按下的指针跑，
 // 「拿起」的放大也一直挂着下不来。
-function endPointer(){
+function endPointer(e){
+  // 只有发起这次手势的那根手指能结束它。第二指抬起不该杀掉第一指正在进行的拖动。
+  if(e && dragPid!=null && e.pointerId!=null && e.pointerId!==dragPid) return;
+  dragPid=null;
   if(cutting){
     const ok=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30;
     if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;setStep(3);syncEmptyState(); }
@@ -4790,7 +4798,7 @@ const RECIPES=[
    type:{size:2, dir:'h', font:[0,2],   want:3}, cut:{pos:[.26,.36], ang:[0,0,0,12,-12]}, second:.30},
   // 竖排一列：标题竖着通天，形让到另一侧
   {n:'column',   w:2, scale:[.17,.26], d3:.35, fill:[0,1,2,3],  rep:[1],       vessel:null,
-   type:{size:1, dir:'v', font:[0,1],   want:2}, cut:{pos:[.30,.40], ang:[0,0]},       second:.20},
+   type:{size:1, dir:'v', font:[0,1],   want:1}, cut:{pos:[.30,.40], ang:[0,0]},       second:.20},
   // 小而精：极小的形落在光学中心，靠留白说话
   {n:'quiet',    w:2, scale:[.07,.12], d3:.20, fill:[0,0,3],    rep:[1,1,3],   vessel:null,
    type:{size:1, dir:'h', font:[2,0],   want:2}, cut:{pos:[.62,.72], ang:[0,0,7,-7]},  second:.10},
@@ -4985,7 +4993,17 @@ function genState(){
   // 文字在 feat() 里只占几维，但眼睛给它的权重远高于此，所以六张看着比数字说的要像。
   // 「字」没被锁上的时候，候选也可以换一个题；锁上了就老老实实用当前这个。
   try{
-    if(!LOCKS.type && Math.random()<0.45) newBrief();
+    // 语言本身就是一个视觉维度：中文可以竖排通天，拉丁是横排的长句，
+    // 两种排出来的版式完全是两回事。原来候选的语言锁死在界面语言上 ——
+    // 中文界面下不管按多少次随机，永远只给你中文那一半的样子。
+    // 现在每张候选自己掷一次语言；「字」被锁上时不动。
+    if(!LOCKS.type){
+      const want = Math.random()<0.5 ? 'zh' : 'en';
+      const flipped = (S.lang!==want);
+      S.lang = want;
+      // 换了语言就必须换文案，否则中文展讯配英文排版规则
+      if(flipped || Math.random()<0.45) newBrief();
+    }
     shuffleState();
     return JSON.parse(JSON.stringify(S));
   }finally{
@@ -5529,6 +5547,10 @@ function showPress(){
   const dl=document.createElement('button');dl.type='button';dl.className='go';dl.textContent='导出 PNG ↓';
   dl.onclick=()=>document.getElementById('download').click();act.append(back,again,dl);
   pressEl.append(close,headline,stage,cap,act);pressEl.hidden=false;
+  // 它声明了 aria-modal="true"，就得真的关住焦点。否则 Tab 两下就落到背景的
+  // 「清空」上，一个空格把整张海报清掉 —— 实测文字 1→0、形 1→0、切线消失，
+  // 而顶上的预览还停在旧画面，人根本看不到自己按坏了什么。
+  try{ close.focus({preventScroll:true}); }catch(_){ }
   let built=false;const run=()=>{if(built||token!==PRESS_TOKEN)return;built=true;buildPress(token,st,sheet,status);};
   requestAnimationFrame(()=>requestAnimationFrame(run));setTimeout(run,90);
 }
@@ -6161,6 +6183,11 @@ document.getElementById('emptyStart').onclick=()=>{
 { const b=document.getElementById('emptyShuffle');
   if(b) b.onclick=()=>shuffleOne(); }
 window.addEventListener('keydown',e=>{
+  // 成品预览声明了 role="dialog" aria-modal="true"，那就得真的是模态：
+  // 它开着的时候，背景的快捷键一律不响应。否则空格会在背后重新生成整张海报、
+  // 方向键挪文字、Delete 删掉一行，而顶上的预览还停在旧画面上。
+  // Escape 不受影响 —— 它是另一个监听器，且只在预览开着时才动作。
+  if(!pressEl.hidden) return;
   // 画布现在是可聚焦部件（tabindex=0）。方向键/Delete/Tab 只在焦点落在 body
   // 或画布上时归它管，落在别的控件上时一律放行。
   if(e.target!==document.body && e.target!==cv) return;
@@ -6311,6 +6338,13 @@ document.getElementById('topUndo').onclick=undo;
 document.getElementById('topReset').onclick=()=>document.getElementById('reset').click();
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!pressEl.hidden){closePress();e.preventDefault();return;}
+});
+// 焦点一旦跑出模态就拽回来。用 focusin 而不是给外壳加 inert：
+// #press 本身就挂在 .stage 里，inert 外壳会把它自己也一起禁掉。
+document.addEventListener('focusin',e=>{
+  if(pressEl.hidden || pressEl.contains(e.target)) return;
+  const f2=pressEl.querySelector('.press-close');
+  if(f2) f2.focus({preventScroll:true});
 });
 
 const HINT={1:'文字已选中；直接拖动，或在当前面板继续编辑',
