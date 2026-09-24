@@ -1483,6 +1483,24 @@ const EN={
   '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
   '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
   '字':'Type','墨与纸':'Ink & Paper',
+  // 照片网点风格的说明
+  '细密、均匀的随机颗粒':'Fine, even random grain',
+  '误差扩散形成的有机纹理':'Organic texture from error diffusion',
+  '高光更白、暗部更实':'Whiter highlights, denser shadows',
+  '规则的 8 × 8 方格网点':'A regular 8 x 8 grid',
+  '删除选中的文字':'Delete the selected line',
+  // 工单条每一格的 tooltip
+  '换 A 版这支墨':'Change the ink on plate A','换 B 版这支墨':'Change the ink on plate B',
+  '换一对配好的墨':'Pick another matched pair','换纸':'Change the paper',
+  '在画布上重新划一刀':'Draw a new cut on the canvas','换套印':'Change the registration',
+  // 形状与器型（按钮 tooltip 与无障碍标签）
+  '圆':'Circle','半圆':'Half circle','条':'Bar','三角':'Triangle','环':'Ring','点阵':'Dot grid',
+  '流线':'Streamline','干刷':'Dry brush','星芒':'Starburst','新月':'Crescent','折带':'Folded band','花瓣':'Petal',
+  '梅瓶':'Meiping','玉壶春瓶':'Yuhuchun','蒜头瓶':'Garlic-head','葫芦瓶':'Gourd','觚':'Gu','碗':'Bowl',
+  // 运行时拼出来的 title / aria-label
+  '选中画面中的':'Select on the sheet: ','加入画面：':'Add to the sheet: ',
+  '加入':'Add ','我的图':'My shape','关闭成品预览':'Close the print preview',
+  '（空文字）':'(empty)','关闭':'Close',
   // 工单条用到的词
   '未切':'Uncut','套印':'Reg.','中等错位':'Off by a little',
   '太近':'too close','偏弱':'weak','甜区':'sweet spot',
@@ -1613,7 +1631,11 @@ function applyLang(){
   // 字符串字面量一旦撞上字典 key 会被当成 UI 文案替换 —— 源码当场被改写。
   const skip=(nd)=>{ let p=nd.parentNode;
     while(p&&p!==document.body){ const t=p.tagName;
-      if(t==='SCRIPT'||t==='STYLE'||t==='TEMPLATE') return true; p=p.parentNode; }
+      if(t==='SCRIPT'||t==='STYLE'||t==='TEMPLATE') return true;
+      // data-raw = 这里面是用户自己的内容，不是界面文案。
+      // 没有这道闸，用户写的「墨」会被字典翻成 "Ink"。
+      if(p.dataset && p.dataset.raw!==undefined) return true;
+      p=p.parentNode; }
     return false; };
   const walk=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode(nd){
     return skip(nd)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT; }});
@@ -1633,6 +1655,10 @@ function applyLang(){
   }
   // placeholder / aria-label / title
   document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>{
+    // 自己管 tooltip 的元素（色样、形状、器型）不能走缓存：
+    // 缓存会把上一次语言的值当成原文，再写回去，retitle 白做。
+    if(el.dataset && (el.dataset.swName!==undefined || el.dataset.shName!==undefined
+                      || el.dataset.vsName!==undefined)) return;
     for(const at of ['placeholder','aria-label','title']){
       const v=el.getAttribute(at); if(!v)continue;
       if(el['_zh_'+at]===undefined) el['_zh_'+at]=v;
@@ -1648,7 +1674,7 @@ document.getElementById('uiLang').onclick=()=>{ UI=UI==='en'?'zh':'en'; applyLan
   if(S.lang!==UI){ S.lang=UI; newBrief(); }
   // 动态生成的控件（句子库、墨色、器物等）重新渲染一遍再翻
   try{ sync(); syncBrief(); syncLathe && syncLathe(); syncImg && syncImg(); syncTextPanel && syncTextPanel();
-       selectTool(activeTool); }catch(_){}
+       retitleStaticButtons(); selectTool(activeTool); }catch(_){}
   applyLang(); draw();
   setTimeout(reLang, 60);          // recipe/meter 是防抖后写的，晚一拍再翻一次
 };
@@ -3566,8 +3592,8 @@ function syncSelectionDelete(){
   selectionDeleteEl.style.left=(x/W*100)+'%';
   selectionDeleteEl.style.top=(y/H*100)+'%';
   selectionDeleteEl.hidden=false;
-  selectionDeleteEl.setAttribute('aria-label',tsel?'删除选中文字':'删除选中图案');
-  selectionDeleteEl.title=tsel?'删除这行文字':'删除这个图案';
+  selectionDeleteEl.setAttribute('aria-label',tt(tsel?'删除选中文字':'删除选中图案'));
+  selectionDeleteEl.title=tt(tsel?'删除这行文字':'删除这个图案');
 }
 function titleText(){ensureTexts();return S.texts.find(t=>t.role==='title')||S.texts[0]||null;}
 function titleMetrics(){return textMetrics(titleText());}
@@ -4477,17 +4503,19 @@ const setCov=v=>{ v=snapCov(v); if(editing) S.covB=v; else S.covA=v; S.pair=-1; 
 
 PAIRS.forEach((pr,i)=>{const b=document.createElement('button');
   b.style.background='linear-gradient(102deg,'+pr[0]+' 0 52%,'+pr[1]+' 52% 100%)';
-  b.title=pr[2];
+  b.dataset.swName=pr[2]; b.title=tt(pr[2]);
   b.onclick=()=>{ S.pair=i; S.paper=pr[0];                 // 浅的那支当纸
     S.inkA=pr[1]; S.covA=0; S.inkB=pr[1]; S.covB=fullCov();
     applyInks(); syncColor(); draw(); };
   swEl.appendChild(b);});
 PAPERS.forEach(c=>{const b=document.createElement('button');
-  b.style.background=c[0]; b.title='纸：'+c[1]+'  '+c[0];
+  b.style.background=c[0]; b.dataset.swName=c[1]; b.dataset.swHex=c[0]; b.dataset.swPaper='1';
+  b.title=tt('纸')+(UI==='en'?': ':'：')+swatchName(c[1])+'  '+c[0];
   b.onclick=()=>{S.paper=c[0];S.pair=-1;applyInks();syncColor();draw();};
   paperEl.appendChild(b);});
 LIB.forEach(c=>{const b=document.createElement('button');
-  b.style.background=c[0]; b.title=c[1]+'  '+c[0];
+  b.style.background=c[0]; b.dataset.swName=c[1]; b.dataset.swHex=c[0];
+  b.title=swatchName(c[1])+'  '+c[0];
   b.onclick=()=>{ if(curCov()<minCov()) setCov(fullCov()); setInk(c[0]); syncColor(); draw(); };
   libEl.appendChild(b);});
 PAPER_STOCKS.forEach((p,i)=>{const b=stockEl.children[i];if(b)b.style.setProperty('--paper',p.base);});
@@ -4599,7 +4627,8 @@ SHAPES.forEach((name,i)=>{
   const b=document.createElement('button');
   b.innerHTML='<svg viewBox="0 0 26 26" class="'+(i===4?'':'solid')+'">'+ICON[i]+'</svg>';
   b.setAttribute('aria-pressed','false');
-  b.title=SHAPE_TITLES[i];b.setAttribute('aria-label','加入'+SHAPE_TITLES[i]);
+  b.dataset.shName=SHAPE_TITLES[i];
+  b.title=tt(SHAPE_TITLES[i]);b.setAttribute('aria-label',tt('加入')+tt(SHAPE_TITLES[i]));
   b._matches=e=>!!e&&e.k===i;
   b.onclick=()=>{
     addEl(i); sel=true;tsel=false;
@@ -4609,7 +4638,7 @@ SHAPES.forEach((name,i)=>{
 VKEYS.forEach((name,i)=>{
   const b=document.createElement('button');
   b.innerHTML='<svg viewBox="0 0 26 26" class="solid"><path d="'+vesselSVG(name)+'"/></svg>';
-  b.setAttribute('aria-pressed','false'); b.title=VNAME[name];
+  b.setAttribute('aria-pressed','false'); b.dataset.vsName=VNAME[name]; b.title=tt(VNAME[name]);
   b._matches=e=>!!e&&e.k===12&&!!e.lat&&e.lat.a===i&&e.lat.m<0.002;
   b.onclick=()=>{
     const lat={a:i,b:(i+1)%VKEYS.length,m:0,t:0}, cu=latheToShape(lat);
@@ -4620,7 +4649,7 @@ VKEYS.forEach((name,i)=>{
   allBtn.push(b); veEl.appendChild(b);
 });
 const custBtn=document.createElement('button');
-custBtn.hidden=true; custBtn.title='我的图'; custBtn.setAttribute('aria-pressed','false');
+custBtn.hidden=true; custBtn.title=tt('我的图'); custBtn.setAttribute('aria-pressed','false');
 custBtn._matches=e=>!!e&&e.k===12&&!e.lat;
 custBtn.onclick=()=>{
   if(!S.cust) return;
@@ -4645,8 +4674,9 @@ function syncTextSizeControl(t){
 function syncTextPanel(){
   ensureTexts();const t=CT();textList.innerHTML='';
   S.texts.forEach((x,i)=>{const b=document.createElement('button');b.className='text-item';
-    b.setAttribute('aria-pressed',String(i===S.ti));b.innerHTML='<span class="num">'+(i+1)+'</span><span class="copy"></span>';
-    b.querySelector('.copy').textContent=x.text||'（空文字）';b.onclick=()=>{S.ti=i;tsel=true;sel=false;sync();draw();};
+    b.setAttribute('aria-pressed',String(i===S.ti));b.innerHTML='<span class="num">'+(i+1)+'</span><span class="copy" data-raw></span>';
+    // data-raw 让翻译跳过这一格；占位符是界面文案，所以在这里就过 tt()
+    b.querySelector('.copy').textContent=x.text||tt('（空文字）');b.onclick=()=>{S.ti=i;tsel=true;sel=false;sync();draw();};
     textList.appendChild(b);});
   textInput.disabled=!t;textInput.value=t?t.text:'';
   const set=(id,key,val)=>[...document.getElementById(id).children].forEach(x=>
@@ -4655,7 +4685,7 @@ function syncTextPanel(){
   document.getElementById('deltext').disabled=!t;
 }
 textInput.addEventListener('input',()=>{const t=CT();if(!t)return;t.text=textInput.value;t.role='custom';t.source=null;t.autoStyle=false;
-  normaliseTextSize(t);clampText(t);syncTextSizeControl(t);const row=textList.children[S.ti];if(row)row.querySelector('.copy').textContent=t.text||'（空文字）';draw();});
+  normaliseTextSize(t);clampText(t);syncTextSizeControl(t);const row=textList.children[S.ti];if(row)row.querySelector('.copy').textContent=t.text||tt('（空文字）');draw();});
 document.getElementById('addtext').onclick=()=>{const t=addText();if(t){
   setStep(1);setHint('文字已加入；可直接在画布上拖动，当前面板保持不变');
   syncTextPanel();textInput.focus();textInput.select();}};
@@ -5440,7 +5470,7 @@ function showPress(){
   pressEl.setAttribute('role','dialog');pressEl.setAttribute('aria-modal','true');
   pressEl.setAttribute('aria-label','印刷成品预览');
   const close=document.createElement('button');close.type='button';close.className='press-close';
-  close.setAttribute('aria-label','关闭成品预览');close.title='关闭';close.textContent='×';close.onclick=()=>closePress();
+  close.setAttribute('aria-label',tt('关闭成品预览'));close.title=tt('关闭');close.textContent='×';close.onclick=()=>closePress();
   const headline=document.createElement('div');headline.className='press-headline';
   const status=document.createElement('span');status.className='press-status';status.setAttribute('aria-live','polite');
   status.innerHTML='<b>··</b><span>PREPARING PLATES</span>';headline.append(status);
@@ -5720,6 +5750,27 @@ function undo(){
   S=JSON.parse(JSON.stringify(prev));sel=false;tsel=false;hoverText=-1;hoverEl=false;
   sync();draw();syncUndoButton();setHint('已撤销上一步');
 }
+// 这些按钮不随 sync 重建，语言一换就得自己把 tooltip 重写一遍
+function retitleStaticButtons(){
+  document.querySelectorAll('[data-sw-name]').forEach(el=>{
+    const pre = el.dataset.swPaper!==undefined ? tt('纸')+(UI==='en'?': ':'：') : '';
+    const hex = el.dataset.swHex ? '  '+el.dataset.swHex : '';
+    el.title = pre + swatchName(el.dataset.swName) + hex;
+  });
+  document.querySelectorAll('[data-sh-name]').forEach(el=>{
+    el.title=tt(el.dataset.shName);
+    el.setAttribute('aria-label', tt('加入')+tt(el.dataset.shName));
+  });
+  document.querySelectorAll('[data-vs-name]').forEach(el=>{ el.title=tt(el.dataset.vsName); });
+}
+function swatchName(s){
+  s=tt(String(s||''));
+  const cjk=/[\u4e00-\u9fff]/;
+  if(!cjk.test(s)) return s.replace(/^riso\s+/i,'');
+  if(UI!=='en') return s.replace(/\s*[A-Za-z][A-Za-z ]*$/,'');
+  const m=s.match(/[A-Za-z][A-Za-z ]*$/);        // 「riso 青」这类没有拉丁部分，只能原样给
+  return m? m[0].trim() : s;
+}
 const inkName=hex=>{ for(const c of LIB) if(c[0]===hex) return tt(c[1]);
   for(const c of PAPERS) if(c[0]===hex) return c[1]; return hex; };
 // 打印画面真正的参数，不让模型写一段"我为什么这样生成"。
@@ -5948,7 +5999,7 @@ function syncBrief(){
   for(const [key,value] of rows){
     const b=document.createElement('button');b.type='button';b.className='brief-piece';b.dataset.piece=key;
     const on=briefTextIndex(key)>=0;b.setAttribute('aria-pressed',String(on));
-    b.setAttribute('aria-label',(on?'选中画面中的':'加入画面：')+value);
+    b.setAttribute('aria-label',tt(on?'选中画面中的':'加入画面：')+value);
     const copy=document.createElement('span');copy.className='piece-copy';copy.textContent=value;
     const action=document.createElement('span');action.className='piece-action';action.textContent=on?'✓':'＋';action.setAttribute('aria-hidden','true');
     b.append(copy,action);box.appendChild(b);
@@ -6028,7 +6079,7 @@ function syncPoemMaterials(){
   for(let i=0;i<poemLines.length;i++){
     const p=poemLines[i],b=document.createElement('button');b.type='button';b.className='poem-piece';
     const on=(S.texts||[]).some(t=>t.source===p.id);b.setAttribute('aria-pressed',String(on));
-    b.setAttribute('aria-label',(on?'选中画面中的':'加入画面：')+p.text);
+    b.setAttribute('aria-label',tt(on?'选中画面中的':'加入画面：')+p.text);
     const copy=document.createElement('span');copy.textContent=p.text;
     const action=document.createElement('i');action.textContent=on?'✓':'＋';action.setAttribute('aria-hidden','true');
     b.append(copy,action);b.onclick=()=>{
