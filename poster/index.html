@@ -793,7 +793,8 @@
     --bg:#dededa; --bg2:#d4d4cf;                    /* 中性浅灰台面 */
     --panel:#fdfdfc;                                /* 面板近白 */
     --hair:#eeeeea; --edge:#cbcbc5;                 /* 边框只两档 */
-    --ink:#17181a; --ink2:#585a5e; --ink3:#8c8e92;  /* 中性墨，不偏冷也不偏暖 */
+    --ink:#17181a; --ink2:#585a5e; --ink3:#70737a;  /* 中性墨。ink3 原为 #8c8e92，
+                                                       对面板只有 3.22:1，压不到 AA 的 4.5 */
     --accent:#00838A;                               /* riso 青 —— 取自本工具自己的墨库 */
   }
 
@@ -851,7 +852,9 @@
   h4.mini{font-size:10px;letter-spacing:.03em;color:#8c8e92;text-transform:none}
   .note,.photo-help{font-variant-numeric:tabular-nums}
   .tool-title small{letter-spacing:.2em}
-  .empty-state span{color:#6d6e72}
+  /* 空状态副标题直接压在纸上，而纸是可换的：牛皮纸下原色只有 2.96:1。
+     压深到六种纸都过 AA —— 它是新人看到的第一句说明，不该看不清。 */
+  .empty-state span{color:#4a4b4f}
 
   /* ---- 印出来：浅暖灰幕布。它是「揭晓」，该把纸托起来，不该压住人 ---- */
   .press{background:#d3d3ce}
@@ -1102,7 +1105,7 @@
   <div class="sheet">
     <span class="crop nw"></span><span class="crop ne"></span>
     <span class="crop sw"></span><span class="crop se"></span>
-    <canvas id="cv" width="470" height="640" aria-label="海报编辑画布。点击元素选中，拖动改变位置，拖动圆形把手缩放和旋转。"></canvas>
+    <canvas id="cv" tabindex="0" width="470" height="640" aria-label="海报编辑画布。点击元素选中，拖动改变位置，拖动圆形把手缩放和旋转。"></canvas>
     <div class="empty-state" id="emptyState">
       <strong>从一句话开始</strong>
       <span>在右侧输入，或者从句子库选择。</span>
@@ -1766,6 +1769,12 @@ function elSize(k,frac,cu){
 
 const blank={ex:null,lang:UI,cut:null,pair:0,paper:PAIRS[0][0],inkA:PAIRS[0][1],covA:0,inkB:PAIRS[0][1],covB:.86,
   a:PAIRS[0][0],b:PAIRS[0][1],els:[],si:-1,texts:[],ti:-1,stock:0,tex:1,dot:1,mark:0,mis:0};
+// ⚠️ 上面这两个派生色只是占位。它们是手写的纯墨值，而 covB=.86 经 mixInk
+// 算出来是 #5F626B —— 明度差 11.5。不修正的话，第一次碰墨/纸/覆盖率/互换/随机生成
+// （任何走到 applyInks 的路径）画面颜色都会自己跳一下，而用户什么都没改。
+// 这里不能直接调 mixInk：它依赖 hex2rgb/s2l 这些后面才定义的 const，会撞 TDZ。
+// 所以规矩是：**每次从 blank 实例化之后，立刻 applyInks()**，让唯一那个算派生色的
+// 函数说了算。启动与「重来」两处都已照办。
 // 候选预览的基准构图。启动时不再展示它，避免示例锚定用户。
 const demo={ex:null,cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
   inkA:PAIRS[1][1], covA:0, inkB:PAIRS[1][1], covB:.86, a:PAIRS[1][0], b:PAIRS[1][1],
@@ -4300,7 +4309,10 @@ cv.addEventListener('pointerdown',e=>{
   const hi=hitEl(p);
   if(hi>=0){ S.si=hi; sel=true;tsel=false; const e=CE();
     drag={m:'el',dx:p.x-EX(e),dy:p.y-EY(e)}; setStep(2); sync(); draw(); return; }
-  if(S.cut){sel=false;tsel=false;sync();draw();return;}
+  // 取消选中要连 si/ti 一起清：只清 sel 的话 CE() 照样返回那个元素，
+  // 右栏继续写着「选中第 N 个」、TRANSFORM/FILL 整块还开着，
+  // 于是点一下填充按钮，会改到一个画面上没有任何选中标记的元素。
+  if(S.cut){sel=false;tsel=false;S.si=-1;S.ti=-1;sync();draw();return;}
   cutting={x1:p.x,y1:p.y,x2:p.x,y2:p.y};
 });
 cv.addEventListener('pointermove',e=>{
@@ -4354,7 +4366,10 @@ function endPointer(){
     const ok=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30;
     if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;setStep(3);syncEmptyState(); }
     cutting=null;
-    if(ok) playCut(); else draw();
+    // 划得太短 = 这是一次点击，不是划线。没切线的时候点空白处同样该取消选中 ——
+    // 原来这条路径只把 cutting 丢掉，选中状态留着，和"有切线时点空白"的行为不一致。
+    if(ok) playCut();
+    else { sel=false;tsel=false;S.si=-1;S.ti=-1;sync();draw(); }
   }
   const hadDrag=!!drag;
   const resizedText=drag&&drag.m==='thandle';drag=null;
@@ -6042,7 +6057,9 @@ document.getElementById('emptyStart').onclick=()=>{
   input.scrollIntoView({behavior:prefersStill()?'auto':'smooth',block:'center'});
 };
 window.addEventListener('keydown',e=>{
-  if(e.target!==document.body) return;
+  // 画布现在是可聚焦部件（tabindex=0）。方向键/Delete/Tab 只在焦点落在 body
+  // 或画布上时归它管，落在别的控件上时一律放行。
+  if(e.target!==document.body && e.target!==cv) return;
   if(e.code==='Space'){ e.preventDefault();
     const b=document.getElementById('topVariants');
     if(b && !b.disabled) shuffleOne();       // 空画布时按钮是禁用的，空格也不该绕过去
@@ -6058,8 +6075,17 @@ window.addEventListener('keydown',e=>{
   if((e.key==='Delete'||e.key==='Backspace')&&ct&&tsel){e.preventDefault();delText();return;}
   if((e.key==='Delete'||e.key==='Backspace') && ce && sel){ e.preventDefault(); delEl(); return; }
   if(e.key==='Tab'){
-    const ne=(S.els||[]).length,nt=(S.texts||[]).length,total=ne+nt;if(total<2)return;
-    e.preventDefault();let at=sel?S.si:(tsel?ne+S.ti:-1);at=(at+1)%total;
+    // Tab 轮选画面上的对象是个好交互，但它原来无条件 preventDefault 并且回绕，
+    // 等于把焦点永久关在画布里 —— 实测连按五次 Tab，焦点一直停在 body，
+    // 键盘用户永远到不了右边的面板。这是 WCAG 2.1.2 的键盘陷阱。
+    // 改成：Shift+Tab 直接放行；正向轮到最后一个之后也放行，
+    // 让焦点顺着正常顺序离开画布。想再进来，Tab 回到画布即可。
+    if(e.shiftKey) return;
+    const ne=(S.els||[]).length,nt=(S.texts||[]).length,total=ne+nt;if(total<1)return;
+    const cur=sel?S.si:(tsel?ne+S.ti:-1);
+    if(cur>=total-1){ sel=false;tsel=false;S.si=-1;S.ti=-1;sync();draw(); return; }
+    e.preventDefault();
+    const at=cur+1;
     if(at<ne){S.si=at;sel=true;tsel=false;}else{S.ti=at-ne;sel=false;tsel=true;}sync();draw();}
 });
 cv.addEventListener('dblclick',e=>{                 // 双击图形循环填充方式，不用去右边找
@@ -6125,6 +6151,7 @@ document.getElementById('shuffle').onclick=()=>shuffleOne();
 document.getElementById('reset').onclick=()=>{const keep=cloneJ(S.ex),lang=S.lang||'zh';
   pushHist();
   S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;sel=false;tsel=false;redrawPending=false;
+  applyInks();                     // 同上：从 blank 实例化之后派生色必须重算
   [...shEl.children].forEach(x=>x.setAttribute('aria-pressed','false'));selectTool('type');setStep(1);sync();draw();
   setHint('画布已经清空。写下一句话，重新开始');};
 
@@ -6184,6 +6211,7 @@ function setStep(n){[...document.getElementById('steps').children].forEach((li,i
   setHint(tt(HINT[n]));}
 document.fonts&&document.fonts.ready.then(draw);
 fitCanvas();
+applyInks();                       // blank 里的派生色是占位，开机先算对再画
 newBrief();syncBrief();sync();selectTool('type');
 setStep(1);
 setHint('从一句话开始。可以自己写，也可以从句子库里选一句');
