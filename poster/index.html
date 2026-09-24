@@ -868,7 +868,7 @@
     <button id="topReset" title="清空画布" aria-label="清空画布">清空</button>
     <button id="topVariants">六个方向</button>
     <button id="topPress">印出来</button>
-    <button id="uiLang" type="button" aria-label="切换界面语言 / Switch language">EN</button>
+    <button id="uiLang" type="button" aria-label="Switch language / 切换界面语言">EN</button>
     <button class="export" id="topDownload" hidden>导出 PNG ↓</button>
   </div>
 </header>
@@ -1139,7 +1139,9 @@ const SC=()=>W/470;   // 缩略图时所有绝对像素都按此缩放
 // 中文短语查字典换成英文；原文存在节点上（_zh），切回来就恢复 —— 不需要
 // 两套 DOM，也不怕以后加新控件漏翻（没命中就保持原文）。
 // 品牌名（CUT / PRINT）和 riso 墨名（Yellow/Blue…）本来就是英文，不动。
-let UI=localStorage.getItem('uiLang')||'zh';
+// 默认英文界面，右上角按钮切中文。曾经手动选过的人保留自己的选择：
+// localStorage 有值就用它，默认值只对首次访问生效。
+let UI=localStorage.getItem('uiLang')||'en';
 const EN={
   // 顶栏
   '撤销':'Undo','清空':'Clear','六个方向':'Six Directions','印出来':'Print It','导出 PNG ↓':'Export PNG ↓',
@@ -1312,6 +1314,8 @@ if(window.MutationObserver) new MutationObserver(()=>{
 }).observe(document.body,{childList:true,subtree:true});
 function applyLang(){
   localStorage.setItem('uiLang',UI);
+  document.documentElement.lang = UI==='en' ? 'en' : 'zh-CN';
+  document.title = UI==='en' ? 'Cut / Print · Risograph Poster Lab' : 'Cut / Print · 海报生成器';
   const btn=document.getElementById('uiLang');
   if(btn) btn.textContent=UI==='en'?'中':'EN';
   // ⚠️ 必须跳过 SCRIPT/STYLE 内的文本：TreeWalker 不跳的话，代码里的中文
@@ -1470,7 +1474,7 @@ function elSize(k,frac,cu){
   return r/W;
 }
 
-const blank={ex:null,lang:'zh',cut:null,pair:0,paper:PAIRS[0][0],inkA:PAIRS[0][1],covA:0,inkB:PAIRS[0][1],covB:.86,
+const blank={ex:null,lang:UI,cut:null,pair:0,paper:PAIRS[0][0],inkA:PAIRS[0][1],covA:0,inkB:PAIRS[0][1],covB:.86,
   a:PAIRS[0][0],b:PAIRS[0][1],els:[],si:-1,texts:[],ti:-1,stock:0,tex:1,dot:1,mark:0,mis:0};
 // 候选预览的基准构图。启动时不再展示它，避免示例锚定用户。
 const demo={ex:null,cut:mkCut('h',.32,-9), pair:1, paper:PAIRS[1][0],
