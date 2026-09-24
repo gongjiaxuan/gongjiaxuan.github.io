@@ -3294,14 +3294,29 @@ function textMetricsRaw(t){
     const natural=z+(chars.length-1)*z*VP;
     if(natural>maxH) z*=maxH/natural;
   }else{
-    ctx.save();ctx.font=fontSpec(t,z).css;
-    let natural=0; chars.forEach((ch,i)=>natural+=ctx.measureText(ch).width+(i?z*f.track:0));ctx.restore();
+    // 「装不下就缩」原来是一次线性外推：在原字号量宽，再假设宽度与字号成正比。
+    // 这对 Archivo 和思源宋体成立（实测非线性度 0.0%），对 Fraunces 不成立 ——
+    // 它带 opsz 光学尺寸轴，字号越小字形相对越宽，实测缩到 42px 时比线性预测宽 5.1%。
+    // 于是缩完照样出边距：默认英文界面下 60% 的文字越界，最多 54px。
+    // 改成迭代 —— 缩完重新量，再缩。四轮足够收敛，装得下就提前退出。
     const available=t.fs==null?maxW:maxW*3;
-    if(natural>available) z*=available/natural;
+    for(let pass=0;pass<4;pass++){
+      ctx.save();ctx.font=fontSpec(t,z).css;
+      let natural=0; chars.forEach((ch,i)=>natural+=ctx.measureText(ch).width+(i?z*f.track:0));ctx.restore();
+      if(natural<=available) break;
+      z*=available/natural*0.998;      // 留 0.2% 余量，免得在边界上来回弹
+    }
   }
   // 字号只由用户选择与画幅约束决定。低色差由「色与纸」中的 ΔL* 提示反馈，
   // 不能暗中改大文字，否则用户一调色，已经完成的排版就会跳动。
-  z=Math.max(10*SC(), z);
+  // 下限是为了别缩到看不清。但它不能把已经算好的"装得下"又撑回去 ——
+  // 竖排一长串拉丁字母时，撑回去的结果是整段掉出画布下沿（实测超出 600px）。
+  // 所以竖排只在抬到下限之后仍然装得下时才抬。
+  {
+    const floor=10*SC();
+    if(vert) z = (floor+(chars.length-1)*floor*VP)<=maxH ? Math.max(floor,z) : z;
+    else     z = Math.max(floor, z);
+  }
   const spec=fontSpec(t,z);
   ctx.save();ctx.font=spec.css;
   const widths=chars.map(ch=>ctx.measureText(ch).width);ctx.restore();
@@ -6296,23 +6311,30 @@ function selfTest(){
       for(const fm of [[470,627],[470,665],[540,540],[420,746]]){
         cv.width=W=fm[0]; cv.height=H=fm[1];
         for(const b of BRIEFS){
-          const copy=b.zh;S.lang='zh';
-          S.ex={t:copy.t,d:copy.d,v:copy.v,k:copy.k,b:b.b||{},date:'01.01 — 02.02'};
-          syncAutoTitle();
-          for(let i=0;i<3;i++){
-            shuffleState(); clampAll(); placeTitle(); tries++;
-            const M=MARGIN();
-            for(const t of S.texts){const m=textMetrics(t);
-              if(m.w>W-M*2+1||m.h>H-M*2.6+1)bad.title++;}
-            if(Math.abs(Lstar(S.a)-Lstar(S.b))<30) bad.dl++;
-            for(const c of [S.covA,S.covB]) if(c>0.001&&(c<minCov()-.001||c>fullCov()+0.005)) bad.cov++;
-            for(const e of S.els){ const bb=elBBox(e);
-              if(e.k===12&&(bb.x0<-1||bb.y0<-1||bb.x1>W+1||bb.y1>H+1)) bad.el++; }
+          // 两种语言都要跑。产品默认英文，而这条用例原来只喂中文文案 ——
+          // 等于把一半的排版情况排除在外，偏偏是更容易出事的那一半：
+          // 拉丁句子长得多，默认英文标题用的 Fraunces 还带 opsz 光学尺寸轴。
+          // 这个盲区让 60% 的英文文字越界一直没被发现。
+          for(const lg of ['zh','en']){
+            const copy=b[lg]; S.lang=lg;
+            S.ex={t:copy.t,d:copy.d,v:copy.v,k:copy.k,b:b.b||{},date:'01.01 — 02.02'};
+            syncAutoTitle();
+            for(let i=0;i<3;i++){
+              shuffleState(); clampAll(); placeTitle(); tries++;
+              const M=MARGIN();
+              for(const t of S.texts){const m=textMetrics(t);
+                if(m.w>W-M*2+1||m.h>H-M*2.6+1)bad.title++;}
+              if(Math.abs(Lstar(S.a)-Lstar(S.b))<30) bad.dl++;
+              for(const c of [S.covA,S.covB]) if(c>0.001&&(c<minCov()-.001||c>fullCov()+0.005)) bad.cov++;
+              for(const e of S.els){ const bb=elBBox(e);
+                if(e.k===12&&(bb.x0<-1||bb.y0<-1||bb.x1>W+1||bb.y1>H+1)) bad.el++; }
+            }
           }
+          // propose 留在语言循环外：它是这段里最贵的一步，没必要跟着翻倍
           const p=propose(6); if(p.spread<minSp) minSp=p.spread;
         }
       }
-      ok('所有文字不出边距', bad.title===0, bad.title+' / '+tries);
+      ok('所有文字不出边距（中英各一半）', bad.title===0, bad.title+' / '+tries);
       ok('两支墨明度差 ΔL* ≥ 30', bad.dl===0, bad.dl+' / '+tries);
       ok('覆盖率落在每种纸的可印区间', bad.cov===0, bad.cov+' / '+(tries*2));
       ok('器物不被画布切掉', bad.el===0, bad.el+' / '+tries);
