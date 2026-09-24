@@ -1419,7 +1419,7 @@ const EN={
   // 工具页签与步骤
   '文字':'Type','图形':'Forms','墨纸':'Ink & Paper',
   '写一句话':'Write a line','加个图形，随手调它':'Add a form, adjust it here',
-  '墨与纸随时换':'Swap inks & paper anytime','印出来':'Print it',
+  '墨与纸随时换':'Swap inks & paper anytime','印出来':'Print It',
   '四个动作':'Four moves',
   // 空状态
   '从一句话开始':'Start with one line','在右侧输入，或者从句子库选择。':'Type on the right, or pick from the library.',
@@ -1483,6 +1483,7 @@ const EN={
   '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
   '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
   '字':'Type','墨与纸':'Ink & Paper',
+  '这句已排好。想加图形就点上面的「图形」；墨和纸随时可换':'Placed. Add a form under Forms; inks and paper can change anytime.',
   // 照片网点风格的说明
   '细密、均匀的随机颗粒':'Fine, even random grain',
   '误差扩散形成的有机纹理':'Organic texture from error diffusion',
@@ -1496,15 +1497,14 @@ const EN={
   // 形状与器型（按钮 tooltip 与无障碍标签）
   '圆':'Circle','半圆':'Half circle','条':'Bar','三角':'Triangle','环':'Ring','点阵':'Dot grid',
   '流线':'Streamline','干刷':'Dry brush','星芒':'Starburst','新月':'Crescent','折带':'Folded band','花瓣':'Petal',
-  '梅瓶':'Meiping','玉壶春瓶':'Yuhuchun','蒜头瓶':'Garlic-head','葫芦瓶':'Gourd','觚':'Gu','碗':'Bowl',
   // 运行时拼出来的 title / aria-label
-  '选中画面中的':'Select on the sheet: ','加入画面：':'Add to the sheet: ',
+  '选中画面中的':'Select on the sheet: ',
   '加入':'Add ','我的图':'My shape','关闭成品预览':'Close the print preview',
-  '（空文字）':'(empty)','关闭':'Close',
+  '（空文字）':'(empty)',
   // 工单条用到的词
   '未切':'Uncut','套印':'Reg.','中等错位':'Off by a little',
   '太近':'too close','偏弱':'weak','甜区':'sweet spot',
-  '墨 A':'Ink A','墨 B':'Ink B','这一版的配方':'This sheet',
+  '墨 A':'Ink A','墨 B':'Ink B',
   // 属性文案（placeholder / aria-label / title）
   '写下一个意象、片段或一句话':'An image, a fragment, or a line',
   '编辑选中的文字':'Edit the selected line',
@@ -1567,7 +1567,7 @@ const EN={
   '阳光黄 · 勃艮第':'Sun Yellow · Burgundy','浅灰 · 蓝宝石':'Light Grey · Sapphire',
   // 配方与 meter（生成点走 tt，这里收词）
   '切线':'Cut','水平':'horizontal','垂直':'vertical','小色域':'small field ','纸':'Paper',
-  '净面':'smooth','原纸':'plain','粗纹':'rough','墨':'Ink','明度差':'Gap',
+  '净面':'smooth','原纸':'Plain','粗纹':'rough','墨':'Ink','明度差':'Gap',
   '道林纸':'Woodfree','新闻纸':'Newsprint','牛皮纸':'Kraft','和纸':'Washi','再生纸':'Recycled','光面纸':'Glossy',
   '对比不够，画面发闷':'Not enough contrast','甜区：对比够且仍有层次':'Sweet spot: contrast with steps left',
   '很硬':'Very hard','对比够，但少了层次':'Enough contrast, few steps',
@@ -4959,11 +4959,16 @@ function genState(){
   // 六张候选顶着同一句标题 —— 实测 propose(6) 的 texts[0].text 六个全一样。
   // 文字在 feat() 里只占几维，但眼睛给它的权重远高于此，所以六张看着比数字说的要像。
   // 「字」没被锁上的时候，候选也可以换一个题；锁上了就老老实实用当前这个。
-  if(!LOCKS.type && Math.random()<0.45) newBrief();
-  shuffleState();
-  const got=JSON.parse(JSON.stringify(S));
-  S=keep;
-  return got;
+  try{
+    if(!LOCKS.type && Math.random()<0.45) newBrief();
+    shuffleState();
+    return JSON.parse(JSON.stringify(S));
+  }finally{
+    // 必须是 finally。这个函数把全局 S 借走当草稿纸，中途抛一次异常就等于
+    // 把用户当前这版海报永久换成一张随机构图 —— renderTo 和 score 都有这层
+    // 保护，只有这里漏了。
+    S=keep;
+  }
 }
 // 归一化特征向量：用来保证六个候选彼此真的看得出差别
 // 「两张海报差多少」的尺子。整个候选托盘（最远点采样保证六个可分辨、
@@ -5956,21 +5961,34 @@ function briefTextIndex(key){
 // 点一句话曾经会自动生成整版海报 —— 是 shuffleState() 干的，
 // 随机墨、随机器物全塞进去，读作失控。现在点一句话只做一件事：
 // 把这句话和配套的那句一起插进来，各自落到对齐线上。图形、墨色由用户自己决定。
+// text/source 原来是收下了却一次都没用：不管点的是哪一句，开局永远铺句子库那一对。
+// 于是点一句自己生成的诗，画面上出现的是完全不相干的展讯标题 —— 实测点
+// 「The blank field keeps a place for 青苔」，进去的是「Clay Was Once a Mountain」。
+// 现在分两种来源：句子库的一句带出它的配套句（原本的意图），
+// 自己生成的一句就只放它自己。
 function startCompositionWithText(text,source){
   pushHist();
   const en=S.lang==='en';
   ensureTexts();
   S.texts=[];
-  // 主句：大字号，中文竖排 / 英文横排（这是读的方向，不是审美偏好）
-  S.texts.push({text:briefValue('title'),x:.5,y:.3,size:2,font:en?2:0,dir:en?'h':'v',
-    role:'title',source:librarySource('title')||null,autoStyle:true});
-  // 配套句：小两档、横排，placeText 会把它跟排在主句旁边
-  S.texts.push({text:briefValue('body'),x:.5,y:.3,size:0,font:en?2:0,dir:'h',
-    role:'poem',source:librarySource('body')||null,autoStyle:true});
+  const libT=librarySource('title')||null, libB=librarySource('body')||null;
+  const fromLibrary = !!source && (source===libT || source===libB);
+  if(fromLibrary || text==null){
+    // 主句：大字号，中文竖排 / 英文横排（这是读的方向，不是审美偏好）
+    S.texts.push({text:briefValue('title'),x:.5,y:.3,size:2,font:en?2:0,dir:en?'h':'v',
+      role:'title',source:libT,autoStyle:true});
+    // 配套句：小两档、横排，placeText 会把它跟排在主句旁边
+    S.texts.push({text:briefValue('body'),x:.5,y:.3,size:0,font:en?2:0,dir:'h',
+      role:'poem',source:libB,autoStyle:true});
+  }else{
+    S.texts.push({text:String(text),x:.5,y:.3,size:2,font:en?2:0,dir:en?'h':'v',
+      role:'title',source:source||null,autoStyle:true});
+  }
   S.ti=0; sel=false; tsel=true;
-  placeText(S.texts[0]); placeText(S.texts[1]);
+  S.texts.forEach(placeText);
   clampTitle(); sync(); draw(); selectTool('type');
-  setHint('两句已排好。想加图形就点上面的「图形」；墨和纸随时可换');
+  setHint(S.texts.length>1 ? '两句已排好。想加图形就点上面的「图形」；墨和纸随时可换'
+                           : '这句已排好。想加图形就点上面的「图形」；墨和纸随时可换');
 }
 function addBriefText(key){
   if(isBlankComposition()){
