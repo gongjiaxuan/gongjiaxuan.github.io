@@ -6211,7 +6211,14 @@ document.getElementById('download').onclick=()=>{
   out.toBlob(blob=>{
     if(!blob)return;
     const a=document.createElement('a'),u=URL.createObjectURL(blob);
-    const name=String(TITLE()||'poster').replace(/[\\/:*?"<>|\s]+/g,'-').replace(/^-|-$/g,'');
+    // 文件名要取自**纸上真正印着的那句话**，不是展讯题目。
+    // TITLE() 给的是当前这条展讯的标题；改过画面文字之后两者就对不上 ——
+    // 实测海报上印的是「Moss On The Kiln Wall」，导出的文件却叫 Minerals-from-Afar.png。
+    const onSheet=(S.texts||[]).filter(t=>String(t.text||'').trim());
+    const lead=onSheet.find(t=>t.role==='title')
+            || onSheet.slice().sort((a,b)=>(b.size||0)-(a.size||0))[0];
+    const raw=(lead&&String(lead.text).trim())||TITLE()||'poster';
+    const name=raw.slice(0,60).replace(/[\\/:*?"<>|\s]+/g,'-').replace(/^-|-$/g,'');
     a.href=u;a.download='cut-print-'+(name||'poster')+'.png';a.click();
     setTimeout(()=>URL.revokeObjectURL(u),1200);setHint('高清 PNG 已生成');
   },'image/png');
