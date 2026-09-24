@@ -3090,7 +3090,13 @@ function drawOne(e, col, side, inv, isLast){
   // 拿起：拖动中的那个元素轻微放大。被拿起的和没被拿起的在眼睛里要分得开 ——
   // 1.02 够了，再多就是跳。命中检测是数学不是像素，视觉放大不影响它。
   const lift=(drag&&drag.m==='el'&&e===CE())?UIA.lift:0;
-  if(lift>0.002){
+  // ⚠️ 这个变换必须自带 save/restore。下面那个 save 在它之后，配对的 restore
+  //    恢复到的是"已经含放大"的状态，等于永不撤销 —— 而 ctx 的变换是累乘的：
+  //    实测拖一次，缩放 1.0 → 3.13 并停在那儿，整块画布连同位移 −1076/−1094
+  //    被永久带偏，之后画什么都飞出画面。
+  const lifted = lift>0.002;
+  if(lifted){
+    ctx.save();
     ctx.translate(EX(e),EY(e));
     ctx.scale(1+0.02*lift,1+0.02*lift);
     ctx.translate(-EX(e),-EY(e));
@@ -3161,6 +3167,7 @@ function drawOne(e, col, side, inv, isLast){
       ctx.restore(); }
   }
   ctx.restore();
+  if(lifted) ctx.restore();          // 撤掉"拿起"的放大，别留在 ctx 上
 }
 // 宋体走竖排、黑体走横排；宋体永不给负字距。标题一律实地墨，绝不上网点——
 // 宋体的横画本来就细于最小可保网点，打上网点会直接断掉。
@@ -4316,7 +4323,11 @@ cv.addEventListener('pointermove',e=>{
   if(hT!==hoverText||hE!==hoverEl){hoverText=hT;hoverEl=hE;
     cv.style.cursor=redrawPending?'crosshair':(onHandle(p)||onTextHandle(p))?'nwse-resize':(hE||hT>=0?'grab':'default');draw();}
 });
-window.addEventListener('pointerup',()=>{
+// pointercancel 必须和 pointerup 走同一条路。手势被系统打断时（来电、手势导航、
+// 浏览器接管、笔离开数位板）只发 cancel 不发 up —— 照片框和器物预览都处理了，
+// 主画布漏了：drag/cutting 会永久卡住，元素跟着一个并没有按下的指针跑，
+// 「拿起」的放大也一直挂着下不来。
+function endPointer(){
   if(cutting){
     const ok=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30;
     if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;setStep(3);syncEmptyState(); }
@@ -4329,7 +4340,11 @@ window.addEventListener('pointerup',()=>{
   // 松手必须触发一次重画：UIA 的目标值（选中/拿起）只在 draw() 里推导，
   // 这里不画的话「拿起」的 1.02 放大会一直挂在元素上下不去 —— 实测踩过。
   if(hadDrag){ UIA_T.lift=0; uiPulse(); }
-});
+}
+window.addEventListener('pointerup', endPointer);
+window.addEventListener('pointercancel', endPointer);
+// 指针捕获被抢走（另一个元素 setPointerCapture、或页面失焦）同样收不到 up
+cv.addEventListener('lostpointercapture', endPointer);
 selectionDeleteEl.addEventListener('pointerdown',e=>e.stopPropagation());
 selectionDeleteEl.addEventListener('click',e=>{
   e.stopPropagation();
