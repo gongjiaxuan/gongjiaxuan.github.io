@@ -661,9 +661,9 @@
 
   .blk{margin-bottom:28px}
   .blk h3{
-    margin:0 0 12px;font-size:11px;font-weight:650;letter-spacing:.15em;color:#77746c;text-transform:uppercase;
+    margin:0 0 12px;font-size:11px;font-weight:650;letter-spacing:.04em;color:#77746c;
   }
-  h4.mini{margin:18px 0 8px;font-size:10.5px;font-weight:600;letter-spacing:.09em;color:#8d897f;text-transform:uppercase}
+  h4.mini{margin:18px 0 8px;font-size:10.5px;font-weight:600;letter-spacing:.03em;color:#8d897f}
   .section-intro{padding-bottom:1px}
   .quiet-action{font-size:10px;color:#77746c;border-bottom:1px solid #aaa69d;padding:0 0 3px}
   .quiet-action:hover{color:var(--accent);border-color:var(--accent)}
@@ -671,7 +671,6 @@
   .empty-state{
     justify-content:center;gap:0;padding:20px;background:transparent;color:var(--ink);pointer-events:auto;
   }
-  .empty-state::before{content:"";width:22px;height:2px;background:var(--accent);margin-bottom:5px}
   .empty-state small{display:block;font-size:8px;letter-spacing:.2em;color:#8b5b50;margin-bottom:9px}
   .empty-state strong{display:block;font-family:"Noto Serif SC","Songti SC",serif;font-size:34px;font-weight:900;line-height:1.22;letter-spacing:.05em;margin-bottom:13px}
   .empty-state span{display:block;font-size:11px;line-height:1.5;color:#706e67;max-width:34em}
@@ -778,81 +777,100 @@
     .tray{inset:54px 0 0}
   }
 
-  /* ============ 样张台主题（级联覆盖，整块可回退） ============ */
+  /* ============ 工作室日光主题（替换上一版的深色样张台） ============
+     深色台面确实让纸「发光」，但一个要久待的创作工具不该有那种重量感。
+     换一条路：**不靠暗，靠冷暖**。
+     · 台面 = 冷中性浅灰（画室的墙 / 看版台的日光）
+     · 纸   = 暖奶油（产品本身，不动）
+     · 面板 = 近白，控件纯白浮在其上
+     冷灰包着暖纸，纸照样跳出来，整体却是亮的。三个明度层次照样分明：
+     台面 L*≈84 / 纸 L*≈94 / 面板 L*≈98。
+     ================================================================ */
   :root{
-    --bg:#33302a; --bg2:#2a2722;                 /* 校样台深暖炭 */
-    --panel:#f4f2ec;                              /* 面板纸，比控件深半档 */
-    --hair:#e6e2d8; --edge:#c9c4b8;               /* 边框只两档 */
-    --chrome:#15161a; --chrome-ink:#c9c5ba;       /* 机器铬 */
+    --bg:#dededa; --bg2:#d4d4cf;                    /* 中性浅灰台面 */
+    --panel:#fdfdfc;                                /* 面板近白 */
+    --hair:#eeeeea; --edge:#cbcbc5;                 /* 边框只两档 */
+    --ink:#17181a; --ink2:#585a5e; --ink3:#8c8e92;  /* 中性墨，不偏冷也不偏暖 */
+    --accent:#00838A;                               /* riso 青 —— 取自本工具自己的墨库 */
   }
 
-  /* ---- 顶栏：机器铬 ---- */
-  .appbar{background:var(--chrome);border-bottom:2px solid var(--accent);height:76px;padding:0 28px}
-  .appbar::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:0} /* 套准线由 border 呈现 */
-  .brand strong{color:#f5f2ea;font-size:20px;letter-spacing:.12em;font-weight:600}
-  .brand span{color:#8a867c;letter-spacing:.18em}
-  .edition{color:#8a867c}
-  .top-actions button{border-color:#3d3a33;background:transparent;color:var(--chrome-ink);min-height:40px}
-  .top-actions button:hover{background:#23242a;border-color:#6a675e;color:#f5f2ea}
-  .top-actions button:disabled{background:transparent;border-color:#2c2a25;color:#5c5a52}
-  .top-actions .export{background:#f5f2ea;border-color:#f5f2ea;color:var(--chrome)}
+  /* ---- 顶栏：与面板同纸，一道朱红套准线 —— 不再是一整块黑 ---- */
+  .appbar{background:#fdfdfc;border-bottom:2px solid var(--accent);height:74px;padding:0 28px;
+    grid-template-columns:1fr auto}
+  .brand strong{color:var(--ink);font-size:20px;letter-spacing:.12em;font-weight:600}
+  .brand span{color:var(--ink3);letter-spacing:.18em}
+  .edition{color:var(--ink3)}
+  .top-actions button{border-color:var(--edge);background:#fff;color:var(--ink2);min-height:40px}
+  .top-actions button:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+  .top-actions .export{background:var(--ink);border-color:var(--ink);color:#fff}
   .top-actions .export:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+  /* 禁用态必须用 ID 特异性压住 —— .top-actions #topVariants{color:var(--ink)} 这类
+     规则的特异性 (0,1,1,0) 高于 .top-actions button:disabled，此前禁用按钮
+     仍被画成可用样式；在深色顶栏上更是黑字压黑底、整个按钮读作空白块。 */
+  .top-actions #topVariants:disabled,
+  .top-actions #topPress:disabled,
+  .top-actions button:disabled{
+    background:#f2f2ef!important;border-color:#e2e2dd!important;color:#a6a6a1!important;
+    cursor:not-allowed;opacity:1}
 
-  /* ---- 台面：深炭 + 网点纸（浅点） ---- */
+  /* ---- 台面：冷灰 + 网点纸 ---- */
   .stage{background-color:var(--bg);
-    background-image:radial-gradient(#f5f2ea0d 1.05px,transparent 1.25px);
+    background-image:radial-gradient(#17181a18 1.05px,transparent 1.25px);
     background-size:21px 21px;background-position:center}
-  .sheet{box-shadow:0 1px 1px #00000059,0 5px 12px -7px #00000073,
-    0 30px 58px -30px #000000a8,0 0 0 1px #00000030}   /* 深底上阴影加深一档 */
-  .crop{color:#8d897d}
+  .sheet{box-shadow:0 1px 1px #24241f2e,0 5px 12px -7px #24241f52,
+    0 30px 58px -30px #24241f7d,0 0 0 1px #24241f1f}
+  .crop{color:#8b887f}
 
-  /* ---- 面板：纸的叠层 ---- */
-  .panel{background:var(--panel);border-left:1px solid #dcd8cd;
-    box-shadow:inset 1px 0 0 #ffffffcc}                 /* 纸的上缘高光 */
+  /* ---- 面板：纸的叠层，控件纯白 ---- */
+  .panel{background:var(--panel);border-left:1px solid var(--edge);box-shadow:none}
   .row button,.ghost,.font-grid button,.photo-style button,.stock-grid button{
-    background:#fdfcfa;border-color:var(--edge)}
+    background:#fff;border-color:var(--edge);color:var(--ink2)}
   .row button:hover,.ghost:hover,.font-grid button:hover,.photo-style button:hover,.stock-grid button:hover{
-    background:#eeebe1;border-color:#a8a396}
+    background:#f2f2ef;border-color:#a3a39d;color:var(--ink)}
   .toolnav{border-color:var(--edge)}
   .toolnav button{border-right-color:var(--edge)}
   .asset-nav{border-bottom-color:var(--edge)}
   .advanced-tools{border-top-color:var(--hair);border-bottom-color:var(--hair)}
-  .brief,.poem-materials{border-color:var(--edge)}
+  .brief,.poem-materials{border-color:var(--edge);background:#fff}
   .quiet-action{border-bottom-color:var(--edge)}
-  .cut-action{background:#fdfcfa}
+  .cut-action{background:#fff}
 
-  /* ---- 微标签收紧：更小、更疏、更轻 —— 高级工具的标签做法 ---- */
-  .blk h3{font-size:10px;letter-spacing:.18em;color:#6f6c62;font-weight:600}
-  h4.mini{font-size:10px;letter-spacing:.14em;color:#6f6c62}
-  .note,.photo-help{font-variant-numeric:tabular-nums}  /* 数字对齐，工单感 */
+  /* ---- 微标签：小、疏、轻；数字等宽（工单感） ---- */
+  /* 全大写 + .18em 字距的小标签是模板腔：三十个分区标题长得一模一样，
+     信息层级全靠"看起来像标签"，而不是靠对比。改成正常大小写 + 正常字距，
+     层级交给字重和颜色。 */
+  .blk h3{font-size:10.5px;letter-spacing:.04em;color:#6d6e72;font-weight:650;text-transform:none}
+  h4.mini{font-size:10px;letter-spacing:.03em;color:#8c8e92;text-transform:none}
+  .note,.photo-help{font-variant-numeric:tabular-nums}
   .tool-title small{letter-spacing:.2em}
+  .empty-state span{color:#6d6e72}
 
-  /* ---- 空状态：纸上的邀请卡，衬线大字保持 ---- */
-  .empty-state span{color:#7d7a70}
-
-  /* ---- 印出来覆盖层：同一台机器 ---- */
-  .press{background:#2a2722}
-  .press-close{border-color:#55524a;color:#c9c5ba}
-  .press-close:hover{background:#3a372f;border-color:#c9c5ba;color:#f5f2ea}
-  .press-headline{color:#8a867c}
-  .press-status b{color:#f5f2ea}
-  .press-act button{border-color:#55524a;color:#c9c5ba;background:transparent}
-  .press-act button:hover{border-color:#c9c5ba;color:#f5f2ea;background:#3a372f}
-  .press-act .go{background:#f5f2ea;border-color:#f5f2ea;color:var(--chrome)}
+  /* ---- 印出来：浅暖灰幕布。它是「揭晓」，该把纸托起来，不该压住人 ---- */
+  .press{background:#d3d3ce}
+  .press-close{border-color:#9d9d97;color:#2c2d30;background:#ffffffa8}
+  .press-close:hover{background:#2c2d30;border-color:#2c2d30;color:#fff}
+  .press-headline{color:#5d5e62}
+  .press-status b{color:var(--ink)}
+  .press-act button{border-color:#9d9d97;color:#2c2d30;background:#ffffffa8}
+  .press-act button:hover{border-color:var(--ink);color:#fff;background:var(--ink)}
+  .press-act .go{background:var(--ink);border-color:var(--ink);color:#fff}
   .press-act .go:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-  .press-cap{color:#8a867c}
+  .press-cap{color:#5d5e62}
 
-  /* ---- 托盘：纸的联系表，深底浮起 ---- */
-  .tray{background:#2a2722f2}
-  .tray-head h3,.tray-ctl .lk{color:#c9c5ba}
-  .tray-ctl .lk{border-color:#55524a}
-  .tray-ctl .mode{border-color:#55524a;color:#c9c5ba}
-  .tray-ctl .mode:hover{border-color:#c9c5ba;color:#f5f2ea}
-  .tray-ctl .mode[aria-pressed="true"]{background:#f5f2ea;border-color:#f5f2ea;color:var(--chrome)}
-  .tray-close{border-color:#55524a;color:#c9c5ba}
-  .tray-path button{border-color:#55524a;color:#c9c5ba}
-  .tray-path button:hover{border-color:#c9c5ba;color:#f5f2ea}
-  .tray-now .cur{color:#8a867c}
+  /* ---- 托盘：浅色联系表 ---- */
+  .tray{background:#efefebf7}
+  .tray-head h3{color:var(--ink2)}
+  .tray-ctl .lk{border-color:var(--edge);color:var(--ink2);background:#fff}
+  .tray-ctl .lk:hover{border-color:var(--ink3);color:var(--ink)}
+  .tray-ctl .mode{border-color:var(--edge);color:var(--ink2);background:#fff}
+  .tray-ctl .mode:hover{border-color:var(--ink3);color:var(--ink)}
+  .tray-ctl .mode[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .tray-close{border-color:var(--edge);color:var(--ink2);background:#fff}
+  .tray-close:hover{border-color:var(--ink);color:var(--ink)}
+  .tray-path button{border-color:var(--edge);color:var(--ink2);background:#fff}
+  .tray-path button:hover{border-color:var(--ink);color:var(--ink)}
+  .tray-now .cur{color:var(--ink3)}
+  .cand-skel{background:#17181a0c;box-shadow:inset 0 0 0 1px #17181a14}
 
   @media (max-width:900px){
     .appbar{height:56px;padding:0 12px}
@@ -862,7 +880,6 @@
 
 <header class="appbar">
   <div class="brand"><strong>CUT / PRINT</strong><span>RISOGRAPH POSTER LAB</span></div>
-  <div class="edition">TWO INKS / ONE SHEET</div>
   <div class="top-actions">
     <button id="topUndo" title="撤销" aria-label="撤销" disabled>↶</button>
     <button id="topReset" title="清空画布" aria-label="清空画布">清空</button>
@@ -880,7 +897,6 @@
     <span class="crop sw"></span><span class="crop se"></span>
     <canvas id="cv" width="470" height="640" aria-label="海报编辑画布。点击元素选中，拖动改变位置，拖动圆形把手缩放和旋转。"></canvas>
     <div class="empty-state" id="emptyState">
-      <small>01 / BLANK SHEET</small>
       <strong>从一句话开始</strong>
       <span>在右侧输入，或者从句子库选择。</span>
       <button type="button" id="emptyStart">去写一句</button>
@@ -901,7 +917,7 @@
       <button data-tool-tab="print" aria-pressed="false" title="墨与纸"><i aria-hidden="true">03</i><span>墨纸</span></button>
     </nav>
     <div class="tool-title">
-      <div><small id="toolKicker">01 / WORDS</small><h2 id="toolTitle">文字</h2></div>
+      <div><h2 id="toolTitle">文字</h2></div>
       <p id="toolSubtitle">先写下一个念头，再让它成为一张海报。</p>
     </div>
   </div>
@@ -1212,6 +1228,17 @@ const EN={
   '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
   '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
   '字':'Type','墨与纸':'Ink & Paper',
+  // 属性文案（placeholder / aria-label / title）
+  '写下一个意象、片段或一句话':'An image, a fragment, or a line',
+  '编辑选中的文字':'Edit the selected line',
+  '海报编辑画布。点击元素选中，拖动改变位置，拖动圆形把手缩放和旋转。':'Poster canvas. Click to select, drag to move, drag the round handle to scale and rotate.',
+  '创作工具':'Tools','删除选中内容':'Delete selection',
+  '删除选中文字':'Delete the selected line','删除选中图案':'Delete the selected form',
+  '删除这行文字':'Delete this line','删除这个图案':'Delete this form',
+  '清空画布':'Clear the canvas','照片取景预览':'Photo framing preview',
+  '使用这个方向':'Use this direction','关闭':'Close',
+  '一个跟当前无关的方向 —— 用来跳出局部最优':'An unrelated direction, to escape a local optimum',
+  '从这一版接着往下走':'Continue from this one',
   '轮选， 拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Tab cycles. Drag the corner handle to scale and rotate; it snaps near 0/90°.',
   '在里面转它， 海报上的剪影就是它的正交投影':'Drag inside to turn it; the poster silhouette is its orthographic projection',
   '这是画面真正的参数，不是解释。 每一个数都能在上面调出来。':'These are the real parameters, not an explanation. Every number can be reproduced above.',
@@ -1345,7 +1372,8 @@ function applyLang(){
     for(const at of ['placeholder','aria-label','title']){
       const v=el.getAttribute(at); if(!v)continue;
       if(el['_zh_'+at]===undefined) el['_zh_'+at]=v;
-      el.setAttribute(at, UI==='en'?(EN[el['_zh_'+at]]||el['_zh_'+at]):el['_zh_'+at]);
+      const zh=el['_zh_'+at];
+      el.setAttribute(at, UI==='en'?(EN_N[norm(zh)]||EN[zh]||zh):zh);
     }
   });
   if(_lastHint) document.getElementById('hint').textContent=tt(_lastHint);
@@ -1355,7 +1383,8 @@ document.getElementById('uiLang').onclick=()=>{ UI=UI==='en'?'zh':'en'; applyLan
   // 画面上已经放好的文字是个体对象，不被牵连。
   if(S.lang!==UI){ S.lang=UI; newBrief(); }
   // 动态生成的控件（句子库、墨色、器物等）重新渲染一遍再翻
-  try{ sync(); syncBrief(); syncLathe && syncLathe(); syncImg && syncImg(); syncTextPanel && syncTextPanel(); }catch(_){}
+  try{ sync(); syncBrief(); syncLathe && syncLathe(); syncImg && syncImg(); syncTextPanel && syncTextPanel();
+       selectTool(activeTool); }catch(_){}
   applyLang(); draw();
   setTimeout(reLang, 60);          // recipe/meter 是防抖后写的，晚一拍再翻一次
 };
@@ -4859,7 +4888,8 @@ function sync(){
   if(objectControls)objectControls.hidden=!ce;
   if(textBlock)textBlock.hidden=!(tsel&&CT());
   const sn=document.getElementById('stocknote'),ps=stockSpec();
-  if(sn)sn.textContent=tt(ps.note)+' '+tt('建议覆盖率')+Math.round(ps.min*100)+'–'+Math.round(ps.max*100)+'%。';
+  if(sn)sn.textContent=tt(ps.note)+' '+tt('建议覆盖率')+(UI==='en'?' ':'')
+    +Math.round(ps.min*100)+'–'+Math.round(ps.max*100)+(UI==='en'?'%.':'%。');
   syncColor();syncTextPanel();syncImg();syncRecipe();syncBrief();syncPoemMaterials();
   if(typeof syncLathe==='function')syncLathe();
   syncEmptyState();
@@ -4894,7 +4924,7 @@ function showTray(reuse){
   const anyLock=LOCK_DIMS.some(d=>LOCKS[d.k]);
   trayEl.innerHTML='';
   const head=document.createElement('div'); head.className='tray-head';
-  head.innerHTML='<div><p class="tray-kicker">Contact sheet / 06</p><p class="tray-title">六个方向</p></div>'+
+  head.innerHTML='<div><p class="tray-title">六个方向</p></div>'+
     '<button class="tray-close" type="button" aria-label="关闭方案比较">×</button>';
   head.querySelector('button').onclick=()=>{trayEl.hidden=true;};
 
@@ -5079,9 +5109,8 @@ function showPress(){
   const close=document.createElement('button');close.type='button';close.className='press-close';
   close.setAttribute('aria-label','关闭成品预览');close.title='关闭';close.textContent='×';close.onclick=()=>closePress();
   const headline=document.createElement('div');headline.className='press-headline';
-  const kicker=document.createElement('span');kicker.className='press-kicker';kicker.textContent='PRINT RUN / THREE PASSES';
   const status=document.createElement('span');status.className='press-status';status.setAttribute('aria-live','polite');
-  status.innerHTML='<b>··</b><span>PREPARING PLATES</span>';headline.append(kicker,status);
+  status.innerHTML='<b>··</b><span>PREPARING PLATES</span>';headline.append(status);
   const stage=document.createElement('div');stage.className='press-stage';
   const sheet=document.createElement('div');sheet.className='press-sheet';
   sheet.style.width=Math.round(pw)+'px';sheet.style.height=Math.round(ph)+'px';
@@ -5589,10 +5618,37 @@ cv.addEventListener('dblclick',e=>{                 // 双击图形循环填充�
   S.si=hi; const ce=CE(); ce.fill=((ce.fill||0)+1)%4; sync(); draw();
 });
 // 换画幅：状态全是 0–1 的比例，所以只要改画布尺寸再夹一遍就行
+// 当前画幅比例（由被按下的画幅按钮决定），画布实际尺寸由舞台算出来
+let FMT_RATIO=627/470;
+function fitCanvas(){
+  const stage=document.querySelector('.stage'); if(!stage) return false;
+  const r=stage.getBoundingClientRect();
+  if(r.width<40||r.height<40) return false;
+  const cs=getComputedStyle(stage);
+  const padX=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight);
+  const padY=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+  const hintH=(document.querySelector('.stage .hint')||{offsetHeight:0}).offsetHeight||0;
+  const availW=r.width-padX, availH=r.height-padY-hintH-14;
+  let w=availW, h=w*FMT_RATIO;
+  if(h>availH){ h=availH; w=h/FMT_RATIO; }
+  // 下限保证手机可用，上限保住网点的物理观感（太大网点会散成颗粒）
+  w=Math.max(300,Math.min(940,Math.round(w)));
+  h=Math.round(w*FMT_RATIO);
+  if(cv.width===w&&cv.height===h) return false;
+  cv.width=W=w; cv.height=H=h;
+  return true;
+}
+let fitT=0;
+window.addEventListener('resize',()=>{ clearTimeout(fitT); fitT=setTimeout(()=>{
+  // resize 只重新钳制，**不重新落位** —— 用户摆好的文字不该因为拉窗口就跑位
+  if(fitCanvas()){ screenCache.clear(); paperCache.clear(); clampAll(); clampTitle(); sync(); draw(); }
+},140); });
 document.getElementById('fmt').onclick=e=>{
   const b=e.target.closest('button'); if(!b) return;
   [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
-  cv.width=W=+b.dataset.w; cv.height=H=+b.dataset.h;
+  FMT_RATIO=(+b.dataset.h)/(+b.dataset.w);
+  screenCache.clear(); paperCache.clear();
+  fitCanvas();
   if(S.cut){ // 切线按新画幅重新吸附，免得斜度在新比例下变成"手滑角"
     const dx=(S.cut.x2-S.cut.x1)*W, dy=(S.cut.y2-S.cut.y1)*H;
     const horiz=Math.abs(dx)>Math.abs(dy);
@@ -5623,9 +5679,11 @@ document.getElementById('reset').onclick=()=>{const keep=cloneJ(S.ex),lang=S.lan
   setHint('画布已经清空。写下一句话，重新开始');};
 
 const TOOL_META={
-  form:['02 / FORMS','图形',''],
-  print:['03 / INK & PAPER','墨与纸',''],
-  type:['01 / WORDS','文字','']
+  // [标题, 副标题]。原来第一项是 "01 / WORDS" 之类的小标 —— 左边页签里
+  // 已经有同样的编号和名字，小标只是把它再说一遍，删掉了。
+  form:['图形',''],
+  print:['墨与纸',''],
+  type:['文字','']
 };
 let activeTool='type';
 function selectTool(tool){
@@ -5636,9 +5694,8 @@ function selectTool(tool){
   document.querySelectorAll('.blk[data-tool]').forEach(b=>
     b.classList.toggle('is-active',b.dataset.tool===tool));
   const m=TOOL_META[tool];
-  document.getElementById('toolKicker').textContent=m[0];
-  document.getElementById('toolTitle').textContent=tt(m[1]);
-  document.getElementById('toolSubtitle').textContent=m[2];
+  document.getElementById('toolTitle').textContent=tt(m[0]);
+  document.getElementById('toolSubtitle').textContent=m[1];
   const panel=document.querySelector('.panel');
   if(panel)panel.scrollTo({top:0,behavior:'smooth'});
 }
@@ -5677,6 +5734,7 @@ function setStep(n){[...document.getElementById('steps').children].forEach((li,i
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});
   setHint(tt(HINT[n]));}
 document.fonts&&document.fonts.ready.then(draw);
+fitCanvas();
 newBrief();syncBrief();sync();selectTool('type');
 setStep(1);
 setHint('从一句话开始。可以自己写，也可以从句子库里选一句');
