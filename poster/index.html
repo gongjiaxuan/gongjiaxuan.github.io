@@ -1500,7 +1500,7 @@ const EN={
   '高清 PNG 已生成':'Hi-res PNG ready.',
   '画布已经清空。写下一句话，重新开始':'Canvas cleared. Start with a new line.',
   '在海报上按住并拖动，重新划出两块色域':'Press and drag on the poster to re-cut the fields.',
-  '字':'Type','墨与纸':'Ink & Paper','或者，随便来一张':'or just give me one',
+  '字':'Type','墨与纸':'Ink & Paper','正在生成…':'Rendering…','或者，随便来一张':'or just give me one',
   '这句已排好。想加图形就点上面的「图形」；墨和纸随时可换':'Placed. Add a form under Forms; inks and paper can change anytime.',
   // 照片网点风格的说明
   '细密、均匀的随机颗粒':'Fine, even random grain',
@@ -4034,6 +4034,16 @@ function playCut(){
 // 图形落进画面：从上方偏大地进来，着地时压扁再弹回 —— squash & stretch。
 // 这一下就把整件事演完了：三维的东西掉进画面，被压成一个剪影。
 let elA=1, elS=0, elRAF=0;
+// 取像之前必须把进行中的动画收到终点。导出和成品预览都要用 ——
+// 人带走的那个文件不该留着"正在飞进来"的半截。
+function settleAnimations(){
+  elA=1; elS=0; ANIM_UNTIL=0;
+  if(elRAF){ cancelAnimationFrame(elRAF); elRAF=0; }
+  if(typeof cutRAF!=='undefined' && cutRAF){ cancelAnimationFrame(cutRAF); cutRAF=0; }
+  cutA=0;
+  if(typeof uiSettle==='function') uiSettle();
+  if(typeof SNAP!=='undefined') SNAP=null;
+}
 // 「动画期间降质」不能拿 rAF 的 id 当判据：切标签页时 rAF 会暂停，
 // id 一直留着，三维元素就永久卡在实色降质上。改成一个会自己过期的时间戳。
 // （自检是同步跑完的，rAF 永远不推进 —— 同一个坑在那边也会踩到。）
@@ -5546,6 +5556,7 @@ function showPress(){
   const st=JSON.parse(JSON.stringify(S));
   const maxH=Math.min(window.innerHeight-220,720),maxW=Math.min(window.innerWidth-76,620);
   let ph=Math.max(220,maxH),pw=ph*W/H;if(pw>maxW){pw=maxW;ph=pw*H/W;}
+  const PRESS_AR=H/W;
   pressEl.innerHTML='';pressEl.className='press preparing';
   pressEl.setAttribute('role','dialog');pressEl.setAttribute('aria-modal','true');
   pressEl.setAttribute('aria-label','印刷成品预览');
@@ -5557,7 +5568,8 @@ function showPress(){
   const stage=document.createElement('div');stage.className='press-stage';
   const sheet=document.createElement('div');sheet.className='press-sheet';
   sheet.style.width=Math.round(pw)+'px';sheet.style.height=Math.round(ph)+'px';
-  sheet.style.setProperty('--travel',Math.round(ph)+'px');sheet.style.setProperty('--paper',st.paper||'#f5eddd');
+  sheet.style.setProperty('--travel',Math.round(ph)+'px');
+  sheet.dataset.ar=PRESS_AR;                 // 窗口变化时按它重算，见下面的 resizesheet.style.setProperty('--paper',st.paper||'#f5eddd');
   const paper=document.createElement('div');paper.className='press-paper';
   const preparing=document.createElement('div');preparing.className='press-preparing';preparing.textContent='MAKING PLATES';
   sheet.append(paper,preparing);stage.appendChild(sheet);
@@ -5701,7 +5713,7 @@ document.getElementById('idel').onclick=()=>{
   if(!S.photo&&!SRC&&!(S.cust&&!S.cust.src))return;
   pushHist();
   if(S.els) S.els=S.els.filter(e=>!(e.k===12 && !e.lat));
-  S.cust=null;S.photo=null;SRC=null;clearPhotoCache();
+  S.cust=null;S.photo=null;SRC=null;clearPhotoCache();sweepPhotoAssets();
   S.si=S.els?Math.min(S.si,S.els.length-1):-1;
   sel=S.si>=0 && sel; if(!S.els||!S.els.length) sel=false;
   syncImg(); sync(); draw();
@@ -5790,6 +5802,7 @@ function applyLathe(lat){
 }
 let lDrag=null;
 latheEl.addEventListener('pointerdown',e=>{
+  if(e.button!==0) return;        // 右键在这里同样不该转动器物
   latheEl.setPointerCapture(e.pointerId);
   const ce=CE(), lat=latheForEdit();
   if(ce&&ce.lat) pushHist();
@@ -5817,6 +5830,17 @@ const stateKey=st=>JSON.stringify(st);
 function syncUndoButton(){
   const b=document.getElementById('topUndo');if(!b)return;
   const now=stateKey(S);b.disabled=!HIST.some(st=>stateKey(st)!==now);
+}
+// 上传的图是一张 1400px 画布加若干 typed array，约 7MB 一张，而 PHOTO_ASSETS 只增不减 ——
+// 实测传 5 张再清空，仍然占着 34MB，而注释里写着"上传的图必须能整个撤走"。
+// 不能无脑清：HIST 里的快照可能还引用着某张图，清了撤销就还原不回来。
+// 所以按可达性回收 —— 当前状态和历史里都没人提到的，才丢。
+function sweepPhotoAssets(){
+  if(typeof PHOTO_ASSETS==="undefined") return;
+  const live=new Set();
+  const note=st=>{ if(st&&st.photo&&st.photo.id!=null) live.add(st.photo.id); };
+  note(S); for(const h of (typeof HIST!=="undefined"?HIST:[])) note(h);
+  for(const id of [...PHOTO_ASSETS.keys()]) if(!live.has(id)) PHOTO_ASSETS.delete(id);
 }
 function pushHist(){
   if(thumb)return;
@@ -6060,6 +6084,10 @@ function briefTextIndex(key){
 function startCompositionWithText(text,source){
   pushHist();
   const en=S.lang==='en';
+  // 字体按**这句话自己的字形**选，不按界面语言。种子是中文时，英文模板里会嵌着中文
+  // （"窑火 passes behind the vessel"），套上 Fraunces 那两个字直接缺失。
+  // 宋/黑都带拉丁字形，中英混排用它们是安全的。
+  const fontFor=t=>/[一-鿿]/.test(String(t||'')) ? 0 : (en?2:0);
   ensureTexts();
   S.texts=[];
   const libT=librarySource('title')||null, libB=librarySource('body')||null;
@@ -6072,7 +6100,12 @@ function startCompositionWithText(text,source){
     S.texts.push({text:briefValue('body'),x:.5,y:.3,size:0,font:en?2:0,dir:'h',
       role:'poem',source:libB,autoStyle:true});
   }else{
-    S.texts.push({text:String(text),x:.5,y:.3,size:2,font:en?2:0,dir:en?'h':'v',
+    // 竖排要看**主体**是不是汉字，不是"含不含"：「窑火 passes behind the vessel」
+    // 大半是拉丁，竖着堆会很别扭。字体则只要含一个汉字就得用带汉字的那支。
+    const str=String(text), cjkN=(str.match(/[一-鿿]/g)||[]).length;
+    const mostlyCJK = cjkN > str.replace(/s/g,'').length*0.5;
+    S.texts.push({text:str,x:.5,y:.3,size:2,font:fontFor(text),
+      dir: mostlyCJK ? 'v' : 'h',
       role:'title',source:source||null,autoStyle:true});
   }
   S.ti=0; sel=false; tsel=true;
@@ -6146,7 +6179,7 @@ document.getElementById('newbrief').onclick=()=>{
   setHint(S.lang==='en'?'A new pair of lines is ready.':'换了一组句子；点击其中一句加入画面');
 };
 
-let poemLines=[],poemGeneration=0;
+let poemLines=[],poemGeneration=0,poemSeed="",poemLang=null;
 const POEM_ZH=[
   q=>q+'落在未干的墨里',
   q=>'纸背收住了关于'+q+'的潮声',
@@ -6182,7 +6215,15 @@ function makePoemLines(seed){
   for(let i=0;i<4;i++)out.push({id:'poem:'+poemGeneration+':'+i,text:pool[(start+i*5)%pool.length](q)});
   return out;
 }
+// 切了语言，生成好的四句要跟着换。原来 poemLines 一直是生成那一刻的语言，
+// 而插入时的字体读的是**当前**语言 —— 于是英文界面下点一句中文，
+// 中文被套上 Fraunces（拉丁衬线），字直接显示不出来。
+function refreshPoemLang(){
+  if(!poemLines.length || !poemSeed || poemLang===S.lang) return;
+  poemGeneration++; poemLang=S.lang; poemLines=makePoemLines(poemSeed);
+}
 function syncPoemMaterials(){
+  refreshPoemLang();
   const box=document.getElementById('poemMaterials');if(!box)return;
   box.hidden=!poemLines.length;box.innerHTML='';
   for(let i=0;i<poemLines.length;i++){
@@ -6197,7 +6238,9 @@ function syncPoemMaterials(){
       if(isBlankComposition()){
         startCompositionWithText(p.text,p.id);syncPoemMaterials();return;
       }
-      const t=addText(p.text,{source:p.id,role:'poem',size:0,font:S.lang==='en'?2:0,dir:'h',autoStyle:true});
+      // 字体按这句话自己的字形选，不按界面语言 —— 中文配拉丁衬线会直接缺字
+      const cjk=/[一-鿿]/.test(p.text);
+      const t=addText(p.text,{source:p.id,role:'poem',size:0,font:cjk?0:2,dir:'h',autoStyle:true});
       if(t){syncPoemMaterials();setHint('诗句已加入；拖动安排它在画面中的位置');}
     };
     box.appendChild(b);
@@ -6206,7 +6249,8 @@ function syncPoemMaterials(){
 function generatePoems(){
   const input=document.getElementById('seedInput'),seed=input.value.trim();
   if(!seed){input.focus();setHint('先写下一个意象、片段或一句话');return;}
-  poemGeneration++;poemLines=makePoemLines(seed);syncPoemMaterials();setHint('四句文字材料已生成；点击 ＋ 加入画面');
+  poemGeneration++;poemSeed=seed;poemLang=S.lang;
+  poemLines=makePoemLines(seed);syncPoemMaterials();setHint('四句文字材料已生成；点击 ＋ 加入画面');
 }
 document.getElementById('seedGenerate').onclick=generatePoems;
 document.getElementById('seedInput').addEventListener('keydown',e=>{
@@ -6303,12 +6347,29 @@ document.getElementById('fmt').onclick=e=>{
   clampAll(); clampTitle(); placeTitle(); sync(); draw();
 };
 document.getElementById('delel').onclick=()=>{ if(sel) delEl(); };
+// 长边固定 3600px。原来是"画布的 3 倍"，而画布跟着窗口走 ——
+// 同一张海报在半宽窗口里导出只有 2.1Mpx，大屏上 9.7Mpx，差 4.6 倍，
+// 按钮上却写着「下载高清 PNG」。尺寸不该由窗口宽度决定。
+const EXPORT_LONG_EDGE=3600;
 document.getElementById('download').onclick=()=>{
-  const out=document.createElement('canvas'),scale=3;
-  out.width=cv.width*scale;out.height=cv.height*scale;
+  const btn=document.getElementById('download');
+  if(btn.dataset.busy) return;                  // 渲染要 1 秒多，连点会生成两个同名文件
+  btn.dataset.busy='1'; btn.disabled=true;
+  const label=btn.textContent; btn.textContent=tt('正在生成…');
+  settleAnimations(); draw();                   // 先落到静帧，再取像
+  const done=()=>{ delete btn.dataset.busy; btn.disabled=false; btn.textContent=label; };
+  // 让忙态先画出来，再做那一秒多的同步渲染
+  setTimeout(()=>{
+  const out=document.createElement('canvas');
+  const ar=cv.height/cv.width;
+  const ow=Math.round(ar>=1 ? EXPORT_LONG_EDGE/ar : EXPORT_LONG_EDGE);
+  out.width=ow; out.height=Math.round(ow*ar);
   renderTo(out.getContext('2d'),JSON.parse(JSON.stringify(S)),out.width,out.height);
+  // renderTo 会把 W/H 换掉，而网屏与纸纹缓存的键里带着 W/H ——
+  // 于是每导出一次就往屏幕用的缓存里塞一份导出尺寸的副本（实测滞留 81MB）。
+  screenCache.clear(); paperCache.clear(); draw();
   out.toBlob(blob=>{
-    if(!blob)return;
+    if(!blob){ done(); return; }
     const a=document.createElement('a'),u=URL.createObjectURL(blob);
     // 文件名要取自**纸上真正印着的那句话**，不是展讯题目。
     // TITLE() 给的是当前这条展讯的标题；改过画面文字之后两者就对不上 ——
@@ -6320,10 +6381,13 @@ document.getElementById('download').onclick=()=>{
     const name=raw.slice(0,60).replace(/[\\/:*?"<>|\s]+/g,'-').replace(/^-|-$/g,'');
     a.href=u;a.download='cut-print-'+(name||'poster')+'.png';a.click();
     setTimeout(()=>URL.revokeObjectURL(u),1200);setHint('高清 PNG 已生成');
+    done();
   },'image/png');
+  },0);
 };
 document.getElementById('shuffle').onclick=()=>shuffleOne();
 document.getElementById('reset').onclick=()=>{const keep=cloneJ(S.ex),lang=S.lang||'zh';
+  sweepPhotoAssets();
   pushHist();
   S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;sel=false;tsel=false;redrawPending=false;
   applyInks();                     // 同上：从 blank 实例化之后派生色必须重算
@@ -6376,6 +6440,18 @@ document.getElementById('topReset').onclick=()=>document.getElementById('reset')
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!pressEl.hidden){closePress();e.preventDefault();return;}
 });
+// 预览的纸只在打开那一刻量过一次。窗口一变矮，「回去改 / 导出 PNG」就被挤到
+// 视口外，而 #press 是 overflow:hidden —— 鼠标永远够不着，只剩 Esc 能出来。
+let pressFitT=0;
+window.addEventListener('resize',()=>{ clearTimeout(pressFitT); pressFitT=setTimeout(()=>{
+  if(pressEl.hidden) return;
+  const sh=pressEl.querySelector('.press-sheet'); if(!sh) return;
+  const ar=+sh.dataset.ar||1.334;
+  const mh=Math.min(window.innerHeight-220,720), mw=Math.min(window.innerWidth-76,620);
+  let h2=Math.max(220,mh), w2=h2/ar; if(w2>mw){ w2=mw; h2=w2*ar; }
+  sh.style.width=Math.round(w2)+'px'; sh.style.height=Math.round(h2)+'px';
+  sh.style.setProperty('--travel',Math.round(h2)+'px');
+},120); });
 // 焦点一旦跑出模态就拽回来。用 focusin 而不是给外壳加 inert：
 // #press 本身就挂在 .stage 里，inert 外壳会把它自己也一起禁掉。
 document.addEventListener('focusin',e=>{
