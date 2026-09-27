@@ -564,7 +564,7 @@
   .section-intro h3{margin:0}
   .quiet-action{border:0;background:transparent;color:var(--ink3);padding:0;font:500 10.5px/1 var(--ui);cursor:pointer}
   .quiet-action:hover{color:var(--ink)}
-  #delel,#deltext,#addtext,#iUse [data-use="shape"],#shapeControls{display:none!important}
+  #delel,#deltext{display:none!important}
   #elementContext{display:none!important}
   .asset-nav{margin-bottom:18px}
   .asset-nav button{min-height:40px}
@@ -1098,6 +1098,7 @@
     .panel{height:100%}
   }
 </style>
+<link rel="stylesheet" href="editor.css">
 
 <header class="appbar">
   <div class="brand"><strong>CUT / PRINT</strong><span>RISOGRAPH POSTER LAB</span></div>
@@ -1113,6 +1114,11 @@
 
 <main class="workspace">
 <div class="stage">
+  <div class="canvas-actions" aria-label="画布操作">
+    <button type="button" id="quickCut" aria-pressed="false">切一刀</button>
+    <button type="button" id="quickVessel">改变器物</button>
+    <button type="button" id="startBlank">从空白开始</button>
+  </div>
   <div class="sheet">
     <span class="crop nw"></span><span class="crop ne"></span>
     <span class="crop sw"></span><span class="crop se"></span>
@@ -1162,7 +1168,7 @@
   <div class="blk" data-tool="form">
     <div class="section-intro"><h3>画幅</h3></div>
     <div class="row" id="fmt">
-      <button data-w="470" data-h="627" aria-pressed="true">3:4</button><button data-w="470" data-h="665">A/B</button><button data-w="540" data-h="540">方</button><button data-w="420" data-h="746">竖屏</button>
+      <button data-w="3" data-h="4" aria-pressed="true">3:4</button><button data-w="470" data-h="665">A/B</button><button data-w="540" data-h="540">方</button><button data-w="420" data-h="746">竖屏</button>
     </div>
     <div class="section-intro" style="margin-top:14px"><h3>切一刀</h3></div>
     <button class="cut-action" id="redrawCut" type="button">✂ 在画布上划一刀</button>
@@ -1258,13 +1264,13 @@
   <div class="blk context-block" data-tool="form" id="latheBlock" hidden><h3>改变器物形态</h3>
     <div class="lathe" id="lathe">
       <canvas id="lcv" width="356" height="300"></canvas>
-      <div class="hud"><span id="lhud1">左右 = 形</span><span id="lhud2">上下 = 俯仰</span></div>
+      <div class="hud" data-raw><span id="lhud1">左右 = 形</span><span id="lhud2">上下 = 俯仰</span></div>
     </div>
     <div class="vpick">
-      <select id="vA"></select><select id="vB"></select>
+      <select id="vA" aria-label="起始器型"></select><select id="vB" aria-label="目标器型"></select>
     </div>
-    <p class="note" style="margin-top:8px">剖面来自馆藏实测，旋成体。<b>在里面转它，
-      海报上的剪影就是它的正交投影</b>——两件之间的形不在任何馆藏里，是你转出来的。</p>
+    <div class="lathe-help"><span>左右拖动变形，上下拖动倾斜。松手后更新海报。</span><button type="button" id="latheReset">重置形态</button></div>
+    <p class="note" style="margin-top:8px">混合两种预设剖面，调整俯仰，生成海报上的器物剪影。</p>
   </div>
 
   <div class="blk" data-tool="form" id="imgblk" hidden>
@@ -1274,7 +1280,7 @@
       <span>拖动取景</span>
     </div>
     <div class="row" id="iUse" style="margin-top:8px">
-      <button data-use="photo" aria-pressed="true">双色印版</button><button data-use="shape" hidden>抠成剪影</button>
+      <button data-use="photo" aria-pressed="true">双色印版</button><button data-use="shape">抠成剪影</button>
     </div>
     <div class="photo-sub" id="photoControls">
       <h4 class="mini">颗粒</h4>
@@ -1298,7 +1304,7 @@
       </div>
       <div class="sld"><label>画笔</label><input type="range" id="cutBrush" min="3" max="18" step="1"><b></b></div>
       <div class="sld"><label>范围</label><input type="range" id="cutRange" min="0" max="100" step="1"><b></b></div>
-      <p class="photo-help cut-status" id="cutStatus">蓝色区域会留下。画几笔，算法会贴着相近的颜色扩展。</p>
+      <p class="photo-help cut-status" id="cutStatus" data-raw>绿色区域会留下。画几笔，算法会贴着相近的颜色扩展。</p>
       <h4 class="mini">剪影边缘</h4>
       <div class="sld"><label>精细</label><input type="range" id="iDet" min="50" max="180" step="5"><b></b></div>
       <p class="photo-help">当前轮廓 <b id="ipts">0</b> 个点。</p>
@@ -1344,9 +1350,8 @@
     <div class="font-grid" id="tfont">
       <button data-font="0">宋</button><button data-font="1">黑</button><button data-font="2">衬</button><button data-font="3">窄</button>
     </div>
-    <h4 class="mini">字号</h4>
     <div class="sld text-size-control">
-      <label for="tSizeSlider">大小</label><input type="range" id="tSizeSlider" min="12" max="160" step="1"><b id="tSizeValue">50</b>
+      <label for="tSizeSlider">字号</label><input type="range" id="tSizeSlider" min="12" max="160" step="1"><b id="tSizeValue">50</b>
     </div>
     <div class="text-actions">
       <button class="ghost" id="addtext">＋ 添加一行文字</button>
@@ -1365,9 +1370,7 @@
     <button class="ghost primary" id="download" style="margin-bottom:7px">下载高清 PNG</button>
     <button class="ghost" id="shuffle" style="margin-bottom:7px">随机生成一版（空格）</button>
     <button class="ghost" id="reset">重来</button>
-    <p class="note" style="margin-top:13px">切线会<b>自动吸附</b>到 0°/90° 或 ±7–12° 的微斜，
-      位置吸附到小色域占 28–36%——中间那段斜度和对半切一律读作「手滑」，所以直接不给。
-      图形跨线<b>自动反色</b>；网点锚在纸上，跨线只换墨色不换网屏。点画面可左右互换两支墨。</p>
+    <p class="note" style="margin-top:13px">手动画线可自由选择角度和位置。图形跨线时反色，网屏锚在纸上。</p>
   </div>
 
   <!-- ============ 工单条：钉在面板底边，三个页签都看得见 ============
@@ -1417,6 +1420,7 @@ const cv=document.getElementById('cv');
 let ctx=cv.getContext('2d');
 let W=cv.width, H=cv.height, thumb=false;
 const SC=()=>W/470;   // 缩略图时所有绝对像素都按此缩放
+const screenScale=()=>thumb?SC():W/(cv.getBoundingClientRect().width||W);
 // ================== 界面语言：纯中文 / 纯英文一键切换 ==================
 // 界面语言纯中文/纯英文一键切换。机制：切换时实时遍历所有文本节点，
 // 中文短语查字典换成英文；原文存在节点上（_zh），切回来就恢复 —— 不需要
@@ -1461,7 +1465,7 @@ const EN={
   '艺术笔触':'Gestures','选中的图形':'Selected Form','删掉选中的（Delete）':'Delete selection (Del)',
   '放一张照片进来':'Bring in a photo','你的照片':'Your Photo','照片':'Photo',
   '改变器物形态':'Reshape the Vessel','图形变化':'Transform',
-  '平面':'Flat','立体':'3D','图形填充':'Fill','实心':'Solid','网点':'Halftone','渐变':'Gradient','半网':'Half-tone',
+  '平面':'Flat','立体':'3D','图形填充':'Fill','实心':'Solid','网点':'Halftone','渐变':'Gradient','半网':'Split fill',
   '网目细':'Fine screen','网目粗':'Coarse screen',
   '颗粒':'Grain','自然':'Natural','漫散':'Diffuse','硬调':'Hard','方格':'Grid',
   '取景与影调':'Crop & Tone','放大':'Zoom','反差':'Contrast','墨量':'Ink',
@@ -1479,8 +1483,8 @@ const EN={
   '已加入图案。拖动调整位置；使用右下角把手缩放或旋转':'Form added. Drag to move; use the handle to scale and rotate.',
   '已加入器物。拖动调整位置，右下角控制大小和角度':'Vessel added. Drag to move; the handle controls size and angle.',
   '文字已加入；可直接在画布上拖动，当前面板保持不变':'Line added. Drag it on the canvas.',
-  '挑一个方向继续；不选择不会改变现在这版':'Pick a direction; not choosing keeps this one.',
-  '已应用此方向。可继续调整或重新生成六个方向':'Applied. Keep adjusting, or roll six more.',
+  '随机生成会直接给你另一版；不点就保留现在这张':'Shuffle gives you one new version; do nothing to keep the current poster.',
+  '已应用这一版。可继续调整，或再随机生成一张':'Applied. Keep adjusting, or shuffle another poster.',
   '印好了 —— 回去改，或者导出':'Printed. Go back and refine, or export.',
   '这张照片暂时抠不出稳定轮廓，可以先作为照片使用':'No stable silhouette found yet. Keep it as a duotone photo.',
   '已回到照片印版 —— 它会随两支墨一起变化':'Back to the duotone plate. It re-prints with your inks.',
@@ -1571,7 +1575,7 @@ const EN={
   '文字已选中；直接拖动，或在当前面板继续编辑':'Line selected. Drag it, or edit in this panel.',
   '图形已选中；直接在画布上移动、缩放或旋转，填充和网目就在「图形变化」里':'Form selected. Move, scale or rotate on the canvas; fill and screen live under Transform.',
   '墨、纸、纸纹都在这一页。切线随时可以在画布上重新划':'Ink, paper and texture live here. Re-cut anytime on the canvas.',
-  '满意了就印出来。也可以先看看「六个方向」':'Happy? Print it. Or peek at Six Directions first.',
+  '满意了就印出来；不满意，就再随机生成一张':'Happy? Print it. If not, shuffle another poster.',
   '建议覆盖率':'Suggested coverage',
   '平整、克制，适合让版式本身说话。':'Flat and restrained; lets the layout speak.',
   '吸墨快，边缘发毛，第二天会变软。':'Drinks ink, fuzzy edges, softens overnight.',
@@ -1602,7 +1606,7 @@ const EN={
   '蓝色区域会留下。画几笔，算法会贴着相近的颜色扩展。':'Blue stays. Paint a few strokes; the mask grows along similar colours.',
   '当前轮廓':'Current contour','个点。':' points.',
   '方向':'Direction','横排':'Horizontal','竖排':'Vertical','字体':'Typeface','字号':'Size',
-  '宋':'Serif','黑':'Sans','衬':'Book','窄':'Condensed',
+  '宋':'Serif','黑':'Sans','衬':'Book','窄':'Display sans',
   '＋ 添加一行文字':'＋ Add a line',
   '拖动文字移动；拖右下角把手或上方滑杆，可连续改变字号。':'Drag to move; the handle or the slider scales the type continuously.',
   '这一版的配方':'This Poster’s Recipe','下载高清 PNG':'Download hi-res PNG',
@@ -1620,6 +1624,53 @@ const EN={
   '点画面上的元素选中它，Tab 轮选，拖右下角把手缩放旋转（转到 0/90° 和切线角会自动吸住）。':'Click a form to select. Tab cycles. Drag the handle to scale and rotate; it snaps near 0/90°.',
   '图片只在你自己的浏览器里处理，不会上传。':'Photos stay in your browser. Nothing is uploaded.',
   '也可以直接把图拖到画布上，或者 Ctrl + V 粘贴。':'Drop an image on the canvas, or paste with Ctrl + V.',
+  '切一刀':'Draw a cut','改变器物':'Shape the vessel','从空白开始':'Start blank',
+  '画布操作':'Canvas actions','起始器型':'Starting vessel','目标器型':'Target vessel','俯仰':'Tilt',
+  '重置形态':'Reset form','左右拖动变形，上下拖动倾斜。松手后更新海报。':'Drag sideways to blend, up or down to tilt. Release to update the poster.',
+  '拖动划出切线。角度和位置由你决定，按 Esc 取消。':'Drag across the poster to place a cut at any angle. Press Esc to cancel.',
+  '试着切一刀，或改变器物。这张样张可以直接编辑。':'Try a cut or shape the vessel. This sample is yours to edit.',
+  '切线已取消':'Cut cancelled',
+  '混合两种预设剖面，调整俯仰，生成海报上的器物剪影。':'Blend two preset profiles and adjust the tilt to form the silhouette on your poster.',
+  '手动画线可自由选择角度和位置。图形跨线时反色，网屏锚在纸上。':'Place a manual cut at any angle or position. Forms invert across it while the screen stays anchored to the paper.',
+  '全画面网屏':'Screen density',
+  '平整、克制，适合让版式本身说话。':'An even, restrained surface for clear type and forms.',
+  '纸白偏暖，网点松，满版也会留出纸感。':'Warm paper with open dots and visible texture in dense fields.',
+  '暖色中明度底，纤维和草杆明显。':'A warm mid-tone surface with visible fibres.',
+  '长纤维与帘纹，墨边更柔。':'Long fibres and laid lines soften the ink edges.',
+  '灰暖纸白，带少量旧墨彩点。':'Warm grey paper with scattered coloured flecks.',
+  '网点干净，表面有很轻的定向反光。':'Clean dots with a subtle directional sheen.',
+  '建议覆盖率':'Suggested coverage',
+  '印刷成品预览':'Print preview','正在生成…':'Exporting…','导出失败，请重试':'Export failed. Please try again.',
+  '高清 PNG 已生成':'High-resolution PNG exported',
+  '绿色区域会留下。画几笔，算法会贴着相近的颜色扩展。':'Green stays. Paint a few strokes; the mask grows along similar colours.',
+  '实心：整块实地墨':'Solid: an even field of ink',
+  '网点：均匀的半调':'Halftone: an even dot screen',
+  '渐变：从上到下由浓到淡':'Gradient: ink fades from top to bottom',
+  '半网：一半实心一半网点，跨切线时两侧各一种':'Split fill: solid on one side, dots on the other',
+  '色调分离：明暗压成三级，像分色版':'Posterised: three levels of light and shade',
+  '连续调：网点大小跟着明暗走':'Continuous tone: dot size follows the shading',
+  '上浓下淡：形往下化开':'Ink coverage fades down the form',
+  '只印暗面：亮的地方留白纸':'Shadows print; highlights leave the paper showing',
+  '立体开了 —— 现在「图形填充」那四个按钮换成四种把明暗印出来的方式':'3D is on. The four fills now interpret the shading.',
+  '回到平面':'Flat rendering is on',
+  '两块版对准了':'The two fields are aligned',
+  '轻微错位 —— 跨切线的形开始有一道细台阶':'Loose registration leaves a small step where forms cross the cut',
+  '中等错位，网点也跟着错开半格':'Medium registration shifts the screens too',
+  '重错位 —— 印坏了，但那正是 riso 的样子':'Off-register: a stronger simulated shift between the two fields',
+  '去掉了版面信息':'Colophon hidden',
+  '版记：三栏小字，写的是这张海报真实的墨、纸、网屏':'Colophon: the inks, paper and screen used in this poster',
+  '加上套准靶和色标 —— 印刷该有的东西都在了':'Registration marks and colour bars added',
+  '读得出来，但结构不够硬':'Readable, with a weak separation between fields',
+  '边界会溶解、形状会发抖':'The fields are too close in lightness for a clear edge',
+  '已切换为中文文案。':'The Chinese phrase library is now active.',
+  '换了一组句子；点击其中一句加入画面':'Another pair of lines is ready. Choose a line to add it.',
+  '画在照片上':'Paint on the photo',
+  '在主体上画：这一块要留下':'Paint on the subject to keep this area',
+  '正在把这一块留下…':'Keeping this area…',
+  '在背景上画：这一块要去掉':'Paint on the background to remove this area',
+  '正在去掉这一块…':'Removing this area…',
+  '到顶了 —— 这张纸放得下的最大尺寸':'This is the largest size that fits on the sheet',
+  '到顶了 —— 重复排得越多，单件就越小；把重复调回 1 能再大一截':'Repeated forms share the available space. Choose 1 to make the form larger.',
 };
 const tt=t=>UI==='en'&&t?(EN[t.trim()]||t):t;
 let _lastHint='';
@@ -1860,8 +1911,7 @@ const CE = ()=> (S.els && S.si>=0) ? (S.els[S.si]||null) : null;
 const CT = ()=> (S.texts && S.ti>=0) ? (S.texts[S.ti]||null) : null;
 const EX = e=>e.x*W, EY = e=>e.y*H, ES = e=>e.s*W;
 const aspOfE = e=> e.k===12 ? (e.cu?e.cu.asp:2) : 2;
-// 切线角度只允许 0°、90°、±7–12°：中间那段斜度读作「手滑」，是最容易让生成画面显廉价的自由度。
-// 位置只允许小色域占 28–36%（或 64–72%）：对半切是最没有决策的决策。
+// These presets support generated layouts. Manual cuts use the pointer line.
 const TILTS=[0,7,9,12];
 function mkCut(o,pos,tilt){
   const t=tilt*Math.PI/180;
@@ -1885,12 +1935,15 @@ function snapTilt(deg){
 }
 function cutFromDrag(c){
   const dx=c.x2-c.x1, dy=c.y2-c.y1;
+  const cx=(c.x1+c.x2)/2,cy=(c.y1+c.y2)/2;
   if(Math.abs(dx)>=Math.abs(dy)){
     const deg=Math.atan2(dy*(dx<0?-1:1),Math.abs(dx))*180/Math.PI;
-    return mkCut('h', snapPos((c.y1+c.y2)/2/H), snapTilt(deg));
+    const angle=Math.abs(deg)<2?0:deg;
+    return mkCut('h',(cy+Math.tan(angle*Math.PI/180)*(W/2-cx))/H,angle);
   }
   const deg=Math.atan2(dx*(dy<0?-1:1),Math.abs(dy))*180/Math.PI;
-  return mkCut('v', snapPos((c.x1+c.x2)/2/W), snapTilt(deg));
+  const angle=Math.abs(deg)<2?0:deg;
+  return mkCut('v',(cx+Math.tan(angle*Math.PI/180)*(H/2-cy))/W,angle);
 }
 function cutLine(){
   if(!S.cut)return null;
@@ -2177,6 +2230,11 @@ function latheToShape(lat){
 // 不需要网格、不需要法线、不需要任何 3D 库。
 function drawLathe(lat){
   const cv2=document.getElementById('lcv'), g=cv2.getContext('2d');
+  const box=cv2.getBoundingClientRect(),ratio=Math.min(3,window.devicePixelRatio||1);
+  if(box.width>0&&box.height>0){
+    const bw=Math.round(box.width*ratio),bh=Math.round(box.height*ratio);
+    if(cv2.width!==bw||cv2.height!==bh){cv2.width=bw;cv2.height=bh;}
+  }
   const q=safeLathe(lat||latheForEdit());
   const W=cv2.width, H=cv2.height, L=curLathe(q), tilt=q.t;
   const c=Math.cos(tilt), sn=Math.sin(tilt);
@@ -2209,8 +2267,8 @@ function drawLathe(lat){
     g.restore();
   }
   document.getElementById('lhud1').textContent=
-    VNAME[VKEYS[q.a]]+' → '+VNAME[VKEYS[q.b]]+'  '+Math.round(q.m*100)+'%';
-  document.getElementById('lhud2').textContent='俯仰 '+Math.round(q.t*180/Math.PI)+'°';
+    tt(VNAME[VKEYS[q.a]])+' → '+tt(VNAME[VKEYS[q.b]])+'  '+Math.round(q.m*100)+'%';
+  document.getElementById('lhud2').textContent=tt('俯仰')+' '+Math.round(q.t*180/Math.PI)+'°';
 }
 
 // ===== 图片 → 照片印版 / 剪影。整条链都在本机内存里跑。 =====
@@ -2720,7 +2778,7 @@ async function useImage(blob){
     requestAnimationFrame(()=>imgBlk.scrollIntoView({behavior:prefersStill()?'auto':'smooth',block:'start'}));
     setHint('照片已经进版 —— 在右边拖动取景，或把它抠成剪影');
     return true;
-  }catch(e){ setHint('这张图读不了（'+(e.message||e)+'）'); return false; }
+  }catch(e){setHint(UI==='en'?'This image could not be read. Please try a PNG, JPEG or WebP.':'这张图读不了，请换一张 PNG、JPEG 或 WebP 图片');return false;}
 }
 
 // 整组图形（含重复实例）合成一条画布坐标系里的路径
@@ -3313,7 +3371,11 @@ function syncAutoTitle(){
     }
   }
 }
-function textChars(t){return [...String((t&&t.text)||' ')];}
+const VERTICAL_PUNCTUATION={'，':'︐','、':'︑','。':'︒','：':'︓','；':'︔','！':'︕','？':'︖','（':'︵','）':'︶','「':'﹁','」':'﹂','『':'﹃','』':'﹄','【':'︻','】':'︼','《':'︽','》':'︾','…':'︙'};
+function textChars(t){
+  const chars=[...String((t&&t.text)||' ')];
+  return t&&t.dir==='v'?chars.map(c=>VERTICAL_PUNCTUATION[c]||c):chars;
+}
 function fontSpec(t,z){
   const f=TEXT_FONTS[Math.max(0,Math.min(TEXT_FONTS.length-1,t.font||0))];
   return {f,css:f.weight+' '+z+'px '+f.family};
@@ -3387,8 +3449,18 @@ function textMetricsRaw(t){
   if(!vert&&t.fs!=null){
     lines=[];let line={chars:[],widths:[],w:0};
     chars.forEach((ch,i)=>{
+      // Keep Latin words together whenever the whole word fits on a line.
+      if(!hasCJK&&!/\s/.test(ch)&&(i===0||/\s/.test(chars[i-1]))){
+        let wordW=0;
+        for(let j=i;j<chars.length&&!/\s/.test(chars[j]);j++)wordW+=widths[j]+(j>i?z*spec.f.track:0);
+        if(line.chars.length&&wordW<=maxW&&line.w+z*spec.f.track+wordW>maxW){
+          while(line.chars.length&&/\s/.test(line.chars.at(-1))){line.chars.pop();line.w-=line.widths.pop()+(line.chars.length?z*spec.f.track:0);}
+          lines.push(line);line={chars:[],widths:[],w:0};
+        }
+      }
+      if(!line.chars.length&&/\s/.test(ch))return;
       const add=widths[i]+(line.chars.length?z*spec.f.track:0);
-      if(line.chars.length&&line.w+add>maxW&&lines.length<2){lines.push(line);line={chars:[],widths:[],w:0};}
+      if(line.chars.length&&line.w+add>maxW){lines.push(line);line={chars:[],widths:[],w:0};}
       const gap=line.chars.length?z*spec.f.track:0;
       line.chars.push(ch);line.widths.push(widths[i]);line.w+=gap+widths[i];
     });
@@ -3597,10 +3669,13 @@ function textBox(t){const m=textMetrics(t);return {x:t.x*W,y:t.y*H,w:m.w,h:m.h,s
 function floatContext(){
   const first=document.querySelector('.blk[data-tool="form"]');     // 画幅与切线块
   if(!first||!first.parentNode) return;
-  for(const id of ['objectControls','elementContext','latheBlock','imgblk']){
+  let anchor=first;
+  for(const id of ['latheBlock','objectControls','elementContext','imgblk']){
     const el=document.getElementById(id);
-    if(el && !el.hidden && el.parentNode===first.parentNode && el!==first.nextSibling)
-      first.parentNode.insertBefore(el, first.nextSibling);
+    if(el && !el.hidden && el.parentNode===first.parentNode){
+      if(el!==anchor.nextElementSibling) first.parentNode.insertBefore(el,anchor.nextSibling);
+      anchor=el;
+    }
   }
 }
 function syncSelectionDelete(){
@@ -3610,8 +3685,9 @@ function syncSelectionDelete(){
     const q=textBox(CT());b={x0:q.x,y0:q.y,x1:q.x+q.w,y1:q.y+q.h};
   }else if(sel&&CE()) b=elBBox(CE());
   if(!b){selectionDeleteEl.hidden=true;return;}
-  const x=Math.max(16,Math.min(W-16,b.x1+9));
-  const y=Math.max(16,Math.min(H-16,b.y0-9));
+  const u=screenScale();
+  const x=Math.max(16*u,Math.min(W-16*u,b.x1+9*u));
+  const y=Math.max(16*u,Math.min(H-16*u,b.y0-9*u));
   selectionDeleteEl.style.left=(x/W*100)+'%';
   selectionDeleteEl.style.top=(y/H*100)+'%';
   selectionDeleteEl.hidden=false;
@@ -3623,8 +3699,9 @@ function titleMetrics(){return textMetrics(titleText());}
 function titleBox(){const t=CT()||titleText();return t?textBox(t):{x:0,y:0,w:0,h:0,s:0};}
 function hitText(p){
   ensureTexts();
+  const padding=10*screenScale();
   for(let i=S.texts.length-1;i>=0;i--){const b=textBox(S.texts[i]);
-    if(p.x>b.x-10&&p.x<b.x+b.w+10&&p.y>b.y-10&&p.y<b.y+b.h+10)return i;}
+    if(p.x>b.x-padding&&p.x<b.x+b.w+padding&&p.y>b.y-padding&&p.y<b.y+b.h+padding)return i;}
   return -1;
 }
 function addText(value,opt){
@@ -3969,7 +4046,7 @@ function cutOverlayCanvas(A,p){
   const c=document.createElement('canvas');c.width=A.w;c.height=A.h;const g=c.getContext('2d'),im=g.createImageData(A.w,A.h),d=im.data;
   for(let y=0,i=0;y<A.h;y++)for(let x=0;x<A.w;x++,i++){
     const q=i*4,bound=mask[i]&&(!x||!y||x===A.w-1||y===A.h-1||!mask[i-1]||!mask[i+1]||!mask[i-A.w]||!mask[i+A.w]);
-    if(mask[i]){d[q]=31;d[q+1]=166;d[q+2]=198;d[q+3]=bound?220:92;}
+    if(mask[i]){d[q]=23;d[q+1]=100;d[q+2]=86;d[q+3]=bound?220:92;}
     else{d[q]=10;d[q+1]=12;d[q+2]=17;d[q+3]=52;}
   }
   g.putImageData(im,0,0);A.cutOverlayMask=mask;A.cutOverlay=c;return c;
@@ -3984,7 +4061,7 @@ function drawPhotoCrop(){
     g.drawImage(cutOverlayCanvas(A,p),dx,dy,dw,dh);
     const cut=ensureCutState(p);g.save();g.lineCap='round';g.lineJoin='round';g.shadowColor='rgba(255,255,255,.92)';g.shadowBlur=1.5;
     for(const s of cut.strokes){const pts=s.pts||[];if(!pts.length)continue;
-      g.strokeStyle=s.mode==='remove'?'rgba(224,82,61,.95)':'rgba(40,168,199,.98)';
+      g.strokeStyle=s.mode==='remove'?'rgba(40,44,41,.95)':'rgba(23,100,86,.98)';
       g.lineWidth=Math.max(2,(s.r||cut.brush)*Math.min(dw,dh));g.beginPath();
       for(let i=0;i<pts.length;i++){const x=dx+pts[i].x*dw,y=dy+pts[i].y*dh;
         if(i)g.lineTo(x,y);else g.moveTo(x,y);}
@@ -4191,7 +4268,7 @@ function draw(){
       // 0.85 起、随剩余时间线性衰减到 0。上一版上限 0.5 叠上衰减均值只有 ~0.2，
       // 肉眼几乎看不见（实测整条线只剩 4 个可测像素）—— 提示线要的就是「一眼看见」。
       const al=Math.min(1,left/380)*0.85, L2=Math.hypot(W,H);
-      ctx.save();ctx.globalAlpha=al;ctx.strokeStyle='#c94836';ctx.lineWidth=1;
+      ctx.save();ctx.globalAlpha=al;ctx.strokeStyle='#176456';ctx.lineWidth=screenScale();
       ctx.setLineDash([7,5]);
       ctx.beginPath();
       ctx.moveTo(SNAP.x-Math.cos(SNAP.ang)*L2,SNAP.y-Math.sin(SNAP.ang)*L2);
@@ -4204,7 +4281,7 @@ function draw(){
   if(!thumb){ noteChange(); recipeSoon(); }
   if(thumb) return;
   if(cutting){
-    const long=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30;
+    const long=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30*screenScale();
     ctx.save();
     // 手指那条：很淡，只是告诉你程序收到了
     ctx.strokeStyle='#00000030';ctx.lineWidth=1;ctx.setLineDash([3,4]);
@@ -4212,7 +4289,7 @@ function draw(){
     if(long){
       // 吸附之后那条：拖的时候就画出来，松手不会再跳一下
       const c=cutFromDrag(cutting);
-      ctx.strokeStyle='#15161aaa';ctx.lineWidth=1.4;ctx.setLineDash([9,6]);
+      ctx.strokeStyle='#176456';ctx.lineWidth=1.4*screenScale();ctx.setLineDash([9*screenScale(),6*screenScale()]);
       ctx.beginPath();ctx.moveTo(c.x1*W,c.y1*H);ctx.lineTo(c.x2*W,c.y2*H);ctx.stroke();
       ctx.setLineDash([]);
       const dx=(c.x2-c.x1)*W, dy=(c.y2-c.y1)*H;
@@ -4221,7 +4298,7 @@ function draw(){
       const pos=horiz?(c.y1+c.y2)/2:(c.x1+c.x2)/2;
       const mx=(c.x1+c.x2)/2*W, my=(c.y1+c.y2)/2*H;
       ctx.fillStyle='#15161ae0';
-      const lab=(deg>=0?'+':'')+deg.toFixed(0)+'°  '+Math.round(Math.min(pos,1-pos)*100)+'%';
+      const lab=(deg>=0?'+':'')+deg.toFixed(0)+'°';
       ctx.font='600 '+(11*SC())+'px "Archivo",sans-serif';
       const w=ctx.measureText(lab).width+12*SC();
       ctx.fillRect(mx-w/2, my-11*SC(), w, 19*SC());
@@ -4250,8 +4327,8 @@ function draw(){
     ctx.globalAlpha=Math.max(0.35,a);
     ctx.strokeStyle='#00000055';ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.strokeRect(-R0*1.08,-hh*1.06,R0*2.16,hh*2.12);ctx.restore();
-    const hp=handlePos(ce), hx=hp.x, hy=hp.y;
-    ctx.save();
+    const hp=handlePos(ce),u=screenScale(),hx=hp.x/u,hy=hp.y/u;
+    ctx.save();ctx.scale(u,u);
     ctx.globalAlpha=a;
     ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1.3;
     ctx.beginPath();ctx.arc(hx,hy,(COARSE?12:8)*hs,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -4265,11 +4342,12 @@ function draw(){
     const ti=tsel?S.ti:hoverText, tt=S.texts&&S.texts[ti], t=tt?textBox(tt):null;
     if(t){
     const ta=tsel?UIA.sel:1;
-    ctx.save();ctx.globalAlpha=Math.max(0.4,ta);ctx.strokeStyle='#00000044';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-    ctx.strokeRect(t.x-9,t.y-9,t.w+18,t.h+18);ctx.restore();
+    const u=screenScale();
+    ctx.save();ctx.globalAlpha=Math.max(0.4,ta);ctx.strokeStyle='#00000044';ctx.lineWidth=u;ctx.setLineDash([3*u,3*u]);
+    ctx.strokeRect(t.x-9*u,t.y-9*u,t.w+18*u,t.h+18*u);ctx.restore();
     if(tsel){                                   // 右下角的把手：拖它自由缩放字号
-      const h=textHandlePos(tt);
-      ctx.save();ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1.3;
+      const hp=textHandlePos(tt),h={x:hp.x/u,y:hp.y/u};
+      ctx.save();ctx.scale(u,u);ctx.fillStyle='#fff';ctx.strokeStyle='#15161a';ctx.lineWidth=1.3;
       ctx.beginPath();ctx.arc(h.x,h.y,COARSE?12:8,0,Math.PI*2);ctx.fill();ctx.stroke();
       ctx.strokeStyle='#15161a';ctx.lineWidth=1.4;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(h.x-3.1,h.y-3.1);ctx.lineTo(h.x+3.1,h.y+3.1);
@@ -4361,11 +4439,11 @@ const HANDLE_HIT = COARSE ? 40 : 17;
 const handlePos = e=>{ const hr=handleR(e);
   return {x:EX(e)+Math.cos(e.r+0.7)*hr, y:EY(e)+Math.sin(e.r+0.7)*hr}; };
 const onHandle=p=>{ const e=CE(); if(!e||!sel)return false; const h=handlePos(e);
-  return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT; };
+  return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT*screenScale(); };
 // 文字也要能自由放大缩小 —— 三档字号不够用
-const textHandlePos = t=>{ const b=textBox(t); return {x:b.x+b.w+11, y:b.y+b.h+11}; };
+const textHandlePos = t=>{ const b=textBox(t),u=screenScale(); return {x:b.x+b.w+11*u, y:b.y+b.h+11*u}; };
 const onTextHandle=p=>{ const t=CT(); if(!t||!tsel)return false; const h=textHandlePos(t);
-  return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT; };
+  return Math.hypot(p.x-h.x, p.y-h.y)<HANDLE_HIT*screenScale(); };
 
 cv.addEventListener('pointerdown',e=>{
   // 右键/中键是「菜单」「粘贴」的手势，不该顺手把作品挪走、也不该顺手切一刀。
@@ -4373,6 +4451,7 @@ cv.addEventListener('pointerdown',e=>{
   if(e.button!==0) return;
   // 已经有一根手指在拖了，后面落下的指针一概不接管
   if((drag||cutting) && dragPid!=null && e.pointerId!==dragPid) return;
+  pushHist();
   if(demoRAF) stopDemo();
   try{cv.setPointerCapture(e.pointerId)}catch(_){}
   dragPid=e.pointerId;
@@ -4434,6 +4513,7 @@ cv.addEventListener('pointermove',e=>{
     }
     draw();return;
   }
+  if(redrawPending){hoverText=-1;hoverEl=false;cv.style.cursor='crosshair';return;}
   const hT=hitText(p), hE=!!(hT<0&&inEl(p));
   if(hT!==hoverText||hE!==hoverEl){hoverText=hT;hoverEl=hE;
     cv.style.cursor=redrawPending?'crosshair':(onHandle(p)||onTextHandle(p))?'nwse-resize':(hE||hT>=0?'grab':'default');draw();}
@@ -4446,9 +4526,10 @@ function endPointer(e){
   // 只有发起这次手势的那根手指能结束它。第二指抬起不该杀掉第一指正在进行的拖动。
   if(e && dragPid!=null && e.pointerId!=null && e.pointerId!==dragPid) return;
   dragPid=null;
+  if(e&&e.type==='pointercancel'&&cutting){cutting=null;redrawPending=false;syncCutAction();draw();}
   if(cutting){
-    const ok=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30;
-    if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;setStep(3);syncEmptyState(); }
+    const ok=Math.hypot(cutting.x2-cutting.x1,cutting.y2-cutting.y1)>30*screenScale();
+    if(ok){ S.cut=cutFromDrag(cutting); redrawPending=false;syncCutAction();setStep(3);syncEmptyState(); }
     cutting=null;
     // 划得太短 = 这是一次点击，不是划线。没切线的时候点空白处同样该取消选中 ——
     // 原来这条路径只把 cutting 丢掉，选中状态留着，和"有切线时点空白"的行为不一致。
@@ -4466,6 +4547,10 @@ window.addEventListener('pointerup', endPointer);
 window.addEventListener('pointercancel', endPointer);
 // 指针捕获被抢走（另一个元素 setPointerCapture、或页面失焦）同样收不到 up
 cv.addEventListener('lostpointercapture', endPointer);
+cv.addEventListener('pointerleave',()=>{
+  if(drag||cutting)return;
+  hoverText=-1;hoverEl=false;cv.style.cursor='';draw();
+});
 selectionDeleteEl.addEventListener('pointerdown',e=>e.stopPropagation());
 selectionDeleteEl.addEventListener('click',e=>{
   e.stopPropagation();
@@ -4639,14 +4724,14 @@ function syncColor(){
   let extra='';
   const cv=curCov();
   if(cv>0.001 && (cv<minCov()-.001||cv>fullCov()+.005))
-    extra='<br><span style="color:#a8632f">当前纸张建议 '+lo+'–'+hi+'% 覆盖率</span>';
+    extra='<br><span>'+tt('当前纸张建议')+' '+lo+' to '+hi+'% '+tt('覆盖率')+'</span>';
   // 覆盖率在不同墨上不是同一个知觉手柄：黄墨整支的明度跨度只有 ΔL* 3.2（几乎纯彩度），
   // 蓝墨是 58（主要在压暗）。所以永远不能把它叫"深浅"，也必须一直画着真实梯尺。
   const span=Math.abs(Lstar(mixInk(curInk(),S.paper,1))-Lstar(S.paper));
-  if(span<12) extra+='<br><span style="color:#7c7d82">这支墨几乎只改彩度，压不出暗场</span>';
+  if(span<12) extra+='<br><span>'+tt('这支墨几乎只改彩度，压不出暗场')+'</span>';
   meterEl.innerHTML=tt('两支墨的明度差')+' <em>&Delta;L* '+d.toFixed(0)+'</em> · '+tt(st[0])+
     '<div class="bar"><span class="safe"></span><span class="pin" style="left:'+
-    Math.min(99,d).toFixed(1)+'%"></span></div>'+st[1]+extra;
+    Math.min(99,d).toFixed(1)+'%"></span></div>'+tt(st[1])+extra;
 }
 
 const ICON=[
@@ -5024,17 +5109,8 @@ function genState(){
   // 文字在 feat() 里只占几维，但眼睛给它的权重远高于此，所以六张看着比数字说的要像。
   // 「字」没被锁上的时候，候选也可以换一个题；锁上了就老老实实用当前这个。
   try{
-    // 语言本身就是一个视觉维度：中文可以竖排通天，拉丁是横排的长句，
-    // 两种排出来的版式完全是两回事。原来候选的语言锁死在界面语言上 ——
-    // 中文界面下不管按多少次随机，永远只给你中文那一半的样子。
-    // 现在每张候选自己掷一次语言；「字」被锁上时不动。
-    if(!LOCKS.type){
-      const want = Math.random()<0.5 ? 'zh' : 'en';
-      const flipped = (S.lang!==want);
-      S.lang = want;
-      // 换了语言就必须换文案，否则中文展讯配英文排版规则
-      if(flipped || Math.random()<0.45) newBrief();
-    }
+    // A new phrase can vary the layout without changing the chosen language.
+    if(!LOCKS.type&&Math.random()<0.45)newBrief();
     shuffleState();
     return JSON.parse(JSON.stringify(S));
   }finally{
@@ -5554,12 +5630,12 @@ function buildPress(token,st,sheet,status){
 function showPress(){
   const token=++PRESS_TOKEN;clearPressTimers();
   const st=JSON.parse(JSON.stringify(S));
-  const maxH=Math.min(window.innerHeight-220,720),maxW=Math.min(window.innerWidth-76,620);
-  let ph=Math.max(220,maxH),pw=ph*W/H;if(pw>maxW){pw=maxW;ph=pw*H/W;}
+  const maxH=Math.min(window.innerHeight-190,720),maxW=Math.min(window.innerWidth-48,620);
+  let ph=Math.max(120,maxH),pw=ph*W/H;if(pw>maxW){pw=maxW;ph=pw*H/W;}
   const PRESS_AR=H/W;
   pressEl.innerHTML='';pressEl.className='press preparing';
   pressEl.setAttribute('role','dialog');pressEl.setAttribute('aria-modal','true');
-  pressEl.setAttribute('aria-label','印刷成品预览');
+  pressEl.setAttribute('aria-label',tt('印刷成品预览'));
   const close=document.createElement('button');close.type='button';close.className='press-close';
   close.setAttribute('aria-label',tt('关闭成品预览'));close.title=tt('关闭');close.textContent='×';close.onclick=()=>closePress();
   const headline=document.createElement('div');headline.className='press-headline';
@@ -5569,7 +5645,8 @@ function showPress(){
   const sheet=document.createElement('div');sheet.className='press-sheet';
   sheet.style.width=Math.round(pw)+'px';sheet.style.height=Math.round(ph)+'px';
   sheet.style.setProperty('--travel',Math.round(ph)+'px');
-  sheet.dataset.ar=PRESS_AR;                 // 窗口变化时按它重算，见下面的 resizesheet.style.setProperty('--paper',st.paper||'#f5eddd');
+  sheet.dataset.ar=PRESS_AR;
+  sheet.style.setProperty('--paper',st.paper||'#f5eddd');
   const paper=document.createElement('div');paper.className='press-paper';
   const preparing=document.createElement('div');preparing.className='press-preparing';preparing.textContent='MAKING PLATES';
   sheet.append(paper,preparing);stage.appendChild(sheet);
@@ -5583,7 +5660,8 @@ function showPress(){
   const again=document.createElement('button');again.type='button';again.textContent='再印一次';again.onclick=showPress;
   const dl=document.createElement('button');dl.type='button';dl.className='go';dl.textContent='导出 PNG ↓';
   dl.onclick=()=>document.getElementById('download').click();act.append(back,again,dl);
-  pressEl.append(close,headline,stage,cap,act);pressEl.hidden=false;
+  const exportStatus=document.createElement('p');exportStatus.id='exportStatus';exportStatus.setAttribute('role','status');
+  pressEl.append(close,headline,stage,cap,act,exportStatus);pressEl.hidden=false;
   // 它声明了 aria-modal="true"，就得真的关住焦点。否则 Tab 两下就落到背景的
   // 「清空」上，一个空格把整张海报清掉 —— 实测文字 1→0、形 1→0、切线消失，
   // 而顶上的预览还停在旧画面，人根本看不到自己按坏了什么。
@@ -5741,8 +5819,8 @@ function syncImg(){
   [...document.getElementById('cutMode').children].forEach(x=>
     x.setAttribute('aria-pressed',String(x.dataset.cut===cut.mode)));
   document.getElementById('cutStatus').textContent=cut.strokes.length
-    ? '已用 '+cut.strokes.length+' 笔修正。蓝色区域会留下，可以继续补或擦。'
-    : '蓝色区域会留下。画几笔，算法会贴着相近的颜色扩展。';
+    ? (UI==='en'?cut.strokes.length+' correction strokes. Green stays; keep painting to refine.':'已用 '+cut.strokes.length+' 笔修正。绿色区域会留下，可以继续补或擦。')
+    : tt('绿色区域会留下。画几笔，算法会贴着相近的颜色扩展。');
   drawPhotoCrop();
   if(!S.cust)return;
   iDet.value=Math.round(S.cust.detail*100);
@@ -5815,18 +5893,24 @@ latheEl.addEventListener('pointermove',e=>{
   lDrag.lat.t=Math.max(0,Math.min(1.05, lDrag.t+(e.clientY-lDrag.y)/r.height*1.5));
   drawLathe(lDrag.lat);
 });
-latheEl.addEventListener('pointerup',()=>{ if(lDrag){ const lat=lDrag.lat;lDrag=null;applyLathe(lat); } });
+latheEl.addEventListener('pointerup',()=>{
+  if(!lDrag)return;
+  const {lat,before}=lDrag;lDrag=null;
+  if(lat.m!==before.m||lat.t!==before.t)applyLathe(lat);
+});
 latheEl.addEventListener('pointercancel',()=>{
   if(lDrag) Object.assign(lDrag.lat,lDrag.before);
   lDrag=null; syncLathe();
 });
-latheEl.addEventListener('dblclick',()=>{
+function resetLathe(){
   const ce=CE(),lat=latheForEdit();if(ce&&ce.lat)pushHist();
   lat.t=0;lat.m=0;drawLathe(lat);applyLathe(lat);
-});
+}
+latheEl.addEventListener('dblclick',resetLathe);
+document.getElementById('latheReset').onclick=resetLathe;
 
 const HIST=[]; let histT=null;
-const stateKey=st=>JSON.stringify(st);
+const stateKey=st=>{const {si,ti,...content}=st;return JSON.stringify(content);};
 function syncUndoButton(){
   const b=document.getElementById('topUndo');if(!b)return;
   const now=stateKey(S);b.disabled=!HIST.some(st=>stateKey(st)!==now);
@@ -5849,7 +5933,7 @@ function pushHist(){
   if(HIST.length && stateKey(HIST[HIST.length-1])===key){syncUndoButton();return;}
   HIST.push(st); if(HIST.length>24) HIST.shift();syncUndoButton();
 }
-function noteChange(){ clearTimeout(histT); histT=setTimeout(pushHist,450); }
+function noteChange(){ syncUndoButton();clearTimeout(histT);histT=setTimeout(pushHist,450); }
 function undo(){
   clearTimeout(histT);
   const now=stateKey(S);
@@ -5900,7 +5984,7 @@ function syncRecipe(){
     const pos=horiz? (S.cut.y1+S.cut.y2)/2 : (S.cut.x1+S.cut.x2)/2;
     // 配方是每帧重算的 —— 直接在生成点走 tt，而不是等 applyLang（防抖会弹回中文）
     L.push(tt('切线')+'  '+tt(horiz?'水平':'垂直')+'  '+(deg>=0?'+':'')+deg.toFixed(0)+'°'+
-           '   '+tt('小色域')+Math.round(Math.min(pos,1-pos)*100)+'%');
+           '   '+tt('小色域')+dkCut().small+'%');
   } else L.push(tt('切线')+'  ——');
   L.push(tt('纸')+'    '+tt(stockSpec().name)+' · '+tt(['净面','原纸','粗纹'][S.tex])+'  '+S.paper);
   L.push(tt('墨')+'A   '+inkName(S.inkA)+'  '+Math.round(S.covA*100)+'%');
@@ -5967,7 +6051,11 @@ function dkCut(){
   const deg=horiz? Math.atan2(dy,Math.abs(dx))*180/Math.PI
                  : Math.atan2(dx,Math.abs(dy))*180/Math.PI;
   const pos=horiz? (S.cut.y1+S.cut.y2)/2 : (S.cut.x1+S.cut.x2)/2;
-  return {horiz:horiz,deg:deg,small:Math.round(Math.min(pos,1-pos)*100)};
+  const l=cutLine(),poly=clipPoly(l.nx,l.ny,l.c);
+  let twiceArea=0;
+  for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];twiceArea+=a[0]*b[1]-b[0]*a[1];}
+  const area=Math.max(0,Math.min(1,Math.abs(twiceArea)/(2*W*H)));
+  return {horiz,deg,small:Math.round(Math.min(area,1-area)*100)};
 }
 let _dkKey='';
 function syncDocket(){
@@ -6279,10 +6367,10 @@ window.addEventListener('keydown',e=>{
   const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   const ce=CE();
   const ct=CT();
-  if(d && ct && tsel){e.preventDefault();const step=(e.shiftKey?8:1);
+  if(d && ct && tsel){e.preventDefault();const step=(e.shiftKey?8:1)*screenScale();
     ct.x+=d[0]*step/W;ct.y+=d[1]*step/H;draw();return;}
   if(d && ce && sel){ e.preventDefault();
-    const step=(e.shiftKey?8:1);
+    const step=(e.shiftKey?8:1)*screenScale();
     ce.x+=d[0]*step/W; ce.y+=d[1]*step/H; draw(); return; }
   if((e.key==='Delete'||e.key==='Backspace')&&ct&&tsel){e.preventDefault();delText();return;}
   if((e.key==='Delete'||e.key==='Backspace') && ce && sel){ e.preventDefault(); delEl(); return; }
@@ -6307,7 +6395,7 @@ cv.addEventListener('dblclick',e=>{                 // 双击图形循环填充�
 });
 // 换画幅：状态全是 0–1 的比例，所以只要改画布尺寸再夹一遍就行
 // 当前画幅比例（由被按下的画幅按钮决定），画布实际尺寸由舞台算出来
-let FMT_RATIO=627/470;
+let FMT_RATIO=4/3;
 function fitCanvas(){
   const stage=document.querySelector('.stage'); if(!stage) return false;
   const r=stage.getBoundingClientRect();
@@ -6316,14 +6404,18 @@ function fitCanvas(){
   const padX=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight);
   const padY=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
   const hintH=(document.querySelector('.stage .hint')||{offsetHeight:0}).offsetHeight||0;
-  const availW=r.width-padX, availH=r.height-padY-hintH-14;
+  const actionH=(document.querySelector('.canvas-actions')||{offsetHeight:0}).offsetHeight||0;
+  const availW=r.width-padX, availH=r.height-padY-hintH-actionH-24;
   let w=availW, h=w*FMT_RATIO;
   if(h>availH){ h=availH; w=h/FMT_RATIO; }
-  // 下限保证手机可用，上限保住网点的物理观感（太大网点会散成颗粒）
-  w=Math.max(300,Math.min(940,Math.round(w)));
+  w=Math.max(80,Math.min(940,Math.floor(w)));
   h=Math.round(w*FMT_RATIO);
-  if(cv.width===w&&cv.height===h) return false;
-  cv.width=W=w; cv.height=H=h;
+  cv.style.width=w+'px';cv.style.height=h+'px';
+  const ratio=Math.min(3,window.devicePixelRatio||1);
+  const bw=Math.round(w*ratio),bh=Math.round(h*ratio);
+  if(cv.width===bw&&cv.height===bh) return false;
+  cv.width=W=bw; cv.height=H=bh;
+  screenCache.clear();paperCache.clear();tmCache.clear();
   return true;
 }
 let fitT=0;
@@ -6337,14 +6429,7 @@ document.getElementById('fmt').onclick=e=>{
   FMT_RATIO=(+b.dataset.h)/(+b.dataset.w);
   screenCache.clear(); paperCache.clear();
   fitCanvas();
-  if(S.cut){ // 切线按新画幅重新吸附，免得斜度在新比例下变成"手滑角"
-    const dx=(S.cut.x2-S.cut.x1)*W, dy=(S.cut.y2-S.cut.y1)*H;
-    const horiz=Math.abs(dx)>Math.abs(dy);
-    const pos=horiz?(S.cut.y1+S.cut.y2)/2:(S.cut.x1+S.cut.x2)/2;
-    const deg=horiz?Math.atan2(dy,Math.abs(dx))*180/Math.PI:Math.atan2(dx,Math.abs(dy))*180/Math.PI;
-    S.cut=mkCut(horiz?'h':'v', snapPos(pos), snapTilt(deg));
-  }
-  clampAll(); clampTitle(); placeTitle(); sync(); draw();
+  clampAll();clampTitle();sync();draw();
 };
 document.getElementById('delel').onclick=()=>{ if(sel) delEl(); };
 // 长边固定 3600px。原来是"画布的 3 倍"，而画布跟着窗口走 ——
@@ -6356,40 +6441,50 @@ document.getElementById('download').onclick=()=>{
   if(btn.dataset.busy) return;                  // 渲染要 1 秒多，连点会生成两个同名文件
   btn.dataset.busy='1'; btn.disabled=true;
   const label=btn.textContent; btn.textContent=tt('正在生成…');
-  settleAnimations(); draw();                   // 先落到静帧，再取像
-  const done=()=>{ delete btn.dataset.busy; btn.disabled=false; btn.textContent=label; };
+  const visible=pressEl.querySelector('.press-act .go'),status=document.getElementById('exportStatus');
+  if(visible){visible.disabled=true;visible.setAttribute('aria-busy','true');visible.textContent=tt('正在生成…');}
+  if(status)status.textContent=tt('正在生成…');
+  settleAnimations();draw();
+  const snapshot=JSON.parse(JSON.stringify(S)),ar=FMT_RATIO;
+  const done=message=>{
+    delete btn.dataset.busy;btn.disabled=false;btn.textContent=label;
+    if(visible){visible.disabled=false;visible.removeAttribute('aria-busy');visible.textContent=tt('导出 PNG ↓');}
+    if(status)status.textContent=tt(message);
+    setHint(message);
+  };
   // 让忙态先画出来，再做那一秒多的同步渲染
   setTimeout(()=>{
+  try{
   const out=document.createElement('canvas');
-  const ar=cv.height/cv.width;
   const ow=Math.round(ar>=1 ? EXPORT_LONG_EDGE/ar : EXPORT_LONG_EDGE);
-  out.width=ow; out.height=Math.round(ow*ar);
-  renderTo(out.getContext('2d'),JSON.parse(JSON.stringify(S)),out.width,out.height);
+  out.width=ow;out.height=ar>=1?EXPORT_LONG_EDGE:Math.round(EXPORT_LONG_EDGE*ar);
+  renderTo(out.getContext('2d'),snapshot,out.width,out.height);
   // renderTo 会把 W/H 换掉，而网屏与纸纹缓存的键里带着 W/H ——
   // 于是每导出一次就往屏幕用的缓存里塞一份导出尺寸的副本（实测滞留 81MB）。
   screenCache.clear(); paperCache.clear(); draw();
   out.toBlob(blob=>{
-    if(!blob){ done(); return; }
+    if(!blob){done('导出失败，请重试');return;}
     const a=document.createElement('a'),u=URL.createObjectURL(blob);
     // 文件名要取自**纸上真正印着的那句话**，不是展讯题目。
     // TITLE() 给的是当前这条展讯的标题；改过画面文字之后两者就对不上 ——
     // 实测海报上印的是「Moss On The Kiln Wall」，导出的文件却叫 Minerals-from-Afar.png。
-    const onSheet=(S.texts||[]).filter(t=>String(t.text||'').trim());
+    const onSheet=(snapshot.texts||[]).filter(t=>String(t.text||'').trim());
     const lead=onSheet.find(t=>t.role==='title')
             || onSheet.slice().sort((a,b)=>(b.size||0)-(a.size||0))[0];
-    const raw=(lead&&String(lead.text).trim())||TITLE()||'poster';
+    const raw=(lead&&String(lead.text).trim())||'poster';
     const name=raw.slice(0,60).replace(/[\\/:*?"<>|\s]+/g,'-').replace(/^-|-$/g,'');
     a.href=u;a.download='cut-print-'+(name||'poster')+'.png';a.click();
-    setTimeout(()=>URL.revokeObjectURL(u),1200);setHint('高清 PNG 已生成');
-    done();
+    setTimeout(()=>URL.revokeObjectURL(u),1200);done('高清 PNG 已生成');
   },'image/png');
-  },0);
+  }catch(error){console.error('PNG export failed',error);done('导出失败，请重试');}
+  },60);
 };
 document.getElementById('shuffle').onclick=()=>shuffleOne();
 document.getElementById('reset').onclick=()=>{const keep=cloneJ(S.ex),lang=S.lang||'zh';
   sweepPhotoAssets();
   pushHist();
   S=JSON.parse(JSON.stringify(blank));S.lang=lang;S.ex=keep;sel=false;tsel=false;redrawPending=false;
+  syncCutAction();
   applyInks();                     // 同上：从 blank 实例化之后派生色必须重算
   [...shEl.children].forEach(x=>x.setAttribute('aria-pressed','false'));selectTool('type');setStep(1);sync();draw();
   setHint('画布已经清空。写下一句话，重新开始');};
@@ -6429,16 +6524,37 @@ function selectAssetPane(kind){
 document.getElementById('assetNav').onclick=e=>{
   const b=e.target.closest('[data-asset]');if(b)selectAssetPane(b.dataset.asset);
 };
-document.getElementById('redrawCut').onclick=()=>{
-  pushHist();redrawPending=true;sel=false;tsel=false;syncSelectionDelete();
-  setHint('在海报上按住并拖动，重新划出两块色域');
+function syncCutAction(){
+  document.getElementById('quickCut').setAttribute('aria-pressed',String(redrawPending));
+  cv.classList.toggle('cut-ready',redrawPending);
+  cv.style.cursor=redrawPending?'crosshair':'';
+}
+function beginCut(){
+  pushHist();redrawPending=true;sel=false;tsel=false;hoverText=-1;hoverEl=false;
+  syncCutAction();syncSelectionDelete();draw();cv.focus({preventScroll:true});
+  setHint('拖动划出切线。角度和位置由你决定，按 Esc 取消。');
+}
+document.getElementById('redrawCut').onclick=beginCut;
+document.getElementById('quickCut').onclick=()=>{
+  if(redrawPending){redrawPending=false;syncCutAction();draw();setHint('切线已取消');}
+  else beginCut();
 };
+document.getElementById('quickVessel').onclick=()=>{
+  redrawPending=false;syncCutAction();
+  const index=S.els.findIndex(e=>e.k===12&&e.lat);
+  if(index>=0){S.si=index;sel=true;tsel=false;sync();draw();}
+  else applyLathe(Object.assign({},LATHE_DEFAULT));
+  selectTool('form');setStep(2);syncLathe();
+  document.getElementById('latheBlock').scrollIntoView({block:'nearest',behavior:'instant'});
+};
+document.getElementById('startBlank').onclick=()=>document.getElementById('reset').click();
 document.getElementById('topVariants').onclick=()=>shuffleOne();
 document.getElementById('topDownload').onclick=()=>document.getElementById('download').click();
 document.getElementById('topUndo').onclick=undo;
 document.getElementById('topReset').onclick=()=>document.getElementById('reset').click();
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!pressEl.hidden){closePress();e.preventDefault();return;}
+  if(e.key==='Escape'&&redrawPending){redrawPending=false;cutting=null;syncCutAction();draw();setHint('切线已取消');}
 });
 // 预览的纸只在打开那一刻量过一次。窗口一变矮，「回去改 / 导出 PNG」就被挤到
 // 视口外，而 #press 是 overflow:hidden —— 鼠标永远够不着，只剩 Esc 能出来。
@@ -6447,8 +6563,8 @@ window.addEventListener('resize',()=>{ clearTimeout(pressFitT); pressFitT=setTim
   if(pressEl.hidden) return;
   const sh=pressEl.querySelector('.press-sheet'); if(!sh) return;
   const ar=+sh.dataset.ar||1.334;
-  const mh=Math.min(window.innerHeight-220,720), mw=Math.min(window.innerWidth-76,620);
-  let h2=Math.max(220,mh), w2=h2/ar; if(w2>mw){ w2=mw; h2=w2*ar; }
+  const mh=Math.min(window.innerHeight-190,720), mw=Math.min(window.innerWidth-48,620);
+  let h2=Math.max(120,mh), w2=h2/ar; if(w2>mw){ w2=mw; h2=w2*ar; }
   sh.style.width=Math.round(w2)+'px'; sh.style.height=Math.round(h2)+'px';
   sh.style.setProperty('--travel',Math.round(h2)+'px');
 },120); });
@@ -6463,16 +6579,26 @@ document.addEventListener('focusin',e=>{
 const HINT={1:'文字已选中；直接拖动，或在当前面板继续编辑',
   2:'图形已选中；直接在画布上移动、缩放或旋转，填充和网目就在「图形变化」里',
   3:'墨、纸、纸纹都在这一页。切线随时可以在画布上重新划',
-  4:'满意了就印出来。也可以先看看「六个方向」'};
+  4:'满意了就印出来；不满意，就再随机生成一张'};
 function setStep(n){[...document.getElementById('steps').children].forEach((li,i)=>{
   li.classList.toggle('on',i+1===n);li.classList.toggle('done',i+1<n);});
   setHint(tt(HINT[n]));}
-document.fonts&&document.fonts.ready.then(draw);
+function makeStarter(){
+  const lat={a:0,b:1,m:.35,t:.12},cu=latheToShape(lat);
+  S=JSON.parse(JSON.stringify(blank));S.pair=-1;S.paper='#F4F1E8';
+  S.inkA='#404E4E';S.inkB='#404E4E';S.covA=0;S.covB=.86;
+  S.cut=mkCut('h',.38,-9);S.tex=1;S.dot=1;S.mark=0;
+  S.els=[{k:12,lat,cu,x:.58,y:.38,s:.205,r:0,fill:3,rep:1,d3:0}];
+  S.texts=[{text:UI==='en'?'A Shape':'器物',x:.085,y:.73,size:2,fs:49,font:UI==='en'?2:0,dir:'h',role:'title',source:'user',autoStyle:false},
+    {text:UI==='en'?'Between':'之间',x:.085,y:.825,size:2,fs:49,font:UI==='en'?2:0,dir:'h',role:'subtitle',source:'user',autoStyle:false}];
+  S.si=-1;S.ti=-1;sel=false;tsel=false;applyInks();
+}
+document.fonts&&document.fonts.ready.then(()=>{tmCache.clear();draw();});
 fitCanvas();
+makeStarter();
 applyInks();                       // blank 里的派生色是占位，开机先算对再画
 newBrief();syncBrief();sync();selectTool('type');
-setStep(1);
-setHint('从一句话开始。可以自己写，也可以从句子库里选一句');
+setHint('试着切一刀，或改变器物。这张样张可以直接编辑。');
 draw();pushHist();
 // ===== 自检 =====
 // 打开 index.html?selftest=1 就跑一遍全部不变量并把结果印在页面上。

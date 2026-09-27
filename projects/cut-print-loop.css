@@ -1,0 +1,415 @@
+/* CUT / PRINT: interaction-logic diagram.
+   Everything is scoped under .cp-loop. No JavaScript.
+   Layout follows the component's own width (container query), not the viewport:
+   under 940px it reads top to bottom; from 940px it reads as a loop.
+   Browsers without container queries get the vertical reading. */
+
+.cp-loop {
+  --cp-loop-bg: #ffffff;
+  --cp-loop-ink: #17181a;
+  --cp-loop-muted: #585a5e;
+  --cp-loop-hair: #d9d9d4;
+  --cp-loop-band: #f1f0ec;
+  --cp-loop-accent: #00838a;   /* return and loop paths only */
+
+  --cp-loop-s: 1.25px;         /* stroke */
+  --cp-loop-hw: 7px;           /* arrowhead width */
+  --cp-loop-hl: 8px;           /* arrowhead length */
+  --cp-loop-arc: 30px;         /* depth of a loop or return arc */
+  --cp-loop-lane: 22px;        /* vertical reading: centre of the forward and return lanes */
+  --cp-loop-loop-in: 18px;     /* how far a self-loop's legs sit inside its half of the hub */
+
+  container: cp-loop / inline-size;
+  display: block;
+  margin: 0;
+  background: var(--cp-loop-bg);
+  color: var(--cp-loop-ink);
+  font-family: "Space Grotesk", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.cp-loop *,
+.cp-loop *::before,
+.cp-loop *::after { box-sizing: border-box; }
+.cp-loop :where(h3, p, ul, li) { margin: 0; padding: 0; font: inherit; }
+.cp-loop :where(ul) { list-style: none; }
+
+.cp-loop__sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- grid: vertical reading (default) ---------- */
+
+.cp-loop__grid {
+  display: grid;
+  grid-template-columns: [L] 44px [m1] minmax(0, 1fr) [m2] minmax(0, 1fr) [R] 44px;
+  grid-template-areas:
+    "start  start  start  start"
+    "enter  enter  clear  clear"
+    "hub    hub    hub    hub"
+    "print  shuf   undo   back"
+    "prev   prev   prev   prev"
+    "export export export export"
+    "png    png    png    png";
+  align-items: stretch;
+  max-width: 560px;          /* the vertical reading stays a column on tablets */
+}
+
+.cp-loop__node--start  { grid-area: start; }
+.cp-loop__hub          { grid-area: hub; }
+.cp-loop__node--prev   { grid-area: prev; }
+.cp-loop__node--png    { grid-area: png; }
+.cp-loop__edge--enter  { grid-area: enter; }
+.cp-loop__edge--clear  { grid-area: clear; }
+.cp-loop__edge--shuf   { grid-area: shuf; }
+.cp-loop__edge--undo   { grid-area: undo; }
+.cp-loop__edge--print  { grid-area: print; }
+.cp-loop__edge--back   { grid-area: back; }
+.cp-loop__edge--export { grid-area: export; }
+
+/* ---------- nodes ---------- */
+
+.cp-loop__node,
+.cp-loop__hub {
+  position: relative;
+  border: var(--cp-loop-s) solid var(--cp-loop-ink);
+  border-radius: 0;
+  background: var(--cp-loop-bg);
+  padding: 12px 14px 14px;
+  min-width: 0;
+}
+.cp-loop__hub {
+  background: var(--cp-loop-band);
+  padding: 12px 16px 16px;
+}
+.cp-loop__title {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--cp-loop-ink);
+}
+.cp-loop__text {
+  margin-top: 6px;
+  color: var(--cp-loop-muted);
+}
+.cp-loop__text,
+.cp-loop__move-text,
+.cp-loop__caption { text-wrap: pretty; }
+.cp-loop__label-note { text-wrap: balance; }
+.cp-loop__text + .cp-loop__text { margin-top: 8px; }
+.cp-loop__ui { color: var(--cp-loop-ink); font-weight: 500; }
+
+.cp-loop__moves {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-top: 14px;
+  border-top: 1px solid var(--cp-loop-hair);
+}
+.cp-loop__move { padding: 10px 12px 12px 0; min-width: 0; }
+.cp-loop__move:nth-child(2n) {
+  padding: 10px 0 12px 12px;
+  border-left: 1px solid var(--cp-loop-hair);
+}
+.cp-loop__move:nth-child(n + 3) { border-top: 1px solid var(--cp-loop-hair); }
+.cp-loop__move-name {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--cp-loop-ink);
+}
+.cp-loop__move-text {
+  display: block;
+  margin-top: 2px;
+  color: var(--cp-loop-muted);
+}
+
+/* ---------- edges ---------- */
+
+.cp-loop__edge { position: relative; min-width: 0; }
+.cp-loop__edge--fwd { color: var(--cp-loop-ink); }
+.cp-loop__edge--return,
+.cp-loop__edge--loop { color: var(--cp-loop-accent); }
+
+.cp-loop__path {
+  position: absolute;
+  display: block;
+  border: 0 solid currentColor;
+  border-radius: 0;
+  pointer-events: none;
+}
+.cp-loop__head {
+  position: absolute;
+  display: block;
+  background: currentColor;
+  pointer-events: none;
+}
+/* shapes */
+.cp-loop__edge .cp-loop__head { width: var(--cp-loop-hw); height: var(--cp-loop-hl); }
+.cp-loop__edge--fwd .cp-loop__head { clip-path: polygon(0 0, 100% 0, 50% 100%); }              /* down */
+.cp-loop__edge--return .cp-loop__head,
+.cp-loop__edge--loop .cp-loop__head { clip-path: polygon(50% 0, 100% 100%, 0 100%); }          /* up */
+
+.cp-loop__label { color: var(--cp-loop-muted); }
+.cp-loop__label-name {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--cp-loop-accent);
+}
+.cp-loop__edge--fwd .cp-loop__label-name { font-weight: 500; color: var(--cp-loop-ink); }
+.cp-loop__label-note { display: block; color: var(--cp-loop-muted); }
+
+/* vertical reading: forward lane on the left, return lane on the right */
+
+.cp-loop__edge--enter,
+.cp-loop__edge--clear { min-height: 64px; }
+
+.cp-loop__edge--fwd .cp-loop__path {
+  left: calc(var(--cp-loop-lane) - var(--cp-loop-s) / 2);
+  top: 0; bottom: 0; width: 0;
+  border-left-width: var(--cp-loop-s);
+}
+.cp-loop__edge--fwd .cp-loop__head {
+  left: calc(var(--cp-loop-s) / -2 - var(--cp-loop-hw) / 2);
+  bottom: 0;
+}
+
+.cp-loop__edge--return .cp-loop__path {
+  right: calc(var(--cp-loop-lane) - var(--cp-loop-s) / 2);
+  top: 0; bottom: 0; width: 0;
+  border-left-width: var(--cp-loop-s);
+}
+.cp-loop__edge--return .cp-loop__head {
+  left: calc(var(--cp-loop-s) / -2 - var(--cp-loop-hw) / 2);
+  top: 0;
+}
+
+.cp-loop__edge--clear .cp-loop__label {
+  padding: 13px calc(var(--cp-loop-lane) + 14px) 13px 8px;
+  text-align: right;
+}
+
+.cp-loop__edge--print .cp-loop__label,
+.cp-loop__edge--back .cp-loop__label {
+  position: absolute;
+  bottom: 12px;
+  white-space: nowrap;
+}
+.cp-loop__edge--print .cp-loop__label { left: calc(var(--cp-loop-lane) + 14px); }
+.cp-loop__edge--back .cp-loop__label {
+  right: calc(var(--cp-loop-lane) + 14px);
+  text-align: right;
+}
+
+.cp-loop__edge--export { min-height: 60px; }
+.cp-loop__edge--export .cp-loop__label {
+  padding: 19px 0 13px calc(var(--cp-loop-lane) + 14px);
+}
+
+/* self-loops hang under the hub */
+.cp-loop__edge--loop {
+  padding: calc(var(--cp-loop-arc) + 10px) 6px 62px;
+  text-align: center;
+}
+.cp-loop__edge--loop .cp-loop__path {
+  top: 0;
+  left: var(--cp-loop-loop-in);
+  right: var(--cp-loop-loop-in);
+  height: var(--cp-loop-arc);
+  border-width: 0 var(--cp-loop-s) var(--cp-loop-s);
+}
+.cp-loop__edge--loop .cp-loop__head {
+  right: calc(var(--cp-loop-s) / -2 - var(--cp-loop-hw) / 2);
+  top: 0;
+}
+
+/* ---------- foot: caption and key ---------- */
+
+.cp-loop__foot {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--cp-loop-hair);
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+  color: var(--cp-loop-muted);
+}
+.cp-loop__caption { max-width: 46em; }
+.cp-loop__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+}
+.cp-loop__key {
+  position: relative;
+  padding-left: 44px;
+  white-space: nowrap;
+}
+.cp-loop__key::before,
+.cp-loop__key::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  background: currentColor;
+}
+.cp-loop__key::before {
+  left: 0;
+  width: 30px;
+  height: var(--cp-loop-s);
+  margin-top: calc(var(--cp-loop-s) / -2);
+}
+.cp-loop__key::after {
+  left: 28px;
+  width: var(--cp-loop-hl);
+  height: var(--cp-loop-hw);
+  margin-top: calc(var(--cp-loop-hw) / -2);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.cp-loop__key--fwd::before,
+.cp-loop__key--fwd::after { color: var(--cp-loop-ink); }
+.cp-loop__key--back::before,
+.cp-loop__key--back::after { color: var(--cp-loop-accent); }
+
+/* ---------- the loop: 900px and wider ---------- */
+
+@container cp-loop (min-width: 940px) {
+  .cp-loop__grid {
+    /* set here, not on .cp-loop: a container query cannot style its own container */
+    --cp-loop-port: 23px;      /* centre of a node title, where forward arrows land */
+    --cp-loop-in: 36px;        /* where a return arc meets a node, in from its edge */
+    --cp-loop-loop-in: 28px;
+    --cp-loop-w-start: 150px;
+    --cp-loop-w-g1: 44px;
+    --cp-loop-w-g2: 108px;
+    --cp-loop-w-prev: 140px;
+    --cp-loop-w-g3: 96px;
+    --cp-loop-w-png: 128px;
+    grid-template-columns:
+      [start] var(--cp-loop-w-start)
+      [g1]    var(--cp-loop-w-g1)
+      [hubL]  minmax(0, 1fr)
+      [hubR]  minmax(0, 1fr)
+      [g2]    var(--cp-loop-w-g2)
+      [prev]  var(--cp-loop-w-prev)
+      [g3]    var(--cp-loop-w-g3)
+      [png]   var(--cp-loop-w-png);
+    grid-template-areas:
+      "clear clear clear back  back  back  .      ."
+      "start enter hub   hub   print prev  export png"
+      ".     .     shuf  undo  .     .     .      .";
+    align-items: start;
+    max-width: none;
+  }
+  .cp-loop__hub { align-self: stretch; }
+
+  /* forward: straight, left to right, level with the node titles */
+  .cp-loop__edge--fwd { min-height: 0; }
+  .cp-loop__edge--fwd .cp-loop__path {
+    inset: auto;
+    left: 0; right: 0;
+    top: calc(var(--cp-loop-port) - var(--cp-loop-s) / 2);
+    width: auto; height: 0;
+    border-width: var(--cp-loop-s) 0 0 0;
+  }
+  .cp-loop__edge--fwd .cp-loop__head {
+    inset: auto;
+    right: 0;
+    top: calc(var(--cp-loop-s) / -2 - var(--cp-loop-hw) / 2);
+    width: var(--cp-loop-hl);
+    height: var(--cp-loop-hw);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+  .cp-loop__edge--fwd .cp-loop__label,
+  .cp-loop__edge--print .cp-loop__label,
+  .cp-loop__edge--export .cp-loop__label {
+    position: static;
+    white-space: normal;
+    padding: calc(var(--cp-loop-port) + 9px) 4px 0;
+    text-align: center;
+  }
+
+  /* returns: arcs over the top, right to left */
+  .cp-loop__edge--return {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    padding-bottom: calc(var(--cp-loop-arc) + 10px);
+  }
+  .cp-loop__edge--return .cp-loop__path {
+    inset: auto;
+    bottom: 0;
+    height: var(--cp-loop-arc);
+    border-width: var(--cp-loop-s) var(--cp-loop-s) 0;
+  }
+  .cp-loop__edge--return .cp-loop__head {
+    inset: auto;
+    left: calc(var(--cp-loop-s) / -2 - var(--cp-loop-hw) / 2);
+    bottom: 0;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+  .cp-loop__edge--clear .cp-loop__path {
+    left: var(--cp-loop-in);
+    width: calc(var(--cp-loop-w-start) + var(--cp-loop-w-g1));
+  }
+  .cp-loop__edge--back .cp-loop__path {
+    right: calc(var(--cp-loop-w-prev) - var(--cp-loop-in));
+    width: calc(var(--cp-loop-w-g2) + 2 * var(--cp-loop-in));
+  }
+  .cp-loop__edge--return .cp-loop__label,
+  .cp-loop__edge--clear .cp-loop__label,
+  .cp-loop__edge--back .cp-loop__label {
+    position: static;
+    white-space: normal;
+    padding: 0 4px;
+    text-align: center;
+  }
+  .cp-loop__edge--clear .cp-loop__label {
+    margin-left: var(--cp-loop-in);
+    width: calc(var(--cp-loop-w-start) + var(--cp-loop-w-g1));
+  }
+  .cp-loop__edge--back .cp-loop__label {
+    align-self: flex-end;
+    margin-right: calc(var(--cp-loop-w-prev) - var(--cp-loop-in));
+    width: calc(var(--cp-loop-w-g2) + 2 * var(--cp-loop-in));
+  }
+
+  /* self-loops under the hub */
+  .cp-loop__edge--loop { padding: calc(var(--cp-loop-arc) + 10px) 4px 0; }
+
+  .cp-loop__foot {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 12px 40px;
+    margin-top: 32px;
+    max-width: none;
+  }
+}
+
+/* Page colours: one accent across the case study (the site's green), site ink and rules. */
+.cp-page .cp-loop {
+  --cp-loop-ink: #202525;
+  --cp-loop-muted: #5e6867;
+  --cp-loop-hair: #dde3e1;
+  --cp-loop-band: #f0f0ec;
+  --cp-loop-accent: #176456;
+}
+/* The page sets every h3 at 19px; the node titles keep the diagram's own size. */
+.cp-page .cp-loop h3.cp-loop__title { font-size: 15px; line-height: 20px; font-weight: 600; }
+/* At the page's 1084px width the right-hand nodes can take some room from the hub. */
+@container cp-loop (min-width: 940px) {
+  .cp-page .cp-loop__grid { --cp-loop-w-prev: 176px; --cp-loop-w-png: 150px; }
+}

@@ -62,7 +62,7 @@
       event.preventDefault();
       opener = link;
       enlarged.src = link.href;
-      enlarged.alt = link.querySelector('img').alt;
+      enlarged.alt = link.dataset.alt || link.querySelector('img').alt;
       caption.textContent = link.dataset.caption;
       original.href = link.href;
       dialog.showModal();

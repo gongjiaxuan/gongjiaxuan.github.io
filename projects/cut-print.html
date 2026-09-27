@@ -1,23 +1,631 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="An editable poster-making tool for working with type, shapes, ink and paper."><title>CUT / PRINT | Jiaxuan Gong</title><link rel="icon" href="data:,"><link rel="stylesheet" href="../academic.css"><script src="../app.js" defer></script></head><body id="top"><a class="skip-link" href="#main">Skip to content</a><div class="site-shell"><header class="site-header"><a class="wordmark" href="../index.html" aria-label="Jiaxuan Gong, home">Jiaxuan Gong</a><nav aria-label="Main navigation"><a href="../index.html#research">Research</a><a href="../publications.html">Publications</a><a href="../work.html" aria-current="page">Projects</a><a href="../about.html">About</a><a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV <svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a></nav></header><main id="main" tabindex="-1">
-    <div class="case-breadcrumb"><a class="text-link " href="../work.html">Projects<svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a></div>
-    <header class="case-intro">
-      <p class="eyebrow">Independent web application</p><h1>CUT / PRINT</h1>
-      <p class="case-subtitle">Two inks. One sheet. Your composition.</p>
-      <div class="case-intro-bottom"><p>I built CUT / PRINT to make two-colour posters in the browser. It lets people compose with type, vessel forms, photographs and geometric elements, then adjust the inks and paper before exporting an image.</p><dl>
-        <div><dt>Project scope</dt><dd>Interaction design and development</dd></div>
-        <div><dt>Methods & tools</dt><dd>JavaScript · Canvas · HTML / CSS</dd></div>
-      </dl></div>
-      <div class="case-actions">
-        <a class="text-link primary-link" href="../poster/index.html">Open CUT / PRINT<svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
-
-
-      </div>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="CUT / PRINT is a browser poster machine for two inks, one cut and a sheet of paper.">
+  <title>CUT / PRINT | Jiaxuan Gong</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="../academic.css">
+  <link rel="stylesheet" href="cut-print.css">
+  <link rel="stylesheet" href="cut-print-loop.css">
+  <script src="../app.js" defer></script>
+</head>
+<body id="top" class="cp-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="wordmark" href="../index.html" aria-label="Jiaxuan Gong, home">Jiaxuan Gong</a>
+      <nav aria-label="Main navigation">
+        <a href="../index.html#research">Research</a>
+        <a href="../publications.html">Publications</a>
+        <a href="../work.html" aria-current="page">Projects</a>
+        <a href="../about.html">About</a>
+        <a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+        </a>
+      </nav>
     </header>
-    <div class="case-cover"><div class="project-visual print-pair"><img class="" src="../images/poster-lab/finished-vessel-remembers-sea.webp" alt="Vessel Remembers the Sea, a poster exported from CUT / PRINT" loading="eager" decoding="async" fetchpriority="high"><img class="" src="../images/poster-lab/type-controls.png" alt="CUT / PRINT editing interface with typography controls" loading="eager" decoding="async" fetchpriority="high"></div></div>
 
-    <div class="case-body"><section class="case-section"><div><h2>Editing the composition</h2></div><p>Text and objects remain individually editable on the canvas. People can move, resize or remove an element without rebuilding the rest of the poster, and regenerate the whole composition in one move when they want a different start.</p></section><section class="case-section"><div><h2>Print settings</h2></div><p>Ink coverage, halftone and registration settings change the print texture. The application renders and exports with the Canvas API; photograph processing happens locally. The examples below were exported from the application.</p></section></div>
+    <main id="main">
+      <div class="case-breadcrumb">
+        <a class="text-link" href="../work.html">Projects
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+        </a>
+      </div>
 
-    <section class="case-gallery section" aria-labelledby="gallery-title"><div class="section-heading"><h2 id="gallery-title">Compositions & process</h2></div><div class="gallery-grid print-gallery"><figure><a class="zoom-link" href="../images/poster-lab/finished-vessel-remembers-sea.webp" data-zoom data-caption="Vessel Remembers the Sea. Yellow and terracotta, a vessel silhouette and layered typography." aria-label="Enlarge: Vessel Remembers the Sea. Yellow and terracotta, a vessel silhouette and layered typography."><img class="" src="../images/poster-lab/finished-vessel-remembers-sea.webp" alt="Vessel Remembers the Sea. Yellow and terracotta, a vessel silhouette and layered typography." loading="lazy" decoding="async"><span class="zoom-icon" aria-hidden="true"><svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span></a><figcaption>Vessel Remembers the Sea. Yellow and terracotta, a vessel silhouette and layered typography.</figcaption></figure><figure><a class="zoom-link" href="../images/poster-lab/type-controls.png" data-zoom data-caption="Development screenshot: on-canvas typography and editing controls." aria-label="Enlarge: Development screenshot: on-canvas typography and editing controls."><img class="" src="../images/poster-lab/type-controls.png" alt="Development screenshot: on-canvas typography and editing controls." loading="lazy" decoding="async"><span class="zoom-icon" aria-hidden="true"><svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span></a><figcaption>Development screenshot: on-canvas typography and editing controls.</figcaption></figure><figure><a class="zoom-link" href="../images/poster-lab/six-directions.png" data-zoom data-caption="Development screenshot: inks, paper and the print recipe along the bottom." aria-label="Enlarge: Development screenshot: inks, paper and the print recipe along the bottom."><img class="" src="../images/poster-lab/six-directions.png" alt="Development screenshot: inks, paper and the print recipe along the bottom." loading="lazy" decoding="async"><span class="zoom-icon" aria-hidden="true"><svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span></a><figcaption>Development screenshot: inks, paper and the print recipe along the bottom.</figcaption></figure></div></section>
+      <!-- Opening: the name, one sentence, and the move that defines the tool -->
+      <header class="cp-hero cp-grid">
+        <div class="cp-hero-copy">
+          <p class="cp-label">Browser prototype, 2026</p>
+          <h1>CUT / PRINT</h1>
+          <p class="cp-sub">A small poster machine for two inks, one cut and a sheet of paper.</p>
+          <div class="case-actions">
+            <a class="text-link primary-link" href="../poster/index.html">Open the prototype
+              <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            </a>
+            <a class="text-link" href="#posters">See the posters
+              <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>
+            </a>
+          </div>
+        </div>
+        <figure class="cp-hero-media">
+          <div class="cp-video">
+            <video data-cp-loop muted loop playsinline preload="none" width="900" height="1198" poster="../images/cut-print/hero-cut-loop.webp" aria-label="A cut is dragged across a poster, and the two ink fields split again along the new line.">
+              <source src="../images/cut-print/hero-cut-loop.mp4" type="video/mp4">
+            </video>
+          </div>
+          <figcaption class="cp-cap cp-cap-row"><span>Draw a cut, then undo: one editable sample. Real-time screen recording, cropped to the sheet.</span><button class="cp-video-toggle" type="button" data-cp-toggle hidden>Pause</button></figcaption>
+        </figure>
+      </header>
 
-    <nav class="case-pagination" aria-label="Project navigation"><a class="text-link " href="../work.html">Projects<svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></a><a href="zisha.html"><span>Next project</span><strong>Yixing Zisha AR</strong><svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></nav></main><footer class="site-footer"><div><span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a></div><div class="footer-links"><a class="text-link " href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a><a class="text-link " href="../cv/Jiaxuan_Gong_CV.pdf">CV</a><a class="text-link " href="#top">Back to top<svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg></a></div></footer></div><dialog class="image-dialog" aria-labelledby="image-caption"><div class="dialog-toolbar"><a id="image-original" class="text-link" target="_blank" rel="noopener">Open full size <svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a><button type="button" data-close-image aria-label="Close image" title="Close image"><svg class="icon " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div><div class="dialog-image-area"><img id="image-enlarged" alt=""></div><p id="image-caption"></p></dialog></body></html>
+      <section class="cp-intro cp-grid" aria-label="About the project">
+        <p class="cp-lede">One cut divides the sheet into two fields, and forms and type take the other field's colour. Paper, halftone and registration are part of the picture. Shuffle deals a finished starting point, and everything on it stays editable.</p>
+        <dl class="cp-meta">
+          <div><dt>Role</dt><dd>Concept, interaction and visual design, front-end development</dd></div>
+          <div><dt>Built with</dt><dd>HTML, CSS, JavaScript, Canvas</dd></div>
+          <div><dt>Year</dt><dd>2026</dd></div>
+          <div><dt>Runs in</dt><dd>The browser, nothing to install</dd></div>
+        </dl>
+      </section>
+
+      <!-- The workbench: one real pass, plus the three places that matter -->
+      <section class="cp-bench cp-bleed" aria-labelledby="bench-title">
+        <div class="cp-head cp-head-split">
+          <h2 id="bench-title">One pass, start to finish</h2>
+          <p class="cp-label">25 seconds, no sound, captions on</p>
+        </div>
+        <div class="cp-grid cp-bench-grid">
+          <figure class="cp-bench-video">
+            <div class="cp-video">
+              <video controls muted playsinline preload="metadata" width="1280" height="800" aria-label="Demo: one pass through CUT / PRINT, about 25 seconds, captioned" poster="../images/cut-print/demo-full.webp" aria-describedby="demo-cap">
+                <source src="../images/cut-print/demo-full.mp4" type="video/mp4">
+                <track kind="captions" src="../images/cut-print/demo-full.en.vtt" srclang="en" label="English" default>
+              </video>
+            </div>
+            <figcaption class="cp-cap" id="demo-cap">One sample, a new cut, the vessel reshaped, a different ink pair, then Print It and a PNG export. Recorded in the browser.</figcaption>
+          </figure>
+          <div class="cp-bench-notes">
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/ui-topbar.webp" data-zoom data-caption="The top bar: Undo, Clear, Shuffle, Print It and the language toggle." aria-label="Enlarge: the top bar">
+                <img class="cp-frame" src="../images/cut-print/ui-topbar.webp" width="680" height="88" alt="The top bar: Undo, Clear, Shuffle, the Print It button in green, and the language toggle." loading="lazy" decoding="async">
+              </a>
+              <figcaption class="cp-cap"><b>Top bar</b> Shuffle deals a new poster. Print It runs the preview, and the export lives there.</figcaption>
+            </figure>
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/ui-tabs.webp" data-zoom data-caption="The three panel tabs: Type, Forms, Ink &amp; Paper." aria-label="Enlarge: the three tabs">
+                <img class="cp-frame" src="../images/cut-print/ui-tabs.webp" width="668" height="88" alt="The three panel tabs, Type, Forms and Ink &amp; Paper, with Type selected." loading="lazy" decoding="async">
+              </a>
+              <figcaption class="cp-cap"><b>Three tabs</b> Type holds the lines. Forms holds the format, shapes, vessels, the photo, the halftone screen and the cut. Ink &amp; Paper holds the ink pairs, stock, texture and registration.</figcaption>
+            </figure>
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/ui-docket.webp" data-zoom data-caption="The docket: both inks, the lightness gap between the fields, the paper, the cut and the registration." aria-label="Enlarge: the docket">
+                <img class="cp-frame" src="../images/cut-print/ui-docket.webp" width="668" height="252" alt="The starter docket: bare paper and Racing Green, the lightness gap, Woodfree stock, the cut and tight registration." loading="lazy" decoding="async">
+              </a>
+              <figcaption class="cp-cap"><b>Docket</b> Both inks, the lightness gap between the fields, the paper, the cut and the registration.</figcaption>
+            </figure>
+            <p class="cp-whole"><a class="text-link" href="../images/cut-print/ui-overview.webp" data-zoom data-alt="The whole CUT / PRINT editor: the A Shape Between vessel sample at left, direct cut and vessel controls above it, and the Type panel at right." data-caption="The editable sample, the two direct actions, and the Type panel.">See the whole editor</a></p>
+            <p class="cp-whole"><a class="text-link" href="../images/cut-print/ui-type-edit.webp" data-zoom data-alt="The first line selected and changed to Soft Edges, with direction, typeface and size controls in the Type panel." data-caption="Select the line on the canvas and edit it in Type. The other line and vessel stay in place.">See text editing</a></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why this medium -->
+      <section class="cp-section cp-medium cp-grid" aria-labelledby="medium-title">
+        <div class="cp-head">
+          <h2 id="medium-title">Why two inks</h2>
+        </div>
+        <div class="cp-text">
+          <p>Riso printing is a stencil process. Each colour needs its own master and its own drum, so colour is rationed. Tone has to be built from halftone dots, the second colour rarely lands exactly on the first, and the paper shows through, colour and grain included.</p>
+          <p>Those limits make a good playground. There are few variables, each one shows on the sheet, and a slip in registration reads as printing. CUT / PRINT keeps the limits on screen: two inks, two screen angles, six paper stocks and registration you can loosen.</p>
+        </div>
+        <figure>
+          <a class="zoom-link" href="../images/cut-print/poster-kraft-01-letter-by-fire-halftone-vase-detail-vase-neck-halftone.webp" data-zoom data-caption="Detail at export resolution: a halftone vase in Ink Black on kraft." aria-label="Enlarge: halftone detail">
+            <img class="cp-frame" src="../images/cut-print/poster-kraft-01-letter-by-fire-halftone-vase-detail-vase-neck-halftone.webp" width="1100" height="1100" alt="Close-up of a poster on kraft paper: the neck of a vase split by a vertical cut, black halftone dots on bare kraft at left and kraft-coloured dots on the black field at right." loading="lazy" decoding="async">
+            <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+          </a>
+          <figcaption class="cp-cap">Detail at full export resolution: the neck of a vase in Ink Black on kraft.</figcaption>
+        </figure>
+      </section>
+
+      <!-- The moves, each shown as a change on one sheet -->
+      <section class="cp-section cp-moves" aria-labelledby="moves-title">
+        <div class="cp-head cp-rule">
+          <h2 id="moves-title">How it plays</h2>
+        </div>
+
+        <article class="cp-move cp-move-wide cp-grid">
+          <div class="cp-move-copy">
+            <h3>Shuffle another version</h3>
+            <p>Begin with the editable sample, or choose Start blank and pick your own lines. Each Shuffle deals a layout, a form, two inks and a paper stock. Lines you wrote or picked stay. Generated phrases can vary within the selected language. Every part of the result stays editable.</p>
+          </div>
+          <div class="cp-move-media">
+            <div class="cp-seq cp-seq-4" style="--n:4">
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/shuffle-1-empty.webp" data-zoom data-caption="Start blank clears the editable sample. Undo can bring it back." aria-label="Enlarge: the optional blank sheet">
+                  <img class="cp-frame" src="../images/cut-print/shuffle-1-empty.webp" width="1100" height="1628" alt="The empty sheet, with the prompt Start with one line." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Empty</b> Choose Start blank.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/shuffle-2-lines.webp" data-zoom data-caption="A title and a line picked from the phrase library, still selected on the sheet." aria-label="Enlarge: two lines picked from the library">
+                  <img class="cp-frame" src="../images/cut-print/shuffle-2-lines.webp" width="1100" height="1628" alt="Lines chosen from the phrase library and placed on the blank sheet." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Two lines</b> Picked from the library.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/shuffle-3.webp" data-zoom data-caption="After one Shuffle: the same two lines on a new sheet." aria-label="Enlarge: after one Shuffle">
+                  <img class="cp-frame" src="../images/cut-print/shuffle-3.webp" width="1100" height="1628" alt="After one Shuffle: the chosen lines remain in a new composition with form, cut and ink fields." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Shuffle</b> One click deals the rest.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/shuffle-4.webp" data-zoom data-caption="After a second Shuffle: the lines stay, the sheet changes again." aria-label="Enlarge: after a second Shuffle">
+                  <img class="cp-frame" src="../images/cut-print/shuffle-4.webp" width="1100" height="1628" alt="After another Shuffle: the same chosen lines in a different composition." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Again</b> The lines stay; the sheet changes.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </article>
+
+        <article class="cp-move cp-grid">
+          <div class="cp-move-copy">
+            <h3>Re-cut the sheet</h3>
+            <p>Choose Draw a cut and drag across the poster. The stroke becomes the new border between the ink fields, at the angle and position you draw. A light snap helps near level or upright. The largest form it crosses prints in reverse on each side.</p>
+          </div>
+          <div class="cp-move-media">
+            <div class="cp-seq cp-seq-3">
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/cut-before.webp" data-zoom data-caption="Before: the starting sample with a gently tilted cut." aria-label="Enlarge: before the cut">
+                  <img class="cp-frame" src="../images/cut-print/cut-before.webp" width="1100" height="1628" alt="A Shape Between: a green vessel crosses the gently tilted border between green ink and bare paper." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Before</b> The sample's gently tilted cut.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/cut-drag.webp" data-zoom data-caption="During the drag: the guide follows the pointer angle and position." aria-label="Enlarge: during the drag">
+                  <img class="cp-frame" src="../images/cut-print/cut-drag.webp" width="1100" height="1628" alt="A diagonal cut being drawn through the vessel, with a green dashed angle guide." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Drag</b> The guide follows your line.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/cut-after.webp" data-zoom data-caption="After: the two fields meet along the drawn diagonal, and the vessel reverses across it." aria-label="Enlarge: after the cut">
+                  <img class="cp-frame" src="../images/cut-print/cut-after.webp" width="1100" height="1628" alt="After the re-cut: a diagonal splits the green and paper fields, with the vessel reversing across the line." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>After</b> A diagonal cut; the vase reverses across it.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </article>
+
+        <article class="cp-move cp-move-wide cp-grid">
+          <div class="cp-move-copy">
+            <h3>Turn the vessel</h3>
+            <p>Choose Shape the vessel, then pick two of six traditional profiles, from meiping to bowl. Drag the preview sideways to blend them, up and down to tip the form toward you. The preview follows the drag, and the poster takes the new shape when you let go. Reset form returns to the starting profile.</p>
+          </div>
+          <div class="cp-move-media">
+            <div class="cp-seq cp-seq-stack">
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/vessel-morph-1.webp" data-zoom data-caption="A Meiping vase blended 30% toward a bowl." aria-label="Enlarge: vessel at 30 percent">
+                  <img class="cp-frame" src="../images/cut-print/vessel-morph-1.webp" width="2384" height="1684" alt="The Forms panel with the Reshape the Vessel preview: a Meiping vase blended 30 percent toward a bowl, matching the selected form on the poster." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>30%</b> Vase toward bowl.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/vessel-morph-2.webp" data-zoom data-caption="The same vessel blended 62% toward the bowl." aria-label="Enlarge: vessel at 62 percent">
+                  <img class="cp-frame" src="../images/cut-print/vessel-morph-2.webp" width="2384" height="1684" alt="The same vessel blended 62 percent toward the bowl: a short, wide-mouthed jar." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>62%</b> A wide jar.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/vessel-morph-3.webp" data-zoom data-caption="The vessel blended fully into a bowl." aria-label="Enlarge: vessel at 100 percent">
+                  <img class="cp-frame" src="../images/cut-print/vessel-morph-3.webp" width="2384" height="1684" alt="The vessel blended fully into a shallow bowl, crossing the diagonal cut on the poster." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>100%</b> A bowl.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Materials: the same sheet under different print settings -->
+      <section class="cp-section cp-inks" aria-labelledby="inks-title">
+        <div class="cp-head cp-rule">
+          <h2 id="inks-title">Ink and paper</h2>
+        </div>
+        <article class="cp-move cp-grid">
+          <div class="cp-move-copy">
+            <h3>Change the pair</h3>
+            <p>Eight ink pairs, six stocks, three textures and three registration settings. The docket at the foot of the panel reports the lightness gap between the two fields, so a pairing too close to read shows up as a number.</p>
+          </div>
+          <div class="cp-move-media">
+            <div class="cp-seq cp-seq-2" style="--n:2">
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/ink-before.webp" data-zoom data-caption="Before: Racing Green on bare Woodfree paper. The docket reads a lightness gap of 52, the sweet spot." aria-label="Enlarge: ink before">
+                  <img class="cp-frame" src="../images/cut-print/ink-before.webp" width="2384" height="1684" alt="The Ink &amp; Paper panel beside the Racing Green poster." loading="lazy" decoding="async">
+                </a>
+                <img class="cp-docket" src="../images/cut-print/ink-before-docket.webp" width="668" height="254" alt="Docket: Ink A bare paper, gap ΔL* 52, sweet spot, Ink B Racing Green 86%." loading="lazy" decoding="async">
+                <figcaption class="cp-cap"><b>Before</b> Racing Green on bare paper, a gap of 52.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/ink-after.webp" data-zoom data-caption="After: Vermilion on bare Woodfree paper. The docket reads a lightness gap of 43, the sweet spot." aria-label="Enlarge: ink after">
+                  <img class="cp-frame" src="../images/cut-print/ink-after.webp" width="2384" height="1684" alt="The same poster in Vermilion on bare off-white paper." loading="lazy" decoding="async">
+                </a>
+                <img class="cp-docket" src="../images/cut-print/ink-after-docket.webp" width="668" height="254" alt="Docket: Ink A bare paper, gap ΔL* 43, sweet spot, Ink B Vermilion 86%." loading="lazy" decoding="async">
+                <figcaption class="cp-cap"><b>After</b> Vermilion on bare paper, a gap of 43.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </article>
+<!--MATERIALS:start-->
+        <article class="cp-move cp-grid cp-materials">
+          <div class="cp-move-copy">
+            <h3>One setting at a time</h3>
+            <p>The same corner of <a href="#p-other-side"><span lang="zh-Hans">器物的背面</span> (The Other Side of Things)</a> at export resolution, where the lip of the vase crosses the cut. Each version changes one setting from the base, clicked in the panel and exported through Print It.</p>
+          </div>
+          <div class="cp-move-media">
+            <div class="cp-seq cp-seq-4" style="--n:4">
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/material-base.webp" data-zoom data-caption="Base: coarse screen, tight registration, Woodfree paper." aria-label="Enlarge: base">
+                  <img class="cp-frame" src="../images/cut-print/material-base.webp" width="640" height="640" alt="Close-up at export resolution: slate-blue and pink fields split by a vertical cut, the lip of a vase in large halftone dots crossing it." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Base</b> Coarse screen, tight registration, Woodfree.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/material-off-register.webp" data-zoom data-caption="Off-register: each field's plate shifts the opposite way, so the lip of the vase steps at the cut." aria-label="Enlarge: off-register">
+                  <img class="cp-frame" src="../images/cut-print/material-off-register.webp" width="640" height="640" alt="The same close-up off-register: the two halves of the vase's lip no longer meet at the cut." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Off-register</b> The plates slip apart and the lip steps at the cut.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/material-screen-fine.webp" data-zoom data-caption="Fine screen: the same area with a much finer dot pitch. The two screen angles still show on either side of the cut." aria-label="Enlarge: fine screen">
+                  <img class="cp-frame" src="../images/cut-print/material-screen-fine.webp" width="640" height="640" alt="The same close-up with a fine screen: the large dots become a tight mesh, at a different angle on each side of the cut." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Fine screen</b> The dots shrink to a mesh; each side keeps its own angle.</figcaption>
+              </figure>
+              <figure>
+                <a class="zoom-link" href="../images/cut-print/material-kraft.webp" data-zoom data-caption="Kraft: brown paper under both inks. Fibres show through the pale pink field, barely through the Sapphire. The tool also lowers Sapphire's coverage to 78%, the most kraft takes." aria-label="Enlarge: kraft">
+                  <img class="cp-frame" src="../images/cut-print/material-kraft.webp" width="640" height="640" alt="The same close-up on kraft paper: the pale pink turns dusty coral, with paper fibres and specks showing through it; the Sapphire side barely changes." loading="lazy" decoding="async">
+                </a>
+                <figcaption class="cp-cap"><b>Kraft</b> Fibres show through the pale pink. The tool also lowers Sapphire to 78%, the most kraft takes.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </article>
+<!--MATERIALS:end-->
+      </section>
+
+      <!-- The payoff -->
+      <section class="cp-press cp-bleed" aria-labelledby="press-title">
+        <div class="cp-grid cp-press-grid">
+          <div class="cp-press-copy">
+            <h2 id="press-title">Print It</h2>
+            <p>The preview lays the sheet down in three passes under a moving roller: field, forms, then type. It ends with the inks, coverage and stock, and holds the export: a PNG drawn from the same state you watched being printed.</p>
+          </div>
+          <figure class="cp-press-mid">
+            <a class="zoom-link" href="../images/cut-print/press-mid-crop.webp" data-zoom data-caption="Print It, second pass: the two fields are down and the form plate fades in under the roller." aria-label="Enlarge: Print It, second pass"><img class="cp-frame" src="../images/cut-print/press-mid-crop.webp" width="1328" height="1796" alt="Print It, second pass: the two fields are down and the bowl is fading in under the roller." loading="lazy" decoding="async"></a>
+            <figcaption class="cp-cap"><b>Second pass</b> The form plate goes down.</figcaption>
+          </figure>
+          <figure class="cp-press-end">
+            <a class="zoom-link" href="../images/cut-print/press-crop.webp" data-zoom data-caption="Print It, finished: the ink and stock line under the sheet, with Back to edit and Export PNG." aria-label="Enlarge: Print It, finished"><img class="cp-frame" src="../images/cut-print/press-crop.webp" width="1328" height="1796" alt="Print It, finished: the complete poster with its ink and stock line, and the buttons Back to edit and Export PNG." loading="lazy" decoding="async"></a>
+            <figcaption class="cp-cap"><b>Done</b> Back to edit, or export.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- How the parts connect -->
+      <section class="cp-section" aria-labelledby="logic-title">
+        <div class="cp-head">
+          <h2 id="logic-title">How the parts connect</h2>
+        </div>
+        <div class="cp-logic-wrap">
+<!--LOOP:start-->
+<!-- CUT / PRINT interaction-logic diagram. Needs cp-loop.css. No JavaScript.
+     Every node, edge and label is sourced in spec.json. -->
+<figure class="cp-loop">
+  <p class="cp-loop__sr">
+    The tool opens on an editable vessel poster. Draw a cut or Shape the vessel begins a direct edit. Start blank clears the sheet, and Undo brings the poster back.
+    Editing has four kinds of move, in any order and as often as you like: type, forms, the cut, and ink and paper.
+    Shuffle redeals the layout, form, cut, inks and paper, keeps lines you wrote or picked, and can be undone. Undo steps back through up to 24 saved states.
+    Clear returns to the empty sheet without asking; Undo brings the poster back.
+    Print It opens a print preview. Back to edit, the close button or Esc return to editing.
+    Export PNG, inside the preview, saves a PNG 3600 pixels on the long edge and leaves the preview open.
+  </p>
+
+  <div class="cp-loop__grid" aria-hidden="true">
+
+    <div class="cp-loop__node cp-loop__node--start">
+      <h3 class="cp-loop__title">Sample or blank</h3>
+      <p class="cp-loop__text">Open an editable vessel poster. Try <span class="cp-loop__ui">Draw a cut</span> or <span class="cp-loop__ui">Shape the vessel</span>.</p>
+      <p class="cp-loop__text"><span class="cp-loop__ui">Start blank</span> clears it. Undo brings it back.</p>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--fwd cp-loop__edge--enter">
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+    </div>
+
+    <div class="cp-loop__hub">
+      <h3 class="cp-loop__title">Editing</h3>
+      <p class="cp-loop__text">Four kinds of move, in any order, as often as you like.</p>
+      <ul class="cp-loop__moves">
+        <li class="cp-loop__move">
+          <span class="cp-loop__move-name">Type</span>
+          <span class="cp-loop__move-text">your own word, or one of 14 phrases</span>
+        </li>
+        <li class="cp-loop__move">
+          <span class="cp-loop__move-name">Forms</span>
+          <span class="cp-loop__move-text">geometry, gestures, six vessels, a photo</span>
+        </li>
+        <li class="cp-loop__move">
+          <span class="cp-loop__move-name">Cut</span>
+          <span class="cp-loop__move-text">one drag makes two ink fields</span>
+        </li>
+        <li class="cp-loop__move">
+          <span class="cp-loop__move-name">Ink &amp; Paper</span>
+          <span class="cp-loop__move-text">ink pair, stock, texture, registration</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--loop cp-loop__edge--shuf">
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+      <p class="cp-loop__label">
+        <span class="cp-loop__label-name">Shuffle</span>
+        <span class="cp-loop__label-note">keeps your lines, redeals the rest; undoable</span>
+      </p>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--loop cp-loop__edge--undo">
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+      <p class="cp-loop__label">
+        <span class="cp-loop__label-name">Undo</span>
+        <span class="cp-loop__label-note">steps back through up to 24 saved states</span>
+      </p>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--return cp-loop__edge--clear">
+      <p class="cp-loop__label">
+        <span class="cp-loop__label-name">Clear</span>
+        <span class="cp-loop__label-note">no confirmation; undoable</span>
+      </p>
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--fwd cp-loop__edge--print">
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+      <p class="cp-loop__label"><span class="cp-loop__label-name">Print It</span></p>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--return cp-loop__edge--back">
+      <p class="cp-loop__label">
+        <span class="cp-loop__label-name">Back to edit</span>
+        <span class="cp-loop__label-note">or &times;, or Esc</span>
+      </p>
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+    </div>
+
+    <div class="cp-loop__node cp-loop__node--prev">
+      <h3 class="cp-loop__title">Print preview</h3>
+      <p class="cp-loop__text">Field, form and type go down in three passes, about 1.7&nbsp;s.</p>
+    </div>
+
+    <div class="cp-loop__edge cp-loop__edge--fwd cp-loop__edge--export">
+      <span class="cp-loop__path"><span class="cp-loop__head"></span></span>
+      <p class="cp-loop__label"><span class="cp-loop__label-name">Export PNG</span></p>
+    </div>
+
+    <div class="cp-loop__node cp-loop__node--png">
+      <h3 class="cp-loop__title">PNG file</h3>
+      <p class="cp-loop__text">3600&nbsp;px on the long edge. The preview stays open.</p>
+    </div>
+
+  </div>
+
+  <figcaption class="cp-loop__foot">
+    <p class="cp-loop__caption">Editing is the hub. The moves have no set order, and every route leads back to it.</p>
+    <ul class="cp-loop__legend" aria-hidden="true">
+      <li class="cp-loop__key cp-loop__key--fwd">forward</li>
+      <li class="cp-loop__key cp-loop__key--back">back, or around again</li>
+    </ul>
+  </figcaption>
+</figure>
+<!--LOOP:end-->
+        </div>
+      </section>
+
+      <!-- The posters -->
+      <section id="posters" class="cp-outputs cp-bleed" aria-labelledby="posters-title">
+        <div class="cp-head cp-head-split">
+          <h2 id="posters-title">Posters</h2>
+          <p class="cp-outputs-note">Three short series. Every sheet is a Shuffle result, chosen from about 130 and exported with no further edits.</p>
+        </div>
+        <figure class="cp-mockup">
+          <a class="zoom-link" href="../images/cut-print/mockup-wall-three-series.webp" data-zoom data-caption="Mockup: one poster from each series, placed unedited on a generated photograph of a studio wall. The scene is not a real print." aria-label="Enlarge: mockup of three posters on a wall">
+            <img src="../images/cut-print/mockup-wall-three-series.webp" width="1672" height="941" alt="Mockup: three posters clipped to a pale studio wall in soft window light, one from each series: 火写下的信 on kraft, 一只碗的冬天 in black, and Twelve Rains in burgundy and teal." loading="lazy" decoding="async">
+            <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+          </a>
+          <figcaption class="cp-cap"><b>Mockup</b> One poster from each series, placed unedited on a generated photograph of a wall. The scene is not a real print.</figcaption>
+        </figure>
+
+        <div class="cp-series">
+          <div class="cp-series-head"><h3>Kraft</h3><p>Vessels in Ink Black on brown paper</p></div>
+          <div class="cp-posters">
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/poster-kraft-01-letter-by-fire-halftone-vase.webp" data-zoom data-caption="火写下的信 (Letters Written by Fire). Ink Black on Kraft." aria-label="Enlarge: Letters Written by Fire">
+                <img src="../images/cut-print/poster-kraft-01-letter-by-fire-halftone-vase.webp" width="1350" height="1800" alt="Poster on kraft paper: a tall vase in coarse halftone dots crosses a vertical cut, beside the vertical title 火写下的信." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b lang="zh-Hans">火写下的信</b> Letters Written by Fire. Ink Black on Kraft.</figcaption>
+            </figure>
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/poster-kraft-02-look-into-the-empty-halftone-vessel.webp" data-zoom data-caption="向空处观看 (Looking into Emptiness). Ink Black on Kraft, loose registration." aria-label="Enlarge: Looking into Emptiness">
+                <img src="../images/cut-print/poster-kraft-02-look-into-the-empty-halftone-vessel.webp" width="1350" height="1800" alt="Poster on kraft paper: a vessel in coarse dots crosses from a dark band into the brown paper, above the headline 向空处观看." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b lang="zh-Hans">向空处观看</b> Looking into Emptiness. Ink Black on Kraft, loose registration.</figcaption>
+            </figure>
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/poster-kraft-03-moonlight-across-glaze-three-bottles.webp" data-zoom data-caption="Moonlight Across Glaze. Ink Black on Kraft." aria-label="Enlarge: Moonlight Across Glaze">
+                <img src="../images/cut-print/poster-kraft-03-moonlight-across-glaze-three-bottles.webp" width="1350" height="1800" alt="Poster on kraft paper: three shaded bottles in fine halftone stand in a row; only the tops of their mouths cross a tilted cut into the dark field above, and their necks and bodies sit on bare kraft below, under the title Moonlight Across Glaze." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b>Moonlight Across Glaze</b> Ink Black on Kraft.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="cp-series">
+          <div class="cp-series-head"><h3>Black</h3><p>Split forms in Ink Black alone</p></div>
+          <div class="cp-posters cp-with-detail">
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/poster-black-01-a-bowl-in-winter-split-gourd.webp" data-zoom data-caption="一只碗的冬天 (A Bowl in Winter). Ink Black at two densities on Glossy." aria-label="Enlarge: A Bowl in Winter">
+                <img src="../images/cut-print/poster-black-01-a-bowl-in-winter-split-gourd.webp" width="1350" height="1800" alt="Poster in Ink Black at two densities: a gourd split by a vertical cut, pale grey on black at left and in fine dots on mid-grey at right, beside the vertical title 一只碗的冬天." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b lang="zh-Hans">一只碗的冬天</b> A Bowl in Winter. Ink Black at two densities on Glossy.</figcaption>
+            </figure>
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/poster-black-alt-shape-of-silence-halftone-flowers.webp" data-zoom data-caption="沉默有形 (The Shape of Silence). Ink Black on Recycled." aria-label="Enlarge: The Shape of Silence">
+                <img src="../images/cut-print/poster-black-alt-shape-of-silence-halftone-flowers.webp" width="1350" height="1800" alt="Poster in Ink Black on recycled paper: two halftone flowers cross a level cut, over the large headline 沉默有形." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b lang="zh-Hans">沉默有形</b> The Shape of Silence. Ink Black on Recycled.</figcaption>
+            </figure>
+            <figure class="cp-detail">
+              <a class="zoom-link" href="../images/cut-print/poster-black-01-a-bowl-in-winter-split-gourd-detail-gourd-split-at-the-cut.webp" data-zoom data-caption="Detail of 一只碗的冬天 at export resolution: the gourd where the cut splits it." aria-label="Enlarge: detail of the split gourd">
+                <img src="../images/cut-print/poster-black-01-a-bowl-in-winter-split-gourd-detail-gourd-split-at-the-cut.webp" width="1100" height="1100" alt="Close-up of the gourd at the cut: a smooth pale edge on black meets a field of fine dots." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b>Detail</b> Where the cut splits the gourd.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="cp-series">
+          <div class="cp-series-head"><h3>Colour</h3><p>Two inks printed together</p></div>
+          <div class="cp-posters cp-with-detail">
+            <figure id="p-other-side">
+              <a class="zoom-link" href="../images/cut-print/poster-colour-02-the-back-of-the-vessel-pink-halftone-vase.webp" data-zoom data-caption="器物的背面 (The Other Side of Things). Sapphire and Riso Fluor Pink on Woodfree." aria-label="Enlarge: The Other Side of Things">
+                <img src="../images/cut-print/poster-colour-02-the-back-of-the-vessel-pink-halftone-vase.webp" width="1350" height="1800" alt="Poster in slate blue and pale pink: a tall vase in halftone dots crosses a vertical cut, beside the vertical title 器物的背面." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b lang="zh-Hans">器物的背面</b> The Other Side of Things. Sapphire and Riso Fluor Pink on Woodfree.</figcaption>
+            </figure>
+            <figure>
+              <a class="zoom-link" href="../images/cut-print/poster-colour-03-twelve-rains-pink-and-teal-dots.webp" data-zoom data-caption="Twelve Rains. Riso Burgundy and Riso Teal on Glossy." aria-label="Enlarge: Twelve Rains">
+                <img src="../images/cut-print/poster-colour-03-twelve-rains-pink-and-teal-dots.webp" width="1350" height="1800" alt="Poster in burgundy and teal: a grid of large dots crosses a tilted cut, each dot taking the other field's colour, above the title Twelve Rains." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b>Twelve Rains</b> Riso Burgundy and Riso Teal on Glossy.</figcaption>
+            </figure>
+            <figure class="cp-detail">
+              <a class="zoom-link" href="../images/cut-print/poster-colour-03-twelve-rains-pink-and-teal-dots-detail-dots-across-the-cut.webp" data-zoom data-caption="Detail of Twelve Rains at export resolution: a dot split by the cut, each half in the other field's ink." aria-label="Enlarge: detail of a split dot">
+                <img src="../images/cut-print/poster-colour-03-twelve-rains-pink-and-teal-dots-detail-dots-across-the-cut.webp" width="1100" height="1100" alt="Close-up of Twelve Rains: a dot cut in two by the tilted line, burgundy on teal above and teal on burgundy below." loading="lazy" decoding="async">
+                <span class="zoom-icon" aria-hidden="true"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="m21 3-7 7"></path><path d="m3 21 7-7"></path><path d="M9 21H3v-6"></path></svg></span>
+              </a>
+              <figcaption class="cp-cap"><b>Detail</b> A dot split by the cut.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- Decisions and build -->
+      <section class="cp-section" aria-labelledby="decisions-title">
+        <div class="cp-head">
+          <h2 id="decisions-title">Decisions</h2>
+        </div>
+        <div class="cp-decisions cp-grid">
+          <article>
+            <h3>One poster per shuffle</h3>
+            <p>Shuffle builds 56 candidates from eight weighted layout recipes, scores them for balance, type clearance, colour and spacing, and keeps the best ten. It then picks at random among those that differ enough from the poster already on the sheet, since always taking the top score would keep returning the same poster.</p>
+          </article>
+          <article>
+            <h3>Screens fixed to the paper</h3>
+            <p>Each of the two plates has its own screen angle, 45° for the lighter field and 75° for the darker, and the dot grid is anchored to the sheet. Moving or scaling a form changes which dots it covers, and the dots themselves stay put, the way they would on a printed page.</p>
+          </article>
+          <article>
+            <h3>One page, drawn twice</h3>
+            <p>A browser-based canvas draws the poster. The export draws the same state again at 3,600 pixels on the long edge, about 220 pixels per inch on an A3 sheet. The file keeps the chosen aspect ratio and contains the poster without editing controls.</p>
+          </article>
+          <p class="cp-limits">Limits: this is a screen simulation. The ink colours are sRGB approximations, not calibrated print predictions. The export is one flattened PNG, with no separated masters for a press.</p>
+          <p class="cp-end"><a class="text-link primary-link" href="../poster/index.html">Open the prototype
+            <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+          </a></p>
+        </div>
+      </section>
+
+      <nav class="case-pagination" aria-label="Project navigation">
+        <a class="text-link" href="../work.html">Projects
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+        </a>
+        <a href="zisha.html"><span>Next project</span><strong>Yixing Zisha AR</strong>
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div><span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a></div>
+      <div class="footer-links">
+        <a class="text-link" href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a>
+        <a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a>
+        <a class="text-link" href="#top">Back to top
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <dialog class="image-dialog" aria-labelledby="image-caption">
+    <div class="dialog-toolbar">
+      <a id="image-original" class="text-link" target="_blank" rel="noopener">Open full size
+        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+      </a>
+      <button type="button" data-close-image aria-label="Close image" title="Close image">
+        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </div>
+    <div class="dialog-image-area"><img id="image-enlarged" alt=""></div>
+    <p id="image-caption"></p>
+  </dialog>
+
+  <script>
+    // The opening loop plays only while it is on screen, stops for anyone who asks
+    // for reduced motion (even if they switch it on mid-visit), and always has a
+    // visible pause control.
+    (() => {
+      const video = document.querySelector('[data-cp-loop]');
+      const toggle = document.querySelector('[data-cp-toggle]');
+      if (!video || !toggle) return;
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let paused = still.matches;
+      const label = () => {
+        toggle.textContent = video.paused ? 'Play' : 'Pause';
+        toggle.setAttribute('aria-label', toggle.textContent + ' the opening loop');
+      };
+      const play = () => { if (!paused) video.play().then(label, label); };
+      toggle.hidden = false;
+      label();
+      toggle.addEventListener('click', () => {
+        paused = !video.paused;
+        paused ? video.pause() : video.play().catch(() => {});
+        label();
+      });
+      still.addEventListener('change', e => { if (e.matches) { paused = true; video.pause(); } });
+      video.addEventListener('play', label);
+      video.addEventListener('pause', label);
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => {
+          entry.intersectionRatio >= 0.25 ? play() : video.pause();
+        }, { threshold: [0, 0.25] }).observe(video);
+      } else {
+        play();
+      }
+    })();
+  </script>
+</body>
+</html>

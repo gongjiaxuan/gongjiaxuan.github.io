@@ -68,6 +68,7 @@ svg { flex-shrink: 0; }
 .project-visual img { width: 100%; height: 100%; object-fit: contain; }
 .print-pair { display: grid; grid-template-columns: .8fr 1.2fr; gap: 18px; padding: 20px; background: #eef1ef; }
 .print-pair img { min-height: 0; object-fit: contain; }
+.print-pair.is-even { grid-template-columns: 1fr 1fr; }
 .interface { padding: 24px; }
 .paper-model { background: #fff; border: 1px solid var(--rule); padding: 20px; }
 .project-line { padding-top: 16px; }
