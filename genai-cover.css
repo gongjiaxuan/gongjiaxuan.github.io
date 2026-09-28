@@ -1,0 +1,40 @@
+.ongoing-research.with-cover {
+  padding-left: 0;
+}
+.ongoing-research.with-cover .research-thumbnail {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: 3 / 2;
+  max-height: none;
+}
+.genai-concept-card {
+  aspect-ratio: 3 / 2;
+  background: #fff;
+}
+.genai-concept-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.genai-concept-credit {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+.review-page .review-concept {
+  padding: 28px 0 0;
+}
+.review-concept > a {
+  display: block;
+}
+.review-concept img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.review-concept figcaption {
+  max-width: 850px;
+  margin-top: 14px;
+}
