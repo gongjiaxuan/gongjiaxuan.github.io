@@ -1,0 +1,8 @@
+.project-visual.zisha-ar-card { flex-direction: column; gap: 16px; padding: 22px 18px; background: #eff3f1; }
+.zisha-ar-card img { width: 100%; height: auto; aspect-ratio: 20 / 9; object-fit: contain; }
+.zisha-card-caption { display: flex; justify-content: space-between; gap: 12px; width: 100%; font-size: 12px; line-height: 1.4; color: #455650; }
+.research-thumbnail.zisha-thumbnail { background: #eff3f1; padding: 0; border: 0; }
+@media (max-width: 360px) {
+  .project-visual.zisha-ar-card { padding: 14px 12px; gap: 10px; }
+  .zisha-card-caption { font-size: 11px; }
+}

@@ -1,0 +1,120 @@
+/* Page-local presentation; colours inside the prototype remain unaltered. */
+.zisha-intro { display: grid; grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr); gap: 60px; padding: 26px 0 32px; align-items: end; }
+.zisha-meta { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.zisha-intro h1 { font-size: clamp(34px, 4.2vw, 46px); }
+.zisha-lead { font-size: 23px; line-height: 1.4; margin-top: 12px; }
+.zisha-summary { max-width: 630px; margin-top: 16px; color: var(--muted); }
+.zisha-role { display: grid; gap: 12px; font-size: 14px; }
+.zisha-role dd { margin-top: 2px; }
+.zisha-hero img { width: 100%; height: auto; }
+.zisha-hero figcaption { display: flex; justify-content: space-between; gap: 10px; }
+.zisha-enlarge { position: absolute; right: 12px; bottom: 12px; padding: 7px 11px; background: #fff; color: var(--ink); font-size: 12px; border: 1px solid var(--rule); }
+.zoom-link:hover .zisha-enlarge { color: var(--accent); }
+.zisha-sections { display: flex; flex-wrap: wrap; gap: 8px 32px; border-bottom: 1px solid var(--rule); margin-top: 22px; padding-bottom: 12px; font-size: 14px; }
+.zisha-sections a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); }
+.zisha-section { padding: 60px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 26px; }
+.zisha-section-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 50px; align-items: start; margin-bottom: 30px; }
+.zisha-section h2 { font-size: 30px; line-height: 1.25; }
+.zisha-section-heading p { color: var(--muted); font-size: 16px; max-width: 62ch; }
+.zisha-switcher { display: flex; gap: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 26px; }
+.zisha-switcher button { padding: 12px 0; border: 0; border-bottom: 3px solid transparent; background: transparent; font-size: 16px; min-height: 48px; }
+.zisha-switcher button span { margin-left: 6px; color: var(--muted); font-size: 13px; }
+.zisha-switcher button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--accent); }
+.zisha-experience { display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr); gap: 30px; align-items: start; }
+.zisha-experience + .zisha-experience { margin-top: 36px; }
+.zisha-page.is-enhanced .zisha-experience { margin-top: 0; }
+.zisha-experience figure { min-width: 0; }
+.zisha-experience img { width: 100%; height: auto; }
+.zisha-experience-copy h3 { font-size: 23px; margin-bottom: 13px; }
+.zisha-experience-copy p { font-size: 15px; margin-bottom: 14px; }
+.zisha-experience-copy .text-link { min-height: 44px; display: inline-flex; align-items: center; color: var(--accent); font-size: 14px; }
+.zisha-film video, .zisha-original video { width: 100%; height: auto; aspect-ratio: 20 / 9; background: #202525; }
+.zisha-film video::cue { font-size: 18px; background: rgb(0 0 0 / 80%); color: white; }
+.zisha-chapters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 20px; }
+.zisha-chapters a { font-size: 14px; border-bottom: 1px solid var(--rule); min-height: 48px; padding: 10px 0; }
+.zisha-chapters a span { display: inline-block; margin-right: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.zisha-original { margin-top: 26px; }
+.zisha-original summary { cursor: pointer; font-size: 15px; padding: 14px 0; min-height: 48px; }
+.zisha-original summary span { color: var(--muted); font-size: 13px; margin-left: 18px; }
+.zisha-original p { font-size: 13px; color: var(--muted); max-width: 80ch; margin-top: 12px; }
+.zisha-study { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 36px 80px; }
+.zisha-study > div > p { margin-top: 18px; max-width: 68ch; }
+.zisha-study-question { font-size: 23px; line-height: 1.45; }
+.zisha-methods { align-self: start; padding: 4px 0 4px 32px; border-left: 2px solid var(--accent); display: grid; gap: 22px; }
+.zisha-methods dd { font-size: 17px; margin-top: 3px; }
+.zisha-methods strong { font-size: 24px; font-weight: 500; }
+.zisha-research-note { grid-column: 1 / -1; background: var(--surface); padding: 24px 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 32px; }
+.zisha-research-note h3 { font-size: 19px; line-height: 1.4; }
+.zisha-research-note > p { margin: 0 !important; font-size: 15px; }
+.zisha-contribution { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 42px; padding: 45px 0 55px; }
+.zisha-contribution h2 { font-size: 26px; }
+.zisha-scope { font-size: 14px; color: var(--muted); margin-top: 16px; }
+.zisha-source { color: var(--muted); font-size: 12px !important; line-height: 1.6; margin-top: 13px; }
+.zisha-build { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 70px; padding: 48px 0; border-bottom: 1px solid var(--rule); }
+.zisha-build h2 { font-size: 27px; margin-bottom: 18px; }
+.zisha-build p { font-size: 16px; }
+.zisha-route { margin: 0; padding-left: 23px; display: grid; gap: 18px; }
+.zisha-route li { padding-left: 6px; font-size: 15px; }
+.zisha-route li::marker { color: var(--accent); }
+.zisha-route strong, .zisha-route span { display: block; }
+.zisha-route span { margin-top: 4px; color: var(--muted); }
+.zisha-findings article { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr); gap: 44px; padding: 25px 0; border-top: 1px solid var(--rule); }
+.zisha-findings h3 { font-size: 21px; line-height: 1.4; }
+.zisha-findings strong { font-weight: 600; color: var(--accent); white-space: nowrap; }
+.zisha-evidence { background: var(--surface); padding: 0 24px; margin-top: 18px; }
+.zisha-evidence summary { padding: 18px 0; cursor: pointer; font-size: 15px; }
+.zisha-evidence > p { font-size: 14px; max-width: 80ch; padding-bottom: 20px; }
+.zisha-table-wrap { overflow-x: auto; margin-bottom: 20px; }
+.zisha-table-wrap:focus-visible, .zisha-experience:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.zisha-table-wrap table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+.zisha-table-wrap caption { text-align: left; color: var(--muted); margin-bottom: 10px; font-size: 13px; }
+.zisha-table-wrap th, .zisha-table-wrap td { border-bottom: 1px solid var(--rule); padding: 10px 14px 10px 0; }
+.zisha-table-wrap th[scope="row"] { font-weight: 400; }
+.zisha-table-wrap td { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.zisha-directions { display: grid; }
+.zisha-directions > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; border-top: 1px solid var(--rule); padding: 20px 0; }
+.zisha-directions dt { font-size: 17px; font-weight: 600; color: var(--ink); }
+.zisha-directions dd { font-size: 16px; }
+.zisha-limits { max-width: 850px; padding: 44px 0 10px; }
+.zisha-limits h2 { font-size: 25px; margin-bottom: 16px; }
+.zisha-limits > p:not(.zisha-source) { font-size: 16px; }
+@media (max-width: 900px) {
+  .zisha-intro { gap: 32px; }
+  .zisha-experience { grid-template-columns: 1fr; gap: 20px; }
+  .zisha-experience-copy { max-width: 70ch; }
+  .zisha-section-heading { gap: 30px; }
+  .zisha-study { gap: 32px; }
+}
+@media (max-width: 600px) {
+  .zisha-intro { grid-template-columns: 1fr; gap: 22px; padding-top: 20px; }
+  .zisha-lead { font-size: 21px; }
+  .zisha-summary { font-size: 16px; }
+  .zisha-role { grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  .zisha-role > div:first-child { grid-column: 1 / -1; }
+  .zisha-role > div:first-child br { display: none; }
+  .zisha-hero figcaption { flex-direction: column; gap: 0; font-size: 12px; }
+  .zisha-enlarge { right: 8px; bottom: 8px; padding: 5px 8px; }
+  .zisha-sections { gap: 0 20px; margin-top: 16px; }
+  .zisha-section { padding: 38px 0; }
+  .zisha-section h2 { font-size: 27px; }
+  .zisha-section-heading { grid-template-columns: 1fr; gap: 14px; margin-bottom: 22px; }
+  .zisha-switcher { gap: 16px; }
+  .zisha-switcher button { flex: 1; font-size: 14px; text-align: left; }
+  .zisha-switcher button span { display: block; margin: 4px 0 0; }
+  .zisha-chapters { grid-template-columns: 1fr; gap: 0; margin-top: 12px; }
+  .zisha-original summary span { display: block; margin-left: 18px; }
+  .zisha-study { grid-template-columns: 1fr; }
+  .zisha-methods { margin-top: 2px; padding-left: 20px; }
+  .zisha-research-note { grid-template-columns: 1fr; padding: 22px; gap: 14px; }
+  .zisha-contribution { grid-template-columns: 1fr; gap: 20px; padding: 36px 0; }
+  .zisha-film video::cue { font-size: 13px; }
+  .zisha-build { grid-template-columns: 1fr; gap: 26px; padding: 36px 0; }
+  .zisha-findings article { grid-template-columns: 1fr; gap: 14px; }
+  .zisha-directions > div { grid-template-columns: 1fr; gap: 8px; }
+  .zisha-evidence { padding: 0 16px; }
+  .zisha-table-wrap table { font-size: 13px; }
+  .zisha-table-wrap th, .zisha-table-wrap td { padding-right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
