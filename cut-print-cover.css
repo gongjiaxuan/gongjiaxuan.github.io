@@ -1,0 +1,11 @@
+/* Real, uncropped prototype UI on both project indexes. */
+.project-visual.cut-print-editor-card {
+  border-radius: 0;
+  background: #eeefec;
+  padding: 12px;
+}
+.project-visual.cut-print-editor-card img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
