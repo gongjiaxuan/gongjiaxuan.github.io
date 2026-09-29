@@ -6,7 +6,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- UI 字体从 Archivo 换 Space Grotesk：几何骨架 + 单层 a/g + 数字等宽感，
      更「印务工单」的气质，也远离 Inter/Archivo 的通用味 -->
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet"></noscript>
 <style>
   :root{
     --bg:#d9d7d1; --bg2:#cbc9c3; --accent:#c94836;
@@ -1101,7 +1102,7 @@
 <link rel="stylesheet" href="editor.css">
 
 <header class="appbar">
-  <div class="brand"><strong>CUT / PRINT</strong><span>RISOGRAPH POSTER LAB</span></div>
+  <div class="brand"><a class="project-return" href="../projects/cut-print.html" target="_blank" rel="noopener" aria-label="About CUT / PRINT (opens in a new tab)" title="About this project (opens in a new tab)"><strong>CUT / PRINT</strong></a><span>RISOGRAPH POSTER LAB</span></div>
   <div class="top-actions">
     <button id="topUndo" title="撤销" aria-label="撤销" disabled>↶</button>
     <button id="topReset" title="清空画布" aria-label="清空画布">清空</button>
@@ -6593,7 +6594,12 @@ function makeStarter(){
     {text:UI==='en'?'Between':'之间',x:.085,y:.825,size:2,fs:49,font:UI==='en'?2:0,dir:'h',role:'subtitle',source:'user',autoStyle:false}];
   S.si=-1;S.ti=-1;sel=false;tsel=false;applyInks();
 }
-document.fonts&&document.fonts.ready.then(()=>{tmCache.clear();draw();});
+if(document.fonts){
+  const refreshLoadedFonts=()=>{tmCache.clear();draw();};
+  document.fonts.ready.then(refreshLoadedFonts);
+  // Optional webfonts can arrive after the editor is already usable.
+  document.fonts.addEventListener('loadingdone',refreshLoadedFonts);
+}
 fitCanvas();
 makeStarter();
 applyInks();                       // blank 里的派生色是占位，开机先算对再画

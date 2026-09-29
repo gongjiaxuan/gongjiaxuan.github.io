@@ -1,669 +1,517 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="color-scheme" content="light" />
-    <meta
-      name="description"
-      content="A systematic review of 240 papers on generative AI and accessibility, tracing applications, research evidence, disabled people's participation, and responsibility for generated outputs."
-    />
-    <title>Generative AI and Accessibility | Jiaxuan Gong</title>
-    <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="../academic.css" />
-    <link rel="stylesheet" href="genai-accessibility.css" />
-    <link rel="stylesheet" href="../genai-cover.css" />
-    <script src="../app.js" defer></script>
-    <script src="genai-accessibility.js" defer></script>
-  </head>
-  <body id="top" class="review-page">
-    <a class="skip-link" href="#main">Skip to content</a>
-    <div class="site-shell">
-      <header class="site-header">
-        <a class="wordmark" href="../index.html" aria-label="Jiaxuan Gong, home"
-          >Jiaxuan Gong</a
-        >
-        <nav aria-label="Main navigation">
-          <a href="../index.html#research" aria-current="page">Research</a
-          ><a href="../publications.html">Publications</a
-          ><a href="../work.html">Projects</a><a href="../about.html">About</a
-          ><a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV ↗</a>
-        </nav>
-      </header>
-      <main id="main" tabindex="-1">
-        <div class="case-breadcrumb">
-          <a class="text-link" href="../index.html#research">← Research</a>
-        </div>
-        <header class="review-hero">
-          <div>
-            <p class="eyebrow">Systematic review · Manuscript in preparation</p>
-            <h1>Generative AI<br />and accessibility</h1>
-            <p class="review-subtitle">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light" name="color-scheme"/>
+<meta content="A systematic review of 240 papers on generative AI and accessibility, tracing applications, research evidence, disabled people's participation, and responsibility for generated outputs." name="description"/>
+<title>Generative AI and Accessibility | Jiaxuan Gong</title>
+<link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="../academic.css" rel="stylesheet"/>
+<link href="genai-accessibility.css" rel="stylesheet"/>
+<link href="../genai-cover.css" rel="stylesheet"/>
+<script defer="" src="../app.js"></script>
+<script defer="" src="genai-accessibility.js"></script>
+<link href="https://gongjiaxuan.github.io/projects/genai-accessibility.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="Jiaxuan Gong" property="og:site_name"/><meta content="Generative AI and Accessibility | Jiaxuan Gong" property="og:title"/><meta content="A systematic review of 240 papers on generative AI and accessibility, tracing applications, research evidence, disabled people's participation, and responsibility for generated outputs." property="og:description"/><meta content="https://gongjiaxuan.github.io/projects/genai-accessibility.html" property="og:url"/><meta content="https://gongjiaxuan.github.io/images/research/genai-accessibility/concept-cover.webp" property="og:image"/><meta content="Generative AI and Accessibility | Jiaxuan Gong" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/></head>
+<body class="review-page" id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="site-shell">
+<header class="site-header">
+<a aria-label="Jiaxuan Gong, home" class="wordmark" href="../index.html">Jiaxuan Gong</a>
+<nav aria-label="Main navigation">
+<a aria-current="page" href="../index.html#research">Research</a><a href="../publications.html">Publications</a><a href="../work.html">Projects</a><a href="../about.html">About</a><a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV ↗</a>
+</nav>
+</header>
+<main id="main" tabindex="-1">
+<div class="case-breadcrumb">
+<a class="text-link" href="../index.html#research">← Research</a>
+</div>
+<header class="review-hero">
+<div>
+<p class="eyebrow">Systematic review · Manuscript in preparation</p>
+<h1>Generative AI<br/>and accessibility</h1>
+<p class="review-subtitle">
               Across applications and disability contexts.
             </p>
-            <p class="review-lead">
+<p class="review-lead">
               What does it take for a generated output to become useful,
               dependable access?
             </p>
-            <p class="review-intro">
+<p class="review-intro">
               I lead a review of 240 papers examining where generative AI is
               used, how accessibility claims are supported, and who helps shape
               the systems and check their outputs.
             </p>
-          </div>
-          <figure class="review-opening">
-            <figcaption>
-              <span class="review-label">One pattern in the evidence</span>
-              <h2>Participation is concentrated<br />in evaluation.</h2>
-            </figcaption>
-            <div
-              class="opening-chart"
-              aria-label="Papers reporting participation by disabled people, out of 240. Selected stages, non-exclusive."
-            >
-              <div class="opening-row">
-                <span>Problem definition</span><b>13</b>
-                <div class="opening-track" aria-hidden="true">
-                  <i style="width: 5.4167%"></i>
-                </div>
-              </div>
-              <div class="opening-row">
-                <span>Design</span><b>45</b>
-                <div class="opening-track" aria-hidden="true">
-                  <i style="width: 18.75%"></i>
-                </div>
-              </div>
-              <div class="opening-row">
-                <span>Evaluation</span><b>141</b>
-                <div class="opening-track" aria-hidden="true">
-                  <i style="width: 58.75%"></i>
-                </div>
-              </div>
-            </div>
-            <p class="review-note">
-              Papers out of 240 · Selected, non-exclusive stages.<br />Reported
+</div>
+<figure class="review-opening">
+<figcaption>
+<span class="review-label">One pattern in the evidence</span>
+<h2>Participation is concentrated<br/>in evaluation.</h2>
+</figcaption>
+<div aria-label="Papers reporting participation by disabled people, out of 240. Selected stages, non-exclusive." class="opening-chart">
+<div class="opening-row">
+<span>Problem definition</span><b>13</b>
+<div aria-hidden="true" class="opening-track">
+<i style="width: 5.4167%"></i>
+</div>
+</div>
+<div class="opening-row">
+<span>Design</span><b>45</b>
+<div aria-hidden="true" class="opening-track">
+<i style="width: 18.75%"></i>
+</div>
+</div>
+<div class="opening-row">
+<span>Evaluation</span><b>141</b>
+<div aria-hidden="true" class="opening-track">
+<i style="width: 58.75%"></i>
+</div>
+</div>
+</div>
+<p class="review-note">
+              Papers out of 240 · Selected, non-exclusive stages.<br/>Reported
               involvement does not establish decision-making power.
             </p>
-            <a class="text-link" href="#evidence">Explore the evidence ↓</a>
-          </figure>
-        </header>
-        <dl class="review-meta">
-          <div>
-            <dt>My role</dt>
-            <dd>Review lead &amp; first author</dd>
-          </div>
-          <div>
-            <dt>Included corpus</dt>
-            <dd>240 peer-reviewed papers</dd>
-          </div>
-          <div>
-            <dt>Search window</dt>
-            <dd>Jan 2020 to 14 Jun 2026</dd>
-          </div>
-          <div>
-            <dt>Approach</dt>
-            <dd>Systematic review &amp; qualitative coding</dd>
-          </div>
-        </dl>
-        <nav class="review-nav" aria-label="On this page">
-          <a href="#questions">Questions</a><a href="#method">Method</a
-          ><a href="#coverage">Coverage</a><a href="#evidence">Evidence</a
-          ><a href="#responsibility">Responsibility</a
-          ><a href="#implications">Implications</a
-          ><a href="#figures">Paper figures</a>
-        </nav>
-
-        <figure class="review-concept" id="concept">
-          <a href="../images/research/genai-accessibility/concept-cover.webp" data-zoom data-caption="Conceptual illustration of generative AI and accessibility applications. AI-generated; the people and interfaces are illustrative, not actual study participants or evaluated systems.">
-            <img src="../images/research/genai-accessibility/concept-cover.webp" srcset="../images/research/genai-accessibility/concept-cover-small.webp 640w, ../images/research/genai-accessibility/concept-cover.webp 1536w" sizes="(max-width: 680px) calc(100vw - 42px), (max-width: 1160px) calc(100vw - 76px), 1084px" width="1536" height="1024" loading="lazy" decoding="async" alt="Conceptual illustration linking generative AI to four accessibility applications: a person using image description on a phone, captioned communication, easy-read information, and voice interaction." />
-          </a>
-          <figcaption>Generative AI and accessibility in everyday use. AI-generated concept illustration; the people and interfaces are illustrative, not actual study participants or evaluated systems. Select to enlarge.</figcaption>
-        </figure>
-        <section class="review-section" id="questions">
-          <div class="review-heading">
-            <h2>Accessibility involves more<br />than generating an output.</h2>
-            <p>
+<a class="text-link" href="#evidence">Explore the evidence ↓</a>
+</figure>
+</header>
+<dl class="review-meta">
+<div>
+<dt>My role</dt>
+<dd>Review lead &amp; first author</dd>
+</div>
+<div>
+<dt>Included corpus</dt>
+<dd>240 peer-reviewed papers</dd>
+</div>
+<div>
+<dt>Search window</dt>
+<dd>Jan 2020 to 14 Jun 2026</dd>
+</div>
+<div>
+<dt>Approach</dt>
+<dd>Systematic review &amp; qualitative coding</dd>
+</div>
+</dl>
+<nav aria-label="On this page" class="review-nav">
+<a href="#questions">Questions</a><a href="#method">Method</a><a href="#coverage">Coverage</a><a href="#evidence">Evidence</a><a href="#responsibility">Responsibility</a><a href="#implications">Implications</a><a href="#figures">Paper figures</a>
+</nav>
+<figure class="review-concept" id="concept">
+<a data-caption="Conceptual illustration of generative AI and accessibility applications. AI-generated; the people and interfaces are illustrative, not actual study participants or evaluated systems." data-zoom="" href="../images/research/genai-accessibility/concept-cover.webp">
+<img alt="Conceptual illustration linking generative AI to four accessibility applications: a person using image description on a phone, captioned communication, easy-read information, and voice interaction." decoding="async" height="1024" loading="lazy" sizes="(max-width: 680px) calc(100vw - 42px), (max-width: 1160px) calc(100vw - 76px), 1084px" src="../images/research/genai-accessibility/concept-cover.webp" srcset="../images/research/genai-accessibility/concept-cover-small.webp 640w, ../images/research/genai-accessibility/concept-cover.webp 1536w" width="1536"/>
+</a>
+<figcaption>Generative AI and accessibility in everyday use. AI-generated concept illustration; the people and interfaces are illustrative, not actual study participants or evaluated systems. Select to enlarge.</figcaption>
+</figure>
+<section class="review-section" id="questions">
+<div class="review-heading">
+<h2>Accessibility involves more<br/>than generating an output.</h2>
+<p>
               A description, a rewritten passage, or an assistant response is
               part of a larger activity. This review connects the application to
               the people, study conditions, and responsibilities around it.
             </p>
-          </div>
-          <div class="review-questions">
-            <article>
-              <h3>Where is GenAI being used?</h3>
-              <p>
+</div>
+<div class="review-questions">
+<article>
+<h3>Where is GenAI being used?</h3>
+<p>
                 Map applications and disability contexts, including whose access
                 needs receive attention and which generative technologies are
                 used.
               </p>
-            </article>
-            <article>
-              <h3>What supports the claims?</h3>
-              <p>
+</article>
+<article>
+<h3>What supports the claims?</h3>
+<p>
                 Examine study methods, reported duration, and disabled people’s
                 involvement across the research process.
               </p>
-            </article>
-            <article>
-              <h3>Who checks, and who responds?</h3>
-              <p>
+</article>
+<article>
+<h3>Who checks, and who responds?</h3>
+<p>
                 Distinguish an expectation to verify outputs from an explicit
                 assignment of responsibility for checking, correction, support,
                 or governance.
               </p>
-            </article>
-          </div>
-        </section>
-
-        <section class="review-section" id="method">
-          <div class="review-heading">
-            <h2>From search records<br />to a coded evidence base.</h2>
-            <p>
+</article>
+</div>
+</section>
+<section class="review-section" id="method">
+<div class="review-heading">
+<h2>From search records<br/>to a coded evidence base.</h2>
+<p>
               English-language, peer-reviewed research retrieved from ACM
               Digital Library, IEEE Xplore, and Scopus. The included papers were
               published from 2022 to the search cutoff in 2026.
             </p>
-          </div>
-          <ol class="review-flow" aria-label="Review screening flow">
-            <li>
-              <strong>8,834</strong><span>Records retrieved</span
-              ><small>1,650 duplicates removed</small>
-            </li>
-            <li>
-              <strong>7,184</strong><span>Records screened</span
-              ><small>6,483 excluded</small>
-            </li>
-            <li>
-              <strong>701</strong><span>Reports sought</span
-              ><small>22 not retrieved</small>
-            </li>
-            <li>
-              <strong>679</strong><span>Full texts assessed</span
-              ><small>439 excluded</small>
-            </li>
-            <li>
-              <strong>240</strong><span>Papers included</span
-              ><small>Coded and synthesized</small>
-            </li>
-          </ol>
-          <div class="review-method-note">
-            <h3>My work in the review</h3>
-            <p>
+</div>
+<ol aria-label="Review screening flow" class="review-flow">
+<li>
+<strong>8,834</strong><span>Records retrieved</span><small>1,650 duplicates removed</small>
+</li>
+<li>
+<strong>7,184</strong><span>Records screened</span><small>6,483 excluded</small>
+</li>
+<li>
+<strong>701</strong><span>Reports sought</span><small>22 not retrieved</small>
+</li>
+<li>
+<strong>679</strong><span>Full texts assessed</span><small>439 excluded</small>
+</li>
+<li>
+<strong>240</strong><span>Papers included</span><small>Coded and synthesized</small>
+</li>
+</ol>
+<div class="review-method-note">
+<h3>My work in the review</h3>
+<p>
               I led the review and initial coding. The framework links
               application area and disability context with methods,
               participation, reported concerns, and responsibility. A second
               author reviewed the codes and categories, with weekly team
               discussions and a full-team consistency check.
             </p>
-          </div>
-          <details class="review-method-details">
-            <summary>How screening and coding were checked</summary>
-            <p>
+</div>
+<details class="review-method-details">
+<summary>How screening and coding were checked</summary>
+<p>
               Two authors independently screened titles and abstracts and
               assessed full texts; unresolved disagreements were discussed with
               a third author. One author manually extracted all 240 papers.
               Initial coding was reviewed by a second author, rather than
               independently duplicated extraction of the entire corpus.
             </p>
-            <p>
+<p>
               Primary application and disability categories are mutually
               exclusive. Participation stages and reported concerns are
               non-exclusive. This is a descriptive synthesis, not a
               meta-analysis of effectiveness.
             </p>
-            <a
-              class="text-link"
-              href="../images/research/genai-accessibility/figure-1.webp"
-              data-zoom
-              data-alt="PRISMA flow diagram: 8,834 records retrieved, 7,184 screened, 679 full texts assessed, and 240 papers included."
-              data-caption="Figure 1. Search and screening. Twenty-two sought reports could not be retrieved."
-              >View the screening diagram ↗</a
-            >
-          </details>
-        </section>
-
-        <section class="review-section" id="coverage">
-          <div class="review-heading">
-            <h2>
-              A broad application landscape.<br />Uneven attention across
+<a class="text-link" data-alt="PRISMA flow diagram: 8,834 records retrieved, 7,184 screened, 679 full texts assessed, and 240 papers included." data-caption="Figure 1. Search and screening. Twenty-two sought reports could not be retrieved." data-zoom="" href="../images/research/genai-accessibility/figure-1.webp">View the screening diagram ↗</a>
+</details>
+</section>
+<section class="review-section" id="coverage">
+<div class="review-heading">
+<h2>
+              A broad application landscape.<br/>Uneven attention across
               contexts.
             </h2>
-            <p>
+<p>
               The corpus spans 18 application and research areas. These counts
               map research attention; they do not measure the prevalence of
               access needs or the effectiveness of a technology.
             </p>
-          </div>
-          <div class="review-coverage">
-            <figure class="review-matrix">
-              <a
-                href="../images/research/genai-accessibility/figure-4.webp"
-                data-zoom
-                data-caption="Figure 4. Primary disability contexts and generative approaches. Each paper contributes to one cell; colour shows percentages within each disability-context row."
-                ><img
-                  src="../images/research/genai-accessibility/figure-4.webp"
-                  width="2200"
-                  height="1907"
-                  loading="lazy"
-                  alt="Matrix crossing primary disability contexts with generative approaches. Blind and low-vision contexts account for 88 papers, and text language models for 165. Cell labels are paper counts; colour shows percentages within each disability-context row."
-              /></a>
-              <figcaption>
+</div>
+<div class="review-coverage">
+<figure class="review-matrix">
+<a data-caption="Figure 4. Primary disability contexts and generative approaches. Each paper contributes to one cell; colour shows percentages within each disability-context row." data-zoom="" href="../images/research/genai-accessibility/figure-4.webp"><img alt="Matrix crossing primary disability contexts with generative approaches. Blind and low-vision contexts account for 88 papers, and text language models for 165. Cell labels are paper counts; colour shows percentages within each disability-context row." height="1907" loading="lazy" src="../images/research/genai-accessibility/figure-4.webp" width="2200"/></a>
+<figcaption>
                 Disability context × generative approach. Original manuscript
                 figure; select to enlarge.
               </figcaption>
-            </figure>
-            <div class="review-coverage-text">
-              <div class="coverage-fact">
-                <strong>88 <span>/ 240 papers</span></strong>
-                <h3>Blind and low-vision contexts</h3>
-                <p>
+</figure>
+<div class="review-coverage-text">
+<div class="coverage-fact">
+<strong>88 <span>/ 240 papers</span></strong>
+<h3>Blind and low-vision contexts</h3>
+<p>
                   The largest primary disability category, followed by
                   cross-disability research (35) and papers without a specific
                   disability group (30).
                 </p>
-              </div>
-              <div class="coverage-fact">
-                <strong>165 <span>/ 240 papers</span></strong>
-                <h3>Text-based large language models</h3>
-                <p>
+</div>
+<div class="coverage-fact">
+<strong>165 <span>/ 240 papers</span></strong>
+<h3>Text-based large language models</h3>
+<p>
                   The most common primary generative modality, followed by
                   vision-language and multimodal models (45).
                 </p>
-              </div>
-              <p class="review-note">
+</div>
+<p class="review-note">
                 195 papers focus on applications; the remaining papers examine
                 uses and needs (20), bias and risk (18), or the accessibility of
                 GenAI tools themselves (7).
               </p>
-            </div>
-          </div>
-        </section>
-
-        <section class="review-section" id="evidence">
-          <div class="review-heading">
-            <h2>Read the evidence<br />from three angles.</h2>
-            <p>
+</div>
+</div>
+</section>
+<section class="review-section" id="evidence">
+<div class="review-heading">
+<h2>Read the evidence<br/>from three angles.</h2>
+<p>
               Who participates, how long participant studies run, and which
               concerns are reported reveal different aspects of the evidence
               base.
             </p>
-          </div>
-          <div class="review-evidence">
-            <div
-              class="evidence-controls"
-              role="group"
-              aria-label="Choose an evidence view"
-              hidden
-            >
-              <button
-                type="button"
-                data-view="participation"
-                aria-pressed="true"
-                aria-controls="evidence-panel"
-              >
-                Participation</button
-              ><button
-                type="button"
-                data-view="duration"
-                aria-pressed="false"
-                aria-controls="evidence-panel"
-              >
-                Study duration</button
-              ><button
-                type="button"
-                data-view="risks"
-                aria-pressed="false"
-                aria-controls="evidence-panel"
-              >
+</div>
+<div class="review-evidence">
+<div aria-label="Choose an evidence view" class="evidence-controls" hidden="" role="group">
+<button aria-controls="evidence-panel" aria-pressed="true" data-view="participation" type="button">
+                Participation</button><button aria-controls="evidence-panel" aria-pressed="false" data-view="duration" type="button">
+                Study duration</button><button aria-controls="evidence-panel" aria-pressed="false" data-view="risks" type="button">
                 Reported concerns
               </button>
-            </div>
-            <p id="evidence-status" class="review-sr-only" role="status"></p>
-            <div class="evidence-grid" id="evidence-panel">
-              <div>
-                <p class="review-label">Corpus view · 240 papers</p>
-                <h3 id="evidence-title">Who gets to shape the work?</h3>
-                <p id="evidence-takeaway">
+</div>
+<p class="review-sr-only" id="evidence-status" role="status"></p>
+<div class="evidence-grid" id="evidence-panel">
+<div>
+<p class="review-label">Corpus view · 240 papers</p>
+<h3 id="evidence-title">Who gets to shape the work?</h3>
+<p id="evidence-takeaway">
                   Disabled people are reported as participating in evaluation in
                   141 papers, compared with 13 at problem definition and 4 at
                   dissemination.
                 </p>
-                <p class="review-note" id="evidence-caution">
+<p class="review-note" id="evidence-caution">
                   Stages are non-exclusive. A paper can appear in several rows.
                   Involvement alone does not show how much influence
                   participants had.
                 </p>
-                <a
-                  class="text-link"
-                  id="evidence-figure"
-                  href="../images/research/genai-accessibility/figure-6.webp"
-                  data-zoom
-                  data-alt="Participation of disabled people across research stages: problem definition 13, design 45, development 27, evaluation 141, analysis 22, dissemination 4."
-                  data-caption="Figure 6. Reported participation of disabled people. Stages are non-exclusive."
-                  >View the full paper figure ↗</a
-                >
-              </div>
-              <div>
-                <p class="chart-unit">Number of papers · bar scale 0 to 240</p>
-                <div id="evidence-bars">
-                  <div class="review-bar-row">
-                    <span>Problem definition</span>
-                    <div aria-hidden="true"><i style="width: 5.4167%"></i></div>
-                    <b>13</b>
-                  </div>
-                  <div class="review-bar-row">
-                    <span>Design</span>
-                    <div aria-hidden="true"><i style="width: 18.75%"></i></div>
-                    <b>45</b>
-                  </div>
-                  <div class="review-bar-row">
-                    <span>Development / iteration</span>
-                    <div aria-hidden="true"><i style="width: 11.25%"></i></div>
-                    <b>27</b>
-                  </div>
-                  <div class="review-bar-row">
-                    <span>Evaluation</span>
-                    <div aria-hidden="true"><i style="width: 58.75%"></i></div>
-                    <b>141</b>
-                  </div>
-                  <div class="review-bar-row">
-                    <span>Analysis / interpretation</span>
-                    <div aria-hidden="true"><i style="width: 9.1667%"></i></div>
-                    <b>22</b>
-                  </div>
-                  <div class="review-bar-row">
-                    <span>Dissemination</span>
-                    <div aria-hidden="true"><i style="width: 1.6667%"></i></div>
-                    <b>4</b>
-                  </div>
-                </div>
-                <p class="review-note" id="evidence-source">
+<a class="text-link" data-alt="Participation of disabled people across research stages: problem definition 13, design 45, development 27, evaluation 141, analysis 22, dissemination 4." data-caption="Figure 6. Reported participation of disabled people. Stages are non-exclusive." data-zoom="" href="../images/research/genai-accessibility/figure-6.webp" id="evidence-figure">View the full paper figure ↗</a>
+</div>
+<div>
+<p class="chart-unit">Number of papers · bar scale 0 to 240</p>
+<div id="evidence-bars">
+<div class="review-bar-row">
+<span>Problem definition</span>
+<div aria-hidden="true"><i style="width: 5.4167%"></i></div>
+<b>13</b>
+</div>
+<div class="review-bar-row">
+<span>Design</span>
+<div aria-hidden="true"><i style="width: 18.75%"></i></div>
+<b>45</b>
+</div>
+<div class="review-bar-row">
+<span>Development / iteration</span>
+<div aria-hidden="true"><i style="width: 11.25%"></i></div>
+<b>27</b>
+</div>
+<div class="review-bar-row">
+<span>Evaluation</span>
+<div aria-hidden="true"><i style="width: 58.75%"></i></div>
+<b>141</b>
+</div>
+<div class="review-bar-row">
+<span>Analysis / interpretation</span>
+<div aria-hidden="true"><i style="width: 9.1667%"></i></div>
+<b>22</b>
+</div>
+<div class="review-bar-row">
+<span>Dissemination</span>
+<div aria-hidden="true"><i style="width: 1.6667%"></i></div>
+<b>4</b>
+</div>
+</div>
+<p class="review-note" id="evidence-source">
                   Source: manuscript participation analysis and Figure 6. All
                   rows use the full corpus denominator.
                 </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="review-section" id="responsibility">
-          <div class="review-heading">
-            <h2>Checking an output is work.<br />Who is responsible for it?</h2>
-            <p>
+</div>
+</div>
+</div>
+</section>
+<section class="review-section" id="responsibility">
+<div class="review-heading">
+<h2>Checking an output is work.<br/>Who is responsible for it?</h2>
+<p>
               171 papers require some form of output checking. Only 52
               explicitly assign an actor a concrete responsibility. These are
               different coding dimensions, and their intersection matters.
             </p>
-          </div>
-          <div class="review-responsibility">
-            <table class="responsibility-table">
-              <caption>
-                Verification requirements × responsibility assignments<br /><span
-                  >Paper counts · mutually exclusive cells · n = 240</span
-                >
-              </caption>
-              <thead>
-                <tr>
-                  <td></td>
-                  <th scope="col">Concrete duty<br />assigned</th>
-                  <th scope="col">No concrete duty<br />reported</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Checking requirement<br />reported</th>
-                  <td><strong>42</strong></td>
-                  <td class="responsibility-highlight">
-                    <strong>129</strong
-                    ><span
-                      >Checking required,<br />responsibility unspecified</span
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">No checking requirement<br />reported</th>
-                  <td><strong>10</strong></td>
-                  <td><strong>59</strong></td>
-                </tr>
-              </tbody>
-            </table>
-            <div>
-              <p class="review-label">The responsibility gap</p>
-              <h3>Naming a checker does not necessarily assign a duty.</h3>
-              <p>
+</div>
+<div class="review-responsibility">
+<table class="responsibility-table">
+<caption>
+                Verification requirements × responsibility assignments<br/><span>Paper counts · mutually exclusive cells · n = 240</span>
+</caption>
+<thead>
+<tr>
+<td></td>
+<th scope="col">Concrete duty<br/>assigned</th>
+<th scope="col">No concrete duty<br/>reported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Checking requirement<br/>reported</th>
+<td><strong>42</strong></td>
+<td class="responsibility-highlight">
+<strong>129</strong><span>Checking required,<br/>responsibility unspecified</span>
+</td>
+</tr>
+<tr>
+<th scope="row">No checking requirement<br/>reported</th>
+<td><strong>10</strong></td>
+<td><strong>59</strong></td>
+</tr>
+</tbody>
+</table>
+<div>
+<p class="review-label">The responsibility gap</p>
+<h3>Naming a checker does not necessarily assign a duty.</h3>
+<p>
                 Of the 129 papers that require checking without assigning a
                 concrete responsibility, 124 still name a checker. A person can
                 be expected to inspect an output without a clear account of who
                 provides correction, support, or follow-up.
               </p>
-              <p class="review-note">
+<p class="review-note">
                 “Responsibility” includes duties related to checking,
                 correction, support, monitoring, and governance, including
                 proposed duties. The 52 papers are not 52 implemented redress
                 systems. Missing reporting does not prove that responsibility
                 was absent in practice.
               </p>
-              <p class="review-note">Source: manuscript Table 5.</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="review-section" id="implications">
-          <div class="review-heading">
-            <h2>What this changes<br />for accessibility research.</h2>
-            <p>
+<p class="review-note">Source: manuscript Table 5.</p>
+</div>
+</div>
+</section>
+<section class="review-section" id="implications">
+<div class="review-heading">
+<h2>What this changes<br/>for accessibility research.</h2>
+<p>
               The synthesis points to questions for future design and
               evaluation. These are research directions, not interventions
               tested by this review.
             </p>
-          </div>
-          <div class="review-implications">
-            <article>
-              <h3>Look beyond the most studied contexts.</h3>
-              <p>
+</div>
+<div class="review-implications">
+<article>
+<h3>Look beyond the most studied contexts.</h3>
+<p>
                 Broaden the communities and tasks represented in research. Match
                 the generative approach to the access need, including the
                 conditions in which people actually use it.
               </p>
-            </article>
-            <article>
-              <h3>Match the evidence to the claim.</h3>
-              <p>
+</article>
+<article>
+<h3>Match the evidence to the claim.</h3>
+<p>
                 Distinguish output quality from successful activity and
                 sustained use. Report duration and setting so readers can see
                 what an evaluation supports.
               </p>
-            </article>
-            <article>
-              <h3>Make participation consequential.</h3>
-              <p>
+</article>
+<article>
+<h3>Make participation consequential.</h3>
+<p>
                 Involve disabled people in framing problems and interpreting
                 findings as well as evaluating systems. Make their influence on
                 decisions visible.
               </p>
-            </article>
-            <article>
-              <h3>Design checking and response together.</h3>
-              <p>
+</article>
+<article>
+<h3>Design checking and response together.</h3>
+<p>
                 Make inspection, correction, and reversal accessible. Measure
                 checking effort and missed errors, and identify a responder with
                 the authority and resources to act.
               </p>
-            </article>
-          </div>
-        </section>
-
-        <section class="review-section" id="figures">
-          <div class="review-heading">
-            <h2>Inside the paper.</h2>
-            <p>
+</article>
+</div>
+</section>
+<section class="review-section" id="figures">
+<div class="review-heading">
+<h2>Inside the paper.</h2>
+<p>
               Seven manuscript figures provide the fuller picture. Open any
               figure to inspect it. Full-text and dataset downloads are not
               currently available.
             </p>
-          </div>
-          <div class="review-figure-index">
-            <details>
-              <summary>Search and screening <span>Figure 1</span></summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-1.webp"
-                  data-zoom
-                  data-caption="Figure 1. PRISMA screening flow."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-1.webp"
-                    width="2200"
-                    height="2346"
-                    loading="lazy"
-                    alt="PRISMA diagram tracing 8,834 retrieved records to 240 included papers, including 22 reports not retrieved and 439 full-text exclusions."
-                /></a>
-                <figcaption>
+</div>
+<div class="review-figure-index">
+<details>
+<summary>Search and screening <span>Figure 1</span></summary>
+<figure>
+<a data-caption="Figure 1. PRISMA screening flow." data-zoom="" href="../images/research/genai-accessibility/figure-1.webp"><img alt="PRISMA diagram tracing 8,834 retrieved records to 240 included papers, including 22 reports not retrieved and 439 full-text exclusions." height="2346" loading="lazy" src="../images/research/genai-accessibility/figure-1.webp" width="2200"/></a>
+<figcaption>
                   Three databases, deduplication, title and abstract screening,
                   and full-text assessment.
                 </figcaption>
-              </figure>
-            </details>
-            <details>
-              <summary>Publication landscape <span>Figure 2</span></summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-2.webp"
-                  data-zoom
-                  data-caption="Figure 2. Publication years and venues. The 2026 count is partial, through 14 June."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-2.webp"
-                    width="2200"
-                    height="1231"
-                    loading="lazy"
-                    alt="Publication profile: 2 papers in 2022, 4 in 2023, 44 in 2024, 114 in 2025, and 76 through 14 June 2026. Venue distribution is also shown."
-                /></a>
-                <figcaption>
+</figure>
+</details>
+<details>
+<summary>Publication landscape <span>Figure 2</span></summary>
+<figure>
+<a data-caption="Figure 2. Publication years and venues. The 2026 count is partial, through 14 June." data-zoom="" href="../images/research/genai-accessibility/figure-2.webp"><img alt="Publication profile: 2 papers in 2022, 4 in 2023, 44 in 2024, 114 in 2025, and 76 through 14 June 2026. Venue distribution is also shown." height="1231" loading="lazy" src="../images/research/genai-accessibility/figure-2.webp" width="2200"/></a>
+<figcaption>
                   The 2026 count covers only the period through 14 June and is
                   not a full-year total.
                 </figcaption>
-              </figure>
-            </details>
-            <details>
-              <summary>
+</figure>
+</details>
+<details>
+<summary>
                 Application and research areas <span>Figure 3</span>
-              </summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-3.webp"
-                  data-zoom
-                  data-caption="Figure 3. Application and research areas. Each paper is assigned to one primary area."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-3.webp"
-                    width="2200"
-                    height="1650"
-                    loading="lazy"
-                    alt="Horizontal bars for 18 primary application and research areas: accessibility testing and remediation 32, conversational assistance 23, content description 23, and task execution and navigation 21 are the largest application areas."
-                /></a>
-                <figcaption>
+</summary>
+<figure>
+<a data-caption="Figure 3. Application and research areas. Each paper is assigned to one primary area." data-zoom="" href="../images/research/genai-accessibility/figure-3.webp"><img alt="Horizontal bars for 18 primary application and research areas: accessibility testing and remediation 32, conversational assistance 23, content description 23, and task execution and navigation 21 are the largest application areas." height="1650" loading="lazy" src="../images/research/genai-accessibility/figure-3.webp" width="2200"/></a>
+<figcaption>
                   Each paper contributes to one primary area.
                   Application-focused areas contain 195 papers in total.
                 </figcaption>
-              </figure>
-            </details>
-            <details>
-              <summary>
+</figure>
+</details>
+<details>
+<summary>
                 Disability contexts and generative approaches
                 <span>Figure 4</span>
-              </summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-4.webp"
-                  data-zoom
-                  data-caption="Figure 4. Disability contexts and generative approaches. Colour shows percentages within each disability-context row."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-4.webp"
-                    width="2200"
-                    height="1907"
-                    loading="lazy"
-                    alt="Disability-context-by-generative-approach matrix. Blindness and low vision is the largest context with 88 papers; text language models are the largest approach with 165. Each paper appears in one cell."
-                /></a>
-                <figcaption>
+</summary>
+<figure>
+<a data-caption="Figure 4. Disability contexts and generative approaches. Colour shows percentages within each disability-context row." data-zoom="" href="../images/research/genai-accessibility/figure-4.webp"><img alt="Disability-context-by-generative-approach matrix. Blindness and low vision is the largest context with 88 papers; text language models are the largest approach with 165. Each paper appears in one cell." height="1907" loading="lazy" src="../images/research/genai-accessibility/figure-4.webp" width="2200"/></a>
+<figcaption>
                   Primary categories summarize research attention and do not
                   represent the prevalence of access needs.
                 </figcaption>
-              </figure>
-            </details>
-            <details>
-              <summary>
+</figure>
+</details>
+<details>
+<summary>
                 Study duration by application area <span>Figure 5</span>
-              </summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-5.webp"
-                  data-zoom
-                  data-caption="Figure 5. Study duration by application or research area."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-5.webp"
-                    width="2200"
-                    height="2649"
-                    loading="lazy"
-                    alt="Duration-by-application matrix with an overall row: single-session 125, repeated under a week 2, one to four weeks 18, over a month 19, not reported 28, and no separate participant study 48. Categories are mutually exclusive within each row."
-                /></a>
-                <figcaption>
+</summary>
+<figure>
+<a data-caption="Figure 5. Study duration by application or research area." data-zoom="" href="../images/research/genai-accessibility/figure-5.webp"><img alt="Duration-by-application matrix with an overall row: single-session 125, repeated under a week 2, one to four weeks 18, over a month 19, not reported 28, and no separate participant study 48. Categories are mutually exclusive within each row." height="2649" loading="lazy" src="../images/research/genai-accessibility/figure-5.webp" width="2200"/></a>
+<figcaption>
                   Duration describes the reported participant study, not
                   deployment length or a ranking of research quality.
                 </figcaption>
-              </figure>
-            </details>
-            <details>
-              <summary>
+</figure>
+</details>
+<details>
+<summary>
                 Disabled people’s participation <span>Figure 6</span>
-              </summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-6.webp"
-                  data-zoom
-                  data-caption="Figure 6. Disabled people’s participation by research stage and application or research area."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-6.webp"
-                    width="2200"
-                    height="2466"
-                    loading="lazy"
-                    alt="Participation-stage-by-application matrix. Overall counts are evaluation 141, design 45, development 27, analysis 22, problem definition 13, and dissemination 4. Colours show within-area percentages and blank cells indicate zero."
-                /></a>
-                <figcaption>
+</summary>
+<figure>
+<a data-caption="Figure 6. Disabled people’s participation by research stage and application or research area." data-zoom="" href="../images/research/genai-accessibility/figure-6.webp"><img alt="Participation-stage-by-application matrix. Overall counts are evaluation 141, design 45, development 27, analysis 22, problem definition 13, and dissemination 4. Colours show within-area percentages and blank cells indicate zero." height="2466" loading="lazy" src="../images/research/genai-accessibility/figure-6.webp" width="2200"/></a>
+<figcaption>
                   Stage counts overlap. Needs input and data provision are coded
                   separately from the six research stages.
                 </figcaption>
-              </figure>
-            </details>
-            <details>
-              <summary>
+</figure>
+</details>
+<details>
+<summary>
                 Reported risks and concerns <span>Figure 7</span>
-              </summary>
-              <figure>
-                <a
-                  href="../images/research/genai-accessibility/figure-7.webp"
-                  data-zoom
-                  data-caption="Figure 7. Reported concerns across the corpus. Categories are non-exclusive and are not incident rates."
-                  ><img
-                    src="../images/research/genai-accessibility/figure-7.webp"
-                    width="2200"
-                    height="1348"
-                    loading="lazy"
-                    alt="Reported concerns led by reliability and safety in 171 papers, accessibility coverage in 133, and use and verification burdens in 107; other categories include autonomy, bias, privacy, cost, governance, and misuse."
-                /></a>
-                <figcaption>
+</summary>
+<figure>
+<a data-caption="Figure 7. Reported concerns across the corpus. Categories are non-exclusive and are not incident rates." data-zoom="" href="../images/research/genai-accessibility/figure-7.webp"><img alt="Reported concerns led by reliability and safety in 171 papers, accessibility coverage in 133, and use and verification burdens in 107; other categories include autonomy, bias, privacy, cost, governance, and misuse." height="1348" loading="lazy" src="../images/research/genai-accessibility/figure-7.webp" width="2200"/></a>
+<figcaption>
                   Counts combine empirical findings, participant accounts, and
                   explicit study-specific discussion. They are not measures of
                   incident frequency or severity.
                 </figcaption>
-              </figure>
-            </details>
-          </div>
-        </section>
-
-        <section
-          class="review-section review-limits"
-          aria-labelledby="scope-title"
-        >
-          <h2 id="scope-title">Scope and current status</h2>
-          <div>
-            <p>
+</figure>
+</details>
+</div>
+</section>
+<section aria-labelledby="scope-title" class="review-section review-limits">
+<h2 id="scope-title">Scope and current status</h2>
+<div>
+<p>
               This review describes what the included papers report. Its
               coverage is bounded by three databases, English-language
               peer-reviewed publications, the search terms, and the 14 June 2026
@@ -671,62 +519,41 @@
               categories also simplify overlapping disability contexts and
               applications.
             </p>
-            <p>
+<p>
               The synthesis and manuscript have been drafted and are being
               prepared for submission. This page does not imply journal
               submission, acceptance, or publication.
             </p>
-            <p class="review-note">
+<p class="review-note">
               Manuscript title:
-              <cite
-                >Generative AI and Accessibility: A Systematic Review Across
-                Applications and Disability Contexts</cite
-              >. Page based on the September 2026 manuscript package.
+              <cite>Generative AI and Accessibility: A Systematic Review Across
+                Applications and Disability Contexts</cite>. Page based on the September 2026 manuscript package.
             </p>
-          </div>
-        </section>
-        <nav class="case-pagination" aria-label="Project navigation">
-          <a class="text-link" href="../work.html">← Projects</a
-          ><a href="vr-acceptance.html"
-            ><span>Next project</span
-            ><strong>VR Acceptance in Cultural Heritage</strong
-            ><span aria-hidden="true">→</span></a
-          >
-        </nav>
-      </main>
-      <footer class="site-footer">
-        <div>
-          <span>Jiaxuan Gong</span
-          ><a href="mailto:gongjiaxuan169@gmail.com"
-            >gongjiaxuan169@gmail.com</a
-          >
-        </div>
-        <div class="footer-links">
-          <a
-            class="text-link"
-            href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ"
-            >Google Scholar</a
-          ><a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a
-          ><a class="text-link" href="#top">Back to top ↑</a>
-        </div>
-      </footer>
-    </div>
-    <dialog class="image-dialog" aria-label="Enlarged research figure">
-      <div class="image-dialog-toolbar">
-        <a id="image-original" target="_blank" rel="noopener"
-          >Open full-size figure ↗</a
-        ><button
-          type="button"
-          data-close-image
-          aria-label="Close enlarged figure"
-        >
+</div>
+</section>
+<nav aria-label="Project navigation" class="case-pagination">
+<a class="text-link" href="../work.html">← Projects</a><a href="vr-acceptance.html"><span>Next project</span><strong>VR Acceptance in Cultural Heritage</strong><span aria-hidden="true">→</span></a>
+</nav>
+</main>
+<footer class="site-footer">
+<div>
+<span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a>
+</div>
+<div class="footer-links">
+<a class="text-link" href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a><a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a><a class="text-link" href="#top">Back to top ↑</a>
+</div>
+</footer>
+</div>
+<dialog aria-label="Enlarged research figure" class="image-dialog">
+<div class="image-dialog-toolbar">
+<a id="image-original" rel="noopener" target="_blank">Open full-size figure ↗</a><button aria-label="Close enlarged figure" data-close-image="" type="button">
           Close ×
         </button>
-      </div>
-      <figure>
-        <img id="image-enlarged" alt="" />
-        <figcaption id="image-caption"></figcaption>
-      </figure>
-    </dialog>
-  </body>
+</div>
+<figure>
+<img alt="" id="image-enlarged"/>
+<figcaption id="image-caption"></figcaption>
+</figure>
+</dialog>
+</body>
 </html>

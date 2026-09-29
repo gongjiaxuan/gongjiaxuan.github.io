@@ -1,235 +1,252 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="description" content="Yixing Zisha AR: a Unity / Vuforia prototype for exploring pottery forms, clay and craft, alongside a 388-response master's thesis study.">
-  <title>Yixing Zisha AR | Jiaxuan Gong</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="../academic.css">
-  <link rel="stylesheet" href="../zisha.css">
-  <script src="../app.js" defer></script>
-  <script src="../zisha.js" defer></script>
-</head>
-<body id="top" class="zisha-page">
-  <a class="skip-link" href="#main">Skip to content</a>
-  <div class="site-shell">
-    <header class="site-header">
-      <a class="wordmark" href="../index.html" aria-label="Jiaxuan Gong, home">Jiaxuan Gong</a>
-      <nav aria-label="Main navigation">
-        <a href="../index.html#research" aria-current="page">Research</a>
-        <a href="../publications.html">Publications</a>
-        <a href="../work.html">Projects</a>
-        <a href="../about.html">About</a>
-        <a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a>
-      </nav>
-    </header>
-    <main id="main" tabindex="-1">
-      <div class="case-breadcrumb"><a class="text-link" href="../work.html">Back to projects</a></div>
-      <header class="zisha-intro">
-        <div>
-          <p class="zisha-meta">Master’s thesis · Jiangnan University · 2026</p>
-          <h1>Yixing Zisha AR</h1>
-          <p class="zisha-lead">Exploring pottery through form, clay and craft.</p>
-          <p class="zisha-summary">I designed a mobile AR experience around a Fanggu teapot, then studied how perceived authenticity, usefulness and flow relate to willingness to use it.</p>
-        </div>
-        <dl class="zisha-role">
-          <div><dt>My work</dt><dd>Interface design, AR prototyping<br> and survey-based research</dd></div>
-          <div><dt>Platform</dt><dd>Android · Unity and Vuforia</dd></div>
-          <div><dt>Supervisor</dt><dd>Prof. Feng Wang</dd></div>
-        </dl>
-      </header>
-      <figure class="zisha-hero">
-        <a class="zoom-link" href="../images/zisha/ar-cover.webp" data-zoom data-caption="A frame from the working prototype: a digital teapot appears over the printed target in the camera view, with controls for vessel forms, clay and craft." aria-label="Enlarge the recorded AR view">
-          <img src="../images/zisha/ar-cover.webp" width="1920" height="864" alt="A purple-brown digital teapot over a printed Zisha culture target in a real room, with three turquoise exploration controls beside it." fetchpriority="high" decoding="async">
-          <span class="zisha-enlarge" aria-hidden="true">Enlarge</span>
-        </a>
-        <figcaption><span>Recorded in the working prototype.</span><span>Mobile AR · Original Chinese interface</span></figcaption>
-      </figure>
-      <nav class="zisha-sections" aria-label="On this page">
-        <a href="#experience">Explore the interface</a>
-        <a href="#demo">Watch 30 seconds</a>
-        <a href="#study">Study and findings</a>
-        <a href="#design-directions">Design implications</a>
-      </nav>
-      <section id="experience" class="zisha-section" aria-labelledby="experience-title">
-        <div class="zisha-section-heading">
-          <h2 id="experience-title">Three ways into the craft</h2>
-          <p>The prototype keeps the vessel in view while the surrounding content changes. These are frames from the actual recording, with English explanations of the original controls.</p>
-        </div>
-        <div class="zisha-switcher" data-experience-tabs hidden role="tablist" aria-label="Explore prototype screens">
-          <button type="button" role="tab" id="tab-forms" aria-controls="panel-forms" aria-selected="true" tabindex="0">Vessel forms <span lang="zh">壶型</span></button>
-          <button type="button" role="tab" id="tab-clay" aria-controls="panel-clay" aria-selected="false" tabindex="-1">Clay materials <span lang="zh">泥料</span></button>
-          <button type="button" role="tab" id="tab-craft" aria-controls="panel-craft" aria-selected="false" tabindex="-1">Craft process <span lang="zh">工艺</span></button>
-        </div>
-        <div class="zisha-experience" id="panel-forms" data-experience-panel>
-          <figure>
-            <a class="zoom-link" href="../images/zisha/forms.webp" data-zoom data-caption="Vessel forms: illustrated entries and contextual text beside the AR vessel. Frame at 00:26.5 in the original recording." aria-label="Enlarge: Vessel forms">
-              <img src="../images/zisha/forms.webp" width="1920" height="864" alt="Three illustrated teapots labelled Xishi, Shipiao and Fanggu sit beside the large AR vessel." loading="lazy" decoding="async">
-              <span class="zisha-enlarge" aria-hidden="true">Enlarge</span>
-            </a>
-            <figcaption>Vessel forms · Original recording, 00:26</figcaption>
-          </figure>
-          <div class="zisha-experience-copy">
-            <h3>Read the shape</h3>
-            <p>The <span lang="zh">壶型</span> (vessel forms) panel introduces Xishi, Shipiao and Fanggu forms through illustrated entries and contextual text.</p>
-            <p>The Fanggu model stays in view. The images explain other forms; they are not three interchangeable 3D models. An accompanying narration introduces the vessel types.</p>
-            <a class="text-link" href="#demo" data-demo-seek="0">Watch this part</a>
-          </div>
-        </div>
-        <div class="zisha-experience" id="panel-clay" data-experience-panel>
-          <figure>
-            <a class="zoom-link" href="../images/zisha/clay.webp" data-zoom data-caption="Clay materials: Zini, Zhuni and Duanni choices. The recording shows the vessel changing colour. Frame at 01:16." aria-label="Enlarge: Clay materials">
-              <img src="../images/zisha/clay.webp" width="1920" height="864" alt="Purple-brown, red and yellow clay choices beside an AR teapot shown with a red finish." loading="lazy" decoding="async">
-              <span class="zisha-enlarge" aria-hidden="true">Enlarge</span>
-            </a>
-            <figcaption>Clay materials · Original recording, 01:16</figcaption>
-          </figure>
-          <div class="zisha-experience-copy">
-            <h3>Compare the clay</h3>
-            <p>The <span lang="zh">泥料</span> (clay) panel offers Zini, Zhuni and Duanni. Selecting a material changes the vessel’s rendered appearance.</p>
-            <p>The implementation switches between three same-shape prefabs with different material textures and matching narration. This is a visual comparison, not a simulation of physical clay properties.</p>
-            <a class="text-link" href="#demo" data-demo-seek="10">Watch this part</a>
-          </div>
-        </div>
-        <div class="zisha-experience" id="panel-craft" data-experience-panel>
-          <figure>
-            <a class="zoom-link" href="../images/zisha/craft.webp" data-zoom data-caption="Craft process: embedded footage plays beside the AR vessel. Frame at 01:53 in the original recording." aria-label="Enlarge: Craft process">
-              <img src="../images/zisha/craft.webp" width="1920" height="864" alt="An embedded video of hands working on pottery beside the yellow AR teapot, with play, pause and close controls." loading="lazy" decoding="async">
-              <span class="zisha-enlarge" aria-hidden="true">Enlarge</span>
-            </a>
-            <figcaption>Craft process · Original recording, 01:53</figcaption>
-          </figure>
-          <div class="zisha-experience-copy">
-            <h3>See the making</h3>
-            <p>The <span lang="zh">工艺</span> (craft) panel opens a video of the making process without replacing the AR object.</p>
-            <p>Play, pause and close controls let the viewer move between the process footage and the vessel. The embedded footage is visible in the original prototype recording.</p>
-            <a class="text-link" href="#demo" data-demo-seek="20">Watch this part</a>
-          </div>
-        </div>
-      </section>
-      <section id="demo" class="zisha-section" aria-labelledby="demo-title">
-        <div class="zisha-section-heading">
-          <h2 id="demo-title">The prototype in motion</h2>
-          <p>A 30-second edit of the original recording: vessel forms, material changes and the craft video. Original speed, with a newly composed instrumental soundtrack and an English visual guide.</p>
-        </div>
-        <figure class="zisha-film">
-          <video id="zisha-walkthrough" controls playsinline preload="none" poster="../images/zisha/forms.webp" width="1280" height="576" aria-label="30-second Zisha AR prototype walkthrough" aria-describedby="walkthrough-description">
-            <source src="../videos/zisha-walkthrough.mp4" type="video/mp4">
-            <track kind="subtitles" src="../videos/zisha-walkthrough-en.vtt" srclang="en" label="English visual guide" default>
-            <a href="../videos/zisha-walkthrough.mp4">Open the walkthrough video</a>
-          </video>
-          <figcaption id="walkthrough-description">The vessel stays in the camera view as the information panel changes. In the clay section, its rendered colour changes; in the craft section, a video plays beside it. The soundtrack was added for this portfolio edit; it is not the prototype’s original audio.</figcaption>
-        </figure>
-        <div class="zisha-chapters" aria-label="Walkthrough chapters">
-          <a href="../videos/zisha-walkthrough.mp4#t=0" data-demo-seek="0"><span>00:00</span> Vessel forms</a>
-          <a href="../videos/zisha-walkthrough.mp4#t=10" data-demo-seek="10"><span>00:10</span> Changing the clay</a>
-          <a href="../videos/zisha-walkthrough.mp4#t=20" data-demo-seek="20"><span>00:20</span> Craft video</a>
-        </div>
-        <details class="zisha-original">
-          <summary>Full prototype recording <span>2 min 32 sec · Original audio</span></summary>
-          <video controls playsinline preload="none" poster="../images/zisha/ar-cover.webp" width="1920" height="864" aria-label="Full original Zisha AR recording">
-            <source src="../videos/zisha_demo.mp4" type="video/mp4">
-            <a href="../videos/zisha_demo.mp4">Open the original recording</a>
-          </video>
-          <p>The original recording includes the opening screen, AR view, exploration panels and embedded craft footage. The short version above selects three excerpts; it does not demonstrate every control.</p>
-        </details>
-      </section>
-      <section class="zisha-build" aria-labelledby="build-title">
-        <div>
-          <h2 id="build-title">One object, a freely chosen route</h2>
-          <p>Image recognition anchors the Fanggu teapot and its content panels to a printed target. The model can be dragged to rotate and pinched to scale; the three content modules remain independently accessible.</p>
-          <p class="zisha-source">Implementation: thesis §§3.3–3.5, pp. 34–41.</p>
-        </div>
-        <ol class="zisha-route">
-          <li><strong>Scan the image target</strong><span>Enter the AR scene from the opening menu.</span></li>
-          <li><strong>Inspect the vessel</strong><span>Auto-rotation introduces the form; drag and pinch give control of the view.</span></li>
-          <li><strong>Choose what to explore</strong><span>Open forms, clay or craft in any order. Return to the menu at any time.</span></li>
-        </ol>
-      </section>
-      <section id="study" class="zisha-section zisha-study" aria-labelledby="study-title">
-        <div>
-          <h2 id="study-title">Beyond the prototype</h2>
-          <p class="zisha-study-question">How do people’s perceptions of an AR craft experience relate to their willingness to use it?</p>
-          <p>Participants were recruited online through social media, including Xiaohongshu and WeChat groups. They received the Android application, image target and instructions, and were asked to explore all three modules on their own phones before completing an online survey.</p>
-          <p>Of 425 returned questionnaires, 388 passed the reported quality checks. A 29-item, seven-point questionnaire measured seven constructs, combining the stimulus–organism–response framework, the Technology Acceptance Model and flow theory.</p>
-          <p class="zisha-source">Research procedure: thesis §§3.6–3.7 and §4.2, pp. 41–51.</p>
-        </div>
-        <dl class="zisha-methods">
-          <div><dt>Survey</dt><dd><strong>388</strong> valid responses<br>425 questionnaires returned</dd></div>
-          <div><dt>Research model</dt><dd>Seven constructs<br>Ten hypotheses tested</dd></div>
-          <div><dt>Analysis</dt><dd>Covariance-based SEM<br>AMOS</dd></div>
-        </dl>
-        <div class="zisha-research-note">
-          <h3>A remote prototype study, not an on-site museum trial</h3>
-          <p>Participants experienced the application independently, without a fixed session length. The study measured self-reported perceptions and intentions, not observed museum behaviour or learning gains. 78.9% of the sample was aged 19–30.</p>
-        </div>
-      </section>
-      <section id="findings" class="zisha-section" aria-labelledby="findings-title">
-        <div class="zisha-section-heading">
-          <h2 id="findings-title">What the study found</h2>
-          <p>Nine of ten hypothesised paths were statistically supported. These are associations within a cross-sectional model, not causal effects of particular design features.</p>
-        </div>
-        <div class="zisha-findings">
-          <article><h3>Authenticity was linked to both value and engagement</h3><div><p>Perceived authenticity was positively associated with perceived usefulness (<strong>β = 0.541</strong>) and flow (<strong>β = 0.452</strong>), both p &lt; .001. Here, authenticity includes visual credibility, material representation and cultural accuracy.</p><p class="zisha-source">Thesis §4.4.2, Table 4-5: H5 and H4; construct definition in §4.1.</p></div></article>
-          <article><h3>Usefulness and flow were linked to intention to use</h3><div><p>The paths from perceived usefulness (<strong>β = 0.412</strong>) and flow (<strong>β = 0.407</strong>) to behavioural intention were both significant (p &lt; .001). They capture perceived cultural value and absorption in the experience—not measured learning performance.</p><p class="zisha-source">Thesis §4.4.2, Table 4-5: H8 and H10.</p></div></article>
-          <article><h3>Ease of use was not a significant direct predictor of intention</h3><div><p>The direct path to behavioural intention was not significant (<strong>β = 0.068, p = .232</strong>). Ease of use was positively associated with usefulness and flow. This does not mean usability is unimportant.</p><p class="zisha-source">Thesis §§4.4.2–4.4.3, Table 4-5: H9, H6 and H7.</p></div></article>
-        </div>
-        <details class="zisha-evidence">
-          <summary>Inspect the reported model results</summary>
-          <p>Standardised path coefficients, transcribed from thesis Table 4-5 (p. 55). No new analysis was performed for this page.</p>
-          <div class="zisha-table-wrap" tabindex="0" role="region" aria-label="All ten model paths; scroll horizontally on narrow screens">
-            <table><caption>All ten tested paths</caption><thead><tr><th scope="col">Path</th><th scope="col">β</th><th scope="col">p</th></tr></thead><tbody>
-              <tr><th scope="row">Information richness → Usefulness</th><td>0.120</td><td>.015</td></tr>
-              <tr><th scope="row">Interactivity → Ease of use</th><td>0.655</td><td>&lt; .001</td></tr>
-              <tr><th scope="row">Interactivity → Flow</th><td>0.148</td><td>.039</td></tr>
-              <tr><th scope="row">Authenticity → Flow</th><td>0.452</td><td>&lt; .001</td></tr>
-              <tr><th scope="row">Authenticity → Usefulness</th><td>0.541</td><td>&lt; .001</td></tr>
-              <tr><th scope="row">Ease of use → Usefulness</th><td>0.435</td><td>&lt; .001</td></tr>
-              <tr><th scope="row">Ease of use → Flow</th><td>0.281</td><td>&lt; .001</td></tr>
-              <tr><th scope="row">Usefulness → Behavioural intention</th><td>0.412</td><td>&lt; .001</td></tr>
-              <tr><th scope="row">Ease of use → Behavioural intention</th><td>0.068</td><td>.232</td></tr>
-              <tr><th scope="row">Flow → Behavioural intention</th><td>0.407</td><td>&lt; .001</td></tr>
-            </tbody></table>
-          </div>
-          <p>Reported fit (Table 4-4): χ²/df = 2.967, RMSEA = .071, CFI = .895, TLI = .884. The table places CFI and TLI below its stated .90 reference, so the findings should not be presented as a model with uniformly strong fit.</p>
-        </details>
-      </section>
-      <section id="design-directions" class="zisha-section" aria-labelledby="directions-title">
-        <div class="zisha-section-heading"><h2 id="directions-title">From findings to design directions</h2><p>The thesis translates the analysis and theoretical discussion into five directions. They are proposals for future design, not improvements evaluated in a second study.</p></div>
-        <dl class="zisha-directions">
-          <div><dt>Organise for understanding</dt><dd>Layer overview, detail and comparison around the craft object, instead of maximising the amount of information on screen.</dd></div>
-          <div><dt>Make the response clear</dt><dd>Keep module choices visible, make changes easy to recognise and provide recovery guidance when image recognition fails.</dd></div>
-          <div><dt>Build cultural credibility</dt><dd>Attend to vessel proportions, differences between clay materials and the accuracy of text, narration and craft footage.</dd></div>
-          <div><dt>Support sustained exploration</dt><dd>Give each module a clear purpose and avoid interruptions between reading, comparing materials and watching the process.</dd></div>
-          <div><dt>Design for the exhibition setting</dt><dd>Consider target placement, lighting, short visits and the effort of holding a phone. These deployment considerations still need on-site evaluation.</dd></div>
-        </dl>
-        <p class="zisha-source">Adapted from thesis §5.3, pp. 64–69. The prototype shown above is the studied version, not a later implementation of every recommendation.</p>
-      </section>
-      <section class="zisha-limits" aria-labelledby="limits-title">
-        <h2 id="limits-title">Where the evidence stops</h2>
-        <p>This is a single-case, cross-sectional, self-report study with a predominantly young sample. It does not establish causality, long-term engagement or learning outcomes. The research prototype also simplifies material rendering and tracking, and has not established robustness under real museum lighting, crowding or prolonged use.</p>
-        <p class="zisha-source">Thesis §6.2, pp. 72–74.</p>
-      </section>
-      <section class="zisha-contribution" aria-labelledby="contribution-title">
-        <h2 id="contribution-title">My contribution</h2>
-        <div><p>I developed the mobile AR prototype and carried out the survey-based thesis research under the supervision of Prof. Feng Wang. The work connects interface design and Unity/Vuforia implementation with empirical analysis.</p><p class="zisha-scope">Master’s thesis, Jiangnan University, June 2026: <cite>User Experience Mechanism and Design Strategy of AR Display for Traditional Crafts: A Case Study of Yixing Zisha.</cite> Page references use the thesis’s printed pagination. The recording documents the implementation, not the survey participants or a public deployment.</p></div>
-      </section>
-      <nav class="case-pagination" aria-label="Project navigation">
-        <a class="text-link" href="../work.html">All projects</a>
-        <a href="vr-acceptance.html"><span>Related research</span><strong>VR Acceptance in Cultural Heritage</strong></a>
-      </nav>
-    </main>
-    <footer class="site-footer">
-      <div><span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a></div>
-      <div class="footer-links"><a class="text-link" href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a><a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a><a class="text-link" href="#top">Back to top</a></div>
-    </footer>
-  </div>
-  <dialog class="image-dialog" aria-labelledby="image-caption">
-    <div class="dialog-toolbar"><a id="image-original" class="text-link" target="_blank" rel="noopener">Open full size</a><button type="button" data-close-image aria-label="Close image" title="Close image">✕</button></div>
-    <div class="dialog-image-area"><img id="image-enlarged" alt=""></div>
-    <p id="image-caption"></p>
-  </dialog>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light" name="color-scheme"/>
+<meta content="Yixing Zisha AR: a Unity / Vuforia prototype for exploring pottery forms, clay and craft, alongside a 388-response master's thesis study." name="description"/>
+<title>Yixing Zisha AR | Jiaxuan Gong</title>
+<link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="../academic.css" rel="stylesheet"/>
+<link href="../zisha.css" rel="stylesheet"/>
+<script defer="" src="../app.js"></script>
+<script defer="" src="../zisha.js"></script>
+<link href="https://gongjiaxuan.github.io/projects/zisha.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="Jiaxuan Gong" property="og:site_name"/><meta content="Yixing Zisha AR | Jiaxuan Gong" property="og:title"/><meta content="Yixing Zisha AR: a Unity / Vuforia prototype for exploring pottery forms, clay and craft, alongside a 388-response master's thesis study." property="og:description"/><meta content="https://gongjiaxuan.github.io/projects/zisha.html" property="og:url"/><meta content="https://gongjiaxuan.github.io/images/zisha/ar-cover.webp" property="og:image"/><meta content="Yixing Zisha AR | Jiaxuan Gong" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/></head>
+<body class="zisha-page" id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="site-shell">
+<header class="site-header">
+<a aria-label="Jiaxuan Gong, home" class="wordmark" href="../index.html">Jiaxuan Gong</a>
+<nav aria-label="Main navigation">
+<a aria-current="page" href="../index.html#research">Research</a>
+<a href="../publications.html">Publications</a>
+<a href="../work.html">Projects</a>
+<a href="../about.html">About</a>
+<a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a>
+</nav>
+</header>
+<main id="main" tabindex="-1">
+<div class="case-breadcrumb"><a class="text-link" href="../work.html">Back to projects</a></div>
+<header class="zisha-intro">
+<div>
+<p class="zisha-meta">Master’s thesis · Jiangnan University · 2026</p>
+<h1>Yixing Zisha AR</h1>
+<p class="zisha-lead">Exploring pottery through form, clay and craft.</p>
+<p class="zisha-summary">I designed a mobile AR experience around a Fanggu teapot, then studied how perceived authenticity, usefulness and flow relate to willingness to use it.</p>
+</div>
+<dl class="zisha-role">
+<div><dt>My work</dt><dd>Interface design, AR prototyping<br/> and survey-based research</dd></div>
+<div><dt>Platform</dt><dd>Android · Unity and Vuforia</dd></div>
+<div><dt>Supervisor</dt><dd>Prof. Feng Wang</dd></div>
+</dl>
+</header>
+<figure class="zisha-hero">
+<a aria-label="Enlarge the recorded AR view" class="zoom-link" data-caption="A frame from the working prototype: a digital teapot appears over the printed target in the camera view, with controls for vessel forms, clay and craft." data-zoom="" href="../images/zisha/ar-cover.webp">
+<img alt="A purple-brown digital teapot over a printed Zisha culture target in a real room, with three turquoise exploration controls beside it." decoding="async" fetchpriority="high" height="864" src="../images/zisha/ar-cover.webp" width="1920"/>
+<span aria-hidden="true" class="zisha-enlarge">Enlarge</span>
+</a>
+<figcaption><span>Recorded in the working prototype.</span><span>Mobile AR · Original Chinese interface</span></figcaption>
+</figure>
+<nav aria-label="On this page" class="zisha-sections">
+<a href="#experience">Explore the interface</a>
+<a href="#demo">Watch 30 seconds</a>
+<a href="#study">Study and findings</a>
+<a href="#design-directions">Design implications</a>
+</nav>
+<section aria-labelledby="experience-title" class="zisha-section" id="experience">
+<div class="zisha-section-heading">
+<h2 id="experience-title">Three ways into the craft</h2>
+<p>The prototype keeps the vessel in view while the surrounding content changes. These are frames from the actual recording, with English explanations of the original controls.</p>
+</div>
+<div aria-label="Explore prototype screens" class="zisha-switcher" data-experience-tabs="" hidden="" role="tablist">
+<button aria-controls="panel-forms" aria-selected="true" id="tab-forms" role="tab" tabindex="0" type="button">Vessel forms <span lang="zh">壶型</span></button>
+<button aria-controls="panel-clay" aria-selected="false" id="tab-clay" role="tab" tabindex="-1" type="button">Clay materials <span lang="zh">泥料</span></button>
+<button aria-controls="panel-craft" aria-selected="false" id="tab-craft" role="tab" tabindex="-1" type="button">Craft process <span lang="zh">工艺</span></button>
+</div>
+<div class="zisha-experience" data-experience-panel="" id="panel-forms">
+<figure>
+<a aria-label="Enlarge: Vessel forms" class="zoom-link" data-caption="Vessel forms: illustrated entries and contextual text beside the AR vessel. Frame at 00:26.5 in the original recording." data-zoom="" href="../images/zisha/forms.webp">
+<img alt="Three illustrated teapots labelled Xishi, Shipiao and Fanggu sit beside the large AR vessel." decoding="async" height="864" loading="lazy" src="../images/zisha/forms.webp" width="1920"/>
+<span aria-hidden="true" class="zisha-enlarge">Enlarge</span>
+</a>
+<figcaption>Vessel forms · Original recording, 00:26</figcaption>
+</figure>
+<div class="zisha-experience-copy">
+<h3>Read the shape</h3>
+<p>The <span lang="zh">壶型</span> (vessel forms) panel introduces Xishi, Shipiao and Fanggu forms through illustrated entries and contextual text.</p>
+<p>The Fanggu model stays in view. The images explain other forms; they are not three interchangeable 3D models. An accompanying narration introduces the vessel types.</p>
+<a class="text-link" data-demo-seek="0" href="#demo">Watch this part</a>
+</div>
+</div>
+<div class="zisha-experience" data-experience-panel="" id="panel-clay">
+<figure>
+<a aria-label="Enlarge: Clay materials" class="zoom-link" data-caption="Clay materials: Zini, Zhuni and Duanni choices. The recording shows the vessel changing colour. Frame at 01:16." data-zoom="" href="../images/zisha/clay.webp">
+<img alt="Purple-brown, red and yellow clay choices beside an AR teapot shown with a red finish." decoding="async" height="864" loading="lazy" src="../images/zisha/clay.webp" width="1920"/>
+<span aria-hidden="true" class="zisha-enlarge">Enlarge</span>
+</a>
+<figcaption>Clay materials · Original recording, 01:16</figcaption>
+</figure>
+<div class="zisha-experience-copy">
+<h3>Compare the clay</h3>
+<p>The <span lang="zh">泥料</span> (clay) panel offers Zini, Zhuni and Duanni. Selecting a material changes the vessel’s rendered appearance.</p>
+<p>The implementation switches between three same-shape prefabs with different material textures and matching narration. This is a visual comparison, not a simulation of physical clay properties.</p>
+<a class="text-link" data-demo-seek="10" href="#demo">Watch this part</a>
+</div>
+</div>
+<div class="zisha-experience" data-experience-panel="" id="panel-craft">
+<figure>
+<a aria-label="Enlarge: Craft process" class="zoom-link" data-caption="Craft process: embedded footage plays beside the AR vessel. Frame at 01:53 in the original recording." data-zoom="" href="../images/zisha/craft.webp">
+<img alt="An embedded video of hands working on pottery beside the yellow AR teapot, with play, pause and close controls." decoding="async" height="864" loading="lazy" src="../images/zisha/craft.webp" width="1920"/>
+<span aria-hidden="true" class="zisha-enlarge">Enlarge</span>
+</a>
+<figcaption>Craft process · Original recording, 01:53</figcaption>
+</figure>
+<div class="zisha-experience-copy">
+<h3>See the making</h3>
+<p>The <span lang="zh">工艺</span> (craft) panel opens a video of the making process without replacing the AR object.</p>
+<p>Play, pause and close controls let the viewer move between the process footage and the vessel. The embedded footage is visible in the original prototype recording.</p>
+<a class="text-link" data-demo-seek="20" href="#demo">Watch this part</a>
+</div>
+</div>
+</section>
+<section aria-labelledby="demo-title" class="zisha-section" id="demo">
+<div class="zisha-section-heading">
+<h2 id="demo-title">The prototype in motion</h2>
+<p>A 30-second edit of the original recording: vessel forms, material changes and the craft video. Original speed, with a newly composed instrumental soundtrack and an English visual guide.</p>
+</div>
+<figure class="zisha-film">
+<video aria-describedby="walkthrough-description" aria-label="30-second Zisha AR prototype walkthrough" controls="" height="576" id="zisha-walkthrough" playsinline="" poster="../images/zisha/forms.webp" preload="none" width="1280">
+<source src="../videos/zisha-walkthrough.mp4" type="video/mp4"/>
+<track default="" kind="subtitles" label="English visual guide" src="../videos/zisha-walkthrough-en.vtt" srclang="en"/>
+<a href="../videos/zisha-walkthrough.mp4">Open the walkthrough video</a>
+</video>
+<figcaption id="walkthrough-description">The vessel stays in the camera view as the information panel changes. In the clay section, its rendered colour changes; in the craft section, a video plays beside it. The soundtrack was added for this portfolio edit; it is not the prototype’s original audio.</figcaption>
+</figure>
+<div aria-label="Walkthrough chapters" class="zisha-chapters">
+<a data-demo-seek="0" href="../videos/zisha-walkthrough.mp4#t=0"><span>00:00</span> Vessel forms</a>
+<a data-demo-seek="10" href="../videos/zisha-walkthrough.mp4#t=10"><span>00:10</span> Changing the clay</a>
+<a data-demo-seek="20" href="../videos/zisha-walkthrough.mp4#t=20"><span>00:20</span> Craft video</a>
+</div>
+<details class="zisha-original">
+<summary>Full prototype recording <span>2 min 32 sec · Original audio</span></summary>
+<video aria-label="Full original Zisha AR recording" controls="" height="864" playsinline="" poster="../images/zisha/ar-cover.webp" preload="none" width="1920">
+<source src="../videos/zisha_demo.mp4" type="video/mp4"/>
+<a href="../videos/zisha_demo.mp4">Open the original recording</a>
+</video>
+<p>The original recording includes the opening screen, AR view, exploration panels and embedded craft footage. The short version above selects three excerpts; it does not demonstrate every control.</p>
+</details>
+</section>
+<section aria-labelledby="build-title" class="zisha-build">
+<div>
+<h2 id="build-title">One object, a freely chosen route</h2>
+<p>Image recognition anchors the Fanggu teapot and its content panels to a printed target. The model can be dragged to rotate and pinched to scale; the three content modules remain independently accessible.</p>
+<p class="zisha-source">Implementation: thesis §§3.3–3.5, pp. 34–41.</p>
+</div>
+<ol class="zisha-route">
+<li><strong>Scan the image target</strong><span>Enter the AR scene from the opening menu.</span></li>
+<li><strong>Inspect the vessel</strong><span>Auto-rotation introduces the form; drag and pinch give control of the view.</span></li>
+<li><strong>Choose what to explore</strong><span>Open forms, clay or craft in any order. Return to the menu at any time.</span></li>
+</ol>
+</section>
+<section aria-labelledby="study-title" class="zisha-section zisha-study" id="study">
+<div>
+<h2 id="study-title">Beyond the prototype</h2>
+<p class="zisha-study-question">How do people’s perceptions of an AR craft experience relate to their willingness to use it?</p>
+<p>Participants were recruited online through social media, including Xiaohongshu and WeChat groups. They received the Android application, image target and instructions, and were asked to explore all three modules on their own phones before completing an online survey.</p>
+<p>Of 425 returned questionnaires, 388 passed the reported quality checks. A 29-item, seven-point questionnaire measured seven constructs, combining the stimulus–organism–response framework, the Technology Acceptance Model and flow theory.</p>
+<p class="zisha-source">Research procedure: thesis §§3.6–3.7 and §4.2, pp. 41–51.</p>
+</div>
+<dl class="zisha-methods">
+<div><dt>Survey</dt><dd><strong>388</strong> valid responses<br/>425 questionnaires returned</dd></div>
+<div><dt>Research model</dt><dd>Seven constructs<br/>Ten hypotheses tested</dd></div>
+<div><dt>Analysis</dt><dd>Covariance-based SEM<br/>AMOS</dd></div>
+</dl>
+<div class="zisha-research-note">
+<h3>A remote prototype study, not an on-site museum trial</h3>
+<p>Participants experienced the application independently, without a fixed session length. The study measured self-reported perceptions and intentions, not observed museum behaviour or learning gains. 78.9% of the sample was aged 19–30.</p>
+</div>
+</section>
+<section aria-labelledby="findings-title" class="zisha-section" id="findings">
+<div class="zisha-section-heading">
+<h2 id="findings-title">What the study found</h2>
+<p>Nine of ten hypothesised paths were statistically supported. These are associations within a cross-sectional model, not causal effects of particular design features.</p>
+</div>
+<div class="zisha-findings">
+<article>
+<h3>Authenticity was linked to both value and engagement</h3><div>
+<p>Perceived authenticity was positively associated with perceived usefulness (<strong>β = 0.541</strong>) and flow (<strong>β = 0.452</strong>), both p &lt; .001. Here, authenticity includes visual credibility, material representation and cultural accuracy.</p>
+<p class="zisha-source">Thesis §4.4.2, Table 4-5: H5 and H4; construct definition in §4.1.</p></div>
+</article>
+<article>
+<h3>Usefulness and flow were linked to intention to use</h3><div>
+<p>The paths from perceived usefulness (<strong>β = 0.412</strong>) and flow (<strong>β = 0.407</strong>) to behavioural intention were both significant (p &lt; .001). They capture perceived cultural value and absorption in the experience—not measured learning performance.</p>
+<p class="zisha-source">Thesis §4.4.2, Table 4-5: H8 and H10.</p></div>
+</article>
+<article>
+<h3>Ease of use was not a significant direct predictor of intention</h3><div>
+<p>The direct path to behavioural intention was not significant (<strong>β = 0.068, p = .232</strong>). Ease of use was positively associated with usefulness and flow. This does not mean usability is unimportant.</p>
+<p class="zisha-source">Thesis §§4.4.2–4.4.3, Table 4-5: H9, H6 and H7.</p></div>
+</article>
+</div>
+<details class="zisha-evidence">
+<summary>Inspect the reported model results</summary>
+<p>Standardised path coefficients, transcribed from thesis Table 4-5 (p. 55). No new analysis was performed for this page.</p>
+<div aria-label="All ten model paths; scroll horizontally on narrow screens" class="zisha-table-wrap" role="region" tabindex="0">
+<table><caption>All ten tested paths</caption><thead><tr><th scope="col">Path</th><th scope="col">β</th><th scope="col">p</th></tr></thead><tbody>
+<tr><th scope="row">Information richness → Usefulness</th><td>0.120</td><td>.015</td></tr>
+<tr><th scope="row">Interactivity → Ease of use</th><td>0.655</td><td>&lt; .001</td></tr>
+<tr><th scope="row">Interactivity → Flow</th><td>0.148</td><td>.039</td></tr>
+<tr><th scope="row">Authenticity → Flow</th><td>0.452</td><td>&lt; .001</td></tr>
+<tr><th scope="row">Authenticity → Usefulness</th><td>0.541</td><td>&lt; .001</td></tr>
+<tr><th scope="row">Ease of use → Usefulness</th><td>0.435</td><td>&lt; .001</td></tr>
+<tr><th scope="row">Ease of use → Flow</th><td>0.281</td><td>&lt; .001</td></tr>
+<tr><th scope="row">Usefulness → Behavioural intention</th><td>0.412</td><td>&lt; .001</td></tr>
+<tr><th scope="row">Ease of use → Behavioural intention</th><td>0.068</td><td>.232</td></tr>
+<tr><th scope="row">Flow → Behavioural intention</th><td>0.407</td><td>&lt; .001</td></tr>
+</tbody></table>
+</div>
+<p>Reported fit (Table 4-4): χ²/df = 2.967, RMSEA = .071, CFI = .895, TLI = .884. The table places CFI and TLI below its stated .90 reference, so the findings should not be presented as a model with uniformly strong fit.</p>
+</details>
+</section>
+<section aria-labelledby="directions-title" class="zisha-section" id="design-directions">
+<div class="zisha-section-heading">
+<h2 id="directions-title">From findings to design directions</h2>
+<p>The thesis translates the analysis and theoretical discussion into five directions. They are proposals for future design, not improvements evaluated in a second study.</p></div>
+<dl class="zisha-directions">
+<div><dt>Organise for understanding</dt><dd>Layer overview, detail and comparison around the craft object, instead of maximising the amount of information on screen.</dd></div>
+<div><dt>Make the response clear</dt><dd>Keep module choices visible, make changes easy to recognise and provide recovery guidance when image recognition fails.</dd></div>
+<div><dt>Build cultural credibility</dt><dd>Attend to vessel proportions, differences between clay materials and the accuracy of text, narration and craft footage.</dd></div>
+<div><dt>Support sustained exploration</dt><dd>Give each module a clear purpose and avoid interruptions between reading, comparing materials and watching the process.</dd></div>
+<div><dt>Design for the exhibition setting</dt><dd>Consider target placement, lighting, short visits and the effort of holding a phone. These deployment considerations still need on-site evaluation.</dd></div>
+</dl>
+<p class="zisha-source">Adapted from thesis §5.3, pp. 64–69. The prototype shown above is the studied version, not a later implementation of every recommendation.</p>
+</section>
+<section aria-labelledby="limits-title" class="zisha-limits">
+<h2 id="limits-title">Where the evidence stops</h2>
+<p>This is a single-case, cross-sectional, self-report study with a predominantly young sample. It does not establish causality, long-term engagement or learning outcomes. The research prototype also simplifies material rendering and tracking, and has not established robustness under real museum lighting, crowding or prolonged use.</p>
+<p class="zisha-source">Thesis §6.2, pp. 72–74.</p>
+</section>
+<section aria-labelledby="contribution-title" class="zisha-contribution">
+<h2 id="contribution-title">My contribution</h2>
+<div>
+<p>I developed the mobile AR prototype and carried out the survey-based thesis research under the supervision of Prof. Feng Wang. The work connects interface design and Unity/Vuforia implementation with empirical analysis.</p>
+<p class="zisha-scope">Master’s thesis, Jiangnan University, June 2026: <cite>User Experience Mechanism and Design Strategy of AR Display for Traditional Crafts: A Case Study of Yixing Zisha.</cite> Page references use the thesis’s printed pagination. The recording documents the implementation, not the survey participants or a public deployment.</p></div>
+</section>
+<nav aria-label="Project navigation" class="case-pagination">
+<a class="text-link" href="../work.html">All projects</a>
+<a href="vr-acceptance.html"><span>Related research</span><strong>VR Acceptance in Cultural Heritage</strong></a>
+</nav>
+</main>
+<footer class="site-footer">
+<div><span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a></div>
+<div class="footer-links"><a class="text-link" href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a><a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a><a class="text-link" href="#top">Back to top</a></div>
+</footer>
+</div>
+<dialog aria-labelledby="image-caption" class="image-dialog">
+<div class="dialog-toolbar"><a class="text-link" id="image-original" rel="noopener" target="_blank">Open full size</a><button aria-label="Close image" data-close-image="" title="Close image" type="button">✕</button></div>
+<div class="dialog-image-area"><img alt="" id="image-enlarged"/></div>
+<p id="image-caption"></p>
+</dialog>
 </body>
 </html>

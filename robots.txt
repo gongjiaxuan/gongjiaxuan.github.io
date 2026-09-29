@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gongjiaxuan.github.io/sitemap.xml

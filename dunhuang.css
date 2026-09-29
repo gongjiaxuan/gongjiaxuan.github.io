@@ -2,7 +2,7 @@
 .dh-intro { padding:27px 0 32px; }
 .dh-intro h1 { font-size:clamp(36px,4.8vw,58px); letter-spacing:-1.8px; line-height:1.13; margin:13px 0 22px; }
 .dh-intro-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:70px; align-items:start; }
-.dh-deck { font-size:26px; line-height:1.35; letter-spacing:-.3px; margin-bottom:15px; }
+.dh-deck { font-size:25px; line-height:1.4; letter-spacing:-.3px; max-width:40ch; margin-bottom:0; }
 .dh-summary { color:var(--muted); font-size:16px; max-width:600px; }
 .dh-role { border-left:2px solid var(--accent); padding-left:24px; }
 .dh-role dt { font-size:13px; }

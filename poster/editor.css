@@ -264,3 +264,6 @@ h4.mini { margin: 18px 0 8px; }
   .blk[data-tool].is-active, .cand, .selection-delete:not([hidden]) { animation: none; }
   .selection-delete:active { transform: translate(-50%, -50%); }
 }
+.project-return { color:inherit; text-decoration:none; display:inline-flex; align-items:center; min-height:44px; }
+.project-return:hover { text-decoration:underline; text-underline-offset:4px; }
+.project-return:focus-visible { outline:2px solid currentColor; outline-offset:4px; }

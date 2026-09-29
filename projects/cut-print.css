@@ -119,6 +119,7 @@
   .cp-gallery { gap: 16px; }
 }
 @media (max-width: 600px) {
+  .cp-grid { grid-template-columns:minmax(0,1fr); }
   .cp-hero { grid-template-columns: 1fr; gap: 24px; padding-top: 20px; }
   .cp-hero-copy { max-width: 28em; }
   .cp-hero .case-actions { margin-top: 14px; }
