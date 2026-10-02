@@ -41,8 +41,9 @@
     />
     <meta content="summary_large_image" name="twitter:card" />
     <link href="site.css" rel="stylesheet" />
+    <link href="research-overview.css" rel="stylesheet" />
   </head>
-  <body id="top">
+  <body class="academic-home" id="top">
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="site-shell">
       <header class="site-header">
@@ -78,8 +79,9 @@
             <h1 id="profile-title">Jiaxuan Gong</h1>
             <p class="home-role">HCI researcher &amp; interaction designer</p>
             <p class="home-lead">
-              My current research examines generative AI and accessibility. I
-              also build interactive prototypes and study AR and VR experiences.
+              I study participation and evaluation in generative-AI accessibility
+              research. Previously, I studied how people experience and decide
+              to use AR and VR in cultural heritage.
             </p>
             <div class="contact-area">
               <div class="resource-links contact-links" aria-label="Contact and profiles">
@@ -95,6 +97,7 @@
               </div>
               <p class="contact-feedback" data-copy-feedback="" role="status" aria-live="polite" aria-atomic="true"></p>
             </div>
+            <p class="home-availability">Applying for PhD opportunities starting in 2027.</p>
           </div>
           <figure class="home-portrait">
             <img
@@ -107,15 +110,12 @@
               src="images/profile-photo.webp"
               width="400"
             />
+            <figcaption>
+              M.F.A. in Design Science<br />Jiangnan University
+              <a href="about.html">About me</a>
+            </figcaption>
           </figure>
         </section>
-        <div class="home-context">
-          <p>
-            M.F.A. in Design Science, Jiangnan University.
-            <a href="about.html">More about me</a>
-          </p>
-          <p>Applying for PhD opportunities starting in 2027.</p>
-        </div>
         <section
           aria-labelledby="research-title"
           class="section selected-research"
@@ -140,31 +140,33 @@
                 <path d="m12 5 7 7-7 7"></path></svg
             ></a>
           </div>
-          <article
-            class="research-feature research-feature-evidence"
-            id="genai-review"
-          >
+          <div class="research-list">
+          <article class="research-row" id="genai-review">
+            <figure class="research-figure">
+              <a class="research-cover-link" href="projects/genai-accessibility.html" aria-label="Generative AI and Accessibility" aria-describedby="genai-cover-note">
+                <img src="images/research/genai-accessibility/concept-cover-small.webp" alt="Concept illustration of image descriptions, captions, easy-read information and voice interaction" width="1536" height="1024" decoding="async" />
+              </a>
+              <figcaption id="genai-cover-note">AI-generated concept illustration.</figcaption>
+            </figure>
             <div class="research-entry-copy">
-              <p class="project-type">
-                Systematic review · Manuscript in preparation
-              </p>
               <h3>
                 <a href="projects/genai-accessibility.html"
                   >Generative AI and Accessibility</a
                 >
               </h3>
+              <p class="research-status">Systematic review <span>Manuscript in preparation</span></p>
               <p class="research-description">
                 How are disabled people involved in GenAI accessibility
                 research? Reported participation is concentrated in evaluation,
                 with less involvement in problem definition and design.
               </p>
               <p class="research-meta">
-                Review lead and first author<br />240 papers, systematic review
-                and qualitative coding
+                <strong>First author and review lead.</strong> Systematic review
+                and qualitative coding of 240 papers.
               </p>
               <div class="resource-links">
                 <a class="text-link" href="projects/genai-accessibility.html"
-                  >Research overview<svg
+                  >Project<svg
                     aria-hidden="true"
                     class="icon"
                     fill="none"
@@ -179,66 +181,36 @@
                     <path d="M5 12h14"></path>
                     <path d="m12 5 7 7-7 7"></path></svg
                 ></a>
+                <a class="text-link" href="projects/genai-accessibility.html#evidence">Findings</a>
               </div>
             </div>
-            <figure
-              class="participation-summary"
-              aria-labelledby="participation-caption"
-            >
-              <figcaption id="participation-caption">
-                Where participation is reported
-              </figcaption>
-              <p class="figure-unit">Papers in a review of 240</p>
-              <dl class="evidence-bars">
-                <div style="--bar: 5.4167%">
-                  <dt>Problem definition</dt>
-                  <dd>13</dd>
-                </div>
-                <div style="--bar: 18.75%">
-                  <dt>Design</dt>
-                  <dd>45</dd>
-                </div>
-                <div style="--bar: 58.75%">
-                  <dt>Evaluation</dt>
-                  <dd>141</dd>
-                </div>
-              </dl>
-              <p class="figure-note">
-                Selected stages, not mutually exclusive. Reported involvement
-                does not establish decision-making power.
-              </p>
-              <a
-                class="text-link"
-                href="projects/genai-accessibility.html#evidence"
-                >Explore the evidence</a
-              >
-            </figure>
           </article>
-          <div class="research-pair">
-            <article class="research-card">
-              <a class="research-thumbnail vr-concept-thumbnail" href="projects/vr-acceptance.html" aria-label="VR Acceptance in Cultural Heritage" aria-describedby="vr-result-caption">
+            <article class="research-row">
+              <figure class="research-figure">
+              <a class="research-cover-link" href="projects/vr-acceptance.html" aria-label="VR Acceptance in Cultural Heritage" aria-describedby="vr-result-caption">
                 <img src="images/research/vr-acceptance/museum-vr-concept.webp" alt="Concept illustration of the Mona Lisa opening into an immersive gallery, with a VR headset in the foreground" width="1536" height="1024" loading="lazy" decoding="async"/>
               </a>
+              <figcaption id="vr-result-caption">AI-generated concept illustration inspired by the study stimulus.</figcaption>
+              </figure>
               <div class="research-entry-copy">
-                <p class="project-type">Heritage · 2025 · Co-first author</p>
                 <h3>
                   <a href="projects/vr-acceptance.html"
                     >VR Acceptance in Cultural Heritage</a
                   >
                 </h3>
-                <p>
+                <p class="research-status">Heritage, 2025 <span>Published article</span></p>
+                <p class="research-description">
                   Perceived usefulness had the strongest direct association with
                   intention to use in our model. Interviews explored what made
                   the experience worthwhile.
                 </p>
                 <p class="research-meta">
-                  566 survey responses and 20 interviews<br />My role: study
-                  design, analysis and writing
+                  <strong>Co-first author.</strong> Study design, analysis and
+                  writing; 566 survey responses and 20 interviews.
                 </p>
-                <p class="cover-credit" id="vr-result-caption">Cover: AI-generated concept illustration inspired by the study stimulus.</p>
                 <div class="resource-links">
                   <a class="text-link" href="projects/vr-acceptance.html"
-                    >Research overview</a
+                    >Project</a
                   >
                   <a
                     class="text-link"
@@ -270,10 +242,11 @@
                 </div>
               </div>
             </article>
-            <article class="research-card">
+            <article class="research-row">
+              <figure class="research-figure">
               <a
                 aria-label="Yixing Zisha AR"
-                class="research-thumbnail zisha-thumbnail"
+                class="research-cover-link zisha-research-cover"
                 href="projects/zisha.html"
               >
                 <img
@@ -281,7 +254,7 @@
                   decoding="async"
                   height="864"
                   loading="lazy"
-                  sizes="(max-width: 700px) calc(100vw - 44px), 542px"
+                  sizes="(max-width: 600px) calc(100vw - 44px), 288px"
                   src="images/zisha/ar-cover-small.webp"
                   srcset="
                     images/zisha/ar-cover-small.webp  960w,
@@ -290,21 +263,23 @@
                   width="1920"
                 />
               </a>
+              <figcaption>Working Unity / Vuforia prototype.</figcaption>
+              </figure>
               <div class="research-entry-copy">
-                <p class="project-type">Master's thesis · 2026</p>
                 <h3><a href="projects/zisha.html">Yixing Zisha AR</a></h3>
-                <p>
+                <p class="research-status">Jiangnan University, 2026 <span>Master's thesis</span></p>
+                <p class="research-description">
                   I built a mobile AR prototype for traditional craft. In the
                   survey, perceived authenticity was associated with usefulness
                   and flow.
                 </p>
                 <p class="research-meta">
-                  388 valid responses after remote prototype use<br />My role:
-                  interface, Unity / Vuforia and thesis research
+                  <strong>Design, development and thesis research.</strong>
+                  388 valid survey responses after remote prototype use.
                 </p>
                 <div class="resource-links">
                   <a class="text-link" href="projects/zisha.html"
-                    >Research overview</a
+                    >Project</a
                   >
                   <a class="text-link" href="projects/zisha.html#demo"
                     >Watch 30 seconds<svg
