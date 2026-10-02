@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
+<head><link rel="preload" href="../fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="light" name="color-scheme"/>
@@ -17,7 +17,7 @@
 <link href="cut-print-loop.css" rel="stylesheet"/>
 <script defer="" src="../app.js"></script>
 <script defer="" src="cut-print.js"></script>
-<link href="https://gongjiaxuan.github.io/projects/cut-print.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="Jiaxuan Gong" property="og:site_name"/><meta content="CUT / PRINT | Jiaxuan Gong" property="og:title"/><meta content="An interactive poster-making prototype. Draw a cut, reshape a vessel and explore two-ink compositions in a real browser editor." property="og:description"/><meta content="https://gongjiaxuan.github.io/projects/cut-print.html" property="og:url"/><meta content="https://gongjiaxuan.github.io/images/cut-print/editor-cover-small.webp" property="og:image"/><meta content="CUT / PRINT | Jiaxuan Gong" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/></head>
+<link href="https://gongjiaxuan.github.io/projects/cut-print.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="Jiaxuan Gong" property="og:site_name"/><meta content="CUT / PRINT | Jiaxuan Gong" property="og:title"/><meta content="An interactive poster-making prototype. Draw a cut, reshape a vessel and explore two-ink compositions in a real browser editor." property="og:description"/><meta content="https://gongjiaxuan.github.io/projects/cut-print.html" property="og:url"/><meta content="https://gongjiaxuan.github.io/images/cut-print/form-studies-editor-small.webp" property="og:image"/><meta content="The working CUT / PRINT editor with a Form Studies poster" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/><link href="../research-site.css" rel="stylesheet"/></head>
 <body class="cp-page" id="top">
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="site-shell">
@@ -26,14 +26,14 @@
 <nav aria-label="Main navigation">
 <a href="../index.html#research">Research</a>
 <a href="../publications.html">Publications</a>
-<a aria-current="page" href="../work.html">Projects</a>
+<a aria-current="location" href="../work.html">Projects</a>
 <a href="../about.html">About</a>
 <a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV
           <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
 </a>
 </nav>
 </header>
-<main id="main">
+<main id="main" tabindex="-1">
 <div class="case-breadcrumb">
 <a class="text-link" href="../work.html">Projects
           <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
@@ -53,11 +53,11 @@
 </div>
 <div class="cp-cover">
 <figure class="cp-cover-editor">
-<a aria-label="Enlarge: The actual CUT / PRINT editor with a selected vessel, its transform handles and the Forms panel" class="zoom-link" data-caption="The working prototype. The selected form on the sheet corresponds to the profile in the right-hand panel." data-zoom="" href="../images/cut-print/editor-cover.webp"><img alt="The actual CUT / PRINT editor with a selected vessel, its transform handles and the Forms panel" decoding="async" fetchpriority="high" height="1800" src="../images/cut-print/editor-cover.webp" width="2880"/></a>
+<a aria-label="Enlarge: The actual CUT / PRINT editor with the Form Studies composition and its vessel controls" class="zoom-link" data-caption="Form Studies, composed and exported in the working prototype. The selected vessel matches the profile in the Forms panel." data-zoom="" href="../images/cut-print/form-studies-editor.webp"><img alt="The actual CUT / PRINT editor with a vermilion Form Studies composition and its vessel controls" decoding="async" fetchpriority="high" height="2000" src="../images/cut-print/form-studies-editor.webp" width="2880"/></a>
 <figcaption class="cp-cap">The working editor <span>Click to explore the interface at full size</span></figcaption>
 </figure>
 <figure class="cp-cover-output">
-<a aria-label="Enlarge: The same edited composition exported without selection handles" class="zoom-link" data-caption="A real PNG export from the exact editor state shown alongside." data-zoom="" href="../images/cut-print/editor-output.webp"><img alt="The same edited composition exported without selection handles" decoding="async" height="1200" loading="lazy" src="../images/cut-print/editor-output.webp" width="900"/></a>
+<a aria-label="Enlarge: Form Studies exported without selection handles" class="zoom-link" data-caption="A real PNG export from the exact editor state shown alongside." data-zoom="" href="../images/cut-print/form-studies-output.webp"><img alt="Form Studies: a vermilion and off-white vessel poster exported from the editor" decoding="async" height="1200" loading="lazy" src="../images/cut-print/form-studies-output.webp" width="900"/></a>
 <figcaption class="cp-cap">The same state, exported.<br/>No editing controls in the file.</figcaption>
 </figure>
 </div>
@@ -79,7 +79,7 @@
 <div><dt>Built with</dt><dd>HTML, CSS, JavaScript and Canvas</dd></div>
 </dl>
 </section>
-<section aria-labelledby="demo-title" class="cp-demo cp-section" id="demo">
+<details class="reading-guide"><summary>On this page</summary><nav aria-label="On this page"><a href="#demo">Watch the demo</a><a href="#interactions">Core interactions</a><a href="#system">Design decisions</a><a href="#posters">Outputs</a></nav></details><section aria-labelledby="demo-title" class="cp-demo cp-section" id="demo">
 <div class="cp-head cp-head-split">
 <h2 id="demo-title">One editing session</h2>
 <p class="cp-label">25 seconds · Real browser recording</p>
@@ -111,7 +111,7 @@
 <p>The sample is already editable. Draw a diagonal across the sheet to change the cut. Select Shape the vessel, choose a second profile and drag the preview; release to update the poster. Choose a different ink pair. Print It previews field, form and type in three passes. Return to the editor, open the preview again and export a PNG with a 3600-pixel long edge.</p>
 </details>
 </section>
-<section aria-labelledby="moves-title" class="cp-section cp-interactions">
+<section aria-labelledby="moves-title" class="cp-section cp-interactions" id="interactions">
 <div class="cp-head">
 <h2 id="moves-title">Gesture, feedback, result</h2>
 <p>Three changes to the same editable sample.</p></div>
@@ -164,7 +164,7 @@
 </div>
 </details>
 </section>
-<section aria-labelledby="system-title" class="cp-section cp-system">
+<section aria-labelledby="system-title" class="cp-section cp-system" id="system">
 <div class="cp-head">
 <h2 id="system-title">An editor you can move around in</h2>
 <p>Type, form, cut and material are independent entry points. Previewing keeps a route back to editing.</p></div>
@@ -303,7 +303,7 @@
 <a class="text-link" href="../work.html">Projects
           <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
 </a>
-<a href="zisha.html"><span>Next project</span><strong>Yixing Zisha AR</strong>
+<a href="remembery.html"><span>Related project</span><strong>REMEMBERY</strong><span class="related-reason">Interface choices for everyday support</span>
 <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
 </a>
 </nav>

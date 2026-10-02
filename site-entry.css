@@ -1,0 +1,8 @@
+/* Homepage/archive bundle. Rebuild with:
+   npx esbuild site-entry.css --bundle --minify --external:*.woff2 --external:*.svg --outfile=site.css
+   Project pages retain their original per-project CSS cascade. */
+@import './academic.css';
+@import './genai-cover.css';
+@import './cut-print-cover.css';
+@import './zisha-cover.css';
+@import './research-site.css';

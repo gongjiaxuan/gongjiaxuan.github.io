@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
+<head><link rel="preload" href="../fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="light" name="color-scheme"/>
@@ -12,14 +12,14 @@
 <link href="../zisha.css" rel="stylesheet"/>
 <script defer="" src="../app.js"></script>
 <script defer="" src="../zisha.js"></script>
-<link href="https://gongjiaxuan.github.io/projects/zisha.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="Jiaxuan Gong" property="og:site_name"/><meta content="Yixing Zisha AR | Jiaxuan Gong" property="og:title"/><meta content="Yixing Zisha AR: a Unity / Vuforia prototype for exploring pottery forms, clay and craft, alongside a 388-response master's thesis study." property="og:description"/><meta content="https://gongjiaxuan.github.io/projects/zisha.html" property="og:url"/><meta content="https://gongjiaxuan.github.io/images/zisha/ar-cover.webp" property="og:image"/><meta content="Yixing Zisha AR | Jiaxuan Gong" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/></head>
+<link href="https://gongjiaxuan.github.io/projects/zisha.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="Jiaxuan Gong" property="og:site_name"/><meta content="Yixing Zisha AR | Jiaxuan Gong" property="og:title"/><meta content="Yixing Zisha AR: a Unity / Vuforia prototype for exploring pottery forms, clay and craft, alongside a 388-response master's thesis study." property="og:description"/><meta content="https://gongjiaxuan.github.io/projects/zisha.html" property="og:url"/><meta content="https://gongjiaxuan.github.io/images/zisha/ar-cover.webp" property="og:image"/><meta content="Yixing Zisha AR | Jiaxuan Gong" property="og:image:alt"/><meta content="summary_large_image" name="twitter:card"/><link href="../research-site.css" rel="stylesheet"/></head>
 <body class="zisha-page" id="top">
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="site-shell">
 <header class="site-header">
 <a aria-label="Jiaxuan Gong, home" class="wordmark" href="../index.html">Jiaxuan Gong</a>
 <nav aria-label="Main navigation">
-<a aria-current="page" href="../index.html#research">Research</a>
+<a aria-current="location" href="../index.html#research">Research</a>
 <a href="../publications.html">Publications</a>
 <a href="../work.html">Projects</a>
 <a href="../about.html">About</a>
@@ -48,6 +48,10 @@
 </a>
 <figcaption><span>Recorded in the working prototype.</span><span>Mobile AR · Original Chinese interface</span></figcaption>
 </figure>
+<section aria-labelledby="zisha-study-summary-title" class="zisha-study-summary">
+<div><h2 id="zisha-study-summary-title">From prototype to study</h2><p>Participants explored the Android prototype remotely before completing an online questionnaire. The analysis used 388 valid responses.</p></div>
+<div><p>Perceived authenticity was associated with both usefulness and flow. The study concerns perceptions and willingness to use, not measured learning gains.</p><a class="text-link" href="#findings">Read the findings</a></div>
+</section>
 <nav aria-label="On this page" class="zisha-sections">
 <a href="#experience">Explore the interface</a>
 <a href="#demo">Watch 30 seconds</a>
@@ -141,7 +145,7 @@
 <div>
 <h2 id="build-title">One object, a freely chosen route</h2>
 <p>Image recognition anchors the Fanggu teapot and its content panels to a printed target. The model can be dragged to rotate and pinched to scale; the three content modules remain independently accessible.</p>
-<p class="zisha-source">Implementation: thesis §§3.3–3.5, pp. 34–41.</p>
+<p class="zisha-source">Implementation: thesis §§3.3-3.5, pp. 34-41.</p>
 </div>
 <ol class="zisha-route">
 <li><strong>Scan the image target</strong><span>Enter the AR scene from the opening menu.</span></li>
@@ -154,8 +158,8 @@
 <h2 id="study-title">Beyond the prototype</h2>
 <p class="zisha-study-question">How do people’s perceptions of an AR craft experience relate to their willingness to use it?</p>
 <p>Participants were recruited online through social media, including Xiaohongshu and WeChat groups. They received the Android application, image target and instructions, and were asked to explore all three modules on their own phones before completing an online survey.</p>
-<p>Of 425 returned questionnaires, 388 passed the reported quality checks. A 29-item, seven-point questionnaire measured seven constructs, combining the stimulus–organism–response framework, the Technology Acceptance Model and flow theory.</p>
-<p class="zisha-source">Research procedure: thesis §§3.6–3.7 and §4.2, pp. 41–51.</p>
+<p>Of 425 returned questionnaires, 388 passed the reported quality checks. A 29-item, seven-point questionnaire measured seven constructs, combining the stimulus-organism-response framework, the Technology Acceptance Model and flow theory.</p>
+<p class="zisha-source">Research procedure: thesis §§3.6-3.7 and §4.2, pp. 41-51.</p>
 </div>
 <dl class="zisha-methods">
 <div><dt>Survey</dt><dd><strong>388</strong> valid responses<br/>425 questionnaires returned</dd></div>
@@ -164,7 +168,7 @@
 </dl>
 <div class="zisha-research-note">
 <h3>A remote prototype study, not an on-site museum trial</h3>
-<p>Participants experienced the application independently, without a fixed session length. The study measured self-reported perceptions and intentions, not observed museum behaviour or learning gains. 78.9% of the sample was aged 19–30.</p>
+<p>Participants experienced the application independently, without a fixed session length. The study measured self-reported perceptions and intentions, not observed museum behaviour or learning gains. 78.9% of the sample was aged 19-30.</p>
 </div>
 </section>
 <section aria-labelledby="findings-title" class="zisha-section" id="findings">
@@ -180,13 +184,13 @@
 </article>
 <article>
 <h3>Usefulness and flow were linked to intention to use</h3><div>
-<p>The paths from perceived usefulness (<strong>β = 0.412</strong>) and flow (<strong>β = 0.407</strong>) to behavioural intention were both significant (p &lt; .001). They capture perceived cultural value and absorption in the experience—not measured learning performance.</p>
+<p>The paths from perceived usefulness (<strong>β = 0.412</strong>) and flow (<strong>β = 0.407</strong>) to behavioural intention were both significant (p &lt; .001). They capture perceived cultural value and absorption in the experience, not measured learning performance.</p>
 <p class="zisha-source">Thesis §4.4.2, Table 4-5: H8 and H10.</p></div>
 </article>
 <article>
 <h3>Ease of use was not a significant direct predictor of intention</h3><div>
 <p>The direct path to behavioural intention was not significant (<strong>β = 0.068, p = .232</strong>). Ease of use was positively associated with usefulness and flow. This does not mean usability is unimportant.</p>
-<p class="zisha-source">Thesis §§4.4.2–4.4.3, Table 4-5: H9, H6 and H7.</p></div>
+<p class="zisha-source">Thesis §§4.4.2-4.4.3, Table 4-5: H9, H6 and H7.</p></div>
 </article>
 </div>
 <details class="zisha-evidence">
@@ -220,12 +224,12 @@
 <div><dt>Support sustained exploration</dt><dd>Give each module a clear purpose and avoid interruptions between reading, comparing materials and watching the process.</dd></div>
 <div><dt>Design for the exhibition setting</dt><dd>Consider target placement, lighting, short visits and the effort of holding a phone. These deployment considerations still need on-site evaluation.</dd></div>
 </dl>
-<p class="zisha-source">Adapted from thesis §5.3, pp. 64–69. The prototype shown above is the studied version, not a later implementation of every recommendation.</p>
+<p class="zisha-source">Adapted from thesis §5.3, pp. 64-69. The prototype shown above is the studied version, not a later implementation of every recommendation.</p>
 </section>
 <section aria-labelledby="limits-title" class="zisha-limits">
 <h2 id="limits-title">Where the evidence stops</h2>
 <p>This is a single-case, cross-sectional, self-report study with a predominantly young sample. It does not establish causality, long-term engagement or learning outcomes. The research prototype also simplifies material rendering and tracking, and has not established robustness under real museum lighting, crowding or prolonged use.</p>
-<p class="zisha-source">Thesis §6.2, pp. 72–74.</p>
+<p class="zisha-source">Thesis §6.2, pp. 72-74.</p>
 </section>
 <section aria-labelledby="contribution-title" class="zisha-contribution">
 <h2 id="contribution-title">My contribution</h2>
@@ -235,7 +239,7 @@
 </section>
 <nav aria-label="Project navigation" class="case-pagination">
 <a class="text-link" href="../work.html">All projects</a>
-<a href="vr-acceptance.html"><span>Related research</span><strong>VR Acceptance in Cultural Heritage</strong></a>
+<a href="vr-acceptance.html"><span>Related research</span><strong>VR Acceptance in Cultural Heritage</strong><span class="related-reason">Related work on immersive technology acceptance</span></a>
 </nav>
 </main>
 <footer class="site-footer">
