@@ -13,7 +13,7 @@
     <meta content="width=device-width,initial-scale=1" name="viewport" />
     <meta content="light" name="color-scheme" />
     <meta
-      content="Jiaxuan Gong is a design-trained HCI researcher working on human-AI interaction, accessibility and immersive experiences."
+      content="Jiaxuan Gong is a design-trained HCI researcher combining empirical research with interaction design and prototyping across human-AI interaction, accessibility and immersive experiences."
       name="description"
     />
     <title>HCI research &amp; interaction design | Jiaxuan Gong</title>
@@ -27,7 +27,7 @@
       property="og:title"
     />
     <meta
-      content="Jiaxuan Gong is a design-trained HCI researcher working on human-AI interaction, accessibility and immersive experiences."
+      content="Jiaxuan Gong is a design-trained HCI researcher combining empirical research with interaction design and prototyping across human-AI interaction, accessibility and immersive experiences."
       property="og:description"
     />
     <meta content="https://gongjiaxuan.github.io/" property="og:url" />
@@ -79,9 +79,10 @@
             <h1 id="profile-title">Jiaxuan Gong</h1>
             <p class="home-role">HCI researcher &amp; interaction designer</p>
             <p class="home-lead">
-              I study participation and evaluation in generative-AI accessibility
-              research. Previously, I studied how people experience and decide
-              to use AR and VR in cultural heritage.
+              I combine empirical research with interaction design and
+              prototyping. Current projects span generative-AI accessibility,
+              disclosed human–AI design roles, and traceable garment-design
+              workflows; earlier research studied AR/VR in cultural heritage.
             </p>
             <div class="contact-area">
               <div class="resource-links contact-links" aria-label="Contact and profiles">
@@ -98,6 +99,11 @@
               <p class="contact-feedback" data-copy-feedback="" role="status" aria-live="polite" aria-atomic="true"></p>
             </div>
             <p class="home-availability">Applying for PhD opportunities starting in 2027.</p>
+            <nav class="home-paths" aria-label="Explore my work">
+              <span>Explore</span>
+              <a href="#research">Current research</a>
+              <a href="#work">Interactive systems</a>
+            </nav>
           </div>
           <figure class="home-portrait">
             <img
@@ -116,188 +122,100 @@
             </figcaption>
           </figure>
         </section>
-        <section
-          aria-labelledby="research-title"
-          class="section selected-research"
-          id="research"
-        >
+        <section class="section current-research" id="research" aria-labelledby="current-research-title">
           <div class="section-heading">
-            <h2 id="research-title">Selected research</h2>
-            <a class="text-link" href="publications.html"
-              >All publications<svg
-                aria-hidden="true"
-                class="icon"
-                fill="none"
-                height="20"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.6"
-                viewbox="0 0 24 24"
-                width="20"
-              >
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path></svg
-            ></a>
+            <div>
+              <h2 id="current-research-title">Current manuscripts</h2>
+              <p>Three active research manuscripts, each at a different stage of finalization.</p>
+            </div>
+            <a class="text-link" href="publications.html#in-preparation">Current manuscripts</a>
+          </div>
+          <div class="current-research-grid">
+            <article class="current-research-card current-genai">
+              <a class="current-visual concept-visual" href="projects/genai-accessibility.html" aria-label="Generative AI and Accessibility">
+                <img src="images/research/genai-accessibility/concept-cover-small.webp" alt="AI-generated concept illustration linking image descriptions, captions, easy-read information and voice interaction" width="1536" height="1024" decoding="async" />
+              </a>
+              <div class="current-copy">
+                <p class="project-type">Systematic review · First author</p>
+                <h3><a href="projects/genai-accessibility.html">Generative AI and Accessibility</a></h3>
+                <p>Across 240 papers, reported participation by disabled people is concentrated in evaluation, with less involvement in problem definition and design.</p>
+                <p class="current-evidence"><strong>240 papers</strong><span>Systematic review &amp; qualitative coding</span></p>
+                <p class="cover-credit">Cover: AI-generated concept illustration; not a study participant or evaluated system.</p>
+                <a class="text-link" href="projects/genai-accessibility.html">Research page</a>
+              </div>
+            </article>
+
+            <article class="current-research-card current-abcss" id="abcss-home">
+              <a class="current-visual current-cover-image" href="publications.html#abcss-manuscript" aria-label="Same Product, Different Story">
+                <img src="images/research/abcss/current-cover-v3.webp" alt="Editorial research illustration comparing human-generation with AI-selection and AI-generation with human-selection, with study-result charts for three experiments" width="1200" height="675" decoding="async" loading="lazy" />
+              </a>
+              <div class="current-copy">
+                <p class="project-type">Conference manuscript · Co-first author</p>
+                <h3><a href="publications.html#abcss-manuscript">Same Product, Different Story</a></h3>
+                <p>Three randomized between-subjects experiments examine how disclosed human–AI design roles shape purchase intention and how brand context can reverse the preferred allocation.</p>
+                <p class="current-evidence"><strong>N = 794</strong><span>Three randomized scenario experiments</span></p>
+                <a class="text-link" href="publications.html#abcss-manuscript">Manuscript details</a>
+              </div>
+            </article>
+
+            <article class="current-research-card current-aei" id="aei-home">
+              <a class="current-visual current-cover-image" href="publications.html#aei-manuscript" aria-label="Source-aware verification for language-driven garment design">
+                <img src="images/research/aei/current-cover-v3.webp" alt="Editorial research illustration of a source-aware garment-design workflow from design intent through pattern geometry and process policy to traceable review" width="1200" height="675" decoding="async" loading="lazy" />
+              </a>
+              <div class="current-copy">
+                <p class="project-type">Journal manuscript · Co-first author</p>
+                <h3><a href="publications.html#aei-manuscript">Source-aware verification for language-driven garment design</a></h3>
+                <p>A source-aware workflow separates parameter constraints, source geometry, stable pattern identities and explicit process policies when screening generated garment patterns.</p>
+                <p class="current-evidence"><strong>255 cases</strong><span>51 designs × 5 body presets</span></p>
+                <a class="text-link" href="publications.html#aei-manuscript">Manuscript details</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section selected-research completed-research" aria-labelledby="completed-research-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="completed-research-title">Selected completed research</h2>
+              <p>Published and thesis work with full research pages.</p>
+            </div>
+            <a class="text-link" href="publications.html">All publications</a>
           </div>
           <div class="research-list">
-          <article class="research-row" id="genai-review">
-            <figure class="research-figure">
-              <a class="research-cover-link" href="projects/genai-accessibility.html" aria-label="Generative AI and Accessibility" aria-describedby="genai-cover-note">
-                <img src="images/research/genai-accessibility/concept-cover-small.webp" alt="Concept illustration of image descriptions, captions, easy-read information and voice interaction" width="1536" height="1024" decoding="async" />
-              </a>
-              <figcaption id="genai-cover-note">AI-generated concept illustration.</figcaption>
-            </figure>
-            <div class="research-entry-copy">
-              <h3>
-                <a href="projects/genai-accessibility.html"
-                  >Generative AI and Accessibility</a
-                >
-              </h3>
-              <p class="research-status">Systematic review <span>Manuscript in preparation</span></p>
-              <p class="research-description">
-                How are disabled people involved in GenAI accessibility
-                research? Reported participation is concentrated in evaluation,
-                with less involvement in problem definition and design.
-              </p>
-              <p class="research-meta">
-                <strong>First author and review lead.</strong> Systematic review
-                and qualitative coding of 240 papers.
-              </p>
-              <div class="resource-links">
-                <a class="text-link" href="projects/genai-accessibility.html"
-                  >Project<svg
-                    aria-hidden="true"
-                    class="icon"
-                    fill="none"
-                    height="20"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.6"
-                    viewbox="0 0 24 24"
-                    width="20"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path></svg
-                ></a>
-                <a class="text-link" href="projects/genai-accessibility.html#evidence">Findings</a>
-              </div>
-            </div>
-          </article>
             <article class="research-row">
               <figure class="research-figure">
-              <a class="research-cover-link" href="projects/vr-acceptance.html" aria-label="VR Acceptance in Cultural Heritage" aria-describedby="vr-result-caption">
-                <img src="images/research/vr-acceptance/museum-vr-concept.webp" alt="Concept illustration of the Mona Lisa opening into an immersive gallery, with a VR headset in the foreground" width="1536" height="1024" loading="lazy" decoding="async"/>
-              </a>
-              <figcaption id="vr-result-caption">AI-generated concept illustration inspired by the study stimulus.</figcaption>
+                <a class="research-cover-link" href="projects/vr-acceptance.html" aria-label="VR Acceptance in Cultural Heritage" aria-describedby="vr-result-caption">
+                  <img src="images/research/vr-acceptance/museum-vr-concept.webp" alt="Concept illustration of the Mona Lisa opening into an immersive gallery, with a VR headset in the foreground" width="1536" height="1024" loading="lazy" decoding="async"/>
+                </a>
+                <figcaption id="vr-result-caption">AI-generated concept illustration inspired by the study stimulus; not a participant photograph or application screenshot.</figcaption>
               </figure>
               <div class="research-entry-copy">
-                <h3>
-                  <a href="projects/vr-acceptance.html"
-                    >VR Acceptance in Cultural Heritage</a
-                  >
-                </h3>
+                <h3><a href="projects/vr-acceptance.html">VR Acceptance in Cultural Heritage</a></h3>
                 <p class="research-status">Heritage, 2025 <span>Published article</span></p>
-                <p class="research-description">
-                  Perceived usefulness had the strongest direct association with
-                  intention to use in our model. Interviews explored what made
-                  the experience worthwhile.
-                </p>
-                <p class="research-meta">
-                  <strong>Co-first author.</strong> Study design, analysis and
-                  writing; 566 survey responses and 20 interviews.
-                </p>
+                <p class="research-description">Perceived usefulness had the strongest direct association with intention to use in our model. Interviews explored what made the experience worthwhile.</p>
+                <p class="research-meta"><strong>Co-first author.</strong> Study design, analysis and writing; 566 survey responses and 20 interviews.</p>
                 <div class="resource-links">
-                  <a class="text-link" href="projects/vr-acceptance.html"
-                    >Project</a
-                  >
-                  <a
-                    class="text-link"
-                    href="papers/Gong_et_al_2025_VR_Acceptance_Heritage.pdf"
-                    >PDF<svg
-                      aria-hidden="true"
-                      class="icon"
-                      fill="none"
-                      height="20"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.6"
-                      viewbox="0 0 24 24"
-                      width="20"
-                    >
-                      <path
-                        d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
-                      ></path>
-                      <path d="M14 2v5a1 1 0 0 0 1 1h5"></path>
-                      <path d="M10 9H8"></path>
-                      <path d="M16 13H8"></path>
-                      <path d="M16 17H8"></path></svg></a
-                  ><a
-                    class="text-link"
-                    href="https://doi.org/10.3390/heritage8120503"
-                    >DOI</a
-                  >
+                  <a class="text-link" href="projects/vr-acceptance.html">Project</a>
+                  <a class="text-link" href="papers/Gong_et_al_2025_VR_Acceptance_Heritage.pdf">PDF</a>
+                  <a class="text-link" href="https://doi.org/10.3390/heritage8120503">DOI</a>
                 </div>
               </div>
             </article>
             <article class="research-row">
               <figure class="research-figure">
-              <a
-                aria-label="Yixing Zisha AR"
-                class="research-cover-link zisha-research-cover"
-                href="projects/zisha.html"
-              >
-                <img
-                  alt="The working Zisha AR prototype: a digital teapot over a printed target, with vessel-form, clay and craft controls."
-                  decoding="async"
-                  height="864"
-                  loading="lazy"
-                  sizes="(max-width: 600px) calc(100vw - 44px), 288px"
-                  src="images/zisha/ar-cover-small.webp"
-                  srcset="
-                    images/zisha/ar-cover-small.webp  960w,
-                    images/zisha/ar-cover.webp       1920w
-                  "
-                  width="1920"
-                />
-              </a>
-              <figcaption>Working Unity / Vuforia prototype.</figcaption>
+                <a aria-label="Yixing Zisha AR" class="research-cover-link zisha-research-cover" href="projects/zisha.html">
+                  <img alt="The working Zisha AR prototype: a digital teapot over a printed target, with vessel-form, clay and craft controls." decoding="async" height="864" loading="lazy" sizes="(max-width: 600px) calc(100vw - 44px), 288px" src="images/zisha/ar-cover-small.webp" srcset="images/zisha/ar-cover-small.webp 960w, images/zisha/ar-cover.webp 1920w" width="1920"/>
+                </a>
+                <figcaption>Working Unity / Vuforia prototype.</figcaption>
               </figure>
               <div class="research-entry-copy">
                 <h3><a href="projects/zisha.html">Yixing Zisha AR</a></h3>
                 <p class="research-status">Jiangnan University, 2026 <span>Master's thesis</span></p>
-                <p class="research-description">
-                  I built a mobile AR prototype for traditional craft. In the
-                  survey, perceived authenticity was associated with usefulness
-                  and flow.
-                </p>
-                <p class="research-meta">
-                  <strong>Design, development and thesis research.</strong>
-                  388 valid survey responses after remote prototype use.
-                </p>
+                <p class="research-description">I built a mobile AR prototype for traditional craft. In the survey, perceived authenticity was associated with usefulness and flow.</p>
+                <p class="research-meta"><strong>Design, development and thesis research.</strong> 388 valid survey responses after remote prototype use.</p>
                 <div class="resource-links">
-                  <a class="text-link" href="projects/zisha.html"
-                    >Project</a
-                  >
-                  <a class="text-link" href="projects/zisha.html#demo"
-                    >Watch 30 seconds<svg
-                      aria-hidden="true"
-                      class="icon"
-                      fill="none"
-                      height="20"
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.6"
-                      viewbox="0 0 24 24"
-                      width="20"
-                    >
-                      <path
-                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"
-                      ></path></svg
-                  ></a>
+                  <a class="text-link" href="projects/zisha.html">Project</a>
+                  <a class="text-link" href="projects/zisha.html#demo">Watch 30 seconds</a>
                 </div>
               </div>
             </article>

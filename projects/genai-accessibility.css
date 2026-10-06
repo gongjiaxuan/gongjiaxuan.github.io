@@ -725,3 +725,13 @@
     font-size: 12px;
   }
 }
+
+
+/* Keep the concept illustration secondary to the research questions. */
+.review-concept {
+  max-width: 820px;
+  margin-inline: auto;
+}
+@media (max-width: 700px) {
+  .review-concept { max-width: none; }
+}
