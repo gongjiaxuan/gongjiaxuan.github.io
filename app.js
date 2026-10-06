@@ -1,6 +1,16 @@
 (() => {
   'use strict';
 
+  // Make image-lightbox triggers self-describing to screen readers.
+  document.querySelectorAll('[data-zoom]').forEach(link => {
+    const image = link.querySelector('img[alt]');
+    const description = image?.alt || link.dataset.alt || link.dataset.caption || 'project image';
+    if (!link.hasAttribute('aria-label')) {
+      link.setAttribute('aria-label', 'Enlarge image: ' + description);
+    }
+    link.setAttribute('aria-haspopup', 'dialog');
+  });
+
   document.querySelectorAll('[data-filter-root]').forEach(root => {
     const items = [...root.querySelectorAll('[data-item]')];
     const buttons = [...root.querySelectorAll('[data-filter]')];

@@ -309,3 +309,8 @@
   object-fit: contain;
   background: #fff;
 }
+
+.academic-home .home-profile { padding-bottom:34px; }
+@media(max-width:700px) {
+  .academic-home .home-profile { padding-bottom:25px; }
+}

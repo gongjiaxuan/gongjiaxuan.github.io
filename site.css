@@ -76,3 +76,94 @@
   object-fit:contain;
   background:#fff;
 }
+
+
+/* 2026-10-06 subtle human-presence pass */
+:root { --warm-accent: #b96d43; }
+
+.home-current {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px 8px;
+  margin-top:17px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+.home-current strong {
+  color:var(--ink);
+  font-weight:600;
+}
+.home-current-dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--warm-accent);
+  flex:0 0 7px;
+}
+.section-updated {
+  color:var(--muted);
+  white-space:nowrap;
+}
+
+.home-paths a,
+.method-links a {
+  display:inline-flex;
+  align-items:center;
+  min-height:32px;
+  padding-inline:3px;
+}
+.resource-links .text-link {
+  min-width:28px;
+}
+.filter-options button {
+  min-width:32px;
+  padding-inline:7px;
+}
+
+/* A little motion makes the site feel handled, not templated. */
+.current-visual,
+.research-cover-link,
+.project-link .project-visual {
+  transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.current-research-card:hover .current-visual,
+.research-row:hover .research-cover-link,
+.project-item:hover .project-link .project-visual {
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(25, 52, 44, .075);
+  border-color:color-mix(in srgb, var(--accent) 24%, var(--rule));
+}
+.current-copy h3 a,
+.research-entry-copy h3 a,
+.project-line h3 {
+  text-decoration-color:transparent;
+  text-underline-offset:4px;
+}
+.current-copy h3 a:hover,
+.research-entry-copy h3 a:hover {
+  color:var(--accent);
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+}
+
+@media(max-width:700px) {
+  .home-current {
+    margin-top:13px;
+    font-size:13px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .current-visual,
+  .research-cover-link,
+  .project-link .project-visual {
+    transition:none;
+  }
+  .current-research-card:hover .current-visual,
+  .research-row:hover .research-cover-link,
+  .project-item:hover .project-link .project-visual {
+    transform:none;
+  }
+}
