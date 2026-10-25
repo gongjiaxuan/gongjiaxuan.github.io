@@ -1,0 +1,306 @@
+/* clarify.html — page-specific styles. 依赖 academic.css 的 tokens 与 header。 */
+
+.cl-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 48px;
+  align-items: end;
+  padding: 40px 0 30px;
+}
+
+.cl-label {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: .02em;
+  margin-bottom: 10px;
+}
+
+.cl-hero h1 {
+  font-size: clamp(44px, 6vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -.015em;
+  margin-bottom: 18px;
+}
+
+.cl-lede {
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 40ch;
+  margin-bottom: 22px;
+}
+
+.cl-lede em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.cl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.cl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 180ms var(--ease), background-color 180ms ease;
+}
+
+.cl-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.cl-btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+}
+
+.cl-btn-ghost:hover {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.cl-hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+
+.cl-fact b {
+  display: block;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.cl-fact span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* 封面 */
+.cl-cover {
+  padding: 8px 0 10px;
+}
+
+.cl-cover-frame {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 24px 60px -32px rgba(32, 37, 37, .35);
+}
+
+.cl-cover-frame img {
+  width: 100%;
+  height: auto;
+}
+
+.cl-caption {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+/* 三段式 */
+.cl-how {
+  padding: 54px 0 10px;
+  border-top: 1px solid var(--rule);
+  margin-top: 40px;
+}
+
+.cl-section-head h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.cl-section-head p {
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.cl-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+  margin-top: 34px;
+  counter-reset: step;
+}
+
+.cl-step {
+  position: relative;
+  padding-top: 62px;
+}
+
+.cl-step::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  background: #fff;
+}
+
+.cl-step h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.cl-step p {
+  font-size: 15.5px;
+  color: var(--muted);
+}
+
+/* 图文块 */
+.cl-block {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: 42px;
+  align-items: center;
+  padding: 56px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.cl-block-rev {
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+}
+
+.cl-block-rev .cl-block-media {
+  order: 2;
+}
+
+.cl-block-media figure {
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.cl-block-media img {
+  width: 100%;
+  height: auto;
+}
+
+.cl-block-copy h2 {
+  font-size: 25px;
+  margin-bottom: 14px;
+}
+
+.cl-block-copy p {
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.cl-block-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.cl-block-copy strong {
+  color: var(--ink);
+}
+
+/* 诚实声明 */
+.cl-note {
+  padding: 34px 0 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.cl-note h2 {
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.cl-note ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 15.5px;
+}
+
+.cl-note li {
+  margin-bottom: 8px;
+}
+
+/* 底部下载 */
+.cl-cta {
+  margin: 46px 0 60px;
+  padding: 38px 40px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cl-cta h2 {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.cl-cta p {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 62ch;
+}
+
+.cl-meta-list {
+  display: grid;
+  gap: 14px;
+}
+
+.cl-meta-list div {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 15px;
+}
+
+.cl-meta-list dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .cl-hero,
+  .cl-block,
+  .cl-block-rev {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .cl-block-rev .cl-block-media { order: 0; }
+  .cl-steps { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .cl-step { padding-top: 56px; }
+  .cl-cta { padding: 28px 24px; }
+  .cl-meta-list div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
