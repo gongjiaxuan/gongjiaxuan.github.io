@@ -1,175 +1,283 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="light" name="color-scheme"/>
-<meta content="Clarify is a research prototype for two-sided clarification: shape a difficult question in private, then let the other person answer, correct the premise, pause or decline." name="description"/>
-<title>Clarify | Jiaxuan Gong</title>
-<link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="../academic.css" rel="stylesheet"/>
-<link href="clarify.css" rel="stylesheet"/>
-<script defer="" src="../app.js"></script>
-<link href="https://gongjiaxuan.github.io/projects/clarify.html" rel="canonical"/>
-<meta content="website" property="og:type"/>
-<meta content="Jiaxuan Gong" property="og:site_name"/>
-<meta content="Clarify | Jiaxuan Gong" property="og:title"/>
-<meta content="A two-sided clarification space for questions that are hard to ask." property="og:description"/>
-<meta content="https://gongjiaxuan.github.io/projects/clarify.html" property="og:url"/>
-<meta content="https://gongjiaxuan.github.io/images/clarify/desktop.png" property="og:image"/>
-<meta content="Clarify | Jiaxuan Gong" property="og:image:alt"/>
-<meta content="summary_large_image" name="twitter:card"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Clarify is Jiaxuan Gong's human-centered AI research prototype for everyday communication: private intention-setting, optional LLM wording suggestions, editable drafts, and deliberate sharing. See the interface, implementation, and research boundaries." />
+  <title>Clarify — Human-Centered AI for Everyday Communication | Jiaxuan Gong</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="canonical" href="https://gongjiaxuan.github.io/projects/clarify.html" />
+  <link rel="preload" href="../fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="stylesheet" href="../academic.css" />
+  <link rel="stylesheet" href="clarify.css" />
+  <script defer src="../app.js"></script>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Jiaxuan Gong" />
+  <meta property="og:title" content="Clarify — Human-Centered AI for Everyday Communication" />
+  <meta property="og:description" content="A working research prototype for clarifying everyday messages while keeping intention, editing and sending under the person's control. Participant evaluation is pending." />
+  <meta property="og:url" content="https://gongjiaxuan.github.io/projects/clarify.html" />
+  <meta property="og:image" content="https://gongjiaxuan.github.io/images/clarify/desktop.png" />
+  <meta property="og:image:alt" content="A real screenshot of the Clarify desktop prototype with a conversation and private wording assistant" />
+  <meta name="twitter:card" content="summary_large_image" />
 </head>
-<body id="top">
-<a class="skip-link" href="#main">Skip to content</a>
-<div class="site-shell">
-<header class="site-header">
-<a aria-label="Jiaxuan Gong, home" class="wordmark" href="../index.html">Jiaxuan Gong</a>
-<nav aria-label="Main navigation">
-<a href="../index.html#research">Research</a>
-<a href="../publications.html">Publications</a>
-<a aria-current="page" href="../work.html">Projects</a>
-<a href="../about.html">About</a>
-<a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV
-          <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
-</a>
-</nav>
-</header>
-<main id="main">
-<div class="case-breadcrumb">
-<a class="text-link" href="../work.html">Projects
-          <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
-</a>
-</div>
+<body class="clarify-case" id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="wordmark" href="../index.html" aria-label="Jiaxuan Gong, home">Jiaxuan Gong</a>
+      <nav aria-label="Main navigation">
+        <a href="../index.html#research">Research</a>
+        <a href="../publications.html">Publications</a>
+        <a href="../work.html" aria-current="location">Projects</a>
+        <a href="../about.html">About</a>
+        <a class="nav-cv" href="../cv/Jiaxuan_Gong_CV.pdf">CV
+          <svg class="icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+        </a>
+      </nav>
+    </header>
 
-<header class="cl-hero">
-<div>
-<p class="cl-label">Research prototype · 2026</p>
-<h1>Clarify</h1>
-<p class="cl-lede">Some questions are easy to think and hard to ask. Clarify gives you a <em>private room</em> to shape the question first — and gives the other person a way to answer without being cornered.</p>
-<div class="cl-actions">
-<a class="cl-btn" href="https://github.com/gongjiaxuan/gongjiaxuan.github.io/releases/tag/clarify-v1.0.0">Download for Windows
-<svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="M12 4v12"></path><path d="m6 12 6 6 6-6"></path><path d="M4 20h16"></path></svg>
-</a>
-<a class="cl-btn cl-btn-ghost" href="#how">See how it works</a>
-</div>
-<div class="cl-hero-facts">
-<div class="cl-fact"><b>3</b><span>moves, not one</span></div>
-<div class="cl-fact"><b>670 MB</b><span>portable, no install</span></div>
-<div class="cl-fact"><b>Win 10/11</b><span>64-bit</span></div>
-</div>
-</div>
-<div>
-<p class="cl-label">What it changes</p>
-<p style="font-size:16px;color:var(--muted);max-width:42ch">Most tools optimise <strong style="color:var(--ink)">what</strong> you say. Clarify works on the step before: deciding whether the question is fair, and letting the other side disagree with the question itself.</p>
-</div>
-</header>
+    <main id="main" tabindex="-1">
+      <div class="cl-breadcrumb">
+        <a class="text-link" href="../work.html">Back to projects</a><span aria-hidden="true">/</span><span>Clarify</span>
+      </div>
 
-<section class="cl-cover">
-<figure>
-<div class="cl-cover-frame">
-<img alt="The Clarify desktop view: the conversation on the left, and a private draft panel on the right where the user rewrites the question before sending it." decoding="async" fetchpriority="high" height="950" src="../images/clarify/desktop.png" width="1440"/>
-</div>
-<figcaption class="cl-caption">The working interface. Left: the conversation you both see. Right: a draft only you can see.</figcaption>
-</figure>
-</section>
+      <header class="cl-hero">
+        <div class="cl-hero-copy">
+          <p class="cl-eyebrow">Human–AI interaction <span aria-hidden="true">·</span> Communication accessibility <span aria-hidden="true">·</span> 2026–ongoing</p>
+          <h1>Clarify</h1>
+          <p class="cl-deck">Helping people find the words—without taking the words away.</p>
+          <p class="cl-intro">A working desktop research prototype for moments when someone knows what they need to ask but finds the conversation difficult to navigate. Clarify separates the person's intention from AI-generated suggestions, private editing, and the final decision to share a message.</p>
+          <div class="cl-actions">
+            <a class="cl-btn" href="#mechanism">Explore the interaction <span aria-hidden="true">↓</span></a>
+            <a class="cl-btn cl-btn-secondary" href="https://github.com/gongjiaxuan/gongjiaxuan.github.io/releases/tag/clarify-v1.0.0">Windows release <span aria-hidden="true">↗</span></a>
+          </div>
+          <p class="cl-status"><strong>Early research prototype.</strong> Explores possible support for everyday communication, including questions relevant to autistic adults. No evaluation with the intended participants has yet been conducted.</p>
+        </div>
+        <aside class="cl-brief" aria-label="Project at a glance">
+          <p class="cl-brief-heading">Project at a glance</p>
+          <dl>
+            <div><dt>Core question</dt><dd>How can AI support clarification without speaking for someone?</dd></div>
+            <div><dt>My role</dt><dd>Interaction design, interface development, AI and state integration</dd></div>
+            <div><dt>Built with</dt><dd>Electron · React · TypeScript · LLM API</dd></div>
+            <div><dt>Current evidence</dt><dd>Functional prototype and engineering tests; user evaluation pending</dd></div>
+          </dl>
+        </aside>
+      </header>
 
-<section class="cl-how" id="how" aria-labelledby="how-title">
-<div class="cl-section-head">
-<h2 id="how-title">Three moves instead of one</h2>
-<p>A clarification request is not a message. It is a small agreement about what is being asked — and whether it should be asked at all.</p>
-</div>
-<div class="cl-steps">
-<article class="cl-step">
-<h3>Start from a goal</h3>
-<p>You say what you actually need to find out, not the sentence you were about to send. The goal is yours alone; it never appears in the conversation.</p>
-</article>
-<article class="cl-step">
-<h3>Rewrite in private</h3>
-<p>You draft the wording, compare a few options, and keep editing until it sounds like a person asking rather than an accusation.</p>
-</article>
-<article class="cl-step">
-<h3>Then it becomes shareable</h3>
-<p>Only when you confirm does the request appear to the other person. Before that moment, nothing is sent and nothing is stored.</p>
-</article>
-</div>
-</section>
+      <figure class="cl-hero-visual">
+        <a href="../images/clarify/desktop.png" data-zoom data-caption="Working Clarify interface using fictional conversation data. The message and the private Find the words panel are visible; this is not a participant session.">
+          <img src="../images/clarify/desktop.png" width="1344" height="861" decoding="async" fetchpriority="high" alt="Real Clarify desktop screenshot: a fictional message saying Maybe a bit later on the left, and the private Find the words panel on the right with an intention and editable wording options." />
+        </a>
+        <figcaption>Working prototype, captured with fictional example data. Select to enlarge.</figcaption>
+      </figure>
 
-<section class="cl-block">
-<div class="cl-block-media">
-<figure>
-<img alt="The partner window: the recipient sees the clarification request and can answer, correct the premise, pause, or decline." decoding="async" height="780" loading="lazy" src="../images/clarify/partner.png" width="660"/>
-<figcaption class="cl-caption" style="padding:12px 14px 0">The partner window, not a chat window.</figcaption>
-</figure>
-</div>
-<div class="cl-block-copy">
-<h2>The other side is not a target</h2>
-<p>Most “help me say this better” tools treat the listener as a recipient. Here the listener gets their own agency:</p>
-<p><strong>Answer</strong> the question, <strong>correct the premise</strong> it was built on, <strong>pause</strong> the exchange, or <strong>decline</strong> — each is a first-class action, not an awkward silence.</p>
-<p>That asymmetry is the design claim: a question can be well-meaning and still be unfair. The interface should make room for saying so.</p>
-</div>
-</section>
+      <nav class="cl-contents" aria-label="On this page">
+        <a href="#problem">01 Problem</a>
+        <a href="#mechanism">02 Interaction</a>
+        <a href="#implementation">03 Implementation</a>
+        <a href="#demo">04 Demonstration</a>
+        <a href="#boundaries">05 Evidence &amp; limits</a>
+        <a href="#contribution">06 My contribution</a>
+      </nav>
 
-<section class="cl-block cl-block-rev">
-<div class="cl-block-media">
-<figure>
-<img alt="Clarify with a live model connected: suggested phrasings generated from the user's stated goal." decoding="async" height="895" loading="lazy" src="../images/clarify/live-ai.png" width="400"/>
-<figcaption class="cl-caption" style="padding:12px 14px 0">With a model connected, suggestions come from your own goal — not from the other person's words.</figcaption>
-</figure>
-</div>
-<div class="cl-block-copy">
-<h2>Optional: let a model draft with you</h2>
-<p>Connect any OpenAI-compatible endpoint with <strong>your own API key</strong> and Clarify will propose a few phrasings for the goal you stated.</p>
-<p>The model only ever sees <strong>your draft and your goal</strong> — never the other person's messages. You still decide what gets sent, and the final text stays editable.</p>
-<p>With no key configured, the prototype runs entirely on labelled example sentences, so the interaction remains demonstrable offline.</p>
-</div>
-</section>
+      <!-- 01: Problem and design judgment -->
+      <section class="cl-section" id="problem" aria-labelledby="problem-title">
+        <div class="cl-section-heading">
+          <p class="cl-kicker">01 / Problem &amp; design judgment</p>
+          <h2 id="problem-title">Sometimes the hard part is not understanding the words. It is knowing how to ask what they mean.</h2>
+        </div>
+        <div class="cl-problem-layout">
+          <div class="cl-copy">
+            <p>“Maybe a bit later” is a normal reply. It can also leave someone unable to plan when to leave. They may know that they need a specific time but be unsure how to ask without sounding abrupt or getting drawn into another ambiguous exchange.</p>
+            <p>Clarify emerged from my research interest in generative AI and accessible communication. I wanted to explore how an interface might support people who seek help putting a question into words—including autistic adults—without presuming that AI can infer their intentions.</p>
+            <p>The design judgment was to <strong>begin with the person's stated purpose</strong>, not with a model rewriting the conversation automatically. This remains a research hypothesis, not a need or outcome established through participant study.</p>
+          </div>
+          <aside class="cl-scenario" aria-label="Fictional demonstration scenario">
+            <p class="cl-scenario-label">Fictional everyday scenario</p>
+            <div class="cl-message"><span>Me</span><p>What time shall we meet tomorrow? I need to plan when to leave.</p></div>
+            <div class="cl-message"><span>Lin</span><p>Maybe a bit later.</p></div>
+            <div class="cl-scenario-intent"><span>What I need to express</span><p>I want to confirm the time so I can plan when to leave.</p></div>
+          </aside>
+        </div>
+        <div class="cl-principles" aria-label="Three design decisions">
+          <article><span class="cl-number">01</span><h3>Intent stays with the person</h3><p>They define the question or purpose; AI cannot know what they meant without asking.</p></article>
+          <article><span class="cl-number">02</span><h3>Assistance remains optional</h3><p>People can type directly or use fixed phrases without generating new text.</p></article>
+          <article><span class="cl-number">03</span><h3>Sending is its own action</h3><p>A suggested sentence first enters an editable private draft, not the partner's view.</p></article>
+        </div>
+      </section>
 
-<section class="cl-block">
-<div class="cl-block-media">
-<figure>
-<img alt="The clarification conversation view showing how the request and the reply sit side by side within the ongoing conversation." decoding="async" height="950" loading="lazy" src="../images/clarify/conversation.png" width="1440"/>
-<figcaption class="cl-caption" style="padding:12px 14px 0">The request lives inside the conversation, not beside it.</figcaption>
-</figure>
-</div>
-<div class="cl-block-copy">
-<h2>Built as a real desktop app</h2>
-<p>Clarify is an Electron application with a React interface, a typed main process boundary, and a local-only speech pipeline.</p>
-<dl class="cl-meta-list">
-<div><dt>My contribution</dt><dd>Concept, interaction design, interface design and implementation</dd></div>
-<div><dt>Format</dt><dd>Independent desktop prototype, single machine, two views</dd></div>
-<div><dt>Built with</dt><dd>Electron, TypeScript, React, ONNX Runtime</dd></div>
-<div><dt>Speech</dt><dd>Optional local Whisper model, downloaded separately</dd></div>
-</dl>
-</div>
-</section>
+      <!-- 02: Interaction mechanism -->
+      <section class="cl-section" id="mechanism" aria-labelledby="mechanism-title">
+        <div class="cl-section-heading">
+          <p class="cl-kicker">02 / Interaction mechanism</p>
+          <h2 id="mechanism-title">From uncertainty to a deliberate message.</h2>
+          <p class="cl-section-lede">The workflow separates five moments that a conventional text-rewriting button might collapse into one.</p>
+        </div>
+        <ol class="cl-flow">
+          <li><span class="cl-flow-number">1</span><div><h3>Notice what needs clarifying</h3><p>Select <strong>Clarify this</strong> beneath an ambiguous message or start drafting directly.</p></div></li>
+          <li><span class="cl-flow-number">2</span><div><h3>Name the intention</h3><p>Write what you want to ask. If useful, select confirmed preferences and inspect or disable conversation context.</p></div></li>
+          <li><span class="cl-flow-number">3</span><div><h3>Review alternative wording</h3><p>Optional LLM suggestions appear as candidates—not as a decision about what you should say.</p></div></li>
+          <li><span class="cl-flow-number">4</span><div><h3>Edit, reject, or send</h3><p>Choose a suggestion only if it helps. Edit it in the composer or keep your own words; nothing reaches the partner until <strong>Send</strong>.</p></div></li>
+          <li><span class="cl-flow-number">5</span><div><h3>Hear the other side</h3><p>The partner can explain, disagree, pause or continue. Clarify does not decide the partner's meaning or assume agreement.</p></div></li>
+        </ol>
+        <div class="cl-feature cl-feature-reverse">
+          <figure class="cl-shot cl-shot-portrait">
+            <a href="../images/clarify/live-ai.png" data-zoom data-caption="Real Find the words panel using fictional scenario data. It shows optional conversation context, an editable intention and generated wording options.">
+              <img src="../images/clarify/live-ai.png" width="400" height="895" loading="lazy" decoding="async" alt="The real Clarify writing panel shows context selection, the sentence Maybe a bit later, an editable intention and two wording suggestions with separate Use this controls." />
+            </a>
+            <figcaption>The writing assistant presents alternatives. “Use this” fills the draft; it does not send a message.</figcaption>
+          </figure>
+          <div class="cl-feature-text">
+            <h3>Why make suggestions reversible?</h3>
+            <p>An apparently polished sentence can soften a boundary, add an assumption, or simply sound unlike the person who needs to speak. Clarify treats generated text as a proposal that can be inspected and changed.</p>
+            <p>The person can instead type or choose a useful phrase. The intention is the reference point; the generated sentence is not the final authority.</p>
+            <p class="cl-small-note">This is a design rationale. It does not yet establish benefit for autistic participants or communication partners.</p>
+          </div>
+        </div>
+      </section>
 
-<section class="cl-note" aria-labelledby="limits-title">
-<h2 id="limits-title">Scope and status</h2>
-<ul>
-<li><strong>Research prototype.</strong> The design question comes first: how much of a difficult question should be negotiated before it is asked.</li>
-<li><strong>Single machine, two views.</strong> Both sides run in one window so the exchange can be inspected without a second device.</li>
-<li><strong>Works offline.</strong> Without a key, phrasings come from labelled preset examples, so the interaction stays demonstrable with no network.</li>
-<li><strong>Local by design.</strong> No account system, no conversation database, no server. Nothing is stored after the window closes, and any API key stays on your machine.</li>
-</ul>
-</section>
+      <!-- 03: System implementation -->
+      <section class="cl-section" id="implementation" aria-labelledby="implementation-title">
+        <div class="cl-section-heading">
+          <p class="cl-kicker">03 / System implementation</p>
+          <h2 id="implementation-title">A working Electron application with distinct private and shared states.</h2>
+          <p class="cl-section-lede">The architecture makes the transition from thinking to sharing explicit. A request to an AI service and a message sent to a person are different events.</p>
+        </div>
+        <div class="cl-state-model" aria-label="Private and shared state architecture">
+          <div class="cl-state-card">
+            <p class="cl-state-label">Private authoring state</p>
+            <h3>Intent, preferences, suggestions, draft</h3>
+            <p>The writer can inspect the selected context, request alternatives, change the wording and decide what to keep.</p>
+            <small>Not displayed in the partner window.</small>
+          </div>
+          <div class="cl-state-arrow" aria-label="Only a deliberate send shares the final message">
+            <span>Explicit Send</span><strong aria-hidden="true">→</strong>
+          </div>
+          <div class="cl-state-card">
+            <p class="cl-state-label">Shared conversation state</p>
+            <h3>Sent message, partner response</h3>
+            <p>Only the chosen message enters the shared view. The partner can respond; a simulated partner is used for solo demonstrations.</p>
+            <small>Not a cross-device messaging service.</small>
+          </div>
+        </div>
+        <div class="cl-tech-grid">
+          <article><h3>Electron / React / TypeScript</h3><p>Desktop windows and conversation-first UI, with component states for the assistant panel, composer, partner perspective and bilingual controls.</p></article>
+          <article><h3>LLM integration</h3><p>On-demand wording requests through a configured OpenAI-compatible API. Inputs can include the selected message, stated goal, selected confirmed preferences and bounded conversation context.</p></article>
+          <article><h3>Private / shared separation</h3><p>Drafts and assistance goals remain separate from sent text. Generating or choosing a suggestion is not equivalent to publishing it.</p></article>
+          <article><h3>Optional non-LLM pathways</h3><p>Direct typing and fixed phrases are always available. Optional local Whisper dictation puts recognized words into the private composer for review.</p></article>
+        </div>
+        <div class="cl-feature">
+          <figure class="cl-shot cl-shot-partner">
+            <a href="../images/clarify/partner.png" data-zoom data-caption="The second local Clarify window showing a fictional conversation. The AI partner's response is labelled as simulated.">
+              <img src="../images/clarify/partner.png" width="660" height="780" loading="lazy" decoding="async" alt="Actual Clarify partner-facing window showing the sent question about a meeting time and an explicitly labelled AI-simulated partner reply." />
+            </a>
+            <figcaption>Partner-facing view on the same computer. The displayed reply is generated for the fictional demonstration.</figcaption>
+          </figure>
+          <div class="cl-feature-text">
+            <h3>A two-sided flow, not a two-device service</h3>
+            <p>Alongside the writer's view, the prototype has a separate local partner-facing window. In demonstration mode, a fictional partner named Lin produces AI replies only after the writer sends a message.</p>
+            <p>This allows the interaction sequence to be examined without treating the simulated partner as a real autistic participant or a real communication partner.</p>
+            <p><strong>Service boundary:</strong> when the online LLM is used, the selected request content is sent to the model provider. Keeping a draft private from the partner does not mean the provider receives no context. The interaction lets the person choose whether and what to request.</p>
+          </div>
+        </div>
+      </section>
 
-<section class="cl-cta">
-<div>
-<h2>Try it, then tell me what breaks</h2>
-<p>Portable Windows build, 235 MB zipped. The speech model is optional and downloaded separately, so the download stays small unless you want voice.</p>
-</div>
-<div class="cl-actions">
-<a class="cl-btn" href="https://github.com/gongjiaxuan/gongjiaxuan.github.io/releases/tag/clarify-v1.0.0">Download Clarify 1.0.0</a>
-<a class="cl-btn cl-btn-ghost" href="https://github.com/gongjiaxuan/gongjiaxuan.github.io/releases/tag/clarify-v1.0.0">Release notes</a>
-</div>
-</section>
-</main>
+      <!-- 04: Demonstration -->
+      <section class="cl-section" id="demo" aria-labelledby="demo-title">
+        <div class="cl-section-heading">
+          <p class="cl-kicker">04 / Demonstration</p>
+          <h2 id="demo-title">A complete clarification exchange in the runnable prototype.</h2>
+          <p class="cl-section-lede">These are application captures—not constructed concept illustrations. Every message shown is fictional.</p>
+        </div>
+        <figure class="cl-demo-shot cl-shot">
+          <a href="../images/clarify/conversation.png" data-zoom data-caption="Fictional example in the running Clarify application: a rewritten question has been sent, and Lin has responded in the AI demo. No target-user session was conducted.">
+            <img src="../images/clarify/conversation.png" width="1440" height="950" loading="lazy" decoding="async" alt="Actual Clarify app screenshot showing the revised request for a meeting time, a labelled AI-simulated reply suggesting 4 pm, and the message composer." />
+          </a>
+          <figcaption>The revised question becomes visible only after Send. The demo partner's answer is clearly labelled AI-generated.</figcaption>
+        </figure>
+        <div class="cl-demo-recap">
+          <article><span>Before</span><h3>Private intention</h3><p>“I need to know the time so I can plan when to leave.”</p></article>
+          <article><span>Decision</span><h3>Edited, then sent</h3><p>“Could you let me know a time for tomorrow so I can plan when to leave?”</p></article>
+          <article><span>After</span><h3>The partner replies</h3><p>In this fictional run, Lin clarifies what “later” meant. The writer can continue or disagree.</p></article>
+        </div>
+        <div class="cl-release">
+          <div><h3>Explore the Windows build</h3><p>Clarify 1.0.0 is available as a portable Windows 10/11 (64-bit) research build. A compatible AI service is needed for live suggestions; optional speech recognition requires a separate local model.</p></div>
+          <a class="cl-btn" href="https://github.com/gongjiaxuan/gongjiaxuan.github.io/releases/tag/clarify-v1.0.0">Release and download <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
 
-<footer class="site-footer"><div><span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a></div><div class="footer-links"><a class="text-link" href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a><a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a><a class="text-link" href="#top">Back to top<svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" width="20"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg></a></div></footer>
-</div>
+      <!-- 05: Evidence and boundaries -->
+      <section class="cl-section" id="boundaries" aria-labelledby="boundaries-title">
+        <div class="cl-section-heading">
+          <p class="cl-kicker">05 / Evidence &amp; unverified claims</p>
+          <h2 id="boundaries-title">What the prototype demonstrates—and what it does not.</h2>
+        </div>
+        <div class="cl-evidence-grid">
+          <div class="cl-evidence">
+            <h3>Implemented and checked</h3>
+            <ul>
+              <li>A functional Windows desktop app with private writing and local partner-facing views.</li>
+              <li>Working LLM request and response flows using fictional everyday situations.</li>
+              <li>Editable suggestions, explicit sending, simulated replies, pause and error-handling paths.</li>
+              <li>Interface checks at desktop and narrow widths, plus tests of optional local speech workflows.</li>
+            </ul>
+            <p>These are engineering and demonstration checks, not studies of user benefit.</p>
+          </div>
+          <div class="cl-evidence cl-evidence-pending">
+            <h3>Not yet evaluated</h3>
+            <ul>
+              <li>No requirements study or participatory co-design with autistic adults and their chosen partners.</li>
+              <li>No evidence yet that the tool improves understanding, preserves meaning or reduces communication effort.</li>
+              <li>No verified accessibility conformance or sustained real-world use evaluation.</li>
+              <li>No independently authenticated, networked, two-device communication service.</li>
+            </ul>
+            <p>These limitations shape the next research stage rather than constituting completed findings.</p>
+          </div>
+        </div>
+        <div class="cl-next-steps">
+          <h3>Next research questions</h3>
+          <p>Which moments in everyday exchanges do people actually want help with? When does reviewing AI wording help—or add more work? I plan to investigate these questions through participatory inquiry and compare direct writing, fixed phrases and optional AI drafting, with attention to user control, meaning preservation and both people's workload.</p>
+        </div>
+      </section>
+
+      <!-- 06: Contribution -->
+      <section class="cl-section" id="contribution" aria-labelledby="contribution-title">
+        <div class="cl-section-heading">
+          <p class="cl-kicker">06 / My contribution</p>
+          <h2 id="contribution-title">Bringing a human–AI research question into an inspectable interaction.</h2>
+          <p class="cl-section-lede">I led the design direction and iteratively developed the functioning prototype, using AI-assisted engineering where appropriate.</p>
+        </div>
+        <dl class="cl-contributions">
+          <div><dt>Research framing</dt><dd>Translated questions about communication access, intent and control into a focused design hypothesis and fictional demonstration scenario.</dd></div>
+          <div><dt>Interaction design</dt><dd>Defined the sequence of clarification, user intention, optional suggestion, private revision, explicit Send and partner response.</dd></div>
+          <div><dt>Interface and desktop implementation</dt><dd>Designed and iterated the conversation UI and assistant panel, developed in Electron, React and TypeScript.</dd></div>
+          <div><dt>LLM and state integration</dt><dd>Implemented and tested on-demand model-assisted wording, selected context and preferences, and the private/shared-state boundary of the two-sided flow.</dd></div>
+          <div><dt>Engineering verification</dt><dd>Used fictional scenario walkthroughs, model-call checks, interface regression tests and explicit limitation reviews to prepare the next research iteration.</dd></div>
+        </dl>
+        <p class="cl-contribution-note">Clarify is an early, continuing research prototype. Its design and engineering checks are not claims of clinical use, user effectiveness, or a completed participant study.</p>
+      </section>
+
+      <aside class="cl-end" aria-labelledby="cl-end-title">
+        <div>
+          <p class="cl-kicker">Ongoing HCI research · 2026</p>
+          <h2 id="cl-end-title">A working question, not a finished answer.</h2>
+          <p>The prototype is a way to make assumptions about AI assistance, communication and agency concrete enough to question and test.</p>
+        </div>
+        <a class="cl-btn" href="https://github.com/gongjiaxuan/gongjiaxuan.github.io/releases/tag/clarify-v1.0.0">Clarify 1.0.0 <span aria-hidden="true">↗</span></a>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <div><span>Jiaxuan Gong</span><a href="mailto:gongjiaxuan169@gmail.com">gongjiaxuan169@gmail.com</a></div>
+      <div class="footer-links">
+        <a class="text-link" href="https://scholar.google.com/citations?user=FtQ2NOUAAAAJ">Google Scholar</a>
+        <a class="text-link" href="../cv/Jiaxuan_Gong_CV.pdf">CV</a>
+        <a class="text-link" href="#top">Back to top
+          <svg class="icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+        </a>
+      </div>
+    </footer>
+  </div>
 </body>
 </html>
